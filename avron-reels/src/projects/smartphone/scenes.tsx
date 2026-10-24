@@ -1,96 +1,117 @@
 import React from "react";
 import { OffthreadVideo, staticFile } from "remotion";
 import { color, font, layout } from "../../brand/tokens";
-import { clamp01, ease, lerp, prog, rand } from "../../engine/anim";
-import { Counter, Label, SourceTag, SweepText, WordReveal } from "../../engine/components/Kinetic";
-import { DataRoom } from "../../engine/components/DataRoom";
-import { fadeWin } from "../viviana/ui";
+import { clamp01, ease, lerp, prog } from "../../engine/anim";
+import { SourceTag } from "../../engine/components/Kinetic";
 import { at, CUE, S } from "./config";
 
+/*
+ * Direction (ideas/2026-10-product-launch-20s, plus the launch/pitch prompts as style references):
+ * high-end minimal, one idea per shot, lots of empty space, one accent colour, one clean sans with tight
+ * tracking, masked type reveals, match moves, one camera language, cuts on the beat, big stats on push cuts.
+ * Banned: shake, particles, glows, grid floors, flashes, bouncy easing. No full stops in on-screen text.
+ * Hindi is written in Roman script (user request).
+ */
 const G = layout.gutter;
-const RED = "#FF5A55";
-const deva: React.CSSProperties = { fontFamily: font.deva, fontWeight: 800, color: color.ink, letterSpacing: "-0.015em" };
-const glass: React.CSSProperties = {
-  borderRadius: 22, padding: "26px 32px", background: "linear-gradient(160deg, rgba(24,26,32,0.88), rgba(9,10,13,0.92))",
-  border: "1.5px solid rgba(243,241,236,0.14)", boxShadow: "0 40px 80px rgba(0,0,0,0.5)",
-};
+const ACC = color.amber;
+const INK = color.ink;
+const DIM = "rgba(243,241,236,0.46)";
+const display = (size: number, weight = 800): React.CSSProperties => ({
+  fontFamily: font.display, fontWeight: weight, fontSize: size, letterSpacing: "-0.045em", lineHeight: 1.02, color: INK,
+});
+const label: React.CSSProperties = { fontFamily: font.text, fontWeight: 600, fontSize: 26, letterSpacing: "0.2em", textTransform: "uppercase", color: DIM };
+const mono: React.CSSProperties = { fontFamily: font.mono, fontSize: 24, color: DIM, letterSpacing: "0.02em" };
+const body: React.CSSProperties = { fontFamily: font.text, fontWeight: 600, fontSize: 32, lineHeight: 1.3, color: INK, letterSpacing: "-0.01em" };
 
-/** Bottom source tags: one shared style for every credit in the reel, stacked upward from the safe line. */
-const TAG_Y = 1500;
-const BottomTags: React.FC<{ t: number; tags: { text: string; start: number; end?: number; estimate?: boolean }[] }> = ({ t, tags }) => {
-  const live = tags.filter((g) => t >= g.start && (g.end === undefined || t < g.end));
+/** Masked rise. No blur, no overshoot. */
+const Mask: React.FC<{ t: number; start: number; out?: number; children: React.ReactNode; style?: React.CSSProperties; dur?: number }> = ({
+  t, start, out, children, style, dur = 0.6,
+}) => {
+  const p = ease.outExpo(clamp01((t - start) / dur));
+  const q = out === undefined ? 0 : ease.inCubic(clamp01((t - out) / 0.28));
   return (
-    <div style={{ position: "absolute", left: G, right: 120, bottom: 1920 - TAG_Y - 52, display: "flex", flexDirection: "column-reverse", alignItems: "flex-start", gap: 10 }}>
-      {live.map((g, i) => (
-        <SourceTag key={g.text} text={g.text} t={t} start={g.start} estimate={g.estimate} style={{ fontSize: 22, padding: "10px 18px", opacity: g.end ? 1 - prog(t, g.end - 0.25, 0.25) : undefined }} />
-      ))}
+    <div style={{ overflow: "hidden", paddingBottom: "0.12em", marginBottom: "-0.12em", ...style }}>
+      <div style={{ transform: `translateY(${(1 - p) * 110 - q * 110}%)` }}>{children}</div>
     </div>
   );
 };
 
-/* ------------------------------------------------ 0. OPENING CLIP (IGR, 1.5x) with hook text and the Q3 stat popup */
+/** Push cut: the incoming shot arrives with a short eased push (motion blur does the rest). */
+const pushIn = (t: number, a: number): React.CSSProperties => {
+  const p = ease.outExpo(clamp01((t - a) / 0.55));
+  return { transform: `scale(${lerp(1.08, 1, p)})`, opacity: clamp01((t - a) / 0.08) };
+};
+
+/** Eased 0..1 progress of a match move starting at `a`. */
+const move = (t: number, a: number, d = 0.7) => ease.inOutQuint(clamp01((t - a) / d));
+
+/** A hairline that grows or shrinks between two fractions of the content width. */
+const Line: React.FC<{ from: number; to: number; p: number; top: number; accent?: boolean; ghost?: number; opacity?: number }> = ({ from, to, p, top, accent, ghost, opacity = 1 }) => {
+  const W = 1080 - 2 * G;
+  return (
+    <div style={{ position: "absolute", left: G, top, width: W, height: 4, opacity }}>
+      {ghost !== undefined && <div style={{ position: "absolute", left: 0, top: 0, height: 4, width: W * ghost, background: "rgba(243,241,236,0.14)" }} />}
+      <div style={{ position: "absolute", left: 0, top: 0, height: 4, width: W * lerp(from, to, p), background: accent ? ACC : INK }} />
+    </div>
+  );
+};
+
+/** Bottom source tags: one shared style for every credit in the reel. */
+const TAG_Y = 1500;
+const BottomTags: React.FC<{ t: number; tags: { text: string; start: number }[] }> = ({ t, tags }) => (
+  <div style={{ position: "absolute", left: G, right: 120, bottom: 1920 - TAG_Y - 52, display: "flex", flexDirection: "column-reverse", alignItems: "flex-start", gap: 10 }}>
+    {tags.filter((g) => t >= g.start).map((g) => (
+      <SourceTag key={g.text} text={g.text} t={t} start={g.start} style={{ fontSize: 22, padding: "10px 18px" }} />
+    ))}
+  </div>
+);
+
+const Stage: React.FC<{ children: React.ReactNode; opacity?: number }> = ({ children, opacity = 1 }) => (
+  <div style={{ position: "absolute", inset: 0, opacity, background: `radial-gradient(80% 55% at 50% 42%, #0E1014 0%, ${color.bg} 70%)` }}>{children}</div>
+);
+
+/* ------------------------------------------------ 0. OPENING CLIP (IGR, 1.5x) */
 export const Opening: React.FC<{ t: number }> = ({ t }) => {
   const turn = CUE.turn, ship = CUE.ship;
-  // camera: slow push, a soft push on "But this year", a zoom punch + shake on "shipments have fallen sharply",
-  // and a small punch on "why buy a new phone"
   const why = 17.46;
-  const punch = 0.17 * prog(t, ship, 0.22, ease.outExpo) - 0.09 * prog(t, ship + 0.25, 1.4, ease.inOutCubic);
-  const s = 1 + 0.004 * t + 0.045 * prog(t, turn, 0.9, ease.inOutCubic) + punch + 0.035 * prog(t, why, 0.18, ease.outExpo) - 0.02 * prog(t, why + 0.2, 1.0, ease.inOutCubic);
-  const shakeK = Math.max(0, 1 - (t - ship) / 0.45) * (t >= ship ? 1 : 0);
-  const sx = (rand(Math.floor(t * 60)) - 0.5) * 22 * shakeK, sy = (rand(Math.floor(t * 60) + 7) - 0.5) * 16 * shakeK;
+  // one camera language: slow push, a soft push on "But this year", zoom punches on "shipments have fallen sharply" and "why buy"
+  const punch = 0.16 * ease.outExpo(clamp01((t - ship) / 0.3)) - 0.08 * ease.inOutCubic(clamp01((t - ship - 0.3) / 1.6));
+  const s = 1 + 0.004 * t + 0.045 * ease.inOutCubic(clamp01((t - turn) / 0.9)) + punch
+    + 0.03 * ease.outExpo(clamp01((t - why) / 0.3)) - 0.015 * ease.inOutCubic(clamp01((t - why - 0.3) / 1.0));
   const BAND_TOP = 610, BAND_H = 594;
-  const hookOut = prog(t, ship - 0.25, 0.25, ease.inCubic);
-  const stat = prog(t, ship, 0.35, ease.outExpo);
+  const hookOut = ship - 0.05;
   const honest = 16.4;
-  const out = prog(t, S.clip[1] - 0.12, 0.12);
   return (
-    <div style={{ position: "absolute", inset: 0, opacity: 1 - out }}>
+    <div style={{ position: "absolute", inset: 0 }}>
       <OffthreadVideo src={staticFile("smartphone/bg.mp4")} muted style={{ position: "absolute", inset: 0, width: 1080, height: 1920, transform: `scale(${1.08 + 0.003 * t})` }} />
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(6,7,10,0.82) 0%, rgba(6,7,10,0.35) 30%, rgba(6,7,10,0.35) 62%, rgba(6,7,10,0.9) 100%)" }} />
-      <div style={{ position: "absolute", left: 0, top: BAND_TOP, width: 1080, height: BAND_H, transform: `translate(${sx}px, ${sy}px) scale(${s})`, transformOrigin: "50% 50%",
-        boxShadow: "0 50px 120px rgba(0,0,0,0.75), 0 0 0 1.5px rgba(243,241,236,0.10)" }}>
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(6,7,10,0.86) 0%, rgba(6,7,10,0.4) 30%, rgba(6,7,10,0.4) 62%, rgba(6,7,10,0.92) 100%)" }} />
+      <div style={{ position: "absolute", left: 0, top: BAND_TOP, width: 1080, height: BAND_H, transform: `scale(${s})`, transformOrigin: "50% 50%", boxShadow: "0 50px 120px rgba(0,0,0,0.7)" }}>
         <OffthreadVideo src={staticFile("smartphone/band.mp4")} muted style={{ width: 1080, height: BAND_H }} />
-        {/* cinematic grade on top of the ffmpeg grade: teal shadows, vignette */}
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(110% 90% at 50% 45%, transparent 55%, rgba(0,0,0,0.55) 100%)", mixBlendMode: "multiply" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(110% 90% at 50% 45%, transparent 55%, rgba(0,0,0,0.5) 100%)" }} />
       </div>
 
-      {/* hook text, top band, out when the stat lands */}
-      <div style={{ position: "absolute", left: G, right: G, top: 250, opacity: 1 - hookOut, transform: `translateY(${-30 * hookOut}px)` }}>
-        <Label text="INDIA · SMARTPHONES · Q3 2026" t={t} start={0.15} tint={color.amber} />
-        <WordReveal text="Festive season में भी" t={t} start={0.35} style={{ ...deva, fontSize: 92, lineHeight: 1.05, marginTop: 18 }} />
-        <WordReveal text="phone market ठंडा।" t={t} start={0.75} style={{ ...deva, fontSize: 92, lineHeight: 1.05, color: color.amberHot }} />
+      <div style={{ position: "absolute", left: G, right: G, top: 250 }}>
+        <Mask t={t} start={0.1} out={hookOut}><div style={label}>India · smartphones · Q3 2026</div></Mask>
+        <Mask t={t} start={0.3} out={hookOut} style={{ marginTop: 18 }}><div style={{ ...display(76), whiteSpace: "nowrap" }}>Festive season mein bhi</div></Mask>
+        <Mask t={t} start={0.55} out={hookOut}><div style={{ ...display(76), color: ACC, whiteSpace: "nowrap" }}>phone market thanda</div></Mask>
       </div>
 
-      {/* Q3 stat popup: a range, because the two trackers measure differently */}
       {t >= ship - 0.05 && (
-        <div style={{ position: "absolute", left: G, right: G, top: 228, opacity: stat * (1 - out) }}>
-          <Label text="Q3 2026 · SHIPMENTS · YoY" t={t} start={ship} tint={color.inkDim} />
-          <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 116, letterSpacing: "-0.05em", color: RED, lineHeight: 1, marginTop: 6, whiteSpace: "nowrap",
-            transform: `scale(${lerp(1.5, 1, stat)})`, transformOrigin: "0% 60%", textShadow: "0 8px 40px rgba(240,82,79,0.35)" }}>
-            −<Counter to={20} t={t} start={ship} dur={0.5} />% <span style={{ ...deva, fontSize: 54, color: color.inkDim }}>से</span> −<Counter to={26} t={t} start={ship + 0.1} dur={0.55} />%
-          </div>
-          <div style={{ display: "flex", gap: 10, marginTop: 12, flexDirection: "column", alignItems: "flex-start" }}>
-            {[["Counterpoint", "−20%"], ["Omdia", "−26% · 35.8M units · 2016 के बाद सबसे कम Q3"]].map(([k, v], i) => {
-              const p = prog(t, ship + 0.35 + i * 0.22, 0.4, ease.outExpo);
-              return (
-                <div key={k} style={{ fontFamily: font.deva, fontSize: 25, fontWeight: 600, color: color.ink, background: "rgba(13,16,21,0.82)", border: `1.5px solid ${color.line}`,
-                  borderRadius: 12, padding: "9px 16px", opacity: p, transform: `translateY(${(1 - p) * 18}px)` }}>
-                  <b style={{ color: color.amberHot }}>{k}</b> {v}
-                </div>
-              );
-            })}
-          </div>
+        <div style={{ position: "absolute", left: G, right: G, top: 236 }}>
+          <Mask t={t} start={ship}><div style={label}>Q3 2026 · shipments · YoY</div></Mask>
+          <Mask t={t} start={ship + 0.05} dur={0.5} style={{ marginTop: 10 }}>
+            <div style={{ ...display(124), whiteSpace: "nowrap" }}>−20% <span style={{ fontSize: 56, color: DIM }}>se</span> <span style={{ color: ACC }}>−26%</span></div>
+          </Mask>
+          <Mask t={t} start={ship + 0.45} style={{ marginTop: 14 }}><div style={{ ...mono, color: INK }}>Counterpoint −20% · Omdia −26%, 35.8M units</div></Mask>
+          <Mask t={t} start={ship + 0.6}><div style={{ ...mono, color: INK }}>Omdia: 2016 ke baad sabse kam Q3</div></Mask>
         </div>
       )}
 
-      {/* the honest line: shipments are not purchases */}
       {t >= honest && (
-        <div style={{ position: "absolute", left: G, right: G, top: 1252, ...glass, padding: "16px 24px", opacity: prog(t, honest, 0.4) * (1 - out),
-          transform: `translateY(${(1 - prog(t, honest, 0.5, ease.outExpo)) * 30}px)` }}>
-          <div style={{ fontFamily: font.mono, fontSize: 20, color: color.amber, letterSpacing: "0.12em", marginBottom: 8 }}>NOTE</div>
-          <div style={{ ...deva, fontWeight: 600, fontSize: 28, lineHeight: 1.3, color: color.ink }}>
-            Shipments यानी दुकानों तक भेजे गए phones, ख़रीदे गए नहीं। Dealers ने stock कम मँगाया, और Diwali भी late थी।
-          </div>
+        <div style={{ position: "absolute", left: G, right: G, top: 1262 }}>
+          <Mask t={t} start={honest}><div style={{ ...label, color: ACC, fontSize: 22 }}>Note</div></Mask>
+          <Mask t={t} start={honest + 0.08} style={{ marginTop: 8 }}><div style={{ ...body, fontSize: 30 }}>Shipments yaani dukaanon tak bheje gaye phones, khareede gaye nahi</div></Mask>
+          <Mask t={t} start={honest + 0.2}><div style={{ ...body, fontSize: 30, color: DIM }}>Dealers ne stock kam mangaaya, Diwali bhi late thi</div></Mask>
         </div>
       )}
 
@@ -102,268 +123,229 @@ export const Opening: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-/* ------------------------------------------------ 1. BUDGET: sub-₹10k price jump and shipment crash */
+/* ------------------------------------------------ 1. BUDGET: one idea per beat; each headline match-moves into the label */
 export const Budget: React.FC<{ t: number }> = ({ t }) => {
-  const [a, b] = S.budget;
+  const [a] = S.budget;
   const r10 = at("b1_budget", "₹10,000"), p32 = at("b1_budget", "32%"), p65 = at("b1_budget", "65%");
-  const priceP = prog(t, p32 - 0.4, 0.9, ease.outExpo);
-  const shipP = prog(t, p65 - 0.3, 1.3, ease.inOutCubic);
-  const q3 = p65 + 0.7;
+  const m1 = move(t, r10 - 0.2), m2 = move(t, p32 - 0.25), m3 = move(t, p65 - 0.25);
+  const q3 = p65 + 0.9;
   return (
-    <div style={{ position: "absolute", inset: 0, opacity: fadeWin(t, a, b, 0.01, 0.25) }}>
-      <DataRoom t={t} tint={color.amber} drift={0.5} opacity={0.55} />
-      <div style={{ position: "absolute", left: G, right: G, top: 250 }}>
-        <Label text="H1 2026 · INDIA" t={t} start={a} tint={color.amber} />
-        <div style={{ ...deva, fontSize: 84, lineHeight: 1.05, marginTop: 14, opacity: prog(t, a + 0.1, 0.4) }}>
-          <span style={{ color: color.amberHot }}>₹10,000</span> से नीचे वाले phones
+    <Stage>
+      <div style={{ position: "absolute", inset: 0, ...pushIn(t, a) }}>
+        <div style={{ position: "absolute", left: G, right: G, top: 660, opacity: 1 - m1 }}>
+          <Mask t={t} start={a + 0.05}><div style={display(118)}>Sabse zyada maar</div></Mask>
+          <Mask t={t} start={a + 0.2}><div style={{ ...display(118), color: ACC }}>sasti phones par</div></Mask>
         </div>
-      </div>
-
-      {/* price: index 100 → 132 */}
-      <div style={{ position: "absolute", left: G, right: G, top: 520, ...glass, opacity: prog(t, r10, 0.4), transform: `translateY(${(1 - prog(t, r10, 0.5, ease.outExpo)) * 40}px)` }}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <div style={{ ...deva, fontSize: 40, color: color.inkDim }}>औसत दाम</div>
-          <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 120, color: color.amberHot, letterSpacing: "-0.04em", lineHeight: 1 }}>
-            +<Counter to={32} t={t} start={p32 - 0.45} dur={0.8} />%
+        {t >= r10 - 0.25 && (
+          <div style={{ position: "absolute", left: G, top: lerp(640, 240, m2), transformOrigin: "0 0", transform: `scale(${lerp(1, 0.26, m2)})` }}>
+            <Mask t={t} start={r10 - 0.2}><div style={{ ...display(170), whiteSpace: "nowrap" }}>₹10,000</div></Mask>
+            <Mask t={t} start={r10 - 0.1}><div style={{ ...display(170), color: DIM, whiteSpace: "nowrap" }}>se neeche</div></Mask>
+            <div style={{ ...label, fontSize: 40, marginTop: 14, opacity: 1 - m2 }}>H1 2026</div>
           </div>
-        </div>
-        <div style={{ position: "relative", height: 26, marginTop: 18, borderRadius: 13, background: "rgba(255,255,255,0.06)" }}>
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${(100 / 132) * 100}%`, borderRadius: 13, background: "rgba(243,241,236,0.28)" }} />
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${lerp(100 / 132, 1, priceP) * 100}%`, borderRadius: 13,
-            background: `linear-gradient(90deg, rgba(243,241,236,0.0) ${(100 / 132) * 100 - 2}%, ${color.amber} ${(100 / 132) * 100}%)` }} />
-        </div>
-        <div style={{ fontFamily: font.mono, fontSize: 22, color: color.inkFaint, marginTop: 12, opacity: priceP }}>index: 100 × 1.32 = 132 (लगभग)</div>
-      </div>
-
-      {/* shipments: 100 → 35 */}
-      <div style={{ position: "absolute", left: G, right: G, top: 860, ...glass, opacity: prog(t, p32 + 0.5, 0.4) }}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <div style={{ fontFamily: font.text, fontWeight: 700, fontSize: 40, color: color.inkDim }}>Shipments</div>
-          <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 120, color: RED, letterSpacing: "-0.04em", lineHeight: 1, opacity: prog(t, p65 - 0.1, 0.3) }}>
-            −<Counter to={65} t={t} start={p65 - 0.2} dur={1.2} />%
+        )}
+        {t >= p32 - 0.3 && (
+          <div style={{ position: "absolute", left: G, top: lerp(640, 360, m3), transformOrigin: "0 0", transform: `scale(${lerp(1, 0.36, m3)})` }}>
+            <Mask t={t} start={p32 - 0.25}><div style={{ ...label, fontSize: 32 }}>Average daam</div></Mask>
+            <Mask t={t} start={p32 - 0.2}><div style={{ ...display(300), color: ACC }}>+32%</div></Mask>
           </div>
-        </div>
-        <div style={{ position: "relative", height: 26, marginTop: 18, borderRadius: 13, background: "rgba(255,255,255,0.06)", border: "1.5px dashed rgba(243,241,236,0.18)" }}>
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${lerp(100, 35, shipP)}%`, borderRadius: 13, background: lerp(0, 1, shipP) > 0.5 ? RED : color.steel }} />
-        </div>
-        <div style={{ fontFamily: font.mono, fontSize: 22, color: color.inkFaint, marginTop: 12, opacity: shipP }}>100 − 65 = 35 · H1 2025 के मुक़ाबले</div>
+        )}
+        {t >= p32 - 0.2 && <Line from={1 / 1.32} to={1} p={prog(t, p32 - 0.1, 0.9, ease.outExpo)} top={1010} accent ghost={1 / 1.32} opacity={1 - m3} />}
+        {t >= p32 && <div style={{ position: "absolute", left: G, top: 1040, ...mono, opacity: prog(t, p32, 0.4) * (1 - m3) }}>index 100 × 1.32 = 132</div>}
+        {t >= p65 - 0.3 && (
+          <div style={{ position: "absolute", left: G, top: 640 }}>
+            <Mask t={t} start={p65 - 0.25}><div style={{ ...label, fontSize: 32 }}>Shipments · YoY</div></Mask>
+            <Mask t={t} start={p65 - 0.2}><div style={display(300)}>−65%</div></Mask>
+          </div>
+        )}
+        {t >= p65 - 0.2 && <Line from={1} to={0.35} p={prog(t, p65, 1.4, ease.inOutCubic)} top={1010} ghost={1} />}
+        {t >= p65 && <div style={{ position: "absolute", left: G, top: 1040, ...mono, opacity: prog(t, p65 + 0.3, 0.4) }}>100 − 65 = 35</div>}
+        {t >= q3 && (
+          <div style={{ position: "absolute", left: G, right: G, top: 1130 }}>
+            <Mask t={t} start={q3}><div style={{ ...body, color: DIM }}>Q3 2026 · ₹20,000 se neeche shipments <span style={{ color: INK }}>−47%</span></div></Mask>
+          </div>
+        )}
       </div>
-
-      {/* Q3 follow-up: below ₹20k */}
-      <div style={{ position: "absolute", left: G, right: G, top: 1180, ...deva, fontWeight: 600, fontSize: 34, color: color.inkDim, opacity: prog(t, q3, 0.4) * (1 - prog(t, b - 0.3, 0.3)) }}>
-        Q3 2026: ₹20,000 से नीचे shipments <span style={{ color: RED, fontWeight: 800 }}>−47%</span>
-      </div>
-
       <BottomTags t={t} tags={[
         { text: "Counterpoint, H1 2026 price analysis (29 Sep 2026)", start: r10 },
         { text: "Counterpoint, Q3 2026 (23 Oct 2026)", start: q3 },
       ]} />
-    </div>
+    </Stage>
   );
 };
 
-/* ------------------------------------------------ 2. MEMORY: AI data centres soak up DRAM/NAND; weaker rupee */
+/* ------------------------------------------------ 2. MEMORY: type only, one idea per beat */
 export const Memory: React.FC<{ t: number }> = ({ t }) => {
-  const [a, b] = S.memory;
+  const [a] = S.memory;
   const ai = at("b2_memory", "AI"), dram = at("b2_memory", "DRAM"), rupee = at("b2_memory", "rupee"), cost = at("b2_memory", "cost");
-  const chipP = prog(t, a + 0.1, 0.6, ease.outExpo);
-  const rackP = prog(t, ai - 0.1, 0.6, ease.outExpo);
-  const flow = clamp01((t - dram) / 0.4);
+  const lab = move(t, ai - 0.25);
+  const shot = (s: number, e: number) => t >= s - 0.3 && t < e + 0.3;
+  const chipDraw = prog(t, dram - 0.1, 1.1, ease.inOutCubic);
   return (
-    <div style={{ position: "absolute", inset: 0, opacity: fadeWin(t, a, b, 0.01, 0.25) }}>
-      <DataRoom t={t} tint={color.blue} drift={0.6} opacity={0.6} />
-      <div style={{ position: "absolute", left: G, right: G, top: 250 }}>
-        <Label text="दाम क्यों बढ़े" t={t} start={a} tint={color.steel} />
-        <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 104, color: color.ink, letterSpacing: "-0.04em", lineHeight: 1, marginTop: 12, opacity: chipP }}>
-          <SweepText text="MEMORY CHIPS" t={t} start={a + 0.3} />
+    <Stage>
+      <div style={{ position: "absolute", inset: 0, ...pushIn(t, a) }}>
+        <div style={{ position: "absolute", left: G, top: lerp(700, 252, lab), transformOrigin: "0 0", transform: `scale(${lerp(1, 0.32, lab)})` }}>
+          <Mask t={t} start={a + 0.05}><div style={{ ...display(170), whiteSpace: "nowrap" }}>Memory</div></Mask>
+          <Mask t={t} start={a + 0.15}><div style={{ ...display(170), color: ACC, whiteSpace: "nowrap" }}>chips</div></Mask>
         </div>
-      </div>
-
-      {/* AI data-centre racks pulling memory upward */}
-      <div style={{ position: "absolute", left: G, right: G, top: 470, display: "flex", justifyContent: "center", gap: 26, opacity: rackP, transform: `translateY(${(1 - rackP) * -30}px)` }}>
-        {[0, 1, 2, 3].map((r) => (
-          <div key={r} style={{ width: 150, height: 200, borderRadius: 10, background: "linear-gradient(180deg,#151922,#0B0D12)", border: "1.5px solid rgba(157,178,201,0.25)", padding: 12, display: "flex", flexDirection: "column", gap: 9 }}>
-            {[0, 1, 2, 3, 4, 5].map((u) => (
-              <div key={u} style={{ height: 19, borderRadius: 4, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", gap: 6, paddingLeft: 8 }}>
-                {[0, 1, 2].map((l) => <span key={l} style={{ width: 6, height: 6, borderRadius: 6, background: rand(r * 31 + u * 7 + l + Math.floor(t * 8)) > 0.45 ? color.blue : "rgba(91,140,255,0.2)" }} />)}
-              </div>
-            ))}
+        {shot(ai, dram) && (
+          <div style={{ position: "absolute", left: G, right: G, top: 700 }}>
+            <Mask t={t} start={ai - 0.2} out={dram - 0.3}><div style={display(124)}>AI data centres</div></Mask>
+            <Mask t={t} start={ai - 0.05} out={dram - 0.3}><div style={{ ...display(124), color: DIM }}>khareed rahe hain</div></Mask>
           </div>
-        ))}
+        )}
+        {shot(dram, rupee) && (
+          <div style={{ position: "absolute", left: 0, right: 0, top: 620, height: 520, opacity: 1 - prog(t, rupee - 0.3, 0.25) }}>
+            <svg width={1080} height={520} style={{ position: "absolute", inset: 0 }}>
+              <rect x={240} y={120} width={600} height={300} rx={18} fill="none" stroke={INK} strokeWidth={3}
+                strokeDasharray={1800} strokeDashoffset={1800 * (1 - chipDraw)} />
+              {Array.from({ length: 10 }).map((_, i) => {
+                const p = prog(t, dram + 0.2 + i * 0.04, 0.3);
+                return (
+                  <g key={i} opacity={p}>
+                    <line x1={285 + i * 57} y1={120} x2={285 + i * 57} y2={120 - 34 * p} stroke={INK} strokeWidth={3} />
+                    <line x1={285 + i * 57} y1={420} x2={285 + i * 57} y2={420 + 34 * p} stroke={INK} strokeWidth={3} />
+                  </g>
+                );
+              })}
+            </svg>
+            <div style={{ position: "absolute", left: 0, right: 0, top: 205, display: "flex", justifyContent: "center", gap: 34 }}>
+              <Mask t={t} start={dram}><div style={{ ...display(96), color: ACC }}>DRAM</div></Mask>
+              <Mask t={t} start={dram + 0.45}><div style={{ ...display(96), color: ACC }}>NAND</div></Mask>
+            </div>
+          </div>
+        )}
+        {shot(rupee, cost) && (
+          <div style={{ position: "absolute", left: G, right: G, top: 700 }}>
+            <Mask t={t} start={rupee - 0.2} out={cost - 0.3}><div style={display(150)}>Rupee <span style={{ color: ACC }}>kamzor</span></div></Mask>
+            <Mask t={t} start={rupee} out={cost - 0.3}><div style={{ ...display(64, 700), color: DIM, marginTop: 10 }}>imported parts mehenge</div></Mask>
+          </div>
+        )}
+        {t >= cost - 0.3 && (
+          <div style={{ position: "absolute", left: G, right: G, top: 680 }}>
+            <Mask t={t} start={cost - 0.2}><div style={display(104)}>Sasti phone ki cost</div></Mask>
+            <Mask t={t} start={cost - 0.05}><div style={display(104)}>mein <span style={{ color: ACC }}>memory</span> ka</div></Mask>
+            <Mask t={t} start={cost + 0.1}><div style={display(104)}>hissa zyada</div></Mask>
+          </div>
+        )}
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 690, textAlign: "center", fontFamily: font.mono, fontSize: 26, letterSpacing: "0.18em", color: color.steel, opacity: rackP }}>AI DATA CENTRES</div>
-
-      {/* streams of memory flowing up */}
-      {Array.from({ length: 26 }).map((_, i) => {
-        const x = 200 + rand(i * 3.3) * 680;
-        const ph = (t * (0.9 + rand(i) * 0.8) + rand(i * 9.1)) % 1;
-        return <div key={i} style={{ position: "absolute", left: x, top: lerp(1010, 720, ph), width: 14, height: 9, borderRadius: 2, background: color.goldHot, opacity: flow * Math.sin(Math.PI * ph) * 0.8 }} />;
-      })}
-
-      {/* the chip */}
-      <div style={{ position: "absolute", left: 540 - 230, top: 790, width: 460, height: 250, opacity: chipP, transform: `scale(${lerp(0.85, 1, chipP)})` }}>
-        {Array.from({ length: 9 }).map((_, i) => (
-          <React.Fragment key={i}>
-            <div style={{ position: "absolute", left: 36 + i * 47, top: -16, width: 16, height: 18, background: color.gold, borderRadius: 2 }} />
-            <div style={{ position: "absolute", left: 36 + i * 47, bottom: -16, width: 16, height: 18, background: color.gold, borderRadius: 2 }} />
-          </React.Fragment>
-        ))}
-        <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "linear-gradient(160deg,#1E2129,#0C0E12)", border: "2px solid rgba(201,164,92,0.5)",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 30, fontFamily: font.display, fontWeight: 900, fontSize: 62, letterSpacing: "0.04em" }}>
-          <span style={{ color: prog(t, dram, 0.3) > 0.5 ? color.goldHot : color.inkFaint }}>DRAM</span>
-          <span style={{ color: color.inkFaint, fontSize: 40 }}>+</span>
-          <span style={{ color: prog(t, dram + 0.5, 0.3) > 0.5 ? color.goldHot : color.inkFaint }}>NAND</span>
-        </div>
-      </div>
-
-      {/* rupee + cost share, qualitative only (no verified share number on Counterpoint's page) */}
-      <div style={{ position: "absolute", left: G, right: G, top: 1090, display: "flex", gap: 18 }}>
-        <div style={{ ...glass, flex: 1, padding: "18px 22px", opacity: prog(t, rupee - 0.1, 0.4), transform: `translateY(${(1 - prog(t, rupee - 0.1, 0.5, ease.outExpo)) * 30}px)` }}>
-          <div style={{ ...deva, fontSize: 34, lineHeight: 1.25 }}><span style={{ color: RED }}>₹ कमज़ोर</span><br /><span style={{ fontWeight: 600, fontSize: 27, color: color.inkDim }}>imported parts महँगे</span></div>
-        </div>
-        <div style={{ ...glass, flex: 1.25, padding: "18px 22px", opacity: prog(t, cost - 0.1, 0.4), transform: `translateY(${(1 - prog(t, cost - 0.1, 0.5, ease.outExpo)) * 30}px)` }}>
-          <div style={{ ...deva, fontSize: 34, lineHeight: 1.25 }}><span style={{ color: color.goldHot }}>सस्ता phone</span><br /><span style={{ fontWeight: 600, fontSize: 27, color: color.inkDim }}>cost में memory का हिस्सा ज़्यादा</span></div>
-        </div>
-      </div>
-
       <BottomTags t={t} tags={[{ text: "Counterpoint, H1 2026 price analysis (29 Sep 2026)", start: a + 0.2 }]} />
-    </div>
+    </Stage>
   );
 };
 
-/* ------------------------------------------------ 3. CYCLE: 3.5 → ~4 years */
+/* ------------------------------------------------ 3. CYCLE: 3.5 → 4 years, the number rolls in place */
 export const Cycle: React.FC<{ t: number }> = ({ t }) => {
-  const [a, b] = S.cycle;
-  const four = at("b3_cycle", "4"), before = at("b3_cycle", "3.5");
-  const W = 912, yr = W / 4.5;
-  const p35 = prog(t, a + 0.2, 0.8, ease.outExpo);
-  const p4 = prog(t, four - 0.1, 0.6, ease.outExpo);
+  const [a] = S.cycle;
+  const four = at("b3_cycle", "4");
+  const roll = ease.inOutQuint(clamp01((t - four + 0.15) / 0.5));
   return (
-    <div style={{ position: "absolute", inset: 0, opacity: fadeWin(t, a, b, 0.01, 0.25) }}>
-      <DataRoom t={t} tint={color.amber} drift={0.4} opacity={0.5} />
-      <div style={{ position: "absolute", left: G, right: G, top: 250 }}>
-        <Label text="REPLACEMENT CYCLE · INDIA" t={t} start={a} tint={color.amber} />
-        <div style={{ ...deva, fontSize: 84, lineHeight: 1.05, marginTop: 14 }}>
-          एक phone, <span style={{ color: color.amberHot }}>~4 साल</span>
+    <Stage>
+      <div style={{ position: "absolute", inset: 0, ...pushIn(t, a) }}>
+        <div style={{ position: "absolute", left: G, top: 252 }}>
+          <Mask t={t} start={a + 0.05}><div style={label}>Replacement cycle · India</div></Mask>
         </div>
-      </div>
-      <div style={{ position: "absolute", left: G, top: 640, width: W }}>
-        {/* ruler */}
-        <div style={{ position: "relative", height: 60 }}>
-          {[0, 1, 2, 3, 4].map((y) => (
-            <div key={y} style={{ position: "absolute", left: y * yr, top: 0, fontFamily: font.mono, fontSize: 24, color: color.inkFaint, transform: "translateX(-50%)" }}>{y}y</div>
-          ))}
-        </div>
-        <div style={{ position: "relative", height: 70, borderRadius: 14, background: "rgba(255,255,255,0.05)" }}>
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3.5 * yr * p35, borderRadius: 14, background: "rgba(243,241,236,0.30)" }} />
-          <div style={{ position: "absolute", left: 3.5 * yr, top: 0, bottom: 0, width: 0.5 * yr * p4, borderRadius: "0 14px 14px 0", background: color.amber, boxShadow: `0 0 30px ${color.amber}88` }} />
-        </div>
-        <div style={{ position: "relative", height: 120, marginTop: 18 }}>
-          <div style={{ position: "absolute", left: 3.5 * yr, transform: "translateX(-100%)", textAlign: "right", opacity: prog(t, before - 0.2, 0.4) || p35 }}>
-            <div style={{ ...deva, fontSize: 30, color: color.inkDim }}>पहले</div>
-            <div style={{ fontFamily: font.display, fontWeight: 800, fontSize: 56, color: color.ink, whiteSpace: "nowrap" }}>~3.5 साल</div>
-          </div>
-          <div style={{ position: "absolute", left: 4 * yr + 14, opacity: p4 }}>
-            <div style={{ ...deva, fontSize: 30, color: color.amber }}>अब</div>
-            <div style={{ fontFamily: font.display, fontWeight: 800, fontSize: 56, color: color.amberHot }}>~4</div>
-          </div>
-        </div>
-      </div>
-      <div style={{ position: "absolute", left: G, right: G, top: 960, ...deva, fontWeight: 600, fontSize: 34, color: color.inkDim, opacity: prog(t, four + 0.6, 0.5) }}>
-        Phone चल रहा है, तो नया लेने की जल्दी नहीं।
-      </div>
-      <BottomTags t={t} tags={[{ text: "Counterpoint × Flipkart, Smartphone Insights Report 2026", start: a + 0.2 }]} />
-    </div>
-  );
-};
-
-/* ------------------------------------------------ 4. SURVEY: 2,095 buyers, stated intentions */
-export const Survey: React.FC<{ t: number }> = ({ t }) => {
-  const [a, b] = S.survey;
-  const one = at("b4_survey", "1");
-  const rows: [string, number, string][] = [
-    ["Budget stretch करेंगे", 46, color.steel],
-    ["Budget में रहेंगे या refurbished", 29, color.steel],
-    ["Purchase रोकेंगे", 25, RED],
-  ];
-  return (
-    <div style={{ position: "absolute", inset: 0, opacity: fadeWin(t, a, b, 0.01, 0.25) }}>
-      <DataRoom t={t} tint={color.steel} drift={0.4} opacity={0.5} />
-      <div style={{ position: "absolute", left: G, right: G, top: 250 }}>
-        <Label text="SURVEY · 2,095 BUYERS · JUL 2026" t={t} start={a} tint={color.steel} />
-        <div style={{ ...deva, fontSize: 80, lineHeight: 1.05, marginTop: 14 }}>दाम बढ़े, तो?</div>
-      </div>
-      <div style={{ position: "absolute", left: G, right: G, top: 540, display: "flex", flexDirection: "column", gap: 34 }}>
-        {rows.map(([label, v, c], i) => {
-          const p = prog(t, a + 0.3 + i * 0.35, 0.8, ease.outExpo);
-          const hot = i === 2 && t >= one - 0.1;
-          return (
-            <div key={label} style={{ opacity: i === 2 || !hot ? 1 : 0.55 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <div style={{ ...deva, fontWeight: 600, fontSize: 36, color: hot ? color.ink : color.inkDim }}>{label}</div>
-                <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: hot ? 92 : 64, color: hot ? RED : color.ink, lineHeight: 1 }}>
-                  <Counter to={v} t={t} start={a + 0.3 + i * 0.35} dur={0.8} />%
-                </div>
-              </div>
-              <div style={{ height: 22, marginTop: 12, borderRadius: 11, background: "rgba(255,255,255,0.06)" }}>
-                <div style={{ width: `${(v / 46) * 100 * p}%`, height: "100%", borderRadius: 11, background: c, boxShadow: hot ? `0 0 26px ${RED}99` : undefined }} />
+        <div style={{ position: "absolute", left: G, top: 600 }}>
+          <Mask t={t} start={a + 0.1}><div style={{ ...display(44, 700), color: DIM }}>Ek phone ab</div></Mask>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 30, marginTop: 6 }}>
+            <div style={{ height: 300, overflow: "hidden" }}>
+              <div style={{ transform: `translateY(${-300 * roll}px)` }}>
+                <div style={{ ...display(300), height: 300, color: INK }}>3.5</div>
+                <div style={{ ...display(300), height: 300, color: ACC }}>~4</div>
               </div>
             </div>
-          );
-        })}
+            <Mask t={t} start={a + 0.25}><div style={display(110)}>saal</div></Mask>
+          </div>
+        </div>
+        <Line from={0} to={3.5 / 4.5} p={prog(t, a + 0.2, 0.9, ease.outExpo)} top={1000} ghost={1} />
+        {t >= four - 0.1 && <Line from={3.5 / 4.5} to={4 / 4.5} p={prog(t, four - 0.1, 0.6, ease.outExpo)} top={1000} accent />}
+        <div style={{ position: "absolute", left: G, top: 1030, ...mono, opacity: prog(t, four, 0.4) }}>pehle ~3.5 saal · ab ~4</div>
       </div>
-      <div style={{ position: "absolute", left: G, right: G, top: 1090, fontFamily: font.mono, fontSize: 24, color: color.inkFaint, opacity: prog(t, a + 1.2, 0.5) }}>
-        46 + 29 + 25 = 100 · stated intentions, असली purchases नहीं
-      </div>
-      <BottomTags t={t} tags={[{ text: "Counterpoint survey, 24 Jul 2026 (n = 2,095)", start: a + 0.2 }]} />
-    </div>
+      <BottomTags t={t} tags={[{ text: "Counterpoint × Flipkart, Smartphone Insights Report 2026", start: a + 0.2 }]} />
+    </Stage>
   );
 };
 
-/* ------------------------------------------------ 5. SPLIT: 2025 volume +1%, value +8% */
-export const Split: React.FC<{ t: number }> = ({ t }) => {
-  const [a, b] = S.split;
-  const p8 = at("b5_split", "8%"), p1 = at("b5_split", "1%");
-  const H = 520;
-  const vol = prog(t, p1 - 0.2, 0.8, ease.outExpo), val = prog(t, p8 - 0.3, 0.9, ease.outExpo);
-  const interp = p8 + 0.35;
-  const bar = (label: string, v: number, p: number, c: string, x: number) => (
-    <div style={{ position: "absolute", left: x, bottom: 0, width: 300, textAlign: "center" }}>
-      <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 100, color: c, lineHeight: 1, opacity: p }}>+<Counter to={v} t={t} start={label === "Volume" ? p1 - 0.2 : p8 - 0.3} dur={0.8} />%</div>
-      <div style={{ height: (H - 150) * (v / 8) * p + 6, marginTop: 14, borderRadius: "14px 14px 0 0", background: `linear-gradient(180deg, ${c}, ${c}55)`, boxShadow: `0 0 40px ${c}44` }} />
-      <div style={{ fontFamily: font.text, fontWeight: 700, fontSize: 36, color: color.inkDim, marginTop: 16 }}>{label}</div>
-    </div>
-  );
+/* ------------------------------------------------ 4. SURVEY: 1 in 4 */
+export const Survey: React.FC<{ t: number }> = ({ t }) => {
+  const [a] = S.survey;
+  const one = at("b4_survey", "1");
   return (
-    <div style={{ position: "absolute", inset: 0, opacity: fadeWin(t, a, b, 0.01, 0.2) }}>
-      <DataRoom t={t} tint={color.gold} drift={0.4} opacity={0.55} />
-      <div style={{ position: "absolute", left: G, right: G, top: 250 }}>
-        <Label text="2025 · INDIA SMARTPHONE MARKET" t={t} start={a} tint={color.gold} />
-        <div style={{ ...deva, fontSize: 80, lineHeight: 1.05, marginTop: 14 }}>महँगे phones की <span style={{ color: color.goldHot }}>कहानी अलग</span></div>
+    <Stage>
+      <div style={{ position: "absolute", inset: 0, ...pushIn(t, a) }}>
+        <div style={{ position: "absolute", left: G, top: 252 }}>
+          <Mask t={t} start={a + 0.05}><div style={label}>Survey · 2,095 buyers · Jul 2026</div></Mask>
+        </div>
+        <div style={{ position: "absolute", left: G, top: 560 }}>
+          <Mask t={t} start={a + 0.1}><div style={{ ...display(176), whiteSpace: "nowrap" }}>4 mein se <span style={{ color: ACC }}>1</span></div></Mask>
+          <Mask t={t} start={a + 0.3} style={{ marginTop: 10 }}><div style={{ ...display(64, 700), color: DIM }}>daam badhe toh rukega</div></Mask>
+        </div>
+        <div style={{ position: "absolute", left: G, top: 990, display: "flex", gap: 26 }}>
+          {[0, 1, 2, 3].map((i) => {
+            const p = prog(t, a + 0.35 + i * 0.08, 0.4, ease.outExpo);
+            const hot = i === 3 && t >= one - 0.05;
+            return <div key={i} style={{ width: 58, height: 58, borderRadius: 58, border: `3px solid ${hot ? ACC : "rgba(243,241,236,0.5)"}`, background: hot ? ACC : "transparent", opacity: p, transform: `scale(${lerp(0.6, 1, p)})` }} />;
+          })}
+        </div>
+        <div style={{ position: "absolute", left: G, right: G, top: 1090, ...mono, opacity: prog(t, one + 0.3, 0.4) }}>
+          46% stretch · 29% same budget or refurbished · 25% wait<br />stated intentions, not purchases
+        </div>
       </div>
-      <div style={{ position: "absolute", left: G, right: G, top: 470, height: H + 70 }}>
-        {bar("Volume", 1, vol, color.steel, 90)}
-        {bar("Value", 8, val, color.gold, 520)}
-      </div>
-      <div style={{ position: "absolute", left: G, right: G, top: 1080, fontFamily: font.mono, fontSize: 23, color: color.inkFaint, opacity: prog(t, p8 + 0.2, 0.4) }}>
-        per phone: 1.08 ÷ 1.01 ≈ +7% (AVRON calc)
-      </div>
-      <div style={{ position: "absolute", left: G, right: G, top: 1130, ...glass, padding: "16px 22px", opacity: prog(t, interp, 0.4) }}>
-        <div style={{ fontFamily: font.mono, fontSize: 19, color: color.gold, letterSpacing: "0.12em" }}>AVRON INTERPRETATION</div>
-        <div style={{ ...deva, fontWeight: 600, fontSize: 30, lineHeight: 1.3, marginTop: 6 }}>Market बँट रहा है। सस्ते phones दब रहे हैं, ऊपर per phone ख़र्च बढ़ रहा है।</div>
+      <BottomTags t={t} tags={[{ text: "Counterpoint survey, 24 Jul 2026 (n = 2,095)", start: a + 0.2 }]} />
+    </Stage>
+  );
+};
+
+/* ------------------------------------------------ 5. SPLIT: 2025 volume vs value */
+export const Split: React.FC<{ t: number }> = ({ t }) => {
+  const [a] = S.split;
+  const p1 = at("b5_split", "1%"), p8 = at("b5_split", "8%");
+  const head = move(t, p1 - 0.35);
+  const interp = p8 + 0.45;
+  return (
+    <Stage>
+      <div style={{ position: "absolute", inset: 0, ...pushIn(t, a) }}>
+        <div style={{ position: "absolute", left: G, top: lerp(660, 240, head), transformOrigin: "0 0", transform: `scale(${lerp(1, 0.3, head)})` }}>
+          <Mask t={t} start={a + 0.05}><div style={{ ...display(124), whiteSpace: "nowrap" }}>Mehenge phones ki</div></Mask>
+          <Mask t={t} start={a + 0.15}><div style={{ ...display(124), color: ACC, whiteSpace: "nowrap" }}>kahani alag</div></Mask>
+        </div>
+        {t >= p1 - 0.35 && (
+          <>
+            <div style={{ position: "absolute", left: G, top: 350 }}><Mask t={t} start={p1 - 0.3}><div style={label}>2025 · India smartphones</div></Mask></div>
+            <div style={{ position: "absolute", left: G, right: G, top: 450 }}>
+              <Mask t={t} start={p1 - 0.25}><div style={{ ...label, fontSize: 30 }}>Volume</div></Mask>
+              <Mask t={t} start={p1 - 0.2}><div style={display(200)}>+1%</div></Mask>
+            </div>
+            <Line from={0} to={1 / 8} p={prog(t, p1, 0.6, ease.outExpo)} top={720} ghost={1} />
+          </>
+        )}
+        {t >= p8 - 0.35 && (
+          <>
+            <div style={{ position: "absolute", left: G, right: G, top: 770 }}>
+              <Mask t={t} start={p8 - 0.25}><div style={{ ...label, fontSize: 30 }}>Value</div></Mask>
+              <Mask t={t} start={p8 - 0.2}><div style={{ ...display(200), color: ACC }}>+8%</div></Mask>
+            </div>
+            <Line from={0} to={1} p={prog(t, p8, 0.7, ease.outExpo)} top={1040} accent ghost={1} />
+            <div style={{ position: "absolute", left: G, top: 1066, ...mono, opacity: prog(t, p8 + 0.25, 0.4) }}>per phone 1.08 ÷ 1.01 ≈ +7% (AVRON calc)</div>
+          </>
+        )}
+        {t >= interp && (
+          <div style={{ position: "absolute", left: G, right: G, top: 1130 }}>
+            <Mask t={t} start={interp}><div style={{ ...label, fontSize: 20, color: ACC }}>AVRON interpretation</div></Mask>
+            <Mask t={t} start={interp + 0.08}><div style={{ ...body, fontSize: 30, whiteSpace: "nowrap" }}>Neeche dabaav, upar per phone zyada kharch</div></Mask>
+          </div>
+        )}
       </div>
       <BottomTags t={t} tags={[{ text: "Counterpoint, 2025 full year (2 Feb 2026)", start: a + 0.2 }]} />
-    </div>
+    </Stage>
   );
 };
 
 /* ------------------------------------------------ 6. END CARD: all sources */
 export const End: React.FC<{ t: number; duration: number }> = ({ t, duration }) => {
   const [a] = S.end;
-  const p = prog(t, a - 0.1, 0.5, ease.outExpo);
-  const out = prog(t, duration - 0.35, 0.35, ease.inCubic);
+  const out = prog(t, duration - 0.5, 0.5, ease.inCubic);
   const src = [
-    "India Global Review (YouTube): opening clip",
+    "India Global Review (YouTube), opening clip",
     "Omdia, Q3 2026 India smartphones (19 Oct 2026)",
     "Counterpoint, Q3 2026 India smartphones (23 Oct 2026)",
     "Counterpoint, H1 2026 price analysis (29 Sep 2026)",
@@ -371,24 +353,26 @@ export const End: React.FC<{ t: number; duration: number }> = ({ t, duration }) 
     "Counterpoint × Flipkart, Smartphone Insights Report 2026",
     "Counterpoint, 2025 full year (2 Feb 2026)",
   ];
+  const p = ease.outExpo(clamp01((t - a) / 0.55));
   return (
-    <div style={{ position: "absolute", inset: 0, background: color.bg, opacity: p * (1 - out) }}>
-      <DataRoom t={t} tint={color.amber} drift={1.2} opacity={0.35} />
-      <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + 0.012 * Math.max(0, t - a)})`, transformOrigin: "50% 40%" }}>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 330, textAlign: "center" }}>
-        <SweepText text="AVRON" t={t} start={a + 0.1} style={{ fontFamily: font.display, fontWeight: 800, fontSize: 150, letterSpacing: "0.3em", color: color.ink, paddingLeft: "0.3em" }} />
-        <div style={{ fontFamily: font.text, fontSize: 30, color: color.inkDim, letterSpacing: "0.22em", marginTop: 12, opacity: prog(t, a + 0.25, 0.4) }}>THE STORY BEHIND THE STOCK</div>
-      </div>
-      <div style={{ position: "absolute", left: G, right: G, top: 690 }}>
-        <div style={{ fontFamily: font.mono, fontSize: 24, color: color.amber, letterSpacing: "0.16em", marginBottom: 18, opacity: prog(t, a + 0.2, 0.3) }}>SOURCES</div>
-        {src.map((s, i) => (
-          <div key={s} style={{ fontFamily: font.mono, fontSize: 27, lineHeight: 1.5, color: color.ink, opacity: prog(t, a + 0.25 + i * 0.06, 0.3) }}>· {s}</div>
-        ))}
-        <div style={{ fontFamily: font.mono, fontSize: 21, lineHeight: 1.55, color: color.inkFaint, marginTop: 28, opacity: prog(t, a + 0.7, 0.4) }}>
-          Shipment figures are tracker estimates, not retail sales. Education only. Not investment advice, not a recommendation to buy, sell or hold. AVRON is not SEBI-registered.
+    <Stage opacity={clamp01((t - a) / 0.08) * (1 - out)}>
+      <div style={{ position: "absolute", inset: 0, transform: `scale(${lerp(1.08, 1, p) + 0.01 * Math.max(0, t - a)})` }}>
+        <div style={{ position: "absolute", left: G, top: 330 }}>
+          <Mask t={t} start={a + 0.05}><div style={{ ...display(150), letterSpacing: "0.18em" }}>AVRON</div></Mask>
+          <Mask t={t} start={a + 0.2}><div style={{ ...label, marginTop: 14 }}>The story behind the stock</div></Mask>
+        </div>
+        <div style={{ position: "absolute", left: G, right: G, top: 700 }}>
+          <Mask t={t} start={a + 0.25}><div style={{ ...label, color: ACC, fontSize: 22, marginBottom: 16 }}>Sources</div></Mask>
+          {src.map((s, i) => (
+            <Mask key={s} t={t} start={a + 0.3 + i * 0.05}><div style={{ fontFamily: font.mono, fontSize: 26, lineHeight: 1.55, color: INK }}>{s}</div></Mask>
+          ))}
+          <Mask t={t} start={a + 0.7} style={{ marginTop: 26 }}>
+            <div style={{ fontFamily: font.mono, fontSize: 21, lineHeight: 1.55, color: DIM }}>
+              Shipment figures are tracker estimates, not retail sales · Education only · Not investment advice, not a recommendation to buy, sell or hold · AVRON is not SEBI-registered
+            </div>
+          </Mask>
         </div>
       </div>
-    </div>
-    </div>
+    </Stage>
   );
 };

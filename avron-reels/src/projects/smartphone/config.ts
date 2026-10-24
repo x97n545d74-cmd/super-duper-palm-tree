@@ -15,7 +15,8 @@ export const at = (beatId: string, display: string, nth = 0) => {
 export const B = (id: string) => beat(id).start;
 
 const words: CaptionWord[] = timeline.beats.flatMap((b) => b.words.map((w) => ({ w: w.w, s: w.s, e: w.e, tone: w.tone })));
-export const CAPTIONS = chunkWords(words, 3);
+// chunk on punctuation, then drop it: no full stops in on-screen text
+export const CAPTIONS = chunkWords(words, 3).map((c) => ({ ...c, words: c.words.map((w) => ({ ...w, w: w.w.replace(/[.,।]+$/, "") })) }));
 
 /** The opening clip: IGR screen recording, bars cropped, 1.5x (setpts=PTS/1.5, atempo=1.5) = 20.37 s. */
 export const CLIP_END = cues.clipEnd;
