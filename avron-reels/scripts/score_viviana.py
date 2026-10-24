@@ -199,7 +199,7 @@ place(mus, pad(["Eb2", "Bb2", "Eb3", "G3", "Bb3"], C["who"] - 0.2, C["cash"], 0.
 place(mus, ostinato("Eb3", C["subs"], C["cash"] - 0.1, 0.22, 0.2, 2400, (0, 7, 12, 7, 15, 12, 7, 12)), C["subs"])
 # cash: hollow low pulse
 for k, tc in enumerate(np.arange(C["cash"], C["order"], 0.6)):
-    place(mus, st2(boom(0.9, 40) * 0.5), tc, 0.35 if k % 2 == 0 else 0.22)
+    place(mus, st2(boom(0.9, 40) * 0.5), tc, 0.14 if k % 2 == 0 else 0.08)
 place(mus, pad(["C3", "Eb3", "Ab3"], C["cash"], C["order"], 0.3, 900), C["cash"])
 # order: suspended cluster
 place(mus, pad(["C4", "D4", "G4"], C["order"], C["mgmt"], 0.3, 3000, attack=1.2), C["order"])

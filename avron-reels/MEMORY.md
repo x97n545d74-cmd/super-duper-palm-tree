@@ -2,6 +2,8 @@
 
 This file records long-lived facts and decisions for this repo. Read it at the start of every session. Last updated 2026-10-24.
 
+Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on every script, and `scripts/fix_timeline.py` after alignment.
+
 ## Who and what
 - AVRON makes cinematic finance and explainer reels: 1080×1920, 30 fps, H.264/AAC, −14 LUFS.
 - The pipeline runs research → verification → script → storyboard → assets → animation → sound → render → QC → MP4.
@@ -22,9 +24,13 @@ This file records long-lived facts and decisions for this repo. Read it at the s
 - **Fuel Gap** (₹30/litre gap): v3 final with the Tia Mirza VO, in `deliverables/2026-10-fuel-gap/`.
 - **शर्त (The Fine Print)**: a 68 s Hinglish oil/fiscal/2029 reel, in `deliverables/2026-10-oil-2029/`. The user called the story weak ("shit story g"), so make future stories more intriguing.
 
+- **Viviana Power Tech, "₹903 → ₹680"**: a 66 s Hinglish reel, in `deliverables/2026-10-viviana/` (produced 2026-10-24).
+  - It uses a Kokoro **guide VO**. Waiting on the user's ElevenLabs/human VO from `vo_lines.md`; drop it in as `public/viviana/vo_raw.mp3`.
+  - The story: the price fell 15 → 23 Oct after the 10 Oct order and warrant notice and the 15 Oct board U-turn. The cash story sits underneath.
+
 ## Research done, not produced
 - **MosChip:** `projects/2026-10-moschip/PROJECT_REPORT.md`. It fails the revenue-guidance screen because the company gives no guidance.
-- **Viviana Power Tech:** `projects/2026-10-viviana/PROJECT_REPORT.md`. The story is "Profit बढ़ा, cash कहाँ गया?". Open items:
+- **Viviana Power Tech:** `projects/2026-10-viviana/PROJECT_REPORT.md` (v1). The open items were resolved in `SOURCE_VERIFICATION.md`. The story is "Profit बढ़ा, cash कहाँ गया?". Open items:
   - Q1 figures conflict (company ₹71.86 cr / PAT ₹6.93 cr; Screener ₹72.39 cr / ₹6.02 cr).
   - The NCD size is unconfirmed.
   - The divestment terms are unconfirmed.
