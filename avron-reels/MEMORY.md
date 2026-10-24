@@ -30,10 +30,10 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 
 ## Research done, not produced
 - **MosChip:** `projects/2026-10-moschip/PROJECT_REPORT.md`. It fails the revenue-guidance screen because the company gives no guidance.
-- **Viviana Power Tech:** `projects/2026-10-viviana/PROJECT_REPORT.md` (v1). The open items were resolved in `SOURCE_VERIFICATION.md`. The story is "Profit बढ़ा, cash कहाँ गया?". Open items:
-  - Q1 figures conflict (company ₹71.86 cr / PAT ₹6.93 cr; Screener ₹72.39 cr / ₹6.02 cr).
-  - The NCD size is unconfirmed.
-  - The divestment terms are unconfirmed.
+- **Viviana Power Tech:** `projects/2026-10-viviana/PROJECT_REPORT.md` (v1). The open items were resolved in `SOURCE_VERIFICATION.md`.
+  - Q1: ₹71.86 cr is standalone and ₹72.39 cr is consolidated.
+  - The NCD board approval is up to ₹75 cr; ₹20 cr was allotted at 12%.
+  - Viviana Life Spaces was sold to a promoter; consideration not disclosed.
 - The stock screen the user wants: market cap under ₹10,000 cr, an emerging segment, and revenue guidance above 20%.
 - The user wants Finance with Sharan-style content with fresh scripts.
 
