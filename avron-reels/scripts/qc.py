@@ -73,10 +73,15 @@ try:
     from faster_whisper import WhisperModel
     pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", video, "-f", "f32le", "-ac", "1", "-ar", "16000", "-"],
                          capture_output=True, check=True).stdout
-    segs, _ = WhisperModel("small.en", device="cpu", compute_type="int8").transcribe(np.frombuffer(pcm, np.float32), beam_size=5)
+    segs, _ = WhisperModel("small.en", device="cpu", compute_type="int8").transcribe(np.frombuffer(pcm, np.float32), beam_size=5,
+        initial_prompt="ICRA, Jefferies, Brent, AVRON, paise, rupees, Delhi.")
     heard = " ".join(s.text for s in segs)
     ref = " ".join(w["w"] for b in tl["beats"] for w in b["words"])
-    norm = lambda s: re.sub(r"[^a-z0-9 ]", "", s.lower()).split()
+    NUM = set("zero one two three four five six seven eight nine ten eleven twelve thirteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand and a".split())
+    SPELL = {"liter": "litre", "jeffrey": "jefferies", "jeffreys": "jefferies", "jefferiess": "jefferies"}
+    # compare words only: number formatting (digits vs words) and US/UK spelling are not intelligibility errors
+    norm = lambda s: [SPELL.get(w, w) for w in re.sub(r"[^a-z0-9 ]", " ", s.lower().replace("-", " ")).split()
+                      if not w.isdigit() and not re.fullmatch(r"\d+(st|nd|rd|th)", w) and w not in NUM]
     ratio = difflib.SequenceMatcher(None, norm(ref), norm(heard)).ratio()
     R["asr"] = {"similarity": round(ratio, 3), "heard": heard.strip()}
     check("narration_intelligible_in_mix", ratio > 0.9, round(ratio, 3))

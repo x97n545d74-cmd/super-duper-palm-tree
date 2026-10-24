@@ -47,7 +47,7 @@ export const FuelGapReel: React.FC = () => {
   const impacts: [number, number][] = [[C.open, 1], [C.loss34, 1], [C.same, 0.7], [C.jeff34, 0.5], [B.cta + 0.05, 0.5]];
   const shake = impacts.reduce((s, [at, k]) => s + decay(t, at, 9) * k, 0);
   const sx = Math.sin(t * 91) * shake * 9, sy = Math.cos(t * 73) * shake * 7;
-  const flash = Math.max(decay(t, C.open, 7) * 0.5, decay(t, C.loss34, 10) * 0.45, decay(t, C.same, 9) * 0.3, decay(t, B.cta + 0.05, 8) * 0.2);
+  const flash = Math.max(decay(t, C.open, 9) * 0.35, decay(t, C.loss34, 14) * 0.28, decay(t, C.same, 9) * 0.3, decay(t, B.cta + 0.05, 8) * 0.2);
 
   const vis = (a: number, b: number) => t >= a && t < b;
   return (

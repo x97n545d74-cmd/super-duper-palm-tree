@@ -45,7 +45,7 @@ export const Hook: React.FC<{ t: number }> = ({ t }) => {
             textShadow: `${split}px 0 0 rgba(0,220,255,0.55), ${-split}px 0 0 rgba(255,40,40,0.75), 0 0 80px rgba(240,82,79,0.45)`,
           }}
         >
-          −₹<Counter to={34} from={30} t={t} start={C.loss34} dur={0.4} />
+          −₹34
         </div>
         <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 46, color: color.ink, opacity: prog(t, C.loss34 + 0.35, 0.4), marginTop: 6 }}>
           <SweepText text="on every litre" t={t} start={C.loss34 + 0.6} />
@@ -76,7 +76,7 @@ export const Brent: React.FC<{ t: number }> = ({ t }) => {
         <Label text="22 Oct 2026" t={t} start={a + 0.35} tint={color.inkFaint} style={{ marginTop: 10, fontSize: 26 }} />
         <div style={{ marginTop: 40, fontFamily: font.display, fontWeight: 800, fontSize: 220, lineHeight: 1, letterSpacing: "-0.045em", color: color.ink, opacity: prog(t, C.brent113 - 1.15, 0.2),
           textShadow: "0 10px 60px rgba(0,0,0,0.6)" }}>
-          $<Counter to={113.17} from={80} t={t} start={C.brent113 - 1.15} dur={1.3} decimals={2} />
+          $<Counter to={113.17} from={0} t={t} start={C.brent113 - 1.15} dur={1.3} decimals={2} />
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 30, opacity: prog(t, C.brent113 + 0.45, 0.4),
           transform: `translateY(${(1 - prog(t, C.brent113 + 0.45, 0.4)) * 20}px)` }}>

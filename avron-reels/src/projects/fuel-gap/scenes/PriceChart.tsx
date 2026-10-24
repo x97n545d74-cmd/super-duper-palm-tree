@@ -48,7 +48,7 @@ export const PriceChart: React.FC<{ t: number }> = ({ t }) => {
   const sameFlash = t >= C.same ? Math.exp(-(t - C.same) * 3) : 0;
   const bracket = prog(t, C.diesel750 - 0.1, 0.5);
   const tiltX = lerp(16, 6, prog(t, B.may, 3)) + z * -4;
-  const tiltY = lerp(-12, 3, prog(t, B.may, 4));
+  const tiltY = lerp(-12, 3, prog(t, B.may, 4)) + (t - B.may) * 0.9; // slow continuous orbit
 
   return (
     <div style={{ position: "absolute", inset: 0, opacity: enter * (1 - exitP), filter: `blur(${exitP * 10}px)` }}>

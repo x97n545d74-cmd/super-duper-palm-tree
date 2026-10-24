@@ -85,14 +85,14 @@ export const WhoPays: React.FC<{ t: number }> = ({ t }) => {
         const pt = projectPoint(cam, [x, 0, 0.2], W, H);
         return (
           <div key={`g${i}`} style={{ position: "absolute", left: pt.x - 260, top: pt.y - 70, width: 520, height: 140, borderRadius: "50%",
-            background: `radial-gradient(closest-side, ${color.amber}${Math.round(lit[i] * 90).toString(16).padStart(2, "0")}, transparent)`, filter: "blur(10px)" }} />
+            opacity: prog(t, B.who, 0.4), background: `radial-gradient(closest-side, ${color.amber}${Math.round(lit[i] * 90).toString(16).padStart(2, "0")}, transparent)`, filter: "blur(10px)" }} />
         );
       })}
       {/* labels pinned to projected 3D points */}
       {PILLAR_X.map((x, i) => {
         const pt = projectPoint(cam, [x, 0, 1.0], W, H);
         const p = prog(t, keys[i] - 0.1, 0.35);
-        const dim = i === 0 ? 1 : 1 - now * 0.6;
+        const dim = (i === 0 ? 1 : 1 - now * 0.6) * prog(t, B.who + 0.1, 0.4);
         return (
           <div key={i} style={{ position: "absolute", left: pt.x - 200, width: 400, top: pt.y + 18, textAlign: "center", opacity: (0.25 + 0.75 * p) * dim,
             fontFamily: font.mono, fontWeight: 700, fontSize: 32, letterSpacing: "0.14em", color: lit[i] > 0.5 ? color.amberHot : color.inkDim }}>
@@ -148,7 +148,7 @@ export const EndCard: React.FC<{ t: number; duration: number }> = ({ t }) => {
   const line = prog(t, a + 0.7, 0.9, ease.inOutCubic);
   const src = prog(t, a + 2.1, 0.6);
   return (
-    <div style={{ position: "absolute", inset: 0, opacity: prog(t, a - 0.1, 0.4) }}>
+    <div style={{ position: "absolute", inset: 0, opacity: prog(t, a - 0.1, 0.4), transform: `scale(${1 + (t - a) * 0.006})`, transformOrigin: "50% 40%" }}>
       <div style={{ position: "absolute", top: 470, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
         {letters.map((ch, i) => {
           const p = prog(t, a + 0.05 + i * 0.07, 0.8, ease.outExpo);
