@@ -9,6 +9,8 @@ import { VivianaReel } from "./projects/viviana/Reel";
 import { DURATION as VIVIANA_DURATION } from "./projects/viviana/config";
 import { Viviana2Reel } from "./projects/viviana2/Reel";
 import { DURATION as VIVIANA2_DURATION } from "./projects/viviana2/config";
+import { SmartphoneReel } from "./projects/smartphone/Reel";
+import { DURATION as SMARTPHONE_DURATION } from "./projects/smartphone/config";
 
 export const Root: React.FC = () => (
   <>
@@ -40,6 +42,14 @@ export const Root: React.FC = () => (
       id="Viviana2"
       component={Viviana2Reel}
       durationInFrames={Math.ceil(VIVIANA2_DURATION * layout.fps)}
+      fps={layout.fps}
+      width={layout.width}
+      height={layout.height}
+    />
+    <Composition
+      id="Smartphone"
+      component={SmartphoneReel}
+      durationInFrames={Math.ceil(SMARTPHONE_DURATION * layout.fps)}
       fps={layout.fps}
       width={layout.width}
       height={layout.height}

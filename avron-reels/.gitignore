@@ -5,3 +5,8 @@ out/
 # regenerable by scripts/score.py (deterministic)
 public/fuel-gap/music.wav
 public/fuel-gap/sfx.wav
+
+# raw iPhone screen recording (re-downloadable from the user's iCloud link); band.mp4/bg.mp4/opening_audio.wav are derived from it
+public/smartphone/opening_raw.mov
+# regenerable by scripts/score_smartphone.py (deterministic)
+public/smartphone/stems/
