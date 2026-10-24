@@ -1,6 +1,6 @@
 """Automated QC for a rendered reel.
 
-usage: qc.py <video.mp4> <project_dir> <out_dir>
+usage: qc.py <video.mp4> <project_dir> <out_dir> [clean_vo.wav]
 Checks: container/stream specs, duration vs timeline, black frames, frozen
 segments, loudness/true peak, per-second motion energy, ASR read-back of the
 narration vs the script, and contact sheets at every beat boundary.
@@ -68,22 +68,32 @@ R["motion_per_second"] = per_sec
 low = [i for i, m in enumerate(per_sec) if m < 0.35]
 check("no_near_static_seconds", not low, {"seconds_below_0.35": low})
 
-# 5. ASR read-back vs script
+# 5. ASR read-back. With a clean VO (argv[4]) the reference is the same model's reading of the
+#    clean narration, so the score measures masking by music/SFX in any language (e.g. Hinglish).
 try:
     from faster_whisper import WhisperModel
-    pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", video, "-f", "f32le", "-ac", "1", "-ar", "16000", "-"],
-                         capture_output=True, check=True).stdout
-    segs, _ = WhisperModel("small.en", device="cpu", compute_type="int8").transcribe(np.frombuffer(pcm, np.float32), beam_size=5,
-        initial_prompt="ICRA, Jefferies, Brent, AVRON, paise, rupees, Delhi.")
-    heard = " ".join(s.text for s in segs)
-    ref = " ".join(w["w"] for b in tl["beats"] for w in b["words"])
-    NUM = set("zero one two three four five six seven eight nine ten eleven twelve thirteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand and a".split())
-    SPELL = {"liter": "litre", "jeffrey": "jefferies", "jeffreys": "jefferies", "jefferiess": "jefferies"}
-    # compare words only: number formatting (digits vs words) and US/UK spelling are not intelligibility errors
-    norm = lambda s: [SPELL.get(w, w) for w in re.sub(r"[^a-z0-9 ]", " ", s.lower().replace("-", " ")).split()
-                      if not w.isdigit() and not re.fullmatch(r"\d+(st|nd|rd|th)", w) and w not in NUM]
+    def pcm(path):
+        return np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-f", "f32le", "-ac", "1", "-ar", "16000", "-"],
+                                            capture_output=True, check=True).stdout, np.float32)
+    clean_vo = sys.argv[4] if len(sys.argv) > 4 else None
+    model = WhisperModel("medium" if clean_vo else "small.en", device="cpu", compute_type="int8")
+    kw = {"beam_size": 5}
+    if clean_vo:
+        kw["language"] = "hi"
+    else:
+        kw["initial_prompt"] = "ICRA, Jefferies, Brent, AVRON, paise, rupees, Delhi."
+    heard = " ".join(s.text for s in model.transcribe(pcm(video), **kw)[0])
+    if clean_vo:
+        ref = " ".join(s.text for s in model.transcribe(pcm(clean_vo), **kw)[0])
+        norm = lambda s: re.sub(r"[^\w ]", " ", s.lower()).split()
+    else:
+        ref = " ".join(w["w"] for b in tl["beats"] for w in b["words"])
+        NUM = set("zero one two three four five six seven eight nine ten eleven twelve thirteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand and a".split())
+        SPELL = {"liter": "litre", "jeffrey": "jefferies", "jeffreys": "jefferies", "jefferiess": "jefferies"}
+        norm = lambda s: [SPELL.get(w, w) for w in re.sub(r"[^a-z0-9 ]", " ", s.lower().replace("-", " ")).split()
+                          if not w.isdigit() and not re.fullmatch(r"\d+(st|nd|rd|th)", w) and w not in NUM]
     ratio = difflib.SequenceMatcher(None, norm(ref), norm(heard)).ratio()
-    R["asr"] = {"similarity": round(ratio, 3), "heard": heard.strip()}
+    R["asr"] = {"similarity": round(ratio, 3), "heard": heard.strip(), "reference": "clean VO" if clean_vo else "script"}
     check("narration_intelligible_in_mix", ratio > 0.9, round(ratio, 3))
 except Exception as e:  # noqa
     R["asr"] = {"error": str(e)}
