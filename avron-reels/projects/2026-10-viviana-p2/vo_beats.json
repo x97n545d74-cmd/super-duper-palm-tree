@@ -1,0 +1,66 @@
+{
+ "leadIn": 0.35,
+ "tail": 2.6,
+ "voice": "elevenlabs:Tia Mirza – Crisp and Commanding (v4), user-supplied",
+ "beats": {
+  "p0_hook": [
+   "Every",
+   "order"
+  ],
+  "p1_orders": [
+   "March"
+  ],
+  "p1_owner": [
+   "Chaaro"
+  ],
+  "p2_work": [
+   "Bhuj"
+  ],
+  "p3_why": [
+   "Sarkar",
+   "kyun?"
+  ],
+  "p3_pay": [
+   "Order",
+   "lowest"
+  ],
+  "p3_267": [
+   "Humari"
+  ],
+  "p4_factory": [
+   "Ab",
+   "nae"
+  ],
+  "p4_bess": [
+   "Battery"
+  ],
+  "p5_rp1": [
+   "Filings"
+  ],
+  "p5_rp2": [
+   "Wo",
+   "company"
+  ],
+  "p5_rp3": [
+   "Ab",
+   "office"
+  ],
+  "p6_target": [
+   "Iss",
+   "saal"
+  ],
+  "p7_close": [
+   "Q2"
+  ],
+  "p8_avron": [
+   "This",
+   "is"
+  ]
+ },
+ "skip": {
+  "p0_hook": [
+   "Part",
+   "2."
+  ]
+ }
+}
