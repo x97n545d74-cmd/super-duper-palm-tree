@@ -16,7 +16,8 @@ export const CAPTIONS = chunkWords(words, 3);
 
 // Scene windows (absolute seconds), cut on the narration beats.
 export const S = {
-  hook: [0, B("b2_order")],
+  opener: [0, B("b1_hook")],
+  hook: [B("b1_hook") - 0.05, B("b2_order")],
   weekend: [B("b2_order"), B("b3_uturn")],
   uturn: [B("b3_uturn"), B("b4_who")],
   who: [B("b4_who"), B("b5_cash")],

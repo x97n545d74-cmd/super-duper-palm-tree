@@ -1,0 +1,201 @@
+{
+ "leadIn": 0.12,
+ "tail": 2.6,
+ "beats": [
+  {
+   "id": "b0_q",
+   "first": [
+    "Want",
+    "to"
+   ]
+  },
+  {
+   "id": "b0_truth",
+   "first": [
+    "Sorry,"
+   ]
+  },
+  {
+   "id": "b1_hook",
+   "first": [
+    "Rs.",
+    "903"
+   ]
+  },
+  {
+   "id": "b1_night",
+   "first": [
+    "The",
+    "night"
+   ]
+  },
+  {
+   "id": "b2_order",
+   "first": [
+    "10",
+    "October,"
+   ]
+  },
+  {
+   "id": "b2_notice",
+   "first": [
+    "रात"
+   ]
+  },
+  {
+   "id": "b3_uturn",
+   "first": [
+    "15",
+    "October",
+    "की"
+   ]
+  },
+  {
+   "id": "b3_fall",
+   "first": [
+    "अगले"
+   ]
+  },
+  {
+   "id": "b4_who",
+   "first": [
+    "विव्याना"
+   ]
+  },
+  {
+   "id": "b4_growth",
+   "first": [
+    "चार",
+    "साल"
+   ]
+  },
+  {
+   "id": "b5_cash",
+   "first": [
+    "पर",
+    "cash"
+   ]
+  },
+  {
+   "id": "b5_cfo",
+   "first": [
+    "तीन",
+    "साल"
+   ]
+  },
+  {
+   "id": "b5_days",
+   "first": [
+    "बिल"
+   ]
+  },
+  {
+   "id": "b5_debt",
+   "first": [
+    "और",
+    "borrowings"
+   ]
+  },
+  {
+   "id": "b6_order",
+   "first": [
+    "वो"
+   ]
+  },
+  {
+   "id": "b7_mgmt",
+   "first": [
+    "कमपनी",
+    "कहती"
+   ]
+  },
+  {
+   "id": "b8_watch",
+   "first": [
+    "Q2"
+   ]
+  },
+  {
+   "id": "b8_q",
+   "first": [
+    "Watch"
+   ]
+  },
+  {
+   "id": "b9_avron",
+   "first": [
+    "This",
+    "is"
+   ]
+  }
+ ],
+ "merge_next": [
+  "Rs.",
+  "U",
+  "एक",
+  "बारह"
+ ],
+ "drop": [
+  "रुपै",
+  "रुपै.",
+  "प्रतीषद"
+ ],
+ "display": {
+  "Rs. 903": "₹903",
+  "Rs. 680": "₹680",
+  "U -turn.": "U-turn.",
+  "Shaniwar.": "शनिवार।",
+  "पाणे": "पौने",
+  "करोड": "crore",
+  "467": "₹467",
+  "order.": "order।",
+  "notice.": "notice।",
+  "दिया.": "दिया।",
+  "बारह गिरा.": "12% गिरा।",
+  "विव्याना": "Viviana",
+  "वडोद्रा.": "Vadodara।",
+  "गुज्रात": "Gujarat",
+  "कमपनियों": "कंपनियों",
+  "lines.": "lines।",
+  "33": "₹33",
+  "531": "₹531",
+  "आया.": "आया।",
+  "negative.": "negative।",
+  "में.": "में।",
+  "एक सो": "₹100",
+  "कमपनी": "Company",
+  "मुताबिक": "मुताबिक़",
+  "था.": "था।",
+  "नहीं.": "नहीं।",
+  "जुलाई": "July",
+  "40": "₹40",
+  "हुए.": "हुए।",
+  "Avron.": "AVRON."
+ },
+ "tones": {
+  "multibagger": "gold",
+  "fake": "red",
+  "hopes,": "red",
+  "truth.": "gold",
+  "₹903": "gold",
+  "₹680": "red",
+  "5": "red",
+  "U-turn.": "red",
+  "₹467": "gold",
+  "warrants": "gold",
+  "छोड़": "red",
+  "12% गिरा।": "red",
+  "Viviana": "gold",
+  "₹531": "gold",
+  "cash": "red",
+  "negative।": "red",
+  "267": "red",
+  "double,": "red",
+  "₹100": "red",
+  "पहले": "gold",
+  "₹40": "gold",
+  "14.": "gold",
+  "November": "gold",
+  "AVRON.": "gold"
+ }
+}

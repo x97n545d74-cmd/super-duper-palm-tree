@@ -6,7 +6,7 @@ import { Captions } from "../../engine/components/Captions";
 import { DevanagariFonts } from "../../engine/components/Fonts";
 import { Finish } from "../../engine/components/Finish";
 import { B, CAPTIONS, DURATION, S } from "./config";
-import { Cash, End, Hook, Mgmt, Order, UTurn, Watch, Weekend, Who } from "./scenes";
+import { Cash, End, Hook, Opener, Mgmt, Order, UTurn, Watch, Weekend, Who } from "./scenes";
 
 /** One camera language for the whole reel: a slow continuous push inside every scene. */
 const Drift: React.FC<{ t: number; w: readonly [number, number]; children: React.ReactNode }> = ({ t, w, children }) => {
@@ -20,6 +20,7 @@ export const VivianaReel: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: color.bg, overflow: "hidden" }}>
       <DevanagariFonts />
+      {on(S.opener) && <Opener t={t} />}
       {on(S.hook) && <Drift t={t} w={S.hook}><Hook t={t} /></Drift>}
       {on(S.weekend) && <Drift t={t} w={S.weekend}><Weekend t={t} /></Drift>}
       {on(S.uturn) && <Drift t={t} w={S.uturn}><UTurn t={t} /></Drift>}
@@ -29,7 +30,7 @@ export const VivianaReel: React.FC = () => {
       {on(S.mgmt) && <Drift t={t} w={S.mgmt}><Mgmt t={t} /></Drift>}
       {on(S.watch) && <Drift t={t} w={S.watch}><Watch t={t} /></Drift>}
       {on(S.end, 0.1) && <Drift t={t} w={S.end}><End t={t} duration={DURATION} /></Drift>}
-      {t < B("b9_avron") && <Captions t={t} chunks={CAPTIONS} family={font.devaDisplay} size={60} />}
+      {t >= B("b1_hook") - 0.05 && t < B("b9_avron") && <Captions t={t} chunks={CAPTIONS} family={font.devaDisplay} size={60} />}
       <Finish progress={Math.min(1, t / DURATION)} showMark={t < B("b9_avron") - 0.2} />
       <Audio src={staticFile("viviana/mix.wav")} />
     </AbsoluteFill>

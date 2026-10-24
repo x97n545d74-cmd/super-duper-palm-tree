@@ -4,28 +4,101 @@ import { clamp01, ease, lerp, prog } from "../../engine/anim";
 import { Counter, Label, SourceTag, SweepText, WordReveal } from "../../engine/components/Kinetic";
 import { DataRoom } from "../../engine/components/DataRoom";
 import { TowerScene } from "../../engine/three/Tower";
-import { ANNUAL, at, B, CLOSES, PEAK, QUARTERS, S } from "./config";
+import { ANNUAL, at, B, CLOSES, PEAK, S } from "./config";
 import { fadeWin, Figure, Filing, Mark, PriceChart } from "./ui";
 
 const G = layout.gutter;
 const RED = "#FF5A55";
 const deva: React.CSSProperties = { fontFamily: font.deva, fontWeight: 800, color: color.ink, letterSpacing: "-0.015em" };
 
+/* ---------------------------------------------------------------- 0. OPENER */
+/** "Want to know what a potential multibagger looks like? Sorry, we don't sell fake hopes, we teach you the truth." */
+export const Opener: React.FC<{ t: number }> = ({ t }) => {
+  const [, end] = S.opener;
+  const mb = at("b0_q", "multibagger"), sorry = B("b0_truth"), fake = at("b0_truth", "fake"), truth = at("b0_truth", "truth.");
+  // illustrative hype curve: rises exponentially, then snaps on "Sorry"
+  const rise = prog(t, 0.0, mb + 0.6, ease.outCubic);
+  const snap = prog(t, sorry - 0.05, 0.5, ease.outExpo);
+  const fall = prog(t, sorry, 1.6, ease.inCubic);
+  const pts = Array.from({ length: 60 }, (_, i) => {
+    const f = i / 59;
+    const x = f * 912;
+    const yv = Math.pow(f, 3.2) * 620 * rise;
+    const crack = f > 0.82 ? (f - 0.82) * 5.5 * 900 * fall : 0;
+    return `${x.toFixed(1)},${(700 - yv + crack).toFixed(1)}`;
+  });
+  const reach = Math.max(2, Math.round(60 * clamp01(rise * 1.15)));
+  const word = prog(t, mb - 0.12, 0.45, ease.outExpo);
+  const drop = prog(t, sorry, 0.7, ease.inCubic);
+  const strike = prog(t, fake - 0.05, 0.5, ease.inOutCubic);
+  const tr = prog(t, truth - 0.1, 0.5, ease.outExpo);
+  const out = prog(t, end - 0.25, 0.25, ease.inCubic);
+  const gray = snap;
+  return (
+    <div style={{ position: "absolute", inset: 0, opacity: 1 - out }}>
+      <DataRoom t={t} tint={snap > 0.5 ? color.steel : color.gold} drift={0.6} opacity={0.6} />
+      {/* hype chart (illustrative) */}
+      <div style={{ position: "absolute", left: G, top: 560, opacity: (1 - drop * 0.75), filter: `saturate(${1 - gray * 0.9})` }}>
+        <svg width={912} height={760} style={{ overflow: "visible" }}>
+          <defs>
+            <linearGradient id="hype" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stopColor="#3DDC84" /><stop offset="1" stopColor={color.goldHot} />
+            </linearGradient>
+          </defs>
+          <polyline points={pts.slice(0, reach).join(" ")} fill="none" stroke="url(#hype)" strokeWidth={9} strokeLinecap="round" strokeLinejoin="round"
+            style={{ filter: `drop-shadow(0 0 ${14 * (1 - snap)}px rgba(120,255,160,0.6))` }} />
+          {snap > 0 && <line x1={748} y1={60} x2={798} y2={140} stroke={RED} strokeWidth={6} opacity={snap} />}
+        </svg>
+        <div style={{ fontFamily: font.mono, fontSize: 20, color: color.inkFaint, letterSpacing: "0.12em", marginTop: -30 }}>ILLUSTRATIVE · NOT DATA</div>
+      </div>
+      {/* question */}
+      <div style={{ position: "absolute", left: G, right: G, top: 255 }}>
+        <WordReveal text="Want to know what a potential" t={t} start={0.02} stagger={0.06}
+          style={{ fontFamily: font.display, fontWeight: 700, fontSize: 58, color: color.inkDim, letterSpacing: "-0.02em" }} exit={sorry - 0.05} />
+      </div>
+      <div style={{ position: "absolute", left: G - 6, top: 340, fontFamily: font.display, fontWeight: 900, fontSize: 124, letterSpacing: "-0.055em", lineHeight: 1,
+        color: color.goldHot, opacity: word * (1 - drop), transform: `translateY(${drop * 260}px) rotate(${drop * 9}deg) scale(${lerp(1.25, 1, word)})`,
+        transformOrigin: "10% 50%", textShadow: `0 0 ${40 * (1 - snap)}px rgba(240,208,138,0.55)` }}>
+        MULTIBAGGER?
+      </div>
+      {/* answer */}
+      {t > sorry - 0.1 && (
+        <div style={{ position: "absolute", left: G, right: G, top: 300 }}>
+          <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 120, color: color.ink, letterSpacing: "-0.05em", opacity: prog(t, sorry, 0.2),
+            transform: `scale(${lerp(1.3, 1, prog(t, sorry, 0.35, ease.outExpo))})`, transformOrigin: "0% 50%" }}>Sorry.</div>
+          <div style={{ marginTop: 24, fontFamily: font.display, fontWeight: 800, fontSize: 86, letterSpacing: "-0.04em", color: RED, opacity: prog(t, fake - 0.3, 0.3) }}>
+            <Mark t={t} start={fake} dur={0.5} tint={RED} strike>NO FAKE HOPES</Mark>
+          </div>
+          <div style={{ marginTop: 40, fontFamily: font.display, fontWeight: 900, fontSize: 150, letterSpacing: "-0.055em", lineHeight: 1, color: color.ink,
+            opacity: tr, transform: `translateY(${(1 - tr) * 50}px)` }}>
+            THE <SweepText text="TRUTH." t={t} start={truth + 0.15} style={{ color: color.goldHot }} />
+          </div>
+          <div style={{ opacity: strike * 0 }} />
+        </div>
+      )}
+    </div>
+  );
+};
+
 /* ------------------------------------------------------------------ 1. HOOK */
 export const Hook: React.FC<{ t: number }> = ({ t }) => {
-  const [, end] = S.hook;
-  const p903 = at("b1_hook", "₹903,"), p5 = at("b1_drop", "पाँच"), p680 = at("b1_drop", "₹680।"), files = B("b1_files");
-  const upto = t < p5 ? lerp(0, PEAK, prog(t, 0, p903 - 0.05, ease.outCubic)) : lerp(PEAK, CLOSES.length - 1, prog(t, p5, p680 - p5 + 0.1, ease.inOutCubic));
+  const [a, end] = S.hook;
+  const p903 = at("b1_hook", "₹903"), p680 = at("b1_hook", "₹680"), five = at("b1_hook", "5");
+  const night = B("b1_night"), board = at("b1_night", "board"), uturn = at("b1_night", "U-turn.");
+  const upto = t < p903 + 0.25 ? lerp(0, PEAK, prog(t, a - 0.05, p903 - a + 0.3, ease.outCubic))
+    : lerp(PEAK, CLOSES.length - 1, prog(t, p903 + 0.25, p680 - p903 + 0.1, ease.inOutCubic));
   const after = upto > PEAK;
-  const sessions = Math.round(clamp01((upto - PEAK) / (CLOSES.length - 1 - PEAK)) * 5);
-  const lift = prog(t, files, 0.7, ease.inOutCubic);
-  const push = 1 + 0.04 * prog(t, 0, end, ease.linear);
+  const sessions = Math.round(clamp01((t - five + 0.1) / 0.7) * 5);
+  const lift = prog(t, night - 0.1, 0.7, ease.inOutCubic);
+  const push = 1 + 0.04 * prog(t, a, end - a, ease.linear);
+  const card = prog(t, board - 0.35, 0.5, ease.outExpo);
+  const stamp = prog(t, uturn - 0.05, 0.3, ease.outExpo);
   return (
-    <div style={{ position: "absolute", inset: 0 }}>
+    <div style={{ position: "absolute", inset: 0, opacity: prog(t, a - 0.05, 0.15) }}>
       <DataRoom t={t} tint={after ? color.crimson : color.gold} drift={0.4} opacity={0.7} />
       <div style={{ position: "absolute", inset: 0, transform: `scale(${push}) translateY(${-lift * 150}px)`, transformOrigin: "50% 40%" }}>
         <div style={{ position: "absolute", left: G, top: 250, opacity: 1 - lift, transform: `translateY(${lift * 40}px)` }}>
-          <Label text="VIVIANA POWER TECH · NSE · DAILY CLOSE" t={t} start={0.05} />
+          <Label text="VIVIANA POWER TECH · NSE · DAILY CLOSE" t={t} start={a} />
           <div style={{ display: "flex", alignItems: "baseline", gap: 26, marginTop: 18 }}>
             <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: 168, letterSpacing: "-0.05em", lineHeight: 1, fontVariantNumeric: "tabular-nums",
               color: after ? RED : color.goldHot }}>
@@ -34,14 +107,14 @@ export const Hook: React.FC<{ t: number }> = ({ t }) => {
           </div>
           <div style={{ fontFamily: font.mono, fontSize: 28, color: after ? "#FF8A80" : color.inkDim, marginTop: 6, letterSpacing: "0.08em" }}>
             {CLOSES[Math.min(CLOSES.length - 1, Math.round(upto))][0].toUpperCase()} 2026
-            {t >= p680 && <span style={{ marginLeft: 22, fontWeight: 700, color: RED, opacity: prog(t, p680, 0.3) }}>▼ 24.7% FROM ₹903.30</span>}
+            {t >= p680 + 0.2 && <span style={{ marginLeft: 22, fontWeight: 700, color: RED, opacity: prog(t, p680 + 0.2, 0.3) }}>▼ 24.7% FROM ₹903.30</span>}
           </div>
         </div>
         <div style={{ position: "absolute", left: G, top: 560 }}>
-          <PriceChart upto={upto} peak={PEAK} h={560} focus={t > p5 ? [PEAK, CLOSES.length - 1] : undefined} glow={Math.exp(-Math.max(0, t - p680) * 3)} />
+          <PriceChart upto={upto} peak={PEAK} h={560} focus={t > p903 + 0.25 ? [PEAK, CLOSES.length - 1] : undefined} glow={Math.exp(-Math.max(0, t - p680) * 3)} />
         </div>
-        {t > p5 && (
-          <div style={{ position: "absolute", left: G, top: 1205, display: "flex", gap: 14, alignItems: "center" }}>
+        {t > five - 0.15 && (
+          <div style={{ position: "absolute", left: G, top: 1205, display: "flex", gap: 14, alignItems: "center", opacity: 1 - lift }}>
             {[0, 1, 2, 3, 4].map((i) => (
               <div key={i} style={{ width: 64, height: 64, borderRadius: 12, display: "grid", placeItems: "center", fontFamily: font.mono, fontSize: 28, fontWeight: 700,
                 border: `2px solid ${i < sessions ? RED : "rgba(243,241,236,0.18)"}`, color: i < sessions ? "#FFD2CF" : color.inkFaint,
@@ -51,23 +124,17 @@ export const Hook: React.FC<{ t: number }> = ({ t }) => {
           </div>
         )}
       </div>
-      {/* three filings preview: they become the next scene */}
-      {t > files - 0.1 && [
-        { s: "10 OCT · 13:07", l: "ORDER · ₹466.74 CR" },
-        { s: "10 OCT · 22:48", l: "BOARD MEETING NOTICE · WARRANTS" },
-        { s: "15 OCT · 18:17", l: "OUTCOME · NOT TO PROCEED" },
-      ].map((f, i) => {
-        const at0 = at("b1_files", "तीन") - 0.25 + i * 0.22;
-        const p = prog(t, at0, 0.55, ease.outExpo);
-        return (
-          <div key={i} style={{ position: "absolute", left: G, right: G, top: 880 + i * 128, height: 110, borderRadius: 10,
-            background: "linear-gradient(175deg,#F2EFE7,#E2DED3)", boxShadow: "0 30px 60px rgba(0,0,0,0.55)",
-            display: "flex", alignItems: "center", gap: 26, padding: "0 30px", opacity: p, transform: `translateY(${(1 - p) * 120}px) rotate(${(1 - p) * (i - 1) * 3}deg)` }}>
-            <span style={{ fontFamily: font.mono, fontSize: 22, background: "#1B1C1F", color: "#F2EFE7", padding: "8px 12px", borderRadius: 4 }}>{f.s}</span>
-            <span style={{ fontFamily: font.text, fontWeight: 700, fontSize: 30, color: "#1B1C1F", letterSpacing: "-0.01em" }}>{f.l}</span>
-          </div>
-        );
-      })}
+      {/* "the night before the fall, the board made a U-turn": the 15 Oct outcome filing, filed 18:17 after the close */}
+      {t > board - 0.4 && (
+        <div style={{ position: "absolute", left: G, top: 880, opacity: card, transform: `translateY(${(1 - card) * 160}px) rotate(${(1 - card) * -3}deg)` }}>
+          <Filing t={t} tag="NSE · OUTCOME OF BOARD MEETING" stamp="15.10.2026 · 18:17" title="Disclosure regarding proposed fund-raising">
+            …unanimously decided not to proceed with the proposed issuance of fully convertible warrants…
+          </Filing>
+          <div style={{ position: "absolute", right: 30, bottom: -46, transform: `rotate(-8deg) scale(${lerp(1.9, 1, stamp)})`, opacity: stamp,
+            border: `6px solid ${RED}`, color: RED, fontFamily: font.display, fontWeight: 900, fontSize: 54, letterSpacing: "0.06em", padding: "6px 22px", borderRadius: 8,
+            background: "rgba(20,6,6,0.3)" }}>U-TURN</div>
+        </div>
+      )}
     </div>
   );
 };
@@ -145,7 +212,7 @@ export const Weekend: React.FC<{ t: number }> = ({ t }) => {
 /* -------------------------------------------------------------- 3. U-TURN */
 export const UTurn: React.FC<{ t: number }> = ({ t }) => {
   const [a, b] = S.uturn;
-  const drop = at("b3_uturn", "छोड़"), fall = B("b3_fall"), pct = at("b3_fall", "12%");
+  const drop = at("b3_uturn", "छोड़"), fall = B("b3_fall"), pct = at("b3_fall", "12% गिरा।");
   const pC = prog(t, a, 0.6, ease.outExpo);
   const up = prog(t, fall - 0.1, 0.7, ease.inOutCubic);
   const stamp = prog(t, drop - 0.05, 0.3, ease.outExpo);
@@ -395,8 +462,7 @@ export const Mgmt: React.FC<{ t: number }> = ({ t }) => {
 /* -------------------------------------------------------------- 8. WATCH */
 export const Watch: React.FC<{ t: number }> = ({ t }) => {
   const [a, b] = S.watch;
-  const march = at("b8_q", "March");
-  const maxV = 322.75;
+  const cashW = at("b8_q", "cash");
   const pulse = 0.5 + 0.5 * Math.sin(t * 6);
   return (
     <div style={{ position: "absolute", inset: 0, opacity: fadeWin(t, a, b, 0.01, 0.3) }}>
@@ -412,37 +478,41 @@ export const Watch: React.FC<{ t: number }> = ({ t }) => {
           <div style={{ fontFamily: font.mono, fontSize: 24, color: color.inkDim, marginTop: 10, letterSpacing: "0.06em", opacity: prog(t, a + 0.6, 0.4) }}>DUE WITHIN 45 DAYS · SEBI LODR REG. 33</div>
         </div>
       </div>
+      {/* "Watch whether the cash finally shows up": operating cash flow so far, and the half-year statement that comes with Q2 */}
       <div style={{ position: "absolute", left: G, right: G, top: 600, height: 700 }}>
-        <Label text="QUARTERLY REVENUE · ₹ CR" t={t} start={a + 0.5} />
-        <div style={{ position: "absolute", left: 0, right: 0, bottom: 60, height: 560, display: "flex", alignItems: "flex-end", gap: 22 }}>
-          {[...QUARTERS, ["Sep-26", 0] as [string, number]].map(([qq, v], i) => {
-            const p = prog(t, a + 0.7 + i * 0.16, 0.7, ease.outExpo);
-            const ghost = v === 0;
-            const isMar = qq === "Mar-26";
-            const hot = isMar ? prog(t, march - 0.1, 0.4) : 0;
+        <Label text="OPERATING CASH FLOW · ₹ CR" t={t} start={a + 0.5} />
+        <div style={{ position: "absolute", left: 0, right: 0, top: 300, height: 2, background: "rgba(243,241,236,0.35)" }} />
+        <div style={{ position: "absolute", left: 20, right: 20, top: 90, height: 520, display: "flex", gap: 40 }}>
+          {([["FY24", -3], ["FY25", -14], ["FY26", -4], ["H1 FY27", 0]] as [string, number][]).map(([fy, v], i) => {
+            const p = prog(t, a + 0.7 + i * 0.18, 0.7, ease.outExpo);
+            const ghost = fy === "H1 FY27";
+            const hot = ghost ? prog(t, cashW - 0.1, 0.4) : 0;
             return (
-              <div key={qq} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
-                <div style={{ fontFamily: font.display, fontWeight: 800, fontSize: isMar ? 46 : 34, color: ghost ? color.goldHot : isMar ? lerpColor(hot) : color.ink, opacity: p, marginBottom: 10 }}>
-                  {ghost ? "?" : Math.round(v)}
-                </div>
-                <div style={{ width: "100%", height: ghost ? 160 * p : Math.max(6, (v / maxV) * 430 * p), borderRadius: "8px 8px 2px 2px",
-                  background: ghost ? "transparent" : isMar ? `linear-gradient(180deg, ${color.goldHot}, ${color.gold})` : "rgba(243,241,236,0.28)",
-                  border: ghost ? `3px dashed rgba(240,208,138,${0.4 + 0.5 * pulse})` : "none",
-                  boxShadow: isMar ? `0 0 ${20 + hot * 50}px rgba(240,208,138,${0.2 + hot * 0.5})` : "none" }} />
-                <div style={{ fontFamily: font.mono, fontSize: 21, color: ghost ? color.goldHot : color.inkDim, marginTop: 12 }}>{qq.toUpperCase()}</div>
+              <div key={fy} style={{ flex: 1, position: "relative", height: "100%" }}>
+                {ghost ? (
+                  <div style={{ position: "absolute", left: 0, right: 0, top: 210 - 150 * p, height: 300 * p, borderRadius: 10,
+                    border: `3px dashed rgba(240,208,138,${0.35 + 0.55 * (hot > 0 ? pulse : 0.3)})`, display: "grid", placeItems: "center",
+                    fontFamily: font.display, fontWeight: 900, fontSize: 110, color: color.goldHot, opacity: p,
+                    boxShadow: `0 0 ${hot * 60}px rgba(240,208,138,${hot * 0.4})` }}>?</div>
+                ) : (
+                  <>
+                    <div style={{ position: "absolute", left: 0, right: 0, top: 210, height: -v * 13 * p, background: `linear-gradient(0deg, #7A1E22, ${RED})`, borderRadius: "0 0 8px 8px" }} />
+                    <div style={{ position: "absolute", left: 0, right: 0, top: 222 + -v * 13 * p, textAlign: "center", fontFamily: font.display, fontWeight: 800, fontSize: 48, color: RED, opacity: p }}>{v}</div>
+                  </>
+                )}
+                <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, textAlign: "center", fontFamily: font.mono, fontSize: 24, color: ghost ? color.goldHot : color.inkDim }}>{fy}</div>
               </div>
             );
           })}
         </div>
-        <div style={{ position: "absolute", left: 0, bottom: -40, display: "flex", gap: 12 }}>
+        <div style={{ position: "absolute", left: 0, bottom: -40, display: "flex", gap: 12, flexWrap: "wrap" }}>
           <SourceTag text="SCREENER · CONSOLIDATED" t={t} start={a + 1.4} style={{ fontSize: 20 }} />
-          <SourceTag text="MAR-26 = 61% OF FY26" t={t} start={march} style={{ fontSize: 20 }} />
+          <SourceTag text="HALF-YEAR CASH FLOW COMES WITH Q2" t={t} start={cashW} style={{ fontSize: 20 }} />
         </div>
       </div>
     </div>
   );
 };
-const lerpColor = (k: number) => (k > 0.5 ? color.goldHot : color.ink);
 
 /* -------------------------------------------------------------- 9. END */
 export const End: React.FC<{ t: number; duration: number }> = ({ t, duration }) => {

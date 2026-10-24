@@ -28,13 +28,15 @@ def w(bid, text, nth=0):
 
 S = lambda bid: BT[bid]["start"]
 C = {
-    "p903": w("b1_hook", "₹903,"), "p5": w("b1_drop", "पाँच"), "p680": w("b1_drop", "₹680।"), "files": S("b1_files"),
+    "mb": w("b0_q", "multibagger"), "sorry": S("b0_truth"), "fake": w("b0_truth", "fake"), "truth": w("b0_truth", "truth."),
+    "hook": S("b1_hook"), "p903": w("b1_hook", "₹903"), "p680": w("b1_hook", "₹680"), "p5": w("b1_hook", "5"),
+    "files": S("b1_night"), "board": w("b1_night", "board"), "uturn_word": w("b1_night", "U-turn."),
     "weekend": S("b2_order"), "r467": w("b2_order", "₹467"), "night": S("b2_notice"), "warrants": w("b2_notice", "warrants"),
-    "uturn": S("b3_uturn"), "chhod": w("b3_uturn", "छोड़"), "fall": S("b3_fall"), "pct": w("b3_fall", "12%"),
+    "uturn": S("b3_uturn"), "chhod": w("b3_uturn", "छोड़"), "fall": S("b3_fall"), "pct": w("b3_fall", "12% गिरा।"),
     "who": S("b4_who"), "subs": w("b4_who", "substations"), "growth": S("b4_growth"), "r531": w("b4_growth", "₹531"),
     "cash": S("b5_cash"), "cfo": S("b5_cfo"), "days": S("b5_days"), "d267": w("b5_days", "267"), "debt": S("b5_debt"),
     "double": w("b5_debt", "double,"), "order": S("b6_order"), "pehle": w("b6_order", "पहले"), "mgmt": S("b7_mgmt"),
-    "watch": S("b8_watch"), "march": w("b8_q", "March"), "end": S("b9_avron"),
+    "watch": S("b8_watch"), "march": w("b8_q", "cash"), "end": S("b9_avron"),
 }
 
 
@@ -183,9 +185,11 @@ def glide_down(d=0.6, f0=900, f1=90):
 mus = np.zeros((2, N))
 # hook: sub drone + clock pulse + dark pad opening
 drone = (np.sin(2 * np.pi * NOTE(M["C1"]) * t) + 0.5 * np.sin(2 * np.pi * NOTE(M["G1"]) * t)) * 0.35
-mus += st2(drone * (win(0, C["cash"] + 0.5, 0.3, 0.6) * 0.8 + win(C["cash"], C["mgmt"], 0.1, 0.8) * 1.2 + win(C["watch"] - 0.5, C["end"] + 0.4, 0.6, 0.3)))
-place(mus, pad(["C3", "Eb3", "G3"], 0, C["weekend"], 0.5, cutoff=1400, attack=1.5), 0.0)
-place(mus, ostinato("C2", C["p5"] - 0.05, C["p680"], 0.28, 0.155, 900, (0, 0, 12, 0)), C["p5"] - 0.05)
+mus += st2(drone * (win(C["sorry"], C["cash"] + 0.5, 0.3, 0.6) * 0.8 + win(C["cash"], C["mgmt"], 0.1, 0.8) * 1.2 + win(C["watch"] - 0.5, C["end"] + 0.4, 0.6, 0.3)))
+# opener: bright hype pad that swells into "multibagger", then stops dead on "Sorry"
+place(mus, pad(["Eb3", "G3", "Bb3", "D4"], 0, C["sorry"], 0.42, cutoff=3200, attack=1.6, release=0.08), 0.0)
+place(mus, pad(["C3", "Eb3", "G3"], C["hook"] - 0.3, C["weekend"], 0.5, cutoff=1400, attack=0.6), C["hook"] - 0.3)
+place(mus, ostinato("C2", C["p903"], C["p680"] + 0.2, 0.28, 0.155, 900, (0, 0, 12, 0)), C["p903"])
 # weekend: ostinato day -> night (filter closes, Ab colour)
 place(mus, ostinato("C3", C["weekend"], C["night"], 0.30, 0.25, 1700), C["weekend"])
 place(mus, pad(["C3", "Eb3", "G3", "Bb3"], C["weekend"], C["night"], 0.38, 2000), C["weekend"])
@@ -209,7 +213,7 @@ place(mus, pad(["Ab2", "Eb3", "C4"], C["mgmt"], C["watch"], 0.32, 1600), C["mgmt
 place(mus, ostinato("C3", C["watch"], C["end"] - 0.05, 0.3, 0.2, 1400), C["watch"])
 place(mus, pad(["C3", "G3", "Eb4"], C["watch"], C["end"], 0.42, 2200, attack=2.0), C["watch"])
 # clock-tick pulse through the hook and the weekend (the "timestamp" motif)
-for tc in np.arange(0.0, C["uturn"], 0.5):
+for tc in np.arange(C["hook"], C["uturn"], 0.5):
     if C["p680"] - 0.1 < tc < C["p680"] + 0.6: continue
     place(mus, st2(tick(2600 if int(tc * 2) % 2 == 0 else 2000)), tc, 0.05)
 music = verb(mus, HALL, 0.28)
@@ -220,11 +224,15 @@ for at, g, L in [(C["p680"], 0.9, 3.5), (C["weekend"], 0.35, 2.0), (C["pct"], 0.
                  (C["r531"], 0.4, 2.5), (C["cash"], 0.7, 3.0), (C["d267"], 0.45, 2.0), (C["double"], 0.5, 2.0), (C["watch"], 0.3, 2.0)]:
     place(imp, st2(boom(L)), at, g)
 place(imp, st2(stamp()), C["chhod"], 0.9)
+place(imp, st2(stamp()), C["uturn_word"], 0.8)
+place(imp, st2(glide_down(0.45, 1400, 60)), C["sorry"] - 0.05, 0.45)  # tape-stop on "Sorry"
+place(imp, st2(boom(3.0)), C["truth"], 0.6)
+place(imp, st2(boom(3.0)), C["hook"], 0.55)
 place(imp, st2(glide_down(0.55)), C["pct"] - 0.55, 0.35)
 impacts = verb(imp, HALL, 0.32)
 
 ris = np.zeros((2, N))
-for at, d, g in [(C["p680"], 1.2, 0.25), (C["who"], 1.0, 0.18), (C["cash"], 0.8, 0.15), (C["end"], 1.6, 0.22)]:
+for at, d, g in [(C["sorry"], 2.4, 0.22), (C["p680"], 1.2, 0.25), (C["who"], 1.0, 0.18), (C["cash"], 0.8, 0.15), (C["end"], 1.6, 0.22)]:
     place(ris, st2(riser(d)), at - d, g)
 for at in (C["files"], C["weekend"], C["uturn"], C["order"], C["mgmt"], C["watch"]):
     place(ris, np.array([whoosh(0.45), whoosh(0.45)[::-1] * 0 + whoosh(0.45)]), at - 0.3, 0.12)
@@ -239,12 +247,12 @@ logo = verb(logo, HALL, 0.6)
 
 # ------------------------------------------------------------------ FOLEY: filings, clock flip, counters, grid hum
 fol = np.zeros((2, N))
-for at in (C["files"] + 1.0, C["files"] + 1.22, C["files"] + 1.44, C["weekend"], C["night"] + 0.1, C["uturn"], C["order"]):
+for at in (C["board"] - 0.3, C["weekend"], C["night"] + 0.1, C["uturn"], C["order"]):
     place(fol, st2(paper()), at, 0.32)
 for k in range(5):  # clock flip 13:07 -> 22:48
     place(fol, st2(tick(1500, 0.04)), C["night"] + 0.05 + k * 0.12, 0.25)
 for k in range(5):  # five sessions
-    place(fol, st2(tick(1100, 0.05)), C["p5"] + k * (C["p680"] - C["p5"]) / 5, 0.2)
+    place(fol, st2(tick(1100, 0.05)), C["p5"] - 0.1 + k * 0.14, 0.2)
 for tc in np.arange(C["days"], C["d267"] + 0.3, 0.07):  # 267 counter
     place(fol, st2(tick(3200, 0.02)), tc, 0.05)
 for at in (C["r467"] - 0.1, C["warrants"] - 0.1, C["pehle"] - 0.4):  # highlighter
