@@ -25,7 +25,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **शर्त (The Fine Print)**: a 68 s Hinglish oil/fiscal/2029 reel, in `deliverables/2026-10-oil-2029/`. The user called the story weak ("shit story g"), so make future stories more intriguing.
 
 - **Viviana Power Tech, "₹903 → ₹680"**: a 66 s Hinglish reel, in `deliverables/2026-10-viviana/` (produced 2026-10-24).
-  - It uses a Kokoro **guide VO**. Waiting on the user's ElevenLabs/human VO from `vo_lines.md`; drop it in as `public/viviana/vo_raw.mp3`.
+  - The final version uses the user's Tia VO and passes QC 11/11. The caption and linking steps are done.
   - The story: the price fell 15 → 23 Oct after the 10 Oct order and warrant notice and the 15 Oct board U-turn. The cash story sits underneath.
 
 ## Research done, not produced
@@ -48,4 +48,8 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 
 ## Agent tools the user asked to install (2026-10-24)
 - The tools are claude-mem (local memory, cloud sync off), Agent Reach 1.6, SkillSpector, and the `no-ai-slop` skill.
-- They don't survive a container reset. Reinstall with `bash tools/install_agent_tools.sh`.
+- The user wants them used **every time** without being asked (2026-10-24): no-ai-slop on every script, caption and post, and Agent Reach for research.
+- The no-ai-slop and agent-reach skills are saved in `.claude/skills/`, so they load from the repo after a reset.
+- The CLIs don't survive a reset. Run `bash .claude/hooks/ensure_agent_tools.sh`, which skips what's already installed.
+- An auto-run SessionStart hook in `.claude/settings.json` is still pending the user's permission.
+- For the claude.ai chat app, `tools/claude-ai-upload/no-ai-slop.zip` is ready to upload under Settings → Capabilities → Skills.
