@@ -65,7 +65,7 @@ export const Orders: React.FC<{ t: number }> = ({ t }) => {
       <DataRoom t={t} tint={color.gold} drift={0.4} opacity={0.55} />
       <div style={{ position: "absolute", left: G, top: 250 }}>
         <Label text="6 ORDERS · MAR–OCT 2026 · INCL. TAXES" t={t} start={a} />
-        <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 190, letterSpacing: "-0.05em", color: color.goldHot, lineHeight: 1, marginTop: 10 }}>
+        <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 190, letterSpacing: "-0.05em", color: color.goldHot, lineHeight: 1, marginTop: 10, opacity: prog(t, total - 0.55, 0.2) }}>
           ₹<Counter to={768} t={t} start={total - 0.5} dur={0.9} /><span style={{ fontSize: 80, color: color.inkDim }}> cr</span>
         </div>
       </div>
@@ -155,7 +155,7 @@ export const Why: React.FC<{ t: number }> = ({ t }) => {
           <circle r={R} fill="none" stroke="rgba(243,241,236,0.12)" strokeWidth={46} />
           <circle r={R} fill="none" stroke={color.goldHot} strokeWidth={46} strokeDasharray={`${C * arc} ${C}`} transform="rotate(-90)" />
         </svg>
-        <div style={{ position: "absolute", top: 160, textAlign: "center" }}>
+        <div style={{ position: "absolute", top: 160, textAlign: "center", opacity: prog(t, sixty - 0.35, 0.2) }}>
           <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 130, color: color.goldHot, lineHeight: 1 }}><Counter to={60} t={t} start={sixty - 0.3} dur={0.9} />%</div>
           <div style={{ fontFamily: font.mono, fontSize: 22, color: color.inkDim, letterSpacing: "0.1em" }}>CENTRAL GOVERNMENT</div>
         </div>
@@ -216,7 +216,7 @@ export const Bets: React.FC<{ t: number }> = ({ t }) => {
             color: "#fff", opacity: ln }}>LOAN 75–80%</div>
           <div style={{ flex: 1, background: color.gold, display: "grid", placeItems: "center", fontFamily: font.mono, fontSize: 20, color: "#1B1C1F" }}>REST</div>
         </div>
-        <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 96, color: color.goldHot, marginTop: 14, letterSpacing: "-0.04em" }}>
+        <div style={{ fontFamily: font.display, fontWeight: 900, fontSize: 96, color: color.goldHot, marginTop: 14, letterSpacing: "-0.04em", opacity: prog(t, r300 - 0.45, 0.2) }}>
           ~₹<Counter to={300} t={t} start={r300 - 0.4} dur={0.8} /> cr <span style={{ fontSize: 34, color: color.inkDim, fontWeight: 700 }}>IN · ₹59 CR SUBSIDY</span>
         </div>
         <Label text="₹40 CR+ A YEAR · AFTER AN 18-MONTH BUILD" t={t} start={yrs - 0.3} style={{ marginTop: 40 }} tint={color.goldHot} />
