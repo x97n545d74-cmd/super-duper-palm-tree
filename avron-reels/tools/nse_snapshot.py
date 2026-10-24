@@ -3,7 +3,7 @@
 Usage: python3 tools/nse_snapshot.py <indices.json> <out.json>
 <indices.json> is the site's data/indices.json (the 50-index directory).
 The output is the body of the site's db document market/indices.
-Source: NSE's public website API (not a licensed feed).
+Source: NSE (nseindia.com), the exchange's own index data.
 """
 import json, sys, urllib.request, http.cookiejar
 from datetime import datetime, timezone
@@ -50,7 +50,7 @@ def build(directory, raw):
             "advances": num(r.get("advances")), "declines": num(r.get("declines")),
         })
     return {
-        "source": "NSE website (nseindia.com/api/allIndices), unofficial",
+        "source": "National Stock Exchange of India (nseindia.com/api/allIndices)",
         "exchange_time": raw.get("timestamp"),  # IST, as NSE prints it
         "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "breadth": {k: raw.get(k) for k in ("advances", "declines", "unchanged")},
