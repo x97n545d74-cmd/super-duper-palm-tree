@@ -17,7 +17,7 @@ cues = []
 for b in tl["beats"]:
     cur = []
     for w in b["words"]:
-        if not w["w"]:
+        if not w["w"] or w.get("mute"):
             continue
         cur.append(w)
         if re.search(r"[।.?…—,]\"?$", w["w"]) and len(" ".join(x["w"] for x in cur)) > 12:

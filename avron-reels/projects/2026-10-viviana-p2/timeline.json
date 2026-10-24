@@ -128,22 +128,26 @@
      "w": "कुल",
      "s": 7.93,
      "e": 8.17,
-     "tone": null
+     "tone": null,
+     "mute": true
     },
     {
      "w": "₹768",
      "s": 8.17,
      "e": 9.45,
-     "tone": "gold"
+     "tone": "gold",
+     "mute": true
     },
     {
      "w": "crore।",
      "s": 9.45,
      "e": 10.21,
-     "tone": null
+     "tone": null,
+     "mute": true
     }
    ],
-   "end": 10.45
+   "end": 10.45,
+   "note": "VO said ₹788 here (wrong); that span is muted in vo.wav and the on-screen ₹768 counter carries it."
   },
   {
    "id": "p1_owner",

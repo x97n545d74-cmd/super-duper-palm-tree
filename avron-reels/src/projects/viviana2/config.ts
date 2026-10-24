@@ -14,7 +14,7 @@ export const B = (id: string) => beat(id).start;
 
 const words: CaptionWord[] = timeline.beats
   .filter((b) => b.id !== "p0_hook" && b.id !== "p8_avron")
-  .flatMap((b) => b.words.map((w) => ({ w: w.w, s: w.s, e: w.e, tone: w.tone })));
+  .flatMap((b) => b.words.filter((w) => !("mute" in w && w.mute)).map((w) => ({ w: w.w, s: w.s, e: w.e, tone: w.tone })));
 export const CAPTIONS = chunkWords(words, 3);
 
 export const S = {
