@@ -1,0 +1,567 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Nohandslabs 15s</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  :root { --bg:#07080a; --lime:#c6ff3d; --dim:#9d9ea1; --fg:#ececed; --line:#1b1e23; --panel:#0c0e11; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1920px; height:1080px; overflow:hidden; background:var(--bg); color:var(--fg); }
+  body { font-family:'Geist', sans-serif; -webkit-font-smoothing:antialiased; }
+  .abs { position:absolute; }
+  .mono { font-family:'JetBrains Mono', monospace; }
+  .disp { font-family:'Space Grotesk', sans-serif; }
+  .dot { font-family:'Doto', monospace; }
+  #stage { position:absolute; inset:0; overflow:hidden; }
+  #cam { position:absolute; inset:0; transform-origin:960px 540px; }
+  canvas { position:absolute; left:0; top:0; }
+  .scene { position:absolute; inset:0; display:none; }
+  .mask { overflow:hidden; display:block; }
+  .mask > span { display:inline-block; will-change:transform; }
+  .lime { color:var(--lime); }
+  .upper { text-transform:uppercase; letter-spacing:.18em; }
+
+  /* HUD */
+  #hud { left:0; top:0; width:1920px; height:44px; border-bottom:1px solid var(--line); font-size:15px; color:#6d6f73; }
+  #hud span { position:absolute; top:13px; white-space:pre; }
+  #hud b { color:var(--fg); font-weight:500; }
+  #hud .l { color:var(--lime); }
+  .corner { width:22px; height:22px; border-color:#3a3d42; border-style:solid; border-width:0; }
+
+  /* S1 */
+  #s1cursor { width:26px; height:46px; background:var(--lime); }
+  #s1line { font-size:34px; color:var(--dim); white-space:pre; }
+
+  /* S2/S3 */
+  #fig { border:1px solid var(--line); }
+  #figTop, #figBot { font-size:14px; color:#6d6f73; white-space:pre; }
+  .headline { font-family:'Space Grotesk'; font-weight:500; font-size:178px; line-height:.98; letter-spacing:-.045em; white-space:nowrap; }
+  #cursorBlock { display:inline-block; width:.42em; height:.74em; background:var(--lime); vertical-align:-.04em; margin-left:.04em; }
+
+  /* S4 */
+  #big95 { font-family:'Doto'; font-weight:900; font-size:560px; line-height:.8; color:var(--lime); letter-spacing:-.02em; white-space:nowrap; }
+  #big5 { font-family:'Doto'; font-weight:900; font-size:250px; line-height:.8; color:var(--fg); white-space:nowrap; }
+  .label { font-family:'JetBrains Mono'; font-size:22px; color:var(--dim); text-transform:uppercase; letter-spacing:.2em; white-space:nowrap; }
+  #bar { left:150px; top:880px; width:1620px; height:20px; background:#15181c; }
+  #barAI { left:0; top:0; height:20px; background:var(--lime); }
+  #barH { top:0; height:20px; background:var(--fg); }
+  #quote { font-size:28px; color:var(--dim); white-space:pre; }
+
+  /* S5 */
+  #editor { left:210px; top:170px; width:1500px; height:740px; background:var(--panel); border:1px solid var(--line); }
+  #edTitle { height:64px; border-bottom:1px solid var(--line); font-size:22px; color:var(--dim); padding:20px 28px; white-space:pre; }
+  .row { position:absolute; left:0; width:1500px; height:84px; font-family:'JetBrains Mono'; font-size:46px; line-height:84px; white-space:pre; }
+  .row .ln { position:absolute; left:28px; width:60px; color:#3f4247; font-size:30px; }
+  .row .tx { position:absolute; left:110px; }
+  .row .hl { position:absolute; left:0; top:0; height:84px; background:rgba(198,255,61,.12); }
+  .row .st { position:absolute; top:42px; height:3px; background:var(--dim); }
+
+  /* S6 */
+  #rtTitle { font-family:'Space Grotesk'; font-weight:500; font-size:76px; letter-spacing:-.035em; white-space:nowrap; }
+  #agents { left:150px; top:330px; width:760px; height:620px; border:1px solid var(--line); background:var(--panel); }
+  .agent { position:absolute; left:0; width:760px; height:74px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono'; font-size:27px; line-height:74px; white-space:pre; }
+  .agent .d { position:absolute; left:30px; top:30px; width:14px; height:14px; background:#2a2d31; }
+  .agent .n { position:absolute; left:66px; color:var(--fg); }
+  .agent .s { position:absolute; left:470px; color:#55585c; }
+  .agent .p { position:absolute; left:470px; top:58px; height:3px; width:0; background:var(--lime); }
+  #log { left:950px; top:330px; width:820px; height:620px; border:1px solid var(--line); background:var(--panel); overflow:hidden; }
+  #logHead { height:56px; border-bottom:1px solid var(--line); font-size:20px; color:var(--dim); padding:16px 24px; white-space:pre; }
+  #logBody { position:absolute; left:24px; top:70px; width:780px; font-family:'JetBrains Mono'; font-size:21px; line-height:36px; color:#7d8085; white-space:pre; }
+  #counter { font-family:'Doto'; font-weight:900; font-size:64px; color:var(--lime); white-space:nowrap; }
+
+  /* S7 */
+  #ringWrap { left:0; top:0; width:1920px; height:1080px; perspective:2200px; perspective-origin:960px 470px; }
+  .ring { position:absolute; left:960px; top:520px; transform-style:preserve-3d; }
+  .card { position:absolute; left:-280px; top:-350px; width:560px; height:700px; background:var(--panel); border:1px solid #23262b; padding:40px; backface-visibility:hidden; }
+  .card .num { font-family:'JetBrains Mono'; font-size:22px; color:#55585c; }
+  .chip { position:absolute; right:40px; top:34px; font-family:'JetBrains Mono'; font-size:19px; padding:6px 14px; letter-spacing:.14em; text-transform:uppercase; border:1px solid; }
+  .card h3 { position:absolute; left:40px; top:250px; font-family:'Space Grotesk'; font-weight:500; font-size:64px; letter-spacing:-.035em; line-height:1; width:480px; }
+  .card p { position:absolute; left:40px; top:420px; font-size:30px; color:var(--dim); width:470px; line-height:1.3; }
+  .card .ft { position:absolute; left:40px; bottom:36px; font-family:'JetBrains Mono'; font-size:20px; color:#6d6f73; }
+  #reflWrap { left:0; top:0; width:1920px; height:1080px; perspective:2200px; perspective-origin:960px 470px; }
+  #floorFade { left:0; top:880px; width:1920px; height:200px; background:linear-gradient(to bottom, rgba(7,8,10,.55), var(--bg) 70%); }
+
+  /* S8 */
+  #wordmark { font-family:'Space Grotesk'; font-weight:400; font-size:150px; letter-spacing:-.03em; white-space:nowrap; line-height:1; }
+  #wmDot { display:inline-block; width:.13em; height:.13em; border-radius:50%; background:var(--fg); margin-left:.06em; vertical-align:.02em; }
+  #tag { font-family:'Space Grotesk'; font-weight:500; font-size:58px; letter-spacing:-.03em; white-space:nowrap; }
+  #url { font-size:30px; color:var(--fg); white-space:pre; }
+  #cta { font-size:28px; color:var(--lime); border:1.5px solid var(--lime); padding:12px 22px; white-space:pre; }
+  #signoff { font-size:20px; color:#6d6f73; white-space:pre; }
+
+  #wipe { left:0; top:0; height:1080px; background:var(--lime); display:none; }
+  #fade { inset:0; background:#000; opacity:0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="cam">
+    <canvas id="grid" width="1920" height="1080"></canvas>
+
+    <!-- S1 boot -->
+    <div class="scene" id="s1">
+      <div class="abs" id="s1cursor"></div>
+      <div class="abs mono" id="s1line"></div>
+    </div>
+
+    <!-- S2/S3 hand + headline -->
+    <div class="scene" id="s23">
+      <div class="abs" id="fig">
+        <div class="abs mono" id="figTop"></div>
+        <div class="abs mono" id="figBot"></div>
+      </div>
+      <div class="abs headline" id="hl" style="left:110px; top:300px;">
+        <span class="mask"><span id="hl1">Companies</span></span>
+        <span class="mask"><span id="hl2">that build</span></span>
+        <span class="mask" style="padding-bottom:.08em"><span id="hl3" class="lime">themselves<i id="cursorBlock"></i></span></span>
+      </div>
+    </div>
+
+    <canvas id="dots" width="1920" height="1080"></canvas>
+
+    <!-- S4 95/5 -->
+    <div class="scene" id="s4">
+      <div class="abs label" id="lab95" style="left:156px; top:160px;">built by ai — target</div>
+      <div class="abs" id="big95" style="left:130px; top:250px;">00%</div>
+      <div class="abs label" id="lab5" style="left:1330px; top:430px;">by humans — target</div>
+      <div class="abs" id="big5" style="left:1310px; top:500px;">5%</div>
+      <div class="abs disp" id="lab5b" style="left:1336px; top:720px; font-size:34px; letter-spacing:-.01em;">finished by hand</div>
+      <div class="abs" id="bar"><div class="abs" id="barAI"></div><div class="abs" id="barH"></div></div>
+      <div class="abs mono" id="quote" style="left:150px; top:940px;"></div>
+    </div>
+
+    <!-- S5 diff -->
+    <div class="scene" id="s5">
+      <div class="abs" id="editor">
+        <div id="edTitle" class="mono"></div>
+        <div id="rows"></div>
+      </div>
+    </div>
+
+    <!-- S6 runtime -->
+    <div class="scene" id="s6">
+      <div class="abs label" style="left:152px; top:110px;" id="rtKicker">[ 05 ] runtime</div>
+      <div class="abs mask" style="left:146px; top:150px;"><span id="rtTitle">What “no hands” looks like on a Tuesday</span></div>
+      <div class="abs" id="agents"></div>
+      <div class="abs" id="log"><div id="logHead" class="mono"></div><div id="logBody"></div></div>
+      <div class="abs label" style="left:1490px; top:262px; font-size:16px;">tasks.run</div>
+      <div class="abs" id="counter" style="left:1490px; top:200px;"></div>
+    </div>
+
+    <!-- S7 portfolio -->
+    <div class="scene" id="s7">
+      <div class="abs" id="reflWrap"><div class="ring" id="refl"></div></div>
+      <div class="abs" id="floorFade"></div>
+      <div class="abs" id="ringWrap"><div class="ring" id="ring"></div></div>
+      <div class="abs label" style="left:152px; top:96px;" id="pfKicker">[ 06 ] portfolio</div>
+      <div class="abs mask" style="left:148px; top:132px;"><span class="disp" id="pfTitle" style="font-size:60px; font-weight:500; letter-spacing:-.03em; white-space:nowrap;">Two live. More on the way.</span></div>
+    </div>
+
+    <!-- S8 lockup -->
+    <div class="scene" id="s8">
+      <svg id="mark" class="abs" viewBox="8 0 92 126" fill="#c6ff3d" style="left:0; top:0; width:160px; height:219px;">
+        <path d="M38 101 19 81" stroke="#c6ff3d" stroke-width="13" stroke-linecap="round" fill="none"/>
+        <path d="M32 82h45v22l-3 14a6 6 0 0 1-6 4H41a6 6 0 0 1-6-4l-3-14z"/>
+        <path d="M32 56h9v30h-9zM44 48h9v38h-9zM56 64h9v22h-9zM68 76h9v10h-9z"/>
+        <path d="M32 48V36l4.5-5 4.5 5v12zM44 38V24l4.5-5 4.5 5v14z"/>
+        <rect x="56" y="46" width="11" height="11"/><rect x="70" y="60" width="10" height="10"/><rect x="60" y="26" width="9" height="9"/><rect x="76" y="36" width="8" height="8"/><rect x="80" y="12" width="7" height="7"/>
+      </svg>
+      <div class="abs mask" id="wmMask"><span id="wordmark">nohandslabs<i id="wmDot"></i></span></div>
+      <div class="abs mask" id="tagMask"><span id="tag">Companies that build <span class="lime">themselves</span></span></div>
+      <div class="abs mono" id="url"></div>
+      <div class="abs mono" id="cta">[ join waitlist ]</div>
+      <div class="abs mono" id="signoff"></div>
+    </div>
+
+    <!-- HUD -->
+    <div class="abs mono" id="hud"></div>
+    <div class="abs corner" id="c1" style="left:40px; top:84px; border-left-width:1.5px; border-top-width:1.5px;"></div>
+    <div class="abs corner" id="c2" style="right:40px; top:84px; border-right-width:1.5px; border-top-width:1.5px;"></div>
+    <div class="abs corner" id="c3" style="left:40px; bottom:40px; border-left-width:1.5px; border-bottom-width:1.5px;"></div>
+    <div class="abs corner" id="c4" style="right:40px; bottom:40px; border-right-width:1.5px; border-bottom-width:1.5px;"></div>
+  </div>
+  <div class="abs" id="wipe"></div>
+  <div class="abs" id="fade"></div>
+</div>
+
+<script>
+// ---------- timing ----------
+const BPM = 128, BEAT = 60 / BPM, BAR = BEAT * 4, DUR = BAR * 8; // 15.000 s
+const b = n => n * BEAT;
+const clamp = (x, a = 0, c = 1) => Math.min(c, Math.max(a, x));
+const prog = (t, a, d) => clamp((t - a) / d);
+const lerp = (a, c, k) => a + (c - a) * k;
+const eOutExpo = k => k >= 1 ? 1 : 1 - Math.pow(2, -10 * k);
+const eOutCubic = k => 1 - Math.pow(1 - k, 3);
+const eInOutCubic = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const eInCubic = k => k * k * k;
+const eOutQuint = k => 1 - Math.pow(1 - k, 5);
+const $ = id => document.getElementById(id);
+const typed = (s, t, t0, cps) => s.slice(0, Math.max(0, Math.floor((t - t0) * cps)));
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
+const show = (id, on) => { $(id).style.display = on ? 'block' : 'none'; };
+// masked line reveal: slide the inner span up from below its mask
+const reveal = (el, k) => { el.style.transform = `translateY(${(1 - eOutQuint(k)) * 110}%)`; };
+// timing for typed text is exported so the audio script can click on each char
+window.TYPING = [];
+function typeEvent(name, text, t0, cps) { window.TYPING.push({ name, text, t0, cps }); return { text, t0, cps }; }
+
+// ---------- logo raster -> dot targets ----------
+function rasterLogo(heightPx, step) {
+  const s = heightPx / 126, w = Math.ceil(92 * s), h = Math.ceil(126 * s);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d');
+  x.setTransform(s, 0, 0, s, -8 * s, 0); x.fillStyle = '#fff'; x.strokeStyle = '#fff';
+  x.lineWidth = 13; x.lineCap = 'round'; x.stroke(new Path2D('M38 101 19 81'));
+  ['M32 82h45v22l-3 14a6 6 0 0 1-6 4H41a6 6 0 0 1-6-4l-3-14z', 'M32 56h9v30h-9zM44 48h9v38h-9zM56 64h9v22h-9zM68 76h9v10h-9z', 'M32 48V36l4.5-5 4.5 5v12zM44 38V24l4.5-5 4.5 5v14z'].forEach(d => x.fill(new Path2D(d)));
+  [[56, 46, 11, 11], [70, 60, 10, 10], [60, 26, 9, 9], [76, 36, 8, 8], [80, 12, 7, 7]].forEach(r => x.fillRect(...r));
+  const data = x.getImageData(0, 0, w, h).data, pts = [];
+  for (let yy = step / 2; yy < h; yy += step) for (let xx = step / 2; xx < w; xx += step)
+    if (data[(Math.floor(yy) * w + Math.floor(xx)) * 4 + 3] > 128) pts.push([xx - w / 2, yy - h / 2]);
+  return { pts, w, h };
+}
+const HAND = rasterLogo(760, 11);
+const MARK = rasterLogo(219, 5.2);
+const R = rng(7);
+const P = HAND.pts.map(([hx, hy], i) => {
+  const ang = R() * Math.PI * 2, rad = 500 + R() * 900;
+  return {
+    hx, hy,
+    sx: 960 + Math.cos(ang) * rad, sy: 540 + Math.sin(ang) * rad * .7,
+    // bottom-up assembly
+    delay: clamp((hy + HAND.h / 2) / HAND.h) * -1 + 1,
+    // fingertips (top right) release first
+    rel: clamp(((hy + HAND.h / 2) / HAND.h) * .75 + (1 - (hx + HAND.w / 2) / HAND.w) * .25 + (R() - .5) * .12),
+    vx: 300 + R() * 520, vy: 160 + R() * 360, ph: R() * 6.28, sz: R() < .08 ? 9 : 7,
+    j: R(), k: R(),
+  };
+});
+
+// ---------- static DOM builds ----------
+const DIFF = [
+  ['#', ' the work that used to need a department never clocks out'],
+  ['-', ' software  : "a tool"'], ['+', ' software  : "the operator"'],
+  ['-', ' headcount : "leverage"'], ['+', ' headcount : "drag"'],
+  ['-', ' startups  : "founders"'], ['+', ' startups  : "an operating system"'],
+];
+DIFF.forEach((r, i) => {
+  const d = document.createElement('div'); d.className = 'row'; d.style.top = (64 + 20 + i * 88) + 'px';
+  d.innerHTML = `<div class="hl"></div><div class="ln">${i + 1}</div><div class="tx"></div><div class="st"></div>`;
+  $('rows').appendChild(d);
+});
+const AG = ['agent.intake', 'agent.draft', 'agent.review', 'agent.deploy', 'agent.support', 'agent.billing', 'human.designer'];
+AG.forEach((n, i) => {
+  const d = document.createElement('div'); d.className = 'agent'; d.style.top = (i * 88) + 'px';
+  d.innerHTML = `<div class="d"></div><div class="n">${n}</div><div class="s">idle</div><div class="p"></div>`;
+  $('agents').appendChild(d);
+});
+const LOG = [
+  'intake   → brief received', 'draft    → homepage v1 generated', 'review   → checks passed', 'deploy   → preview live',
+  'support  → ticket resolved', 'billing  → invoice sent', 'intake   → new request queued', 'draft    → copy pass 2',
+  'review   → contrast fixed', 'deploy   → dns verified', 'support  → reply sent', 'billing  → renewal processed',
+];
+const CARDS = [
+  { n: '01', st: 'live', t: 'No Hands Studio', p: 'Your website. Tomorrow.', f: 'nohandsstudio.com ↗' },
+  { n: '02', st: 'live', t: 'No Hands Sites', p: 'Websites that run themselves.', f: 'affiliate · e-commerce' },
+  { n: '03', st: 'waitlist', t: 'Benchdesk', p: 'Launch startups straight from your desk.', f: 'benchdesk.ai ↗' },
+  { n: '04', st: 'coming soon', t: 'No Hands Agency', p: 'Next in line.', f: 'follow on x ↗' },
+  { n: '05', st: 'research', t: 'null _', p: 'Pressure-testing the wedge.', f: 'wedge testing' },
+];
+const RING_R = 760, STEP = 360 / CARDS.length;
+function chipStyle(st) {
+  if (st === 'live') return 'color:#07080a;background:#c6ff3d;border-color:#c6ff3d';
+  if (st === 'waitlist') return 'color:#ececed;border-color:#ececed';
+  return 'color:#6d6f73;border-color:#3a3d42';
+}
+['ring', 'refl'].forEach(rid => CARDS.forEach((c, i) => {
+  const d = document.createElement('div'); d.className = 'card';
+  d.style.transform = `rotateY(${i * STEP}deg) translateZ(${RING_R}px)`;
+  d.innerHTML = `<div class="num">company. ${c.n}</div><div class="chip" style="${chipStyle(c.st)}">${c.st === 'live' ? '● ' : ''}${c.st}</div>
+    <h3>${c.t}</h3><p>${c.p}</p><div class="ft">${c.f}</div>`;
+  $(rid).appendChild(d);
+}));
+
+const gctx = $('grid').getContext('2d'), dctx = $('dots').getContext('2d');
+
+// ---------- typed strings (shared with the audio script) ----------
+const T_HUD = typeEvent('hud', '■ SYS.ONLINE', b(1), 40);
+const T_S1 = typeEvent('s1', '// venture builder for autonomous companies', b(2), 42);
+const T_FIGT = typeEvent('fig', 'FIG.01 — THE HAND LETS GO', b(4.2), 50);
+const T_QUOTE = typeEvent('quote', "// we're not chasing zero. the 5% is where the quality lives.", b(14.6), 64);
+const T_URL = typeEvent('url', 'nohandslabs.com', b(29.6), 40);
+const T_SIGN = typeEvent('sign', 'built 95% by ai. finished by hand.', b(30.2), 46);
+
+// ---------- frame ----------
+function hud(t) {
+  const sec = 14 * 3600 + 9 * 60 + 41 + Math.floor(t);
+  const hh = String(Math.floor(sec / 3600)).padStart(2, '0'), mm = String(Math.floor(sec / 60) % 60).padStart(2, '0'), ss = String(sec % 60).padStart(2, '0');
+  const k = prog(t, b(1), b(2));
+  const items = [
+    [40, `<span class="l">${typed(T_HUD.text, t, T_HUD.t0, T_HUD.cps)}</span>`, 0],
+    [470, 'PORTFOLIO: <b>2/5 LIVE</b>', .25], [910, 'TARGET: <b class="l">95% AI</b> / 5% HUMAN', .5],
+    [1420, 'UPTIME: <b>24/7</b>', .75], [1700, `AMS <b>${hh}:${mm}:${ss}</b>`, .9],
+  ];
+  $('hud').innerHTML = items.map(([x, h, d]) => `<span style="left:${x}px;opacity:${d === 0 ? 1 : eOutCubic(prog(k, d, .2))}">${h}</span>`).join('');
+  $('hud').style.opacity = t < b(28) ? 1 : 1 - prog(t, b(28), b(.5));
+  $('hud').style.borderBottomColor = `rgba(27,30,35,${eOutCubic(prog(t, b(1), b(1)))})`;
+  const corners = eOutExpo(prog(t, b(3), b(1))) * (t < b(28) ? 1 : 0);
+  ['c1', 'c2', 'c3', 'c4'].forEach(c => { $(c).style.opacity = corners; });
+}
+
+function drawGrid(t) {
+  gctx.clearRect(0, 0, 1920, 1080);
+  let k = eInOutCubic(prog(t, b(1.5), b(2.5)));
+  if (t >= b(12) && t < b(28)) k = 1;
+  if (t >= b(28)) k = 1 - prog(t, b(28), b(.75));
+  if (k <= 0) return;
+  gctx.strokeStyle = 'rgba(255,255,255,0.045)'; gctx.lineWidth = 1;
+  const half = 1100 * k;
+  for (let x = 0; x <= 1920; x += 120) { const xx = x + .5; gctx.beginPath(); gctx.moveTo(xx, 540 - half); gctx.lineTo(xx, 540 + half); gctx.stroke(); }
+  for (let y = 60; y <= 1080; y += 120) { const yy = y + .5; gctx.beginPath(); gctx.moveTo(960 - half * 1.8, yy); gctx.lineTo(960 + half * 1.8, yy); gctx.stroke(); }
+}
+
+function sceneBoot(t) {
+  const on = t < b(4); show('s1', on); if (!on) return;
+  const line = typed(T_S1.text, t, T_S1.t0, T_S1.cps);
+  const typing = t >= T_S1.t0;
+  // cursor: centre blink, then rides the end of the typed line
+  const cx = typing ? 330 + line.length * 20.4 + 6 : 945;
+  const blink = typing && line.length < T_S1.text.length ? 1 : (Math.floor(t / (BEAT / 2)) % 2 === 0 ? 1 : 0);
+  const intro = eOutExpo(prog(t, 0, .12));
+  Object.assign($('s1cursor').style, { left: cx + 'px', top: '517px', opacity: blink * intro, transform: `scaleY(${intro})` });
+  Object.assign($('s1line').style, { left: '330px', top: '520px' });
+  $('s1line').textContent = line;
+  $('s1line').style.opacity = t > b(3.6) ? 1 - prog(t, b(3.6), b(.4)) : 1;
+  $('s1cursor').style.opacity *= t > b(3.6) ? 1 - prog(t, b(3.6), b(.4)) : 1;
+}
+
+function sceneHand(t) {
+  const on = t >= b(4) && t < b(12); show('s23', on);
+  dctx.clearRect(0, 0, 1920, 1080);
+  if (!on) return;
+  // hand centre: centred in bar 2, slides right on the bar 3 downbeat
+  const slide = eInOutCubic(prog(t, b(8), b(1)));
+  const hcx = lerp(960, 1390, slide), hcy = 565;
+  const push = 1 + .05 * prog(t, b(4), b(4));
+  // figure frame
+  const fw = 840, fh = 900, fx = hcx - fw / 2, fy = 120;
+  const fk = eOutExpo(prog(t, b(4), b(.75)));
+  Object.assign($('fig').style, { left: fx + 'px', top: fy + 'px', width: fw + 'px', height: fh + 'px', opacity: fk * (1 - .6 * slide), transform: `scale(${lerp(.96, 1, fk)})` });
+  $('figTop').textContent = typed(T_FIGT.text, t, T_FIGT.t0, T_FIGT.cps).padEnd(48) + (t > b(5) ? 'RENDER: LIVE' : '');
+  Object.assign($('figTop').style, { left: '18px', top: '14px' });
+  $('figBot').textContent = (t > b(6) ? '■ FRAGMENTS → SYSTEM' : '').padEnd(52) + (t > b(8.5) ? 'RELEASE: ON' : '');
+  Object.assign($('figBot').style, { left: '18px', top: (fh - 34) + 'px', color: t > b(8.5) ? '#c6ff3d' : '#6d6f73' });
+
+  // headline (bar 3)
+  reveal($('hl1'), prog(t, b(9), b(.7)));
+  reveal($('hl2'), prog(t, b(10), b(.7)));
+  reveal($('hl3'), prog(t, b(11), b(.7)));
+  $('cursorBlock').style.opacity = (Math.floor(t / (BEAT / 2)) % 2 === 0) ? 1 : .15;
+  $('hl').style.opacity = t < b(9) ? 0 : 1;
+
+  // dots
+  for (const p of P) {
+    const a = eOutExpo(prog(t, b(4) + p.delay * b(1.6) + p.j * b(.25), b(1.5)));
+    if (a <= 0) continue;
+    let x = lerp(p.sx, hcx + p.hx * push, a), y = lerp(p.sy, hcy + p.hy * push, a);
+    // swirl while travelling
+    const sw = (1 - a) * 60; x += Math.sin(t * 3 + p.ph) * sw; y += Math.cos(t * 2.4 + p.ph) * sw;
+    let col = [217, 218, 219], alpha = .25 + .75 * a;
+    // lime scan across the assembled hand on beat 7
+    const scanY = lerp(hcy + HAND.h / 2, hcy - HAND.h / 2, prog(t, b(7), b(.6)));
+    if (Math.abs(y - scanY) < 26 && t > b(7) && t < b(7.7)) col = [198, 255, 61];
+    // release (bar 3)
+    const rt = b(8.4) + p.rel * b(3.1);
+    if (t > rt) {
+      const tau = t - rt;
+      x += p.vx * Math.pow(tau, 1.35) + Math.sin(tau * 4 + p.ph) * 26 * tau;
+      y -= p.vy * Math.pow(tau, 1.2) + Math.cos(tau * 3 + p.ph) * 18 * tau;
+      col = [198, 255, 61];
+      alpha = 1 - clamp(tau / (1.1 + p.k * .6));
+      // brief pixel flicker on release
+      if (tau < .08 && p.j > .5) alpha = .3;
+    }
+    if (alpha <= 0) continue;
+    dctx.fillStyle = `rgba(${col[0]},${col[1]},${col[2]},${alpha})`;
+    const s = p.sz * push;
+    dctx.fillRect(x - s / 2, y - s / 2, s, s);
+  }
+}
+
+function sceneRatio(t) {
+  const on = t >= b(12) && t < b(16); show('s4', on); if (!on) return;
+  const k = eOutExpo(prog(t, b(12), b(1.6)));
+  const v = Math.round(95 * k);
+  $('big95').textContent = String(v).padStart(2, '0') + '%';
+  const slam = eOutExpo(prog(t, b(12), b(.6)));
+  $('big95').style.transform = `scale(${lerp(1.18, 1, slam)})`; $('big95').style.transformOrigin = '0% 60%';
+  $('lab95').style.opacity = eOutCubic(prog(t, b(12.25), b(.5)));
+  $('barAI').style.width = (1620 * .95 * k) + 'px';
+  const hk = eOutExpo(prog(t, b(14), b(.8)));
+  Object.assign($('barH').style, { left: (1620 * .95 + 6) + 'px', width: Math.max(0, 1620 * .05 * hk - 6) + 'px' });
+  $('big5').style.opacity = hk; $('big5').style.transform = `translateY(${(1 - hk) * 60}px)`;
+  $('lab5').style.opacity = hk; $('lab5b').style.opacity = eOutCubic(prog(t, b(14.3), b(.5)));
+  $('quote').textContent = typed(T_QUOTE.text, t, T_QUOTE.t0, T_QUOTE.cps);
+  const push = 1 + .03 * prog(t, b(12), b(4));
+  $('s4').style.transform = `scale(${push})`;
+}
+
+const ROWS = () => document.querySelectorAll('#rows .row');
+function sceneDiff(t) {
+  const on = t >= b(16) && t < b(20); show('s5', on); if (!on) return;
+  $('edTitle').innerHTML = `company.config <span style="color:#ff6b5b">−3</span> <span class="lime">+3</span>          <span style="color:#3f4247">// that ratio just broke</span>`;
+  const rows = ROWS();
+  const ek = eOutExpo(prog(t, b(16), b(.6)));
+  $('editor').style.transform = `translateY(${(1 - ek) * 40}px)`; $('editor').style.opacity = ek;
+  rows.forEach((r, i) => {
+    const [sign, text] = DIFF[i];
+    let start, kind = sign;
+    if (i === 0) start = b(16);
+    else { const pair = Math.floor((i - 1) / 2); start = b(16 + pair * 1.0 + (sign === '+' ? .5 : 0)); }
+    const tx = r.querySelector('.tx'), hl = r.querySelector('.hl'), st = r.querySelector('.st');
+    const vis = t >= start;
+    r.style.opacity = vis ? 1 : 0;
+    if (!vis) return;
+    if (kind === '#') { tx.textContent = '#' + typed(text, t, start, 90); tx.style.color = '#4a4d52'; hl.style.width = 0; st.style.width = 0; return; }
+    if (kind === '-') {
+      tx.textContent = '−' + typed(text, t, start, 120);
+      const sk = eOutExpo(prog(t, start + b(.28), b(.2)));
+      st.style.left = '150px'; st.style.width = (sk * (text.length * 27.6)) + 'px';
+      tx.style.color = sk > .5 ? '#55585c' : '#ff8a7a'; hl.style.width = 0;
+      return;
+    }
+    const sl = eOutExpo(prog(t, start, b(.3)));
+    tx.textContent = '+' + text; tx.style.color = '#c6ff3d';
+    tx.style.transform = `translateX(${(1 - sl) * -40}px)`;
+    hl.style.width = (1500 * sl) + 'px';
+    st.style.width = 0;
+  });
+  // push into the last line on beat 19
+  const pk = eInCubic(prog(t, b(19), b(1)));
+  const last = rows[6].getBoundingClientRect ? null : null;
+  const ox = 210 + 110 + 640, oy = 170 + 84 + 6 * 88 + 42;
+  $('s5').style.transformOrigin = `${ox}px ${oy}px`;
+  $('s5').style.transform = `scale(${1 + pk * 2.6})`;
+  $('s5').style.opacity = 1;
+}
+
+function sceneRuntime(t) {
+  const on = t >= b(20) && t < b(24); show('s6', on); if (!on) return;
+  reveal($('rtTitle'), prog(t, b(20), b(.7)));
+  $('rtKicker').style.opacity = eOutCubic(prog(t, b(20), b(.4)));
+  const pk = eOutExpo(prog(t, b(20.1), b(.6)));
+  $('agents').style.transform = $('log').style.transform = `translateY(${(1 - pk) * 50}px)`;
+  $('agents').style.opacity = $('log').style.opacity = pk;
+  document.querySelectorAll('.agent').forEach((a, i) => {
+    const at = b(20.5 + i * .4);
+    const act = t >= at;
+    const human = i === 6;
+    const d = a.querySelector('.d'), s = a.querySelector('.s'), p = a.querySelector('.p'), n = a.querySelector('.n');
+    const pulse = act ? 1 + .6 * (1 - eOutCubic(prog(t, at, .25))) : 1;
+    d.style.background = act ? (human ? '#ececed' : '#c6ff3d') : '#2a2d31';
+    d.style.transform = `scale(${pulse})`;
+    s.textContent = act ? (human ? 'sign-off ■' : 'running') : 'idle';
+    s.style.color = act ? (human ? '#ececed' : '#c6ff3d') : '#55585c';
+    n.style.color = human && act ? '#ececed' : (human ? '#55585c' : '#ececed');
+    p.style.width = act && !human ? (((t - at) * (1.6 + i * .37)) % 1 * 250) + 'px' : '0px';
+    a.style.background = human && act ? `rgba(236,237,237,${.07 * eOutCubic(prog(t, at, .3))})` : 'transparent';
+  });
+  $('logHead').textContent = '~/portfolio/01-studio — runtime.log  [illustrative]';
+  const nLines = Math.floor(clamp((t - b(20.5)) / b(.25), 0, 40));
+  const lines = [];
+  for (let i = 0; i < nLines; i++) {
+    const s = 9 * 3600 + 14 * 60 + i * 7; const ts = `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor(s / 60) % 60).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+    lines.push(`<span style="color:#45484d">${ts}</span>  ${LOG[i % LOG.length]}`);
+  }
+  $('logBody').innerHTML = lines.slice(-14).join('\n') + (Math.floor(t / (BEAT / 2)) % 2 ? '\n<span class="lime">$ █</span>' : '\n<span class="lime">$ </span>');
+  const ck = eOutCubic(prog(t, b(20.5), b(3.3)));
+  $('counter').textContent = String(Math.floor(ck * 1284)).padStart(4, '0');
+}
+
+function sceneFolio(t) {
+  const on = t >= b(24) && t < b(28); show('s7', on); if (!on) return;
+  // front card k at beat 24 + k*0.75, whip between with cubic in/out
+  const u = (t - b(24)) / b(.75);
+  const i0 = Math.floor(u), f = u - i0;
+  const mv = eInOutCubic(clamp((f - .35) / .65));
+  const idx = Math.min(4, i0 + (i0 < 4 ? mv : 0)) - .55 * (1 - eOutExpo(prog(t, b(24), b(.5))));
+  const rot = -idx * STEP;
+  const lift = eOutExpo(prog(t, b(24), b(.6)));
+  $('ring').style.transform = `translateZ(${-RING_R + 40}px) rotateY(${rot}deg)`;
+  $('refl').style.transform = `translateY(740px) scaleY(-1) translateZ(${-RING_R + 40}px) rotateY(${rot}deg)`;
+  $('ringWrap').style.opacity = lift; $('reflWrap').style.opacity = .22 * lift;
+  $('ringWrap').style.transform = `translateY(${(1 - lift) * 80}px)`;
+  reveal($('pfTitle'), prog(t, b(24.1), b(.7)));
+  $('pfKicker').style.opacity = eOutCubic(prog(t, b(24), b(.4)));
+}
+
+function sceneLockup(t) {
+  const on = t >= b(28); show('s8', on);
+  if (!on) return;
+  // dots implode into the mark (reuse the canvas)
+  const mx = 960 - 520, my = 470;
+  const n = MARK.pts.length;
+  const solid = eOutCubic(prog(t, b(29), b(.4)));
+  if (solid < 1) {
+    for (let i = 0; i < P.length; i++) {
+      const p = P[i];
+      const a = eOutExpo(prog(t, b(28) + p.j * b(.3), b(.85)));
+      const target = i < n ? MARK.pts[i] : null;
+      let x, y, alpha;
+      if (target) { x = lerp(p.sx, mx + target[0], a); y = lerp(p.sy, my + target[1], a); alpha = (.3 + .7 * a) * (1 - solid); }
+      else { x = lerp(p.sx, mx, a); y = lerp(p.sy, my, a); alpha = (1 - a) * .8; }
+      if (alpha <= 0.01) continue;
+      dctx.fillStyle = `rgba(198,255,61,${alpha})`;
+      const s = target ? 4.4 : 3; dctx.fillRect(x - s / 2, y - s / 2, s, s);
+    }
+  }
+  Object.assign($('mark').style, { left: (mx - 80) + 'px', top: (my - 109.5) + 'px', opacity: solid });
+  const wm = $('wmMask'); Object.assign(wm.style, { left: (mx + 120) + 'px', top: (my - 98) + 'px', paddingBottom: '20px' });
+  reveal($('wordmark'), prog(t, b(29), b(.7)));
+  const tm = $('tagMask'); Object.assign(tm.style, { left: (mx - 76) + 'px', top: (my + 160) + 'px', paddingBottom: '10px' });
+  reveal($('tag'), prog(t, b(29.5), b(.7)));
+  Object.assign($('url').style, { left: (mx - 74) + 'px', top: (my + 290) + 'px' });
+  $('url').textContent = typed(T_URL.text, t, T_URL.t0, T_URL.cps);
+  const ck = eOutExpo(prog(t, b(30), b(.5)));
+  Object.assign($('cta').style, { left: (mx + 250) + 'px', top: (my + 276) + 'px', opacity: ck, transform: `translateX(${(1 - ck) * 30}px)` });
+  Object.assign($('signoff').style, { left: (mx - 74) + 'px', top: (my + 400) + 'px' });
+  $('signoff').textContent = typed(T_SIGN.text, t, T_SIGN.t0, T_SIGN.cps) + (Math.floor(t / (BEAT / 2)) % 2 ? '█' : ' ');
+  const zoom = 1 + .025 * prog(t, b(28), b(4));
+  $('s8').style.transform = `scale(${zoom})`; $('s8').style.transformOrigin = '960px 540px';
+}
+
+function wipe(t) {
+  // lime scan wipe across the downbeat into the drop and into the lockup
+  const w = $('wipe');
+  for (const at of [b(12), b(28)]) {
+    const k = (t - (at - .14)) / .30;
+    if (k > 0 && k < 1) {
+      const e = eInOutCubic(k);
+      const x0 = lerp(-400, 1920, e), width = 260 + 260 * Math.sin(Math.PI * k);
+      w.style.display = 'block'; w.style.left = (x0 - width / 2) + 'px'; w.style.width = width + 'px';
+      return;
+    }
+  }
+  w.style.display = 'none';
+}
+
+function camera(t) {
+  // one camera language: slow push per scene, nothing else
+  $('cam').style.transform = 'none';
+}
+
+window.seek = async function (t) {
+  t = clamp(t, 0, DUR);
+  hud(t); drawGrid(t); camera(t);
+  sceneBoot(t); sceneHand(t); sceneRatio(t); sceneDiff(t); sceneRuntime(t); sceneFolio(t); sceneLockup(t);
+  wipe(t);
+  $('fade').style.opacity = eInCubic(prog(t, DUR - b(.75), b(.75)));
+  await document.fonts.ready;
+  await new Promise(r => requestAnimationFrame(() => r()));
+};
+window.DUR = DUR; window.BEAT = BEAT;
+window.ready = document.fonts.ready.then(() => Promise.all([...document.fonts].map(f => f.load()))).then(() => true);
+</script>
+</body>
+</html>
