@@ -1,0 +1,65 @@
+{
+  "project": "2026-10-viviana",
+  "aspect": "9:16",
+  "keyframe": {"width": 768, "height": 1360},
+  "video": {"width": 480, "height": 848, "frames": 81, "fps": 16, "_note": "81 frames @16 fps = 5.06 s. With >=32 GB VRAM raise to 576x1024."},
+  "style": "cinematic photograph, anamorphic 35mm film look, shallow depth of field, rich contrast, subtle film grain, moody documentary color grade, ultra detailed, no text, no letters, no logos, no watermark, no brand names",
+  "negative": "text, letters, words, subtitles, watermark, logo, brand name, signage, readable writing, faces, identifiable people, distorted hands, extra limbs, blurry, low quality, jpeg artifacts, oversaturated, cartoon, illustration, static frame, frozen motion",
+  "shots": [
+    {
+      "id": "V01_hook_pylons_storm", "beat": "HOOK", "seed": 2901,
+      "image": "aerial view at dusk of a long line of 400 kV steel lattice transmission towers marching across flat green Indian farmland, monsoon storm clouds building on the horizon, distant lightning, wet fields reflecting an orange sky, power cables glinting",
+      "motion": "slow steady drone push forward along the power lines, storm clouds drifting, a distant lightning flicker, cables swaying very slightly, cinematic camera motion"
+    },
+    {
+      "id": "V02_sector_substation_bluehour", "beat": "SECTOR", "seed": 2902,
+      "image": "wide shot at blue hour of a large outdoor high-voltage electrical substation, rows of power transformers, insulators and steel gantries, sodium vapour lights, thin mist over wet gravel, deep blue sky",
+      "motion": "slow lateral tracking shot past the gantries, mist drifting through the lights, gentle parallax between foreground and background structures"
+    },
+    {
+      "id": "V03_company_lineman_sunrise", "beat": "COMPANY", "seed": 2903,
+      "image": "low angle silhouette of two anonymous linemen in safety harnesses high on a steel transmission tower at sunrise, backlit by a golden sun, faces not visible, sky gradient from amber to pale blue",
+      "motion": "slow tilt up the tower toward the workers, sun flare shimmering, workers making small careful movements, cables gently swaying"
+    },
+    {
+      "id": "V04_guidance_transformer_crane", "beat": "GUIDANCE", "seed": 2904,
+      "image": "a massive grey power transformer being lifted by a large crawler crane at an industrial construction site during golden hour, dust in the air, long shadows, scale emphasised by tiny distant workers in silhouette",
+      "motion": "the crane slowly lifts the transformer upward, dust drifting through golden light, slow upward camera crane move"
+    },
+    {
+      "id": "V05_catch_site_office_night", "beat": "CATCH 1", "seed": 2905,
+      "image": "an empty project site office at night, a single warm desk lamp over stacks of thick files and rolled engineering blueprints, rain streaking down a dark window, deep shadows, tense quiet mood",
+      "motion": "slow push-in toward the desk, rain running down the window glass, lamp light flickering very subtly"
+    },
+    {
+      "id": "V06_catch_invoices_macro", "beat": "CATCH 2", "seed": 2906,
+      "image": "macro close-up of a pile of paper invoices and a wall calendar on a wooden desk, papers out of focus with no legible text, shallow depth of field, warm tungsten light, floating dust motes",
+      "motion": "slow rack focus from the papers to the calendar, dust motes drifting in the light beam, extremely slow push"
+    },
+    {
+      "id": "V07_mgmt_control_room", "beat": "MGMT", "seed": 2907,
+      "image": "a dim modern power grid control room with large wall screens showing abstract glowing network graphs with no text, cool blue light, empty chairs, reflections on a glossy floor",
+      "motion": "slow dolly forward between the desks, screen graphs pulsing softly, light reflections sliding across the floor"
+    },
+    {
+      "id": "V08_stakes_rain_bokeh", "beat": "STAKES", "seed": 2908,
+      "image": "abstract dark background of out-of-focus red and green city lights seen through a rain-covered glass window at night, large soft bokeh circles, moody",
+      "motion": "raindrops slowly running down the glass, bokeh lights gently shifting, very slow lateral drift"
+    },
+    {
+      "id": "V09_watch_transformer_factory", "beat": "WATCH", "seed": 2909,
+      "image": "interior of a transformer manufacturing factory, huge copper coil windings in the foreground, a worker in silhouette welding with bright orange sparks, shafts of warm light through haze, industrial scale",
+      "motion": "slow push past the copper coils, welding sparks flying and fading, haze drifting through the light shafts"
+    },
+    {
+      "id": "V10_payoff_tower_sunset", "beat": "PAYOFF", "seed": 2910,
+      "image": "a single tall steel transmission tower in silhouette against a vast deep orange and violet sunset sky, power lines receding into the far distance over flat land, a few birds in flight",
+      "motion": "slow cinematic pull-back revealing more sky, birds gliding across, clouds drifting slowly"
+    },
+    {
+      "id": "V11_alt_bess_containers", "beat": "SECTOR (alt)", "seed": 2911,
+      "image": "rows of white battery energy storage containers in a large solar park at dusk, small green status lights glowing, solar panels stretching to the horizon, clean industrial look",
+      "motion": "slow aerial glide over the rows of containers, status lights blinking softly, warm dusk light fading"
+    }
+  ]
+}
