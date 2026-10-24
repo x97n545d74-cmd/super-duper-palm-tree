@@ -81,3 +81,8 @@ Sia script (eleven_v4, about 600 characters, 577 credits per take):
 
 ## Music and licences
 Music and SFX are original, synthesised in `scripts/score_smartphone.py` (drone, sub-bass hit, 96 BPM pulse, near silence on the 65% line). Nothing licensed or trending is used.
+
+## QC (guide-VO render)
+10 of 11 automated checks pass: specs, duration, no black or frozen frames, no static seconds, −14.0 LUFS, −1.5 dBTP.
+`narration_intelligible_in_mix` fails because Whisper locks to English from the opening clip and then transcribes the Hindi VO as English. A Hindi-only pass on 20.4–50.2 s reads the mixed VO back almost word for word, through "वैल्यू आठ परसेंट".
+The opening clip's YouTube player controls (0.26–0.87 s) are covered with a clean held frame.

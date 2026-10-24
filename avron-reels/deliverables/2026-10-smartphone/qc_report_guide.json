@@ -1,0 +1,138 @@
+{
+ "file": "out/AVRON_smartphone_GUIDE-VO.mp4",
+ "checks": {
+  "dimensions_1080x1920": {
+   "pass": true,
+   "detail": "1080x1920"
+  },
+  "fps_30": {
+   "pass": true,
+   "detail": 30.0
+  },
+  "h264_yuv420p": {
+   "pass": true,
+   "detail": "h264 yuv420p"
+  },
+  "aac_audio": {
+   "pass": true,
+   "detail": "aac"
+  },
+  "duration_matches_timeline": {
+   "pass": true,
+   "detail": "53.55s vs 53.525s"
+  },
+  "no_black_segments": {
+   "pass": true,
+   "detail": []
+  },
+  "no_frozen_segments_over_1.2s": {
+   "pass": true,
+   "detail": []
+  },
+  "loudness_-14_LUFS_pm1": {
+   "pass": true,
+   "detail": -14.0
+  },
+  "true_peak_below_-1dB": {
+   "pass": true,
+   "detail": -1.5
+  },
+  "no_near_static_seconds": {
+   "pass": true,
+   "detail": {
+    "seconds_below_0.35": []
+   }
+  },
+  "narration_intelligible_in_mix": {
+   "pass": false,
+   "detail": 0.045
+  }
+ },
+ "specs": {
+  "width": 1080,
+  "height": 1920,
+  "fps": 30.0,
+  "vcodec": "h264",
+  "profile": "High",
+  "pix_fmt": "yuv420p",
+  "color_space": "bt709",
+  "duration": 53.547,
+  "bitrate_mbps": 4.23,
+  "acodec": "aac",
+  "sample_rate": "48000",
+  "channels": 2
+ },
+ "loudness": {
+  "integrated_lufs": -14.0,
+  "true_peak_dbfs": -1.5
+ },
+ "motion_per_second": [
+  8.04,
+  7.25,
+  5.97,
+  5.69,
+  5.2,
+  1.58,
+  0.83,
+  0.67,
+  0.73,
+  0.66,
+  9.24,
+  4.55,
+  1.79,
+  10.71,
+  11.05,
+  7.91,
+  5.46,
+  5.22,
+  10.05,
+  1.08,
+  20.36,
+  0.79,
+  1.57,
+  0.86,
+  1.33,
+  1.4,
+  1.4,
+  3.18,
+  1.82,
+  1.02,
+  1.16,
+  1.08,
+  1.25,
+  1.3,
+  1.31,
+  1.25,
+  3.24,
+  0.88,
+  1.0,
+  0.77,
+  3.1,
+  1.6,
+  1.05,
+  3.11,
+  1.17,
+  0.92,
+  0.67,
+  1.34,
+  1.87,
+  3.64,
+  2.42,
+  1.05,
+  0.97,
+  1.92
+ ],
+ "asr": {
+  "similarity": 0.045,
+  "heard": "It's festive season in India, and traditionally this is when people make big purchases, including  a new phone.  There are new models, big discounts and exchange offers, basically everything designed to make  you upgrade.  But this year, the story looks a bit different.  Smartphone sales are low in India.  Shipments have fallen sharply.  Even the biggest brands are feeling the pressure, and consumers are asking, why buy a new phone  when the old one still works?  A decision to buy phones as they went through the house by January 9th.  Some companies are supposed to buy them in the 1.5 per cent plants.  These are not like before being sold sale, and there is only one phone representative in  India.  Luckily it is one live phone and others are still calling them.  Here people are also expecting lots of food.  They are also getting paid as well.  They omnipresently make things worse.  They do not spend time workingrazy doing these questions, but they certainly earn time  Ship means 8% Pari, value art percent.",
+  "reference": "script"
+ },
+ "sheets": [
+  "out/qc_sp/sheet_transitions.jpg",
+  "out/qc_sp/sheet_timeline.jpg"
+ ],
+ "summary": {
+  "passed": 10,
+  "total": 11
+ }
+}
