@@ -22,7 +22,7 @@ export const CAPTIONS = chunkWords(words, 3).map((c) => ({ ...c, words: c.words.
 export const CLIP_END = cues.clipEnd;
 
 /** Captions follow the VO. Off while the user records their own TTS for the post-clip section. */
-export const SHOW_CAPTIONS = false;
+export const SHOW_CAPTIONS = true;
 
 export const S = {
   intro: [0, cues.intro],

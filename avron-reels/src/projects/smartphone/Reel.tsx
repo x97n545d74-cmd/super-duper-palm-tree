@@ -51,7 +51,7 @@ export const SmartphoneReel: React.FC = () => {
       )}
       {SHOW_CAPTIONS && t >= S.budget[0] && t < S.end[0] && <Captions t={t} chunks={CAPTIONS} family={font.display} size={56} y={1330} />}
       <Finish progress={Math.min(1, t / DURATION)} showMark={t >= S.clip[0] && t < S.end[0] - 0.2} />
-      <Audio src={staticFile("smartphone/bed.wav")} />
+      <Audio src={staticFile("smartphone/mix.wav")} />
     </AbsoluteFill>
   );
 };

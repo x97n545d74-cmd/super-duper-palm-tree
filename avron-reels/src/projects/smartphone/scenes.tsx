@@ -155,7 +155,7 @@ export const Budget: React.FC<{ t: number }> = ({ t }) => {
       <div style={{ position: "absolute", inset: 0, ...pushIn(t, a) }}>
         <div style={{ position: "absolute", left: G, right: G, top: 660, opacity: 1 - m1 }}>
           <Mask t={t} start={a + 0.05}><div style={display(118)}>Sabse zyada maar</div></Mask>
-          <Mask t={t} start={a + 0.2}><div style={{ ...display(118), color: ACC }}>sasti phones par</div></Mask>
+          <Mask t={t} start={a + 0.2}><div style={{ ...display(118), color: ACC }}>saste phones par</div></Mask>
         </div>
         {t >= r10 - 0.25 && (
           <div style={{ position: "absolute", left: G, top: lerp(640, 240, m2), transformOrigin: "0 0", transform: `scale(${lerp(1, 0.26, m2)})` }}>
@@ -243,7 +243,7 @@ export const Memory: React.FC<{ t: number }> = ({ t }) => {
         )}
         {t >= cost - 0.3 && (
           <div style={{ position: "absolute", left: G, right: G, top: 680 }}>
-            <Mask t={t} start={cost - 0.2}><div style={display(104)}>Sasti phone ki cost</div></Mask>
+            <Mask t={t} start={cost - 0.2}><div style={display(104)}>Saste phone ki cost</div></Mask>
             <Mask t={t} start={cost - 0.05}><div style={display(104)}>mein <span style={{ color: ACC }}>memory</span> ka</div></Mask>
             <Mask t={t} start={cost + 0.1}><div style={display(104)}>hissa zyada</div></Mask>
           </div>
