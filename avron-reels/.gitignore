@@ -10,3 +10,8 @@ public/fuel-gap/sfx.wav
 public/smartphone/opening_raw.mov
 # regenerable by scripts/score_smartphone.py (deterministic)
 public/smartphone/stems/
+
+# cocktail experiment: rendered frames and intermediate audio
+experiments/cocktail/out/
+experiments/cocktail/frames/
+experiments/cocktail/audio_pre.wav

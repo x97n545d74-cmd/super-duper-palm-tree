@@ -305,7 +305,7 @@ window.seek = async function (t) {
   const wp = P(t, 21.4, 0.8, E.outExpo);
   $('wheel').setAttribute('transform', `translate(${lerp(1250, CX + HW_T - 10, wp)},${TOP - 34}) rotate(${lerp(140, 0, wp)})`);
   const cp = E.outCubic(clamp01((t - 22.4) / 0.6));
-  $('cherry').setAttribute('transform', `translate(${CX - 50},${lerp(-200, TOP + 20, cp)})`);
+  $('cherry').setAttribute('transform', `translate(${CX - 50},${lerp(-200, yForMl(150) - 18, cp)})`);
   $('cherry').setAttribute('opacity', t >= 22.4 ? 1 : 0);
 
   // ambient light picks up the drink colour
