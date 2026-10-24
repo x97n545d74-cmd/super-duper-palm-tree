@@ -1,4 +1,4 @@
-# Instagram caption (draft, not posted), v2 for the Tia Mirza VO version
+# Instagram caption (draft, not posted), v2 for the Tia Mirza VO version · no-ai-slop pass done
 
 ```
 Want to know what a potential multibagger looks like? Sorry, we don't sell fake hopes.
@@ -26,5 +26,5 @@ Education only. Not investment advice. Not a recommendation to buy, sell or hold
 
 **Pinned comment (optional):**
 ```
-August में company ने अपनी 90% stake Viviana Life Spaces में promoter Mrs. Priyanka Richi Choksi को बेची. Filing इसे related-party deal बताती है, "at arm's length based on a valuation report". Price disclose नहीं हुई. Aarsh Transformers की 75% stake एक non-promoter buyer को बेची गई. Source: NSE filing, 4 Aug 2026.
+August में company ने अपनी 90% stake Viviana Life Spaces में promoter Mrs. Priyanka Richi Choksi को बेची. Company ने filing में इसे related-party deal बताया, "at arm's length based on a valuation report", पर price disclose नहीं की. Aarsh Transformers की 75% stake company ने एक non-promoter buyer को बेची. Source: NSE filing, 4 Aug 2026.
 ```
