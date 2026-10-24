@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/ensure_agent_tools.sh\"",
+            "timeout": 600
+          }
+        ]
+      }
+    ]
+  }
+}

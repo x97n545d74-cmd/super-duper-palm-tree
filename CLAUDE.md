@@ -9,4 +9,4 @@ The user wants these used every time, without being asked:
 - **claude-mem**: keeps memory across sessions.
 - **SkillSpector**: scan any new skill before installing it.
 
-The skills live in `.claude/skills/`, so they load from the repo even after a container reset. The CLIs (claude-mem, Agent Reach, SkillSpector) don't survive a reset. At session start, if they're missing, run `bash .claude/hooks/ensure_agent_tools.sh`. It skips anything already installed.
+The skills live in `.claude/skills/`, so they load from the repo even after a container reset. The CLIs (claude-mem, Agent Reach, SkillSpector) don't survive a reset. A SessionStart hook in `.claude/settings.json` runs `.claude/hooks/ensure_agent_tools.sh` automatically and skips anything already installed. If they're still missing, run that script by hand.
