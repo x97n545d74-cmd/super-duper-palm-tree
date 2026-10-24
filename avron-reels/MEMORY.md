@@ -52,3 +52,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 
 ## MCP servers (2026-10-24)
 - **Tapetide** is configured in the repo-root `.mcp.json` (HTTP, `https://mcp.tapetide.com/mcp`). The bearer token comes from the `TAPETIDE_TOKEN` env var. Never commit the token itself.
+
+## AVRON website (artifact https://claude.ai/artifact/BYhvtdeeDozb4eWBELtWN1)
+- The site shows no prices until a licensed feed is connected; it does not scrape exchange sites.
+- 2026-10-24: the Market page gained an "NSE index directory": 50 indices in 6 groups, 32 with feed keys and 18 without. The data is in `data/indices.json` on the site.
