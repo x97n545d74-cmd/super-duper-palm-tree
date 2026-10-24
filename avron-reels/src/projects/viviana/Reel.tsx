@@ -20,7 +20,7 @@ export const VivianaReel: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: color.bg, overflow: "hidden" }}>
       <DevanagariFonts />
-      {on(S.opener) && <Opener t={t} />}
+      {on(S.opener) && <Drift t={t} w={[0, 99] as const}><AbsoluteFill style={{ transform: `scale(${1 + 0.012 * t}) rotate(${0.12 * t}deg)` }}><Opener t={t} /></AbsoluteFill></Drift>}
       {on(S.hook) && <Drift t={t} w={S.hook}><Hook t={t} /></Drift>}
       {on(S.weekend) && <Drift t={t} w={S.weekend}><Weekend t={t} /></Drift>}
       {on(S.uturn) && <Drift t={t} w={S.uturn}><UTurn t={t} /></Drift>}

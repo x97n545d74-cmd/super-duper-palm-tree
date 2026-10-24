@@ -1,0 +1,158 @@
+{
+ "file": "out/AVRON_viviana_tia_v2.mp4",
+ "checks": {
+  "dimensions_1080x1920": {
+   "pass": true,
+   "detail": "1080x1920"
+  },
+  "fps_30": {
+   "pass": true,
+   "detail": 30.0
+  },
+  "h264_yuv420p": {
+   "pass": true,
+   "detail": "h264 yuv420p"
+  },
+  "aac_audio": {
+   "pass": true,
+   "detail": "aac"
+  },
+  "duration_matches_timeline": {
+   "pass": true,
+   "detail": "73.34s vs 73.329s"
+  },
+  "no_black_segments": {
+   "pass": true,
+   "detail": []
+  },
+  "no_frozen_segments_over_1.2s": {
+   "pass": true,
+   "detail": []
+  },
+  "loudness_-14_LUFS_pm1": {
+   "pass": true,
+   "detail": -14.1
+  },
+  "true_peak_below_-1dB": {
+   "pass": true,
+   "detail": -1.4
+  },
+  "no_near_static_seconds": {
+   "pass": true,
+   "detail": {
+    "seconds_below_0.35": []
+   }
+  },
+  "narration_intelligible_in_mix": {
+   "pass": true,
+   "detail": 0.951
+  }
+ },
+ "specs": {
+  "width": 1080,
+  "height": 1920,
+  "fps": 30.0,
+  "vcodec": "h264",
+  "profile": "High",
+  "pix_fmt": "yuv420p",
+  "color_space": "bt709",
+  "duration": 73.344,
+  "bitrate_mbps": 3.83,
+  "acodec": "aac",
+  "sample_rate": "48000",
+  "channels": 2
+ },
+ "loudness": {
+  "integrated_lufs": -14.1,
+  "true_peak_dbfs": -1.4
+ },
+ "motion_per_second": [
+  1.49,
+  2.68,
+  1.37,
+  5.03,
+  0.99,
+  0.83,
+  2.35,
+  5.22,
+  1.57,
+  0.94,
+  0.82,
+  1.02,
+  3.83,
+  6.79,
+  1.56,
+  9.13,
+  1.07,
+  1.08,
+  1.2,
+  1.23,
+  2.18,
+  11.25,
+  1.1,
+  1.25,
+  1.36,
+  12.46,
+  1.31,
+  1.24,
+  6.31,
+  3.52,
+  0.77,
+  5.55,
+  1.41,
+  2.79,
+  4.51,
+  8.0,
+  9.35,
+  6.62,
+  1.92,
+  2.05,
+  0.96,
+  4.48,
+  1.49,
+  1.1,
+  1.51,
+  0.82,
+  3.25,
+  1.46,
+  1.64,
+  2.83,
+  1.55,
+  0.86,
+  0.77,
+  12.07,
+  1.31,
+  1.34,
+  6.09,
+  1.57,
+  10.27,
+  1.46,
+  1.2,
+  2.1,
+  1.23,
+  1.17,
+  2.61,
+  1.5,
+  0.76,
+  1.12,
+  0.88,
+  3.08,
+  0.67,
+  0.52,
+  0.49,
+  2.83
+ ],
+ "asr": {
+  "similarity": 0.951,
+  "heard": "Want to know what a potential multi-bagger looks like?  Sorry, we don't sell fake hopes.  We teach you the truth.  903 rupees to 680 rupees in 5 trading days.  The night before the fall, the board made a U-turn.  10 October, Shaniwar.  Dopaher, 467 crore rupee ka order.  Raat 4.45, warrants se paisa jutani ke liye board meeting ka notice.  15 October ki shaam, board ne plan chhod diya.  Agle din stock, 12% gira.  Viviana PowerTech, Vadodara.  Gujrat ki bijli companies ke liye substations aur lines.  Chaar saal mein revenue, 33 rupees se 531 crore rupee.  Par cash nahi aaya.  3 saal se operating cash flow negative.  Bill ka paisa, ausatan 267 din mein.  Aur borrowings, 1 saal mein double.  100 crore rupee.  Wo 467 crore rupee ka order?  Company ke mutabik, pehle hi bataya ja chuka tha.  Company kehti hai, koi client late nahi.  July mein 40 crore rupee vasool huye.  Q2 results are due by November 14.  Watch whether the cash finally shows up.  This is Avron.",
+  "reference": "clean VO"
+ },
+ "sheets": [
+  "out/qc_tia2/sheet_transitions.jpg",
+  "out/qc_tia2/sheet_timeline.jpg"
+ ],
+ "summary": {
+  "passed": 11,
+  "total": 11
+ }
+}

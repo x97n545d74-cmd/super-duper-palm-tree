@@ -57,3 +57,16 @@ The reel then turns to the business underneath: revenue up 16×, operating cash 
 3. **Prices.** The price series is from Yahoo Finance's NSE feed, cross-checked on 4 dates against NDTV Profit, Finology and Economic Times. It isn't from an NSE bhavcopy.
 4. **Rendering.** It's CPU-only WebGL, so there are no path-traced shadows.
 5. **Not posted.** Nothing has been published or scheduled.
+
+## v2: your Tia Mirza VO (24 Oct 2026)
+- **File:** `AVRON_viviana_TIA-VO_1080x1920.mp4`, 73.3 s. The guide-voice version is kept unchanged.
+- **Voiceover:** your ElevenLabs take (Tia Mirza – Crisp and Commanding, v4). It's used as delivered, with no re-pacing. Word timings come from faster-whisper (`scripts/timeline_from_vo.py`).
+- **New opening, 0–7.5 s:** "Want to know what a potential multibagger looks like? Sorry, we don't sell fake hopes, we teach you the truth."
+  - **Picture:** a gold MULTIBAGGER? over an illustrative hype curve, labelled "ILLUSTRATIVE · NOT DATA". On "Sorry" the curve snaps and greys out, NO FAKE HOPES gets a red strike, then THE TRUTH appears.
+  - **Sound:** a hype pad, a tape-stop on "Sorry", and a hit on "truth".
+- **New line, "The night before the fall, the board made a U-turn":** the real 15 Oct outcome filing slides in, with a U-TURN stamp.
+- **Closing:** the closing line is now in English ("Watch whether the cash finally shows up"). The Watch scene now shows operating cash flow for FY24–26 and a "?" for H1 FY27, since half-year cash flow is published with Q2.
+- **QC: 11/11 pass.** Narration intelligibility is 0.951 against the clean VO, −14.1 LUFS / −1.4 dBTP, with no frozen or static seconds.
+  - The opening's frames (0–239) were re-rendered with camera motion and spliced in.
+  - Frames 240 onward are the full render, unchanged.
+- **Known nit in the VO:** "₹33 से ₹531 crore" is spoken as "33 रुपै से 531 करोड़ रुपै", so the first figure sounds like 33 rupees. The screen shows ₹33 cr (FY22). Fixing it would mean regenerating that one line as "33 करोड़ से 531 करोड़".
