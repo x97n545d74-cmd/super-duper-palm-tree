@@ -326,8 +326,8 @@ export const Split: React.FC<{ t: number }> = ({ t }) => {
     <Stage>
       <div style={{ position: "absolute", inset: 0, ...pushIn(t, a) }}>
         <div style={{ position: "absolute", left: G, top: lerp(660, 240, head), transformOrigin: "0 0", transform: `scale(${lerp(1, 0.3, head)})` }}>
-          <Mask t={t} start={a + 0.05}><div style={{ ...display(124), whiteSpace: "nowrap" }}>Mehenge phones ki</div></Mask>
-          <Mask t={t} start={a + 0.15}><div style={{ ...display(124), color: ACC, whiteSpace: "nowrap" }}>kahani alag</div></Mask>
+          <Mask t={t} start={a + 0.05}><div style={{ ...display(104), whiteSpace: "nowrap" }}>Mehenge phones ki</div></Mask>
+          <Mask t={t} start={a + 0.15}><div style={{ ...display(104), color: ACC, whiteSpace: "nowrap" }}>kahani alag</div></Mask>
         </div>
         {t >= p1 - 0.35 && (
           <>
