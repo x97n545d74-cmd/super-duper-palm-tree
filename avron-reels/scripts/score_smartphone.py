@@ -29,9 +29,11 @@ def w(bid, text, nth=0):
     return [x for x in BT[bid]["words"] if norm(x["w"]) == norm(text)][nth]["s"]
 
 
-ow = lambda text: next(x["s"] for x in OW if x["w"].lower().strip(".,") == text)
+INTRO = float(os.environ.get("INTRO", "2.5"))  # logo-reveal pre-roll before the opening clip
+CLIP_LEN = 20.37
+ow = lambda text: INTRO + next(x["s"] for x in OW if x["w"].lower().strip(".,") == text)
 C = {
-    "turn": ow("but"), "ship": ow("shipments"), "clipEnd": 20.37, "vo": BT["b1_budget"]["start"],
+    "intro": INTRO, "turn": ow("but"), "ship": ow("shipments"), "clipEnd": INTRO + CLIP_LEN, "vo": BT["b1_budget"]["start"],
     "r10k": w("b1_budget", "₹10,000"), "p32": w("b1_budget", "32%"), "p65": w("b1_budget", "65%"),
     "mem": BT["b2_memory"]["start"], "chips": w("b2_memory", "chips"), "cycle": BT["b3_cycle"]["start"],
     "four": w("b3_cycle", "4"), "survey": BT["b4_survey"]["start"], "one": w("b4_survey", "1"),
@@ -151,7 +153,18 @@ clip = subprocess.run(["ffmpeg", "-v", "error", "-i", f"{out}/opening_audio.wav"
                       capture_output=True, check=True).stdout
 clip = np.frombuffer(clip, np.float32).astype(float)
 clipbuf = np.zeros(N)
-place(clipbuf, clip * np.clip((C["clipEnd"] - np.arange(len(clip)) / SR) / 0.08, 0, 1), 0.0)
+place(clipbuf, clip * np.clip((CLIP_LEN - np.arange(len(clip)) / SR) / 0.08, 0, 1), INTRO)
+
+# ------------------------------------------------------------------ logo reveal (0 .. INTRO)
+# wireframe shimmer, one soft whoosh per shard, a low hit when the mark assembles, typing clicks, a swish into the clip
+place(risers, riser(0.6) * 0.6, 0.0, 0.5)
+for i in range(9):
+    place(risers, whoosh(0.28), 0.42 + i * 0.09, 0.16)
+place(impacts, boom(1.4, 64, 38, 1.3), 1.42, 0.45)
+place(logo, tone(D4, 1.2, a=0.004, rel=0.45), 1.5, 0.12)
+for i in range(5):
+    place(impacts, tick(2600 + 200 * i), 1.78 + i * 0.09, 0.12)
+place(risers, whoosh(0.45), INTRO - 0.3, 0.3)
 
 for name, x in (("music", music), ("impacts", impacts), ("risers", risers), ("sonic_logo", logo), ("clip", clipbuf)):
     x = x / max(1e-9, np.max(np.abs(x))) * 0.89

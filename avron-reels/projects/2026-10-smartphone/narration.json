@@ -1,9 +1,9 @@
 {
  "voice": "hf_alpha",
  "lang": "hi",
- "leadIn": 20.6,
+ "leadIn": 23.1,
  "tail": 3.4,
- "_note": "GUIDE VO (Kokoro). Swap for ElevenLabs Sia when credits allow; keep beat ids. leadIn = the 20.37 s opening clip + 0.23 s.",
+ "_note": "GUIDE VO (Kokoro). The user records TTS for the lines after the Palki clip; re-time with their file, keep beat ids. leadIn = 2.5 s logo intro + 20.37 s clip + 0.23 s.",
  "beats": [
   {
    "id": "b1_budget",

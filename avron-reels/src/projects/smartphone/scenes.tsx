@@ -71,8 +71,18 @@ const Stage: React.FC<{ children: React.ReactNode; opacity?: number }> = ({ chil
 );
 
 /* ------------------------------------------------ 0. OPENING CLIP (IGR, 1.5x) */
+/** Kinetic keywords over the clip, each landing on Palki's word (clip-local seconds, from opening_words.json). */
+const KEYWORDS: { a: number; b: number; lines: { at: number; text: string; acc?: boolean; size?: number }[] }[] = [
+  { a: 1.15, b: 3.05, lines: [{ at: 1.2, text: "Festive season" }] },
+  { a: 3.1, b: 4.6, lines: [{ at: 3.15, text: "Big purchases" }] },
+  { a: 4.62, b: 5.74, lines: [{ at: 4.68, text: "New phone", acc: true }] },
+  { a: 5.78, b: 9.0, lines: [{ at: 5.82, text: "New models", size: 80 }, { at: 6.32, text: "Big discounts", size: 80 }, { at: 6.86, text: "Exchange offers", size: 80, acc: true }] },
+  { a: 9.0, b: 10.5, lines: [{ at: 9.0, text: "Upgrade?" }] },
+];
+
+/** The opening clip. `t` is clip-local time (the reel offsets it by the logo intro). */
 export const Opening: React.FC<{ t: number }> = ({ t }) => {
-  const turn = CUE.turn, ship = CUE.ship;
+  const turn = CUE.turn - CUE.intro, ship = CUE.ship - CUE.intro;
   const why = 17.46;
   // one camera language: slow push, a soft push on "But this year", zoom punches on "shipments have fallen sharply" and "why buy"
   const punch = 0.16 * ease.outExpo(clamp01((t - ship) / 0.3)) - 0.08 * ease.inOutCubic(clamp01((t - ship - 0.3) / 1.6));
@@ -92,8 +102,19 @@ export const Opening: React.FC<{ t: number }> = ({ t }) => {
 
       <div style={{ position: "absolute", left: G, right: G, top: 250 }}>
         <Mask t={t} start={0.1} out={hookOut}><div style={label}>India · smartphones · Q3 2026</div></Mask>
-        <Mask t={t} start={0.3} out={hookOut} style={{ marginTop: 18 }}><div style={{ ...display(76), whiteSpace: "nowrap" }}>Festive season mein bhi</div></Mask>
-        <Mask t={t} start={0.55} out={hookOut}><div style={{ ...display(76), color: ACC, whiteSpace: "nowrap" }}>phone market thanda</div></Mask>
+      </div>
+      {KEYWORDS.map((k, i) => t >= k.a - 0.05 && t < k.b + 0.35 && (
+        <div key={i} style={{ position: "absolute", left: G, right: G, top: 310 }}>
+          {k.lines.map((l) => (
+            <Mask key={l.text} t={t} start={l.at} out={k.b - 0.05} dur={0.45}>
+              <div style={{ ...display(l.size ?? 104), color: l.acc ? ACC : INK, whiteSpace: "nowrap" }}>{l.text}</div>
+            </Mask>
+          ))}
+        </div>
+      ))}
+      <div style={{ position: "absolute", left: G, right: G, top: 310 }}>
+        <Mask t={t} start={turn} out={hookOut} dur={0.5}><div style={{ ...display(88), whiteSpace: "nowrap" }}>Par is saal</div></Mask>
+        <Mask t={t} start={turn + 0.25} out={hookOut} dur={0.5}><div style={{ ...display(88), color: ACC, whiteSpace: "nowrap" }}>phone market thanda</div></Mask>
       </div>
 
       {t >= ship - 0.05 && (

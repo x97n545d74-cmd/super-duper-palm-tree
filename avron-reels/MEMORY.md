@@ -41,7 +41,10 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **India smartphone slowdown** (draft, 2026-10-24): a ~53.5 s reel in `deliverables/2026-10-smartphone/`. It opens with the user's IGR / Palki Sharma screen recording at 1.5x; the user chose to use it as briefed.
   - All 6 points were checked against Omdia and Counterpoint primary pages.
   - It uses a Kokoro **guide VO**, because ElevenLabs Sia was out of credits (276 left, 577 needed). Swap steps are in `REPORT.md`.
-  - Not published. Waiting on the user's approval and the Sia VO.
+  - v3: a 2.5 s AVRON logo reveal (wireframe → low-poly shards → app icon → typed name, from the user's prompt) plus kinetic keywords over the clip.
+  - The user will record **their own TTS** for the post-clip lines. Slots are in `deliverables/2026-10-smartphone/VO_TIMING.md`.
+  - The reel ships with a ducked music bed (`bed.wav`) and no captions until that VO arrives.
+  - Not published.
 - **ElevenLabs credits:** check the balance before generating a VO. One ~600-character eleven_v4 read costs about 577 credits per take, and the default is 2 takes.
 
 ## Research done, not produced

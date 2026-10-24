@@ -18,11 +18,15 @@ const words: CaptionWord[] = timeline.beats.flatMap((b) => b.words.map((w) => ({
 // chunk on punctuation, then drop it: no full stops in on-screen text
 export const CAPTIONS = chunkWords(words, 3).map((c) => ({ ...c, words: c.words.map((w) => ({ ...w, w: w.w.replace(/[.,।]+$/, "") })) }));
 
-/** The opening clip: IGR screen recording, bars cropped, 1.5x (setpts=PTS/1.5, atempo=1.5) = 20.37 s. */
+/** The opening clip: IGR screen recording, bars cropped, 1.5x (setpts=PTS/1.5, atempo=1.5) = 20.37 s, after the logo intro. */
 export const CLIP_END = cues.clipEnd;
 
+/** Captions follow the VO. Off while the user records their own TTS for the post-clip section. */
+export const SHOW_CAPTIONS = false;
+
 export const S = {
-  clip: [0, CLIP_END],
+  intro: [0, cues.intro],
+  clip: [cues.intro, CLIP_END],
   budget: [CLIP_END, B("b2_memory")],
   memory: [B("b2_memory"), B("b3_cycle")],
   cycle: [B("b3_cycle"), B("b4_survey")],

@@ -1,0 +1,337 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Tequila Sunrise</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0B0B0D; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #0B0B0D; font-family: 'Inter', sans-serif; color: #F3F1EC; }
+  svg { position: absolute; inset: 0; }
+  .mask { overflow: hidden; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+  .mask > div { will-change: transform; }
+  .label { font-weight: 600; font-size: 26px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(243,241,236,0.5); }
+  .big { font-family: 'Inter Display', 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.045em; line-height: 1.0; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .abs { position: absolute; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="cam" class="abs" style="inset:0; transform-origin: 50% 46%;">
+    <svg id="svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+      <defs>
+        <radialGradient id="ambient" cx="50%" cy="46%" r="55%">
+          <stop id="ambC" offset="0%" stop-color="#F29A1F" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#0B0B0D" stop-opacity="0"/>
+        </radialGradient>
+        <clipPath id="inside"><path id="insidePath"/></clipPath>
+        <linearGradient id="liq" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+          <stop id="s0" offset="0"/><stop id="s1" offset="0"/><stop id="s2" offset="0"/><stop id="s3" offset="1"/>
+        </linearGradient>
+        <linearGradient id="glassSheen" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity="0.07"/>
+          <stop offset="0.18" stop-color="#fff" stop-opacity="0.02"/>
+          <stop offset="0.8" stop-color="#fff" stop-opacity="0.0"/>
+          <stop offset="1" stop-color="#fff" stop-opacity="0.06"/>
+        </linearGradient>
+      </defs>
+      <rect width="1080" height="1920" fill="url(#ambient)"/>
+
+      <!-- ml scale -->
+      <g id="scale"></g>
+
+      <!-- glass interior: liquid + ice, clipped -->
+      <g clip-path="url(#inside)">
+        <rect id="liquid" x="300" width="480" fill="url(#liq)"/>
+        <path id="tendril" fill="none" stroke-linecap="round"/>
+        <ellipse id="surface"/>
+        <g id="ice"></g>
+        <path id="streamIn" fill="none" stroke-linecap="round"/>
+      </g>
+      <!-- garnish behind front rim -->
+      <g id="cherry"></g>
+      <!-- glass body -->
+      <path id="glassFill" fill="url(#glassSheen)"/>
+      <path id="glassLine" fill="none" stroke="#F3F1EC" stroke-width="3" stroke-linejoin="round"/>
+      <rect id="glassBase" fill="rgba(243,241,236,0.10)"/>
+      <path id="streak" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="10" stroke-linecap="round"/>
+      <g id="wheel"></g>
+
+      <!-- pour stream above the glass + the measure -->
+      <path id="stream" fill="none" stroke-linecap="round"/>
+      <g id="jigger"></g>
+    </svg>
+  </div>
+
+  <!-- text layer (not under camera push, stays crisp and in the safe zone) -->
+  <div class="abs" style="left:84px; top:150px; right:84px;">
+    <div class="mask"><div id="topLabel" class="label">Recipe · 1 glass</div></div>
+  </div>
+  <div id="titleWrap" class="abs" style="left:84px; top:200px; right:84px;">
+    <div class="mask"><div id="title1" class="big" style="font-size:112px;">Tequila</div></div>
+    <div class="mask"><div id="title2" class="big" style="font-size:112px; color:#F29A1F;">Sunrise</div></div>
+  </div>
+  <div id="mlReadout" class="abs mono" style="left:84px; top:0; font-size:26px; color:rgba(243,241,236,0.75);"></div>
+  <div id="jigReadout" class="abs mono" style="font-size:30px; color:#F3F1EC;"></div>
+  <div id="steps" class="abs" style="left:84px; right:84px; top:1460px;"></div>
+  <div id="card" class="abs" style="left:84px; right:84px; top:1430px;"></div>
+</div>
+
+<script>
+// ------------------------------------------------------------------ helpers (every frame is a pure function of t)
+const clamp01 = x => Math.min(1, Math.max(0, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const E = {
+  outExpo: t => t >= 1 ? 1 : 1 - Math.pow(2, -10 * t),
+  outCubic: t => 1 - Math.pow(1 - t, 3),
+  inCubic: t => t * t * t,
+  inOutCubic: t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+  inOutQuint: t => t < .5 ? 16 * t ** 5 : 1 - Math.pow(-2 * t + 2, 5) / 2,
+};
+const P = (t, a, d, f = E.outCubic) => f(clamp01((t - a) / d));
+const $ = id => document.getElementById(id);
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, k) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], k))).join(',')})`; };
+const ACC = '#F29A1F';
+
+// ------------------------------------------------------------------ glass geometry
+const CX = 540, TOP = 600, BOT = 1330, HW_T = 178, HW_B = 150, H = BOT - TOP;
+const hwAt = y => lerp(HW_B, HW_T, (BOT - y) / H);           // interior half-width at y
+const CAP = 150;                                              // ml at the fill line
+const FILL = 0.80;                                            // fill line as fraction of height
+const yForMl = ml => BOT - (ml / CAP) * FILL * H;
+$('insidePath').setAttribute('d', `M${CX - HW_T},${TOP} L${CX + HW_T},${TOP} L${CX + HW_B},${BOT} L${CX - HW_B},${BOT} Z`);
+const glassD = `M${CX - HW_T - 8},${TOP - 30} L${CX - HW_B - 8},${BOT + 10} Q${CX - HW_B - 8},${BOT + 52} ${CX - HW_B + 30},${BOT + 52} L${CX + HW_B - 30},${BOT + 52} Q${CX + HW_B + 8},${BOT + 52} ${CX + HW_B + 8},${BOT + 10} L${CX + HW_T + 8},${TOP - 30}`;
+$('glassLine').setAttribute('d', glassD);
+$('glassFill').setAttribute('d', glassD + ' Z');
+const GLASS_LEN = 2 * Math.hypot(HW_T - HW_B, H + 40) + 2 * (HW_B * 2) ;
+
+// ------------------------------------------------------------------ recipe + timeline
+const ING = [
+  { key: 'teq', name: 'Tequila', ml: 45, col: '#EBD9A6', a: 5.6 },
+  { key: 'oj', name: 'Orange juice', ml: 90, col: '#F29A1F', a: 10.6 },
+  { key: 'gren', name: 'Grenadine', ml: 15, col: '#B3122E', a: 16.1 },
+];
+// phases relative to the step start
+const PH = { teq: { fill: [0.7, 1.0], move: [1.7, 0.6], pour: [2.3, 1.7], exit: [4.0, 0.7] },
+             oj: { fill: [0.7, 1.0], move: [1.7, 0.6], pour: [2.3, 2.1], exit: [4.4, 0.7] },
+             gren: { fill: [0.7, 0.7], move: [1.4, 0.6], pour: [2.0, 1.1], exit: [3.1, 0.7] } };
+const STEPS = [
+  { n: '01', name: 'Ice', sub: 'Fill the glass', a: 2.6, b: 5.6 },
+  { n: '02', name: 'Tequila', amt: '45 ml', a: 5.6, b: 10.6 },
+  { n: '03', name: 'Orange juice', amt: '90 ml', a: 10.6, b: 16.1 },
+  { n: '04', name: 'Grenadine', amt: '15 ml', sub: 'Pour slowly, let it sink', a: 16.1, b: 21.1 },
+  { n: '05', name: 'Garnish', sub: 'Orange wheel + cherry', a: 21.1, b: 24.3 },
+];
+const FINAL = 24.3, DUR = 30;
+const ICE = [ // resting centre x, y (bottom-up stack), size, rotation
+  [478, 1262, 118, -8], [600, 1268, 112, 6], [532, 1160, 116, 14], [470, 1060, 108, -4], [606, 1070, 114, -12], [545, 962, 106, 9],
+];
+const ICE_T0 = 2.9, ICE_DT = 0.28;
+
+// ------------------------------------------------------------------ build static DOM pieces
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+const iceEls = ICE.map(() => {
+  const g = el('g', {}, $('ice'));
+  el('rect', { x: -50, y: -50, width: 100, height: 100, rx: 16, fill: 'rgba(235,245,255,0.20)', stroke: 'rgba(255,255,255,0.55)', 'stroke-width': 2.5 }, g);
+  el('path', { d: 'M-34,-30 L-10,-36', stroke: 'rgba(255,255,255,0.6)', 'stroke-width': 4, 'stroke-linecap': 'round' }, g);
+  return g;
+});
+// ml scale on the left of the glass
+for (let ml = 0; ml <= 150; ml += 25) {
+  const y = yForMl(ml), x = CX - hwAt(y) - 40;
+  el('line', { x1: x - (ml % 50 ? 12 : 22), y1: y, x2: x, y2: y, stroke: 'rgba(243,241,236,0.35)', 'stroke-width': 2, class: 'tick' }, $('scale'));
+  if (ml % 50 === 0) { const tx = el('text', { x: x - 34, y: y + 8, 'text-anchor': 'end', fill: 'rgba(243,241,236,0.4)', 'font-size': 22, 'font-family': 'JetBrains Mono, monospace' }, $('scale')); tx.textContent = ml; }
+}
+// jigger (double cone) drawn around its pour lip at (0,0)
+const jig = $('jigger');
+const jigInner = el('clipPath', { id: 'jigClip' }, $('svg').querySelector('defs'));
+el('path', { d: 'M-70,0 L70,0 L32,120 L-32,120 Z' }, jigInner);
+const jigLiquid = el('rect', { x: -80, width: 160, 'clip-path': 'url(#jigClip)' }, jig);
+el('path', { d: 'M-70,0 L70,0 L32,120 L-32,120 Z', fill: 'none', stroke: '#F3F1EC', 'stroke-width': 3, 'stroke-linejoin': 'round' }, jig);
+el('path', { d: 'M-32,120 L32,120 L52,200 L-52,200 Z', fill: 'none', stroke: 'rgba(243,241,236,0.55)', 'stroke-width': 3, 'stroke-linejoin': 'round' }, jig);
+// garnish
+const wheel = $('wheel');
+el('circle', { r: 92, fill: '#F7B13C', stroke: '#F3F1EC', 'stroke-width': 3 }, wheel);
+el('circle', { r: 76, fill: '#F9C463' }, wheel);
+for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5; el('line', { x1: 0, y1: 0, x2: 74 * Math.cos(a), y2: 74 * Math.sin(a), stroke: '#FCE3A8', 'stroke-width': 4 }, wheel); }
+el('circle', { r: 8, fill: '#FCE3A8' }, wheel);
+const cherry = $('cherry');
+el('path', { d: 'M0,-30 C10,-80 40,-110 70,-128', fill: 'none', stroke: '#5E7D3A', 'stroke-width': 5, 'stroke-linecap': 'round' }, cherry);
+el('circle', { r: 34, fill: '#A50F24' }, cherry);
+el('circle', { cx: -11, cy: -11, r: 9, fill: 'rgba(255,255,255,0.45)' }, cherry);
+
+// text blocks for steps + final card
+const stepEls = STEPS.map(s => {
+  const d = document.createElement('div');
+  d.className = 'abs'; d.style.left = '0'; d.style.right = '0'; d.style.top = '0';
+  d.innerHTML = `<div class="mask"><div class="label" style="color:${ACC}">Step ${s.n} / 05</div></div>
+    <div style="display:flex; align-items:baseline; gap:28px; margin-top:14px;">
+      <div class="mask"><div class="big" style="font-size:92px;">${s.name}</div></div>
+      ${s.amt ? `<div class="mask"><div class="big" style="font-size:92px; color:${ACC};">${s.amt}</div></div>` : ''}
+    </div>
+    ${s.sub ? `<div class="mask" style="margin-top:14px;"><div style="font-size:36px; font-weight:500; color:rgba(243,241,236,0.6);">${s.sub}</div></div>` : ''}`;
+  $('steps').appendChild(d); return d;
+});
+const CARD = [['45 ml', 'Tequila'], ['90 ml', 'Orange juice'], ['15 ml', 'Grenadine'], ['Ice', 'to fill'], ['Garnish', 'orange wheel, cherry']];
+$('card').innerHTML = `<div class="mask"><div class="label" style="color:${ACC}">The recipe</div></div>` + CARD.map(([a, b]) =>
+  `<div class="mask" style="margin-top:10px;"><div style="display:flex; gap:22px; font-size:42px; font-weight:600; letter-spacing:-0.01em;"><span class="mono" style="width:190px; color:${ACC}; font-size:36px; padding-top:4px;">${a}</span><span>${b}</span></div></div>`).join('');
+
+// masked rise: el = .mask > div
+const rise = (node, t, a, out, dur = 0.6) => {
+  const p = E.outExpo(clamp01((t - a) / dur));
+  const q = out === undefined ? 0 : E.inCubic(clamp01((t - out) / 0.3));
+  node.style.transform = `translateY(${(1 - p) * 110 - q * 110}%)`;
+};
+const riseAll = (root, t, a, out, stagger = 0.06) => root.querySelectorAll('.mask > div').forEach((n, i) => rise(n, t, a + i * stagger, out === undefined ? undefined : out + i * 0.03));
+
+// ------------------------------------------------------------------ liquid state at time t
+function liquidState(t) {
+  let teq = 0, oj = 0, gren = 0;
+  for (const g of ING) {
+    const [pa, pd] = PH[g.key].pour; const k = P(t, g.a + pa, pd, E.inOutCubic);
+    if (g.key === 'teq') teq = g.ml * k; else if (g.key === 'oj') oj = g.ml * k; else gren = g.ml * k;
+  }
+  return { teq, oj, gren, ml: teq + oj + gren };
+}
+// which ingredient is pouring now, and how far
+function pouring(t) {
+  for (const g of ING) { const [pa, pd] = PH[g.key].pour; if (t >= g.a + pa - 0.05 && t <= g.a + pa + pd + 0.25) return { g, k: clamp01((t - g.a - pa) / pd), tail: clamp01((t - g.a - pa - pd) / 0.25) }; }
+  return null;
+}
+
+// ------------------------------------------------------------------ seek(t): draw one frame
+window.seek = async function (t) {
+  // camera: one slow push; a firmer push into the finished drink
+  const cam = 1 + 0.0015 * t + 0.07 * P(t, FINAL, 2.2, E.inOutCubic);
+  $('cam').style.transform = `scale(${cam}) translateY(${-40 * P(t, FINAL, 2.2, E.inOutCubic)}px)`;
+
+  // glass draws itself
+  const draw = P(t, 0.3, 1.4, E.inOutCubic);
+  $('glassLine').setAttribute('stroke-dasharray', GLASS_LEN);
+  $('glassLine').setAttribute('stroke-dashoffset', GLASS_LEN * (1 - draw));
+  $('glassFill').setAttribute('opacity', P(t, 1.2, 0.6));
+  $('glassBase').setAttribute('x', CX - HW_B + 8); $('glassBase').setAttribute('y', BOT + 16);
+  $('glassBase').setAttribute('width', 2 * HW_B - 16); $('glassBase').setAttribute('height', 30); $('glassBase').setAttribute('rx', 10);
+  $('glassBase').setAttribute('opacity', P(t, 1.3, 0.5));
+  $('streak').setAttribute('d', `M${CX - HW_T + 40},${TOP + 40} L${CX - HW_B + 34},${BOT - 50}`);
+  $('streak').setAttribute('opacity', P(t, 1.5, 0.6));
+  $('scale').setAttribute('opacity', P(t, 5.0, 0.6) * (1 - P(t, FINAL, 0.6)));
+
+  // liquid
+  const L = liquidState(t);
+  const level = L.ml > 0.05 ? yForMl(L.ml) : BOT + 2;
+  const pour = pouring(t);
+  const slosh = pour ? Math.sin(t * 9) * 4 * (1 - pour.tail) : 0;
+  $('liquid').setAttribute('y', level + slosh * 0.3); $('liquid').setAttribute('height', BOT - level + 40);
+  // colour: pale tequila -> orange as juice goes in; grenadine builds a red base that blends upward (sunrise)
+  const ojK = L.oj / 90;
+  const top = mix('#E9D49A', ACC, Math.min(1, ojK * 1.15));
+  const alpha = lerp(0.42, 0.95, Math.min(1, ojK * 1.3));
+  const sink = P(t, ING[2].a + PH.gren.pour[0] + 0.3, 2.6, E.inOutCubic) * (L.gren / 15);
+  const rel = L.ml > 0 ? (BOT - level) / (FILL * H) : 1;          // gradient offsets are relative to the liquid height
+  const g1 = 0.16 * sink / rel, g2 = 0.42 * sink / rel;
+  [['s0', 0, '#A80F2A'], ['s1', g1, '#B8152C'], ['s2', g2, '#E4511F'], ['s3', 1, top]].forEach(([id, o, c], i) => {
+    const s = $(id);
+    s.setAttribute('offset', i === 3 ? 1 : Math.min(0.99, o));
+    s.setAttribute('stop-color', i < 3 && sink < 0.001 ? top : c);
+    s.setAttribute('stop-opacity', i < 3 ? lerp(alpha, 0.97, sink) : alpha);
+  });
+  // surface
+  const hw = hwAt(level);
+  $('surface').setAttribute('cx', CX); $('surface').setAttribute('cy', level + slosh * 0.3);
+  $('surface').setAttribute('rx', hw); $('surface').setAttribute('ry', 13 + Math.abs(slosh) * 0.8);
+  $('surface').setAttribute('fill', mix('#FFF4D6', ACC, Math.min(1, ojK * 0.9)));
+  $('surface').setAttribute('opacity', L.ml > 0.5 ? 0.55 : 0);
+  // grenadine tendril sinking through the juice while it pours
+  if (pour && pour.g.key === 'gren') {
+    const depth = lerp(level, BOT - 20, E.outCubic(clamp01((t - ING[2].a - PH.gren.pour[0]) / 1.2)));
+    $('tendril').setAttribute('d', `M${CX + 30},${level} C${CX + 40},${lerp(level, depth, 0.4)} ${CX + 10},${lerp(level, depth, 0.7)} ${CX + 24},${depth}`);
+    $('tendril').setAttribute('stroke', '#B3122E'); $('tendril').setAttribute('stroke-width', 16 * (1 - pour.tail * 0.8));
+    $('tendril').setAttribute('opacity', 0.85 * (1 - pour.tail));
+  } else $('tendril').setAttribute('opacity', 0);
+
+  // ice: drops in, no bounce; bobs gently once liquid is under it
+  iceEls.forEach((g, i) => {
+    const [x, y, s, r] = ICE[i];
+    const p = E.outCubic(clamp01((t - ICE_T0 - i * ICE_DT) / 0.42));
+    const float = L.ml > 0 ? Math.min(0, (yForMl(L.ml) + 60 - y)) * 0 : 0;
+    const bob = L.ml > 10 ? Math.sin(t * 1.6 + i) * 3 : 0;
+    g.setAttribute('transform', `translate(${x},${lerp(y - 900, y, p) + bob + float}) rotate(${r + (1 - p) * 30}) scale(${s / 100})`);
+    g.setAttribute('opacity', t >= ICE_T0 + i * ICE_DT ? 1 : 0);
+  });
+
+  // jigger: enter, fill with a live ml counter, move over the glass, tilt, pour, leave
+  let jx = 1300, jy = 330, rot = 0, jfill = 0, jcol = ACC, jvis = false, label = '';
+  for (const g of ING) {
+    const ph = PH[g.key], a = g.a;
+    if (t < a || t > a + ph.exit[0] + ph.exit[1]) continue;
+    jvis = true; jcol = g.col;
+    const enter = P(t, a, 0.7, E.outExpo);
+    const mv = P(t, a + ph.move[0], ph.move[1], E.inOutQuint);
+    const ex = P(t, a + ph.exit[0], ph.exit[1], E.inCubic);
+    jx = lerp(lerp(1300, 820, enter), CX + 120, mv) + 700 * ex;
+    jy = lerp(360, 470, mv) - 120 * ex;
+    const pk = P(t, a + ph.pour[0] - 0.25, 0.35, E.inOutCubic) * (1 - P(t, a + ph.pour[0] + ph.pour[1] + 0.05, 0.4, E.inOutCubic));
+    rot = -118 * pk;
+    const filled = P(t, a + ph.fill[0], ph.fill[1], E.inOutCubic);
+    const emptied = P(t, a + ph.pour[0], ph.pour[1], E.inOutCubic);
+    jfill = filled * (1 - emptied);
+    const shown = Math.round(g.ml * filled * (1 - emptied));
+    label = (t < a + ph.pour[0]) ? `${Math.round(g.ml * filled)} ml` : `${shown} ml`;
+  }
+  jig.setAttribute('opacity', jvis ? 1 : 0);
+  jig.setAttribute('transform', `translate(${jx},${jy}) rotate(${rot})`);
+  jigLiquid.setAttribute('y', lerp(120, 6, jfill)); jigLiquid.setAttribute('height', 120);
+  jigLiquid.setAttribute('fill', jcol); jigLiquid.setAttribute('opacity', jcol === '#EBD9A6' ? 0.75 : 0.95);
+  const jr = $('jigReadout');
+  jr.style.opacity = jvis && rot > -20 ? 1 : 0;
+  jr.style.left = `${jx - 70}px`; jr.style.top = `${jy - 70}px`; jr.textContent = label;
+
+  // stream from the tilted lip to the surface
+  if (pour && pour.k < 1.0001) {
+    const lipX = jx - 70 * Math.cos(rot * Math.PI / 180), lipY = jy - 70 * Math.sin(rot * Math.PI / 180);
+    const startY = lerp(lipY, level, pour.tail);
+    const w = pour.g.key === 'gren' ? 9 : pour.g.key === 'oj' ? 15 : 12;
+    const wob = Math.sin(t * 23) * 2;
+    const d = `M${lipX},${startY} C${lipX - 6},${lerp(startY, level, 0.3)} ${CX + 26 + wob},${lerp(startY, level, 0.7)} ${CX + 26},${level}`;
+    $('stream').setAttribute('d', d); $('stream').setAttribute('stroke', pour.g.col);
+    $('stream').setAttribute('stroke-width', w * (1 - 0.5 * pour.tail)); $('stream').setAttribute('opacity', pour.g.key === 'teq' ? 0.8 : 1);
+    $('streamIn').setAttribute('opacity', 0);
+  } else $('stream').setAttribute('opacity', 0);
+
+  // garnish
+  const wp = P(t, 21.4, 0.8, E.outExpo);
+  $('wheel').setAttribute('transform', `translate(${lerp(1250, CX + HW_T - 10, wp)},${TOP - 34}) rotate(${lerp(140, 0, wp)})`);
+  const cp = E.outCubic(clamp01((t - 22.4) / 0.6));
+  $('cherry').setAttribute('transform', `translate(${CX - 50},${lerp(-200, TOP + 20, cp)})`);
+  $('cherry').setAttribute('opacity', t >= 22.4 ? 1 : 0);
+
+  // ambient light picks up the drink colour
+  $('ambC').setAttribute('stop-opacity', 0.10 * Math.min(1, ojK) + 0.06 * sink + 0.05 * P(t, FINAL, 1.5));
+
+  // ml readout beside the scale
+  const mr = $('mlReadout');
+  mr.textContent = `${Math.round(L.ml)} ml`;
+  mr.style.top = `${level - 18}px`; mr.style.left = `${CX - hwAt(level) - 40 - 190}px`;
+  mr.style.opacity = (L.ml > 0.5 ? 1 : 0) * (1 - P(t, FINAL, 0.5));
+
+  // text: title, steps, final card
+  rise($('topLabel'), t, 0.1);
+  rise($('title1'), t, 0.25, 2.35); rise($('title2'), t, 0.4, 2.4);
+  STEPS.forEach((s, i) => riseAll(stepEls[i], t, s.a + 0.05, s.b - 0.3));
+  $('steps').style.visibility = t < FINAL + 0.1 ? 'visible' : 'hidden';
+  riseAll($('card'), t, FINAL + 0.4, undefined, 0.08);
+  $('card').style.visibility = t >= FINAL ? 'visible' : 'hidden';
+  // the title returns small for the finished drink
+  if (t >= FINAL) { rise($('title1'), t, FINAL + 0.2); rise($('title2'), t, FINAL + 0.32); }
+  // fade to black on the last 0.5 s
+  $('stage').style.opacity = 1 - P(t, DUR - 0.5, 0.5, E.inCubic);
+  await document.fonts.ready;
+};
+window.DURATION = DUR;
+window.seek(0);
+</script>
+</body>
+</html>
