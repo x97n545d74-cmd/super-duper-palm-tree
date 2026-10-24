@@ -16,6 +16,16 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Do not generate an AI likeness of real people. Only use assets that are licensed or owned by the user.
 - Pick a topic or idea first, then wait for approval before producing anything.
 
+## Motion and on-screen text (user feedback 2026-10-24: "itna ganda graphic")
+- **Default motion direction for every reel:** the direction saved in `ideas/2026-10-product-launch-20s/PROMPT.md`.
+  - High-end minimal, one idea per shot, lots of empty space, one accent colour.
+  - Inter with tight tracking, masked type reveals, match moves, one camera language.
+  - Cuts on the beat, push cuts with real motion blur.
+  - **Banned:** camera shake, particles, glows, grid floors, flashes, bouncy easing. No full stops in on-screen text.
+- The user's pasted launch/pitch prompts (chain.wtf, MotionSites) are style references in that same spirit.
+- **Write Hindi in Roman script** on screen and in captions (e.g. "Sabse zyada maar"), not Devanagari.
+- Read the saved prompts in `ideas/` before designing visuals.
+
 ## Voice preferences
 - The user dislikes "cranky" or robotic TTS and wants a correct Indian accent: "paisaa", not "paise".
 - The best result so far was the user's own ElevenLabs file (Tia Mirza, v4). The user may supply VO again: hand over the script and ask for it.
