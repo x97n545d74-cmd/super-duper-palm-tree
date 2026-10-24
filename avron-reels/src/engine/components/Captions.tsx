@@ -2,7 +2,7 @@ import React from "react";
 import { color, font, layout } from "../../brand/tokens";
 import { clamp01, ease } from "../anim";
 
-export type CaptionWord = { w: string; s: number; e: number; tone?: "amber" | "loss" };
+export type CaptionWord = { w: string; s: number; e: number; tone?: string | null };
 export type CaptionChunk = { words: CaptionWord[]; s: number; e: number };
 
 /** Group timed words into short, readable chunks (break on punctuation or max words). */
@@ -16,7 +16,7 @@ export const chunkWords = (words: CaptionWord[], maxWords = 3): CaptionChunk[] =
   for (const w of words) {
     if (!w.w) continue;
     cur.push(w);
-    if (cur.length >= maxWords || /[.,?!]$/.test(w.w)) flush();
+    if (cur.length >= maxWords || /[.,?!।…—]"?$/.test(w.w)) flush();
   }
   flush();
   // hold each chunk until the next one starts (no flicker in short gaps)
@@ -28,7 +28,11 @@ export const chunkWords = (words: CaptionWord[], maxWords = 3): CaptionChunk[] =
 };
 
 /** Word-synchronised captions: active word lights up, chunk rises in. */
-export const Captions: React.FC<{ t: number; chunks: CaptionChunk[]; y?: number }> = ({ t, chunks, y = layout.captionY }) => {
+const TONES: Record<string, string> = { amber: color.amberHot, loss: color.loss, gold: color.goldHot, red: "#FF6A6A" };
+
+export const Captions: React.FC<{ t: number; chunks: CaptionChunk[]; y?: number; family?: string; size?: number }> = ({
+  t, chunks, y = layout.captionY, family = font.display, size = 66,
+}) => {
   const c = chunks.find((ch) => t >= ch.s - 0.05 && t < ch.e);
   if (!c) return null;
   const pIn = ease.outExpo(clamp01((t - c.s + 0.05) / 0.25));
@@ -41,12 +45,12 @@ export const Captions: React.FC<{ t: number; chunks: CaptionChunk[]; y?: number 
     >
       {c.words.map((w, i) => {
         const active = t >= w.s - 0.04;
-        const tone = w.tone === "loss" ? color.loss : w.tone === "amber" ? color.amberHot : color.ink;
+        const tone = (w.tone && TONES[w.tone]) || color.ink;
         return (
           <span
             key={i}
             style={{
-              fontFamily: font.display, fontWeight: 800, fontSize: 66, lineHeight: 1.12, letterSpacing: "-0.01em",
+              fontFamily: family, fontWeight: 800, fontSize: size, lineHeight: 1.18, letterSpacing: "-0.01em",
               color: active ? tone : "rgba(243,241,236,0.38)",
               textShadow: "0 4px 22px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.9)",
               transform: `scale(${active ? 1 : 0.97})`,

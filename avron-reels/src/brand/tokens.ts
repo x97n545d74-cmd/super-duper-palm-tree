@@ -11,12 +11,21 @@ export const color = {
   loss: "#F0524F", // losses / estimates of loss
   steel: "#9DB2C9",
   blue: "#5B8CFF", // AVRON accent, used sparingly
+  gold: "#C9A45C", // metallic gold (restrained)
+  goldHot: "#F0D08A",
+  steelCold: "#7F93AD", // exterior unrest
+  tungsten: "#FFB46A", // briefing-room practicals
+  crimson: "#C8323A", // market stress
 } as const;
 
 export const font = {
   display: "'Inter Display', 'Inter', sans-serif",
   text: "'Inter', sans-serif",
   mono: "'JetBrains Mono', monospace",
+  // Hinglish: Latin glyphs from Inter, Devanagari from Noto (unicode-range split)
+  deva: "'Inter', 'AVRON Deva', sans-serif",
+  devaDisplay: "'Inter Display', 'AVRON Deva', sans-serif",
+  devaSerif: "'AVRON Deva Serif', serif",
 } as const;
 
 // 1080x1920 canvas with Instagram Reels UI-safe zones.
