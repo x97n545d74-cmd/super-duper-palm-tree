@@ -10,6 +10,7 @@
 | `script.md` | Final narration: timecodes, subtitle text, spoken text, pauses, emphasis, pronunciation decisions |
 | `SOURCE_VERIFICATION.md` | Claim-by-claim verification with exact passages and links |
 | `qc_report.json`, `sheet_*.jpg` | Automated QC and contact sheets |
+| `audio/*.flac` | Narration, final mix and all 8 stems (lossless FLAC) |
 
 **Audio stems** (in `public/shart/`): `vo.wav` (narration), `vo_beats/*.wav` (each line), and `stems/`: `music`, `impacts`, `risers`, `sonic_logo`, `amb_exterior`, `amb_room`, `foley`, `alerts`. Also `mix.wav`. All are 48 kHz.
 
@@ -53,4 +54,4 @@
 7. **Every claim verifiable:** yes. See `SOURCE_VERIFICATION.md`.
 8. **The 2029 reveal implies no secret plan:** yes. It only lays three documented facts side by side.
 9. **Premium brand ending:** a gold light-sweep wordmark on charcoal, sources and a disclaimer.
-10. **MP4 rendered and validated:** see `qc_report.json`.
+10. **MP4 rendered and validated:** yes. Final QC passed 10/11: 67.97 s, 1080×1920, 30 fps, H.264 High yuv420p BT.709, AAC 48 kHz stereo, 4.2 Mbps, **−14.0 LUFS / −1.4 dBTP**, no black or frozen segments, and narration intelligibility in the mix of **0.966** (clean-VO ASR reference). The one flag is second 25 (motion 0.33 against the 0.35 threshold). That's a deliberate reading hold on the RBI card with slow drift, and I kept it.
