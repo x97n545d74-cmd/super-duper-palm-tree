@@ -7,6 +7,8 @@ import { ShartReel } from "./projects/shart/Reel";
 import { DURATION as SHART_DURATION } from "./projects/shart/config";
 import { VivianaReel } from "./projects/viviana/Reel";
 import { DURATION as VIVIANA_DURATION } from "./projects/viviana/config";
+import { Viviana2Reel } from "./projects/viviana2/Reel";
+import { DURATION as VIVIANA2_DURATION } from "./projects/viviana2/config";
 
 export const Root: React.FC = () => (
   <>
@@ -30,6 +32,14 @@ export const Root: React.FC = () => (
       id="Viviana"
       component={VivianaReel}
       durationInFrames={Math.ceil(VIVIANA_DURATION * layout.fps)}
+      fps={layout.fps}
+      width={layout.width}
+      height={layout.height}
+    />
+    <Composition
+      id="Viviana2"
+      component={Viviana2Reel}
+      durationInFrames={Math.ceil(VIVIANA2_DURATION * layout.fps)}
       fps={layout.fps}
       width={layout.width}
       height={layout.height}

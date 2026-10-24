@@ -43,7 +43,7 @@ t = cfg["leadIn"]
 beats_out = []
 for b in cfg["beats"]:
     text = " ".join(tok[0] for tok in b["tokens"])
-    a, sr = tts.create(text, voice=cfg["voice"], speed=b.get("speed", 0.9), lang=cfg["lang"])
+    a, sr = tts.create(text, voice=b.get("voice", cfg["voice"]), speed=b.get("speed", 0.9), lang=b.get("lang", cfg["lang"]))
     a = trim(resample(a, sr))
     sf.write(f"{out}/vo_beats/{b['id']}.wav", a, SR)
     dur = len(a) / SR
@@ -51,7 +51,7 @@ for b in cfg["beats"]:
     # --- align display tokens using ASR word timestamps as anchors
     pcm16 = subprocess.run(["ffmpeg", "-v", "error", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "-", "-f", "f32le",
                             "-ar", "16000", "-"], input=a.tobytes(), capture_output=True, check=True).stdout
-    segs, _ = asr.transcribe(np.frombuffer(pcm16, np.float32), language="hi", word_timestamps=True, beam_size=5)
+    segs, _ = asr.transcribe(np.frombuffer(pcm16, np.float32), language=b.get("asr_lang", "hi"), word_timestamps=True, beam_size=5)
     aw = [w for s in segs for w in s.words]
     ref = [norm(tok[2] if len(tok) > 2 else tok[0]) for tok in b["tokens"]]
     hyp = [norm(w.word) for w in aw]

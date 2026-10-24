@@ -1,25 +1,26 @@
 # Viviana Part 2: script (Hinglish, English open and close) · no-ai-slop pass applied
-Target length: about 70 s. Voice: Tia Mirza – Crisp and Commanding, v4 (same as Part 1).
+Target length: about 60–65 s (v2, tightened). Voice: Tia Mirza – Crisp and Commanding, v4 (same as Part 1).
 
-## Eleven v4 (paste this)
+## Eleven v4 (paste this) · v2, tightened to match the reel (about 60–65 s in Tia's voice)
 ```
-[confident] Part 2. Every order Viviana Power Tech announced this year came from one government. [pause] [calm] March से October तक छह orders, कुल ₹768 crore। MGVCL, PGVCL, DGVCL और GETCO, ये सब Gujarat सरकार की बिजली कंपनियाँ हैं। [pause] काम क्या है? Bhuj और Jamnagar जैसे coastal इलाकों में खुले बिजली के तार हटाकर covered तार और underground cable डालना, ताकि cyclone में line न टूटे। [pause] सरकारी client क्यों? भारत में बिजली की distribution ज़्यादातर सरकारी कंपनियों के पास है, और management के मुताबिक़ 60% पैसा Central Government देती है। Order lowest bid पर मिलता है, payment काम की जाँच के बाद। [short pause] हमारी समझ में, Part 1 के 267 दिनों की वजह यही है। [pause] अब नए दांव। 21 September को transformer factory शुरू हुई, साल में 1,000 MVA तक। और battery storage, जहाँ company हर project में करीब ₹300 crore खुद लगाएगी, ज़्यादातर loan से, और कमाई 10 से 12 साल में आएगी। [pause] [serious] Filings में एक और बात है। पिछले डेढ़ साल में company ने Viviana Life Spaces को ₹36 crore advance दिए। वो company अब promoter की है, और पिछले साल उसकी कुल कमाई ₹1 lakh थी। अब office खरीदने के लिए ₹50 crore तक और देने की मंज़ूरी माँगी गई है। [pause] [calm] Company का target: इस साल ₹875 से 910 crore, और 2030 तक ₹2,000 crore से ज़्यादा। Q1 में आए ₹72 crore। [pause] [confident] Q2 results are due by November 14. We'll be back with Part 3. This is AVRON.
+[confident] Part 2. Every order Viviana Power Tech announced this year came from one government. [pause] [calm] March से October तक छह orders, कुल सात सौ अड़सठ करोड़। चारों clients Gujarat सरकार की कंपनियाँ हैं। [pause] Bhuj और Jamnagar के coastal इलाकों में खुले तार हटाकर covered तार और underground cable, ताकि cyclone में line न टूटे। [pause] सरकार क्यों? India में बिजली distribution ज़्यादातर सरकारी है, और management के मुताबिक़ साठ percent पैसा Central Government देती है। Order lowest bid पर मिलता है, payment काम की जाँच के बाद। [short pause] हमारी समझ में, Part 1 के दो सौ सड़सठ दिनों की वजह यही है। [pause] अब नए दांव। इक्कीस September को transformer factory शुरू हुई, साल में एक हज़ार MVA तक। Battery storage में company हर project पर करीब तीन सौ करोड़ लगाएगी, ज़्यादातर loan से, और कमाई दस से बारह साल में। [pause] [serious] Filings में एक और बात है। Company ने Viviana Life Spaces को छत्तीस करोड़ advance दिए। वो company अब promoter की है, और पिछले साल उसकी कुल कमाई एक लाख रुपये थी। अब office खरीदने के लिए पचास करोड़ तक और देने की मंज़ूरी माँगी गई है। [pause] [calm] इस साल का target आठ सौ पचहत्तर से नौ सौ दस करोड़ है। Q1 में आए बहत्तर करोड़। [pause] [confident] Q2 results are due by November 14. We'll be back with Part 3. [short pause] This is AVRON.
 ```
 
 ## Without tags (Multilingual v2 / recording yourself)
 ```
 Part 2. Every order Viviana Power Tech announced this year came from one government.
-March से October तक छह orders, कुल ₹768 crore। MGVCL, PGVCL, DGVCL और GETCO, ये सब Gujarat सरकार की बिजली कंपनियाँ हैं।
-काम क्या है? Bhuj और Jamnagar जैसे coastal इलाकों में खुले बिजली के तार हटाकर covered तार और underground cable डालना, ताकि cyclone में line न टूटे।
-सरकारी client क्यों? भारत में बिजली की distribution ज़्यादातर सरकारी कंपनियों के पास है, और management के मुताबिक़ 60% पैसा Central Government देती है।
-Order lowest bid पर मिलता है, payment काम की जाँच के बाद। हमारी समझ में, Part 1 के 267 दिनों की वजह यही है।
-अब नए दांव। 21 September को transformer factory शुरू हुई, साल में 1,000 MVA तक।
-और battery storage, जहाँ company हर project में करीब ₹300 crore खुद लगाएगी, ज़्यादातर loan से, और कमाई 10 से 12 साल में आएगी।
-Filings में एक और बात है। पिछले डेढ़ साल में company ने Viviana Life Spaces को ₹36 crore advance दिए।
-वो company अब promoter की है, और पिछले साल उसकी कुल कमाई ₹1 lakh थी।
-अब office खरीदने के लिए ₹50 crore तक और देने की मंज़ूरी माँगी गई है।
-Company का target: इस साल ₹875 से 910 crore, और 2030 तक ₹2,000 crore से ज़्यादा। Q1 में आए ₹72 crore।
-Q2 results are due by November 14. We'll be back with Part 3. This is AVRON.
+March से October तक छह orders, कुल सात सौ अड़सठ करोड़। चारों clients Gujarat सरकार की कंपनियाँ हैं।
+Bhuj और Jamnagar के coastal इलाकों में खुले तार हटाकर covered तार और underground cable, ताकि cyclone में line न टूटे।
+सरकार क्यों? India में बिजली distribution ज़्यादातर सरकारी है, और management के मुताबिक़ साठ percent पैसा Central Government देती है।
+Order lowest bid पर मिलता है, payment काम की जाँच के बाद। हमारी समझ में, Part 1 के दो सौ सड़सठ दिनों की वजह यही है।
+अब नए दांव। इक्कीस September को transformer factory शुरू हुई, साल में एक हज़ार MVA तक।
+Battery storage में company हर project पर करीब तीन सौ करोड़ लगाएगी, ज़्यादातर loan से, और कमाई दस से बारह साल में।
+Filings में एक और बात है। Company ने Viviana Life Spaces को छत्तीस करोड़ advance दिए।
+वो company अब promoter की है, और पिछले साल उसकी कुल कमाई एक लाख रुपये थी।
+अब office खरीदने के लिए पचास करोड़ तक और देने की मंज़ूरी माँगी गई है।
+इस साल का target आठ सौ पचहत्तर से नौ सौ दस करोड़ है। Q1 में आए बहत्तर करोड़।
+Q2 results are due by November 14. We'll be back with Part 3.
+This is AVRON.
 ```
 
 ## Pronunciation (so we don't repeat Part 1's "33 rupees" slip)
