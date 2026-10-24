@@ -47,27 +47,27 @@ Left out, per the brief: 5G fatigue, EMI, repair and refurb, market maturity, ot
 | 43.9–50.1 | Volume vs value bars, music lifts | "महँगे phones की कहानी अलग है। 2025 में shipments 1% बढ़ीं, value 8%।" | +1% / +8%, "per phone ≈ +7% (AVRON calc)", AVRON INTERPRETATION card |
 | 50.1–53.5 | End card, sonic logo | (none) | AVRON · all 7 sources · disclaimer |
 
-## Caption options
+## Caption options (Roman-script Hinglish; checked with no-ai-slop)
 
 **1 (Hinglish, stat-led)**
-India smartphone shipments Q3 2026 में 20% से 26% गिरीं।
-₹10,000 से नीचे वाले phones H1 2026 में लगभग 32% महँगे हुए, और उनकी shipments 65% कम हुईं। AI data centres memory chips ख़रीद रहे हैं, इसलिए phone बनाना महँगा हुआ।
+India smartphone shipments Q3 2026 mein 20% se 26% giri.
+₹10,000 se neeche wale phones H1 2026 mein lagbhag 32% mehenge hue, aur unki shipments 65% kam hui. AI data centres memory chips khareed rahe hain, isliye phone banana mehenga hua.
 Sources: Omdia (19 Oct 2026), Counterpoint (23 Oct, 29 Sep, 24 Jul 2026), Counterpoint × Flipkart 2026. Opening clip: India Global Review (YouTube).
-आपने आख़िरी बार phone कब बदला था? Comment में बताइए।
+Aapne aakhri baar phone kab badla tha? Comment mein bataiye.
 #smartphones #indiatech #memorychips #consumerindia #avron
 
 **2 (English, explainer)**
-India's smartphone slowdown: Q3 2026 shipments fell 20% (Counterpoint) to 26% (Omdia), the weakest third quarter since 2016 by Omdia's count.
+India's smartphone shipments fell 20% (Counterpoint) to 26% (Omdia) in Q3 2026, the weakest third quarter since 2016 by Omdia's count.
 Budget phones took the biggest hit. Below ₹10,000, prices rose about 32% and shipments fell 65% in H1 2026. Shipments count phones sent to shops, so part of the drop is dealers stocking less before a late Diwali.
 Sources: Omdia (19 Oct 2026), Counterpoint (23 Oct, 29 Sep, 24 Jul 2026), Counterpoint × Flipkart 2026. Clip: India Global Review (YouTube).
-Follow @avronindia for the numbers behind the headlines.
+Follow @avronindia for the source behind every number.
 #smartphones #india #tech #counterpoint #avron
 
 **3 (Hinglish, survey-led)**
-Smartphone के दाम बढ़े, तो 25% buyers ने कहा वो purchase रोकेंगे।
-Counterpoint ने July 2026 में 2,095 buyers से पूछा। 46% budget stretch करेंगे, 29% budget में रहेंगे या refurbished लेंगे। लोग अब phone लगभग 4 साल चलाते हैं, पहले 3.5।
+Smartphone ke daam badhe, toh 25% buyers ne kaha woh purchase rokenge.
+Counterpoint ne July 2026 mein 2,095 buyers se poocha. 46% budget stretch karenge, 29% budget mein rahenge ya refurbished lenge. Log ab phone lagbhag 4 saal chalate hain, pehle 3.5.
 Sources: Counterpoint (24 Jul, 23 Oct 2026), Omdia (19 Oct 2026), Counterpoint × Flipkart 2026. Clip: India Global Review (YouTube).
-आप किस group में हैं? Comment में लिखिए।
+Aap kis group mein hain? Comment mein likhiye.
 #smartphones #indiatech #consumerindia #avron
 
 ## Swapping in the Sia voice
