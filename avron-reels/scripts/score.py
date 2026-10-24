@@ -24,9 +24,14 @@ def beat(bid):
     return next(b for b in tl["beats"] if b["id"] == bid)
 
 
+NUMWORDS = {"4": "four", "8": "eight", "9": "nine", "7": "seven", "34": "thirtyfour"}
+
+
 def word(bid, text, nth=0):
+    """Start time of a word in a beat; accepts digits or spelled-out numbers (ASR varies)."""
     norm = lambda s: re.sub(r"[^\w$]", "", s).lower()
-    hits = [w for w in beat(bid)["words"] if norm(w["w"]) == norm(text)]
+    want = {norm(text), NUMWORDS.get(norm(text), norm(text))}
+    hits = [w for w in beat(bid)["words"] if norm(w["w"]) in want]
     return hits[nth]["s"]
 
 

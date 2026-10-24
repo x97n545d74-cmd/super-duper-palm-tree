@@ -9,8 +9,10 @@ const beatStart = (id: string) => timeline.beats.find((b) => b.id === id)!.start
 /** Absolute time of the n-th occurrence of a word in a beat (punctuation-insensitive). */
 export const wordAt = (beatId: string, text: string, nth = 0) => {
   const norm = (s: string) => s.replace(/[^\w$]/g, "").toLowerCase();
+  const spelled: Record<string, string> = { "4": "four", "8": "eight", "9": "nine", "7": "seven" };
+  const want = [norm(text), spelled[norm(text)] ?? norm(text)];
   const b = timeline.beats.find((x) => x.id === beatId)!;
-  return b.words.filter((w) => norm(w.w) === norm(text))[nth].s;
+  return b.words.filter((w) => want.includes(norm(w.w)))[nth].s;
 };
 export const B = {
   hookPrice: beatStart("hook_price"),
@@ -29,7 +31,7 @@ export const B = {
 // "" hides a token but keeps timing (e.g. "34 rupees" is shown as "₹34").
 type Fix = [beat: string, idx: number, text: string, tone?: "amber" | "loss"];
 const fixes: Fix[] = [
-  ["hook_price", 0, "95", "amber"], ["hook_price", 2, "20", "amber"], ["hook_price", 4, "That's"],
+  ["hook_price", 0, "95", "amber"], ["hook_price", 2, "20", "amber"], ["hook_price", 3, "paisa."], ["hook_price", 4, "That's"],
   ["hook_loss", 10, "₹34", "loss"], ["hook_loss", 11, ""],
   ["brent", 7, "$113", "amber"],
   ["freight", 6, "8", "amber"], ["freight", 8, "pre-conflict"], ["freight", 9, ""],
@@ -45,7 +47,9 @@ const captionWords: CaptionWord[] = timeline.beats
   .flatMap((b) =>
     b.words.map((w, i) => {
       const f = fixes.find((x) => x[0] === b.id && x[1] === i);
-      return { w: f ? f[2] : w.w, s: w.s, e: w.e, tone: f?.[3] };
+      // house style: British/Indian spelling regardless of ASR output
+      const text = f ? f[2] : w.w.replace(/\bliter/i, "litre");
+      return { w: text, s: w.s, e: w.e, tone: f?.[3] };
     }),
   );
 
