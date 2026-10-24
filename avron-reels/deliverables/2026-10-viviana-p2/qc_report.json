@@ -1,0 +1,169 @@
+{
+ "file": "out/AVRON_viviana_part2_TIA.mp4",
+ "checks": {
+  "dimensions_1080x1920": {
+   "pass": true,
+   "detail": "1080x1920"
+  },
+  "fps_30": {
+   "pass": true,
+   "detail": 30.0
+  },
+  "h264_yuv420p": {
+   "pass": true,
+   "detail": "h264 yuv420p"
+  },
+  "aac_audio": {
+   "pass": true,
+   "detail": "aac"
+  },
+  "duration_matches_timeline": {
+   "pass": true,
+   "detail": "84.84s vs 84.818s"
+  },
+  "no_black_segments": {
+   "pass": true,
+   "detail": []
+  },
+  "no_frozen_segments_over_1.2s": {
+   "pass": true,
+   "detail": []
+  },
+  "loudness_-14_LUFS_pm1": {
+   "pass": true,
+   "detail": -14.2
+  },
+  "true_peak_below_-1dB": {
+   "pass": true,
+   "detail": -1.3
+  },
+  "no_near_static_seconds": {
+   "pass": true,
+   "detail": {
+    "seconds_below_0.35": []
+   }
+  },
+  "narration_intelligible_in_mix": {
+   "pass": true,
+   "detail": 0.966
+  }
+ },
+ "specs": {
+  "width": 1080,
+  "height": 1920,
+  "fps": 30.0,
+  "vcodec": "h264",
+  "profile": "High",
+  "pix_fmt": "yuv420p",
+  "color_space": "bt709",
+  "duration": 84.843,
+  "bitrate_mbps": 2.95,
+  "acodec": "aac",
+  "sample_rate": "48000",
+  "channels": 2
+ },
+ "loudness": {
+  "integrated_lufs": -14.2,
+  "true_peak_dbfs": -1.3
+ },
+ "motion_per_second": [
+  4.78,
+  5.94,
+  3.31,
+  2.7,
+  1.48,
+  10.44,
+  0.53,
+  1.65,
+  0.98,
+  0.44,
+  1.24,
+  1.32,
+  1.01,
+  4.63,
+  1.74,
+  2.41,
+  3.31,
+  3.1,
+  3.26,
+  2.9,
+  2.0,
+  3.55,
+  0.51,
+  0.77,
+  0.49,
+  0.83,
+  0.52,
+  1.85,
+  0.95,
+  2.16,
+  1.05,
+  0.92,
+  0.89,
+  0.95,
+  0.81,
+  1.44,
+  1.0,
+  1.03,
+  8.36,
+  3.84,
+  1.03,
+  1.14,
+  1.15,
+  1.02,
+  1.04,
+  7.29,
+  0.78,
+  1.32,
+  1.77,
+  0.83,
+  1.19,
+  1.67,
+  2.0,
+  10.51,
+  1.62,
+  1.21,
+  1.22,
+  1.6,
+  1.12,
+  7.31,
+  0.74,
+  0.79,
+  0.93,
+  1.28,
+  1.1,
+  1.13,
+  1.75,
+  1.16,
+  1.17,
+  3.24,
+  0.86,
+  0.69,
+  0.6,
+  0.64,
+  0.87,
+  1.95,
+  1.91,
+  0.8,
+  0.52,
+  1.7,
+  3.39,
+  0.82,
+  0.6,
+  0.54,
+  1.45
+ ],
+ "asr": {
+  "similarity": 0.966,
+  "heard": "Every order Viviana PowerTech announced this year came from one government.  March se October tak 6 orders.  Charo clients Gujarat Sarkar ki companya hai.  Bhuj aur Jamnagar ke coastal ilakon me khule taar hata kar covered taar aur underground cable  Taaki cyclone me line na tute.  Sarkar kyun?  India me Bijli distribution zyada tar sarkari hai  Aur management ke mutabik 60% paisa central government deti hai.  Order lowest bid par milta hai.  Payment kaam ki jaanch ke baad.  Humari samaj me part 1 ke 266 dinon ki waja yahi hai.  Ab nae dao.  21 September ko transformer factory shuru hui.  Saal me 1000 MVA tak.  Battery storage me company har project par kareep 300 crore lagayegi.  Zyada tar loan se.  Aur kamai 10-12 saal me.  Filings me ek aur baad hai.  Company ne Viviana Life Spaces ko 36 crore advance diye.  Wo company ab promoter ki hai.  Aur pichle saal uski kal kamai 1 lakh rupee thi.  Ab office kharidne ke liye 50 crore tak aur dene ki manzoori maagi gayi hai.  Iss saal ka target 875-910 crore hai.  Q1 me aaye 72 crore.  Q2 results are due by November 14.  We'll be back with part 3.  This is Avron.",
+  "reference": "clean VO"
+ },
+ "sheets": [
+  "out/qc_v2tia/sheet_transitions.jpg",
+  "out/qc_v2tia/sheet_timeline.jpg"
+ ],
+ "summary": {
+  "passed": 11,
+  "total": 11
+ }
+}
