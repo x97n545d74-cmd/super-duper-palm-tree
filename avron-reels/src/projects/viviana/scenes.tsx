@@ -262,9 +262,10 @@ const Ring: React.FC<{ value: number; total: number; p: number }> = ({ value, to
 export const Cash: React.FC<{ t: number }> = ({ t }) => {
   const [a, b] = S.cash;
   const cfo = B("b5_cfo"), days = B("b5_days"), debt = B("b5_debt"), d267 = at("b5_days", "267"), dbl = at("b5_debt", "double,");
-  const w1 = fadeWin(t, cfo - 0.2, days + 0.1, 0.35, 0.3);
-  const w2 = fadeWin(t, days - 0.1, debt + 0.1, 0.35, 0.3);
-  const w3 = fadeWin(t, debt - 0.1, b + 0.2, 0.35, 0.2);
+  // strictly sequential panels: each one is gone before the next arrives
+  const w1 = fadeWin(t, cfo - 0.2, days - 0.12, 0.35, 0.25);
+  const w2 = fadeWin(t, days - 0.05, debt - 0.12, 0.3, 0.25);
+  const w3 = fadeWin(t, debt - 0.05, b + 0.2, 0.3, 0.2);
   const years: [string, number, number][] = [["FY24", 7, -3], ["FY25", 21, -14], ["FY26", 53, -4]];
   return (
     <div style={{ position: "absolute", inset: 0, opacity: fadeWin(t, a, b, 0.01, 0.25) }}>

@@ -211,7 +211,7 @@ place(mus, pad(["C3", "G3", "Eb4"], C["watch"], C["end"], 0.42, 2200, attack=2.0
 # clock-tick pulse through the hook and the weekend (the "timestamp" motif)
 for tc in np.arange(0.0, C["uturn"], 0.5):
     if C["p680"] - 0.1 < tc < C["p680"] + 0.6: continue
-    place(mus, st2(tick(2600 if int(tc * 2) % 2 == 0 else 2000)), tc, 0.10)
+    place(mus, st2(tick(2600 if int(tc * 2) % 2 == 0 else 2000)), tc, 0.05)
 music = verb(mus, HALL, 0.28)
 
 # ------------------------------------------------------------------ IMPACTS / RISERS / LOGO
