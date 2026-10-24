@@ -1,0 +1,15 @@
+{
+  "leadIn": 0.5,
+  "beats": [
+    {"id": "hook_price",   "firstWord": 0,   "gapAfter": 0.45},
+    {"id": "hook_loss",    "firstWord": 11,  "gapAfter": 0.6},
+    {"id": "brent",        "firstWord": 26,  "gapAfter": 0.35},
+    {"id": "freight",      "firstWord": 39,  "gapAfter": 0.45},
+    {"id": "may_hikes",    "firstWord": 50,  "gapAfter": 0.35},
+    {"id": "frozen",       "firstWord": 67,  "gapAfter": 0.65},
+    {"id": "estimates",    "firstWord": 83,  "gapAfter": 0.6},
+    {"id": "who_pays",     "firstWord": 103, "gapAfter": 0.4},
+    {"id": "payoff",       "firstWord": 117, "gapAfter": 0.7},
+    {"id": "cta",          "firstWord": 128, "gapAfter": 3.2}
+  ]
+}

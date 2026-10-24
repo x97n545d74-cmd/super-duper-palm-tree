@@ -1,0 +1,7 @@
+node_modules/
+out/
+*.log
+.cache/
+# regenerable by scripts/score.py (deterministic)
+public/fuel-gap/music.wav
+public/fuel-gap/sfx.wav

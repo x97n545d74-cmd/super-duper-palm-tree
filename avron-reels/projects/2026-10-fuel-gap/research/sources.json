@@ -1,0 +1,124 @@
+{
+  "project": "2026-10-fuel-gap",
+  "title": "The ₹34 gap: who pays for India's oil shock?",
+  "researchedOn": "2026-10-24",
+  "statusKey": {
+    "VERIFIED_PRIMARY": "Checked against an official / primary document",
+    "VERIFIED_SECONDARY": "Checked against a reputable report quoting the original; original not directly accessible",
+    "ESTIMATE": "Third-party estimate; must be attributed on screen",
+    "DERIVED": "AVRON arithmetic from verified inputs; working shown"
+  },
+  "claims": [
+    {
+      "id": "C1",
+      "claim": "Delhi retail price of diesel was ₹95.20/litre and petrol ₹102.12/litre on 23 October 2026 (IOCL outlet).",
+      "sourceUrl": "https://ppac.gov.in/",
+      "publisher": "Petroleum Planning & Analysis Cell (PPAC), Ministry of Petroleum & Natural Gas",
+      "published": "2026-10-23",
+      "passage": "RSP of Diesel in Delhi as per IOCL outlet as on 23-October-2026, Rs. 95.20/ltr; RSP of Petrol ... Rs. 102.12/ltr",
+      "status": "VERIFIED_PRIMARY",
+      "evidence": "primary",
+      "narrationQualifier": "Say 'in Delhi'. Prices differ by state because of VAT."
+    },
+    {
+      "id": "C2",
+      "claim": "On 15 May 2026 petrol and diesel were raised by ₹3/litre, the first revision in over four years.",
+      "sourceUrl": "https://www.newsonair.gov.in/fuel-prices-in-national-capital-increased-by-about-90-paise-per-litre/",
+      "publisher": "All India Radio (News on AIR), Prasar Bharati",
+      "published": "2026-05-19",
+      "passage": "Petrol and diesel prices were raised by Rs 3 per litre each on May 15 ... the first fuel price revision in over four years.",
+      "status": "VERIFIED_SECONDARY",
+      "evidence": "secondary (public broadcaster)",
+      "narrationQualifier": "None."
+    },
+    {
+      "id": "C3",
+      "claim": "Delhi diesel path in May 2026: ₹87.67 → ₹90.67 (15 May) → ₹91.58 (19 May) → ₹92.49 (23 May) → ₹95.20 (25 May). Four hikes in ten days.",
+      "sourceUrl": "https://www.procurementresource.com/news-and-articles/india-fuel-price-hikes-may-2026-oil-marketing-companies",
+      "supportingUrls": [
+        "https://www.newsonair.gov.in/fuel-prices-in-national-capital-increased-by-about-90-paise-per-litre/",
+        "https://www.etvbharat.com/en/bharat/petrol-diesel-prices-hike-second-increase-in-a-week-amid-west-asia-war-enn26051900418",
+        "https://univest.in/blogs/petrol-price-hike-crosses-100-delhi-fourth-hike-10-days-may-2026"
+      ],
+      "publisher": "Procurement Resource; All India Radio; ETV Bharat",
+      "published": "2026-05-25",
+      "passage": "May 23: diesel +Rs 0.91; May 25: diesel +Rs 2.71 to Rs 95.20 (Delhi). Cumulative since 15 May: diesel +8.6%, petrol +7.8%. AIR: diesel 91.58 on 19 May.",
+      "status": "VERIFIED_SECONDARY",
+      "evidence": "secondary, cross-checked across 3 outlets and reconciled arithmetically (see D1)",
+      "narrationQualifier": "Use 'about ₹7.50'."
+    },
+    {
+      "id": "D1",
+      "claim": "Total May 2026 diesel increase in Delhi = ₹7.53/litre (+8.6%).",
+      "working": "87.67 + 3.00 + 0.91 + 0.91 + 2.71 = 95.20. 95.20 − 87.67 = 7.53. 7.53 / 87.67 = 8.59% ≈ 8.6% (matches reported cumulative). Petrol: 94.77 + 3.00 + 0.87 + 0.87 + 2.61 = 102.12; +7.35 = 7.76% ≈ 7.8% (matches).",
+      "status": "DERIVED",
+      "evidence": "derived from C2, C3; endpoint confirmed by C1",
+      "narrationQualifier": "Round to 'about ₹7.50'."
+    },
+    {
+      "id": "C4",
+      "claim": "Brent crude for December settlement rose 4% to settle at $113.17 a barrel on 22 October 2026 after a drone strike on Saudi Aramco's Shaybah field (which killed two people; operations unaffected).",
+      "sourceUrl": "https://www.rigzone.com/news/wire/oil_surges_4_after_deadly_saudi_attacks-22-oct-2026-184912-article/",
+      "publisher": "Bloomberg (via Rigzone)",
+      "published": "2026-10-22",
+      "passage": "Brent for December settlement climbed 4% to settle at $113.17 a barrel ... A drone strike on Saudi Aramco's Shaybah field killed two people but left operations unaffected.",
+      "status": "VERIFIED_SECONDARY",
+      "evidence": "secondary (wire)",
+      "narrationQualifier": "Say 'after attacks in Saudi Arabia'. Do NOT say production was hit (it wasn't)."
+    },
+    {
+      "id": "C5",
+      "claim": "Jefferies: crude freight rates are about eight times pre-conflict levels, now more than 25% of landed crude cost vs around 3% before.",
+      "sourceUrl": "https://businesstoday.in/latest/economy/story/crude-oil-shipping-costs-surge-nearly-7-fold-will-indian-consumers-pay-more-for-fuel-563160-2026-10-23",
+      "publisher": "Business Today, citing Jefferies",
+      "published": "2026-10-23",
+      "passage": "freight rates are eight times pre-conflict levels, now more than 25% of landed crude costs, up from around 3%",
+      "status": "ESTIMATE",
+      "evidence": "secondary report of broker research",
+      "narrationQualifier": "Attribute: 'Jefferies estimates'."
+    },
+    {
+      "id": "C6",
+      "claim": "Jefferies estimates oil marketing companies' marketing losses at ₹28/litre on petrol and ₹34/litre on diesel (15-day average pricing).",
+      "sourceUrl": "https://businesstoday.in/latest/economy/story/crude-oil-shipping-costs-surge-nearly-7-fold-will-indian-consumers-pay-more-for-fuel-563160-2026-10-23",
+      "supportingUrls": [
+        "https://aninews.in/news/business/oil-supply-improves-as-middle-east-crude-exports-recover-but-high-fuel-costs-may-persist-jefferies20261022125838/"
+      ],
+      "publisher": "Business Today / ANI, citing Jefferies",
+      "published": "2026-10-22",
+      "passage": "Petrol: ₹28 per litre; Diesel: ₹34 per litre (Jefferies estimates)",
+      "status": "ESTIMATE",
+      "evidence": "secondary report of broker research; earlier Jefferies note (16 Oct) said ₹26/₹30",
+      "narrationQualifier": "Must be framed as an estimate ('may be losing', 'one brokerage estimates'). Never state as fact."
+    },
+    {
+      "id": "C7",
+      "claim": "ICRA (Sept 2026): marketing margins about −₹8/litre petrol and −₹9/litre diesel; daily OMC loss about ₹530 crore; Indian basket $117.4/bbl on 21 Sept vs FY26 average ~$66.",
+      "sourceUrl": "https://www.businesstoday.in/latest/economy/story/why-are-oil-marketing-companies-facing-rs-530-crore-losses-daily-557375-2026-09-23",
+      "publisher": "Business Today, quoting ICRA (Prashant Vasisht)",
+      "published": "2026-09-23",
+      "passage": "negative Rs. 8/litre on petrol and Rs. 9/litre on diesel ... the daily loss to the OMCs is estimated at Rs. 530 crore",
+      "status": "ESTIMATE",
+      "evidence": "secondary report of rating-agency analysis",
+      "narrationQualifier": "Show date (September) next to the figure; different date and method from Jefferies."
+    },
+    {
+      "id": "C8",
+      "claim": "Delhi diesel on 23 Oct 2026 (₹95.20) is the same as the level set on 25 May 2026.",
+      "working": "C1 (₹95.20 on 23 Oct) = C3 endpoint (₹95.20 on 25 May). ICRA (C7, Sept) cites 'unchanged domestic fuel prices'.",
+      "status": "DERIVED",
+      "evidence": "comparison of two verified data points + ICRA statement",
+      "narrationQualifier": "Phrase as 'five months later, the same ₹95.20'. Do not claim zero intermediate changes."
+    }
+  ],
+  "excluded": [
+    {
+      "claim": "BPCL Q2 FY27 profit fell 21%",
+      "reason": "Single low-reliability source; Q2 FY27 BPCL results not confirmed on exchange filings at time of research."
+    },
+    {
+      "claim": "Excise duty cut of ₹10/litre in March 2026",
+      "reason": "Only a calculator-style blog; no official notification found."
+    }
+  ]
+}
