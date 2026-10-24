@@ -49,3 +49,6 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 ## Agent tools the user asked to install (2026-10-24)
 - The tools are claude-mem (local memory, cloud sync off), Agent Reach 1.6, SkillSpector, and the `no-ai-slop` skill.
 - They don't survive a container reset. Reinstall with `bash tools/install_agent_tools.sh`.
+
+## MCP servers (2026-10-24)
+- **Tapetide** is configured in the repo-root `.mcp.json` (HTTP, `https://mcp.tapetide.com/mcp`). The bearer token comes from the `TAPETIDE_TOKEN` env var. Never commit the token itself.
