@@ -373,6 +373,8 @@ export const End: React.FC<{ t: number; duration: number }> = ({ t, duration }) 
   ];
   return (
     <div style={{ position: "absolute", inset: 0, background: color.bg, opacity: p * (1 - out) }}>
+      <DataRoom t={t} tint={color.amber} drift={1.2} opacity={0.35} />
+      <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + 0.012 * Math.max(0, t - a)})`, transformOrigin: "50% 40%" }}>
       <div style={{ position: "absolute", left: 0, right: 0, top: 330, textAlign: "center" }}>
         <SweepText text="AVRON" t={t} start={a + 0.1} style={{ fontFamily: font.display, fontWeight: 800, fontSize: 150, letterSpacing: "0.3em", color: color.ink, paddingLeft: "0.3em" }} />
         <div style={{ fontFamily: font.text, fontSize: 30, color: color.inkDim, letterSpacing: "0.22em", marginTop: 12, opacity: prog(t, a + 0.25, 0.4) }}>THE STORY BEHIND THE STOCK</div>
@@ -386,6 +388,7 @@ export const End: React.FC<{ t: number; duration: number }> = ({ t, duration }) 
           Shipment figures are tracker estimates, not retail sales. Education only. Not investment advice, not a recommendation to buy, sell or hold. AVRON is not SEBI-registered.
         </div>
       </div>
+    </div>
     </div>
   );
 };
