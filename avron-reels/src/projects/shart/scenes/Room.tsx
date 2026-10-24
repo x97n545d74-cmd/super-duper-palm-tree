@@ -19,7 +19,8 @@ export const Choice: React.FC<{ t: number }> = ({ t }) => {
   const L = "M540,1080 C540,900 300,900 250,820";
   const R = "M540,1080 C540,900 780,900 830,820";
   return (
-    <div style={{ position: "absolute", inset: 0, opacity: enter, background: "radial-gradient(80% 55% at 50% 45%, #10131a 0%, #06070a 75%)" }}>
+    <div style={{ position: "absolute", inset: 0, opacity: enter * (1 - prog(t, b - 0.35, 0.35)), background: "radial-gradient(80% 55% at 50% 45%, #10131a 0%, #06070a 75%)",
+      transform: `scale(${1 + (t - a) * 0.012})`, transformOrigin: "50% 55%" }}>
       <Rain t={t} intensity={0.25 * (1 - prog(t, a, 3))} />
       <div style={{ position: "absolute", top: 290, left: 0, right: 0, textAlign: "center" }}>
         <div style={{ fontFamily: font.devaSerif, fontWeight: 800, fontSize: 96, color: color.goldHot, opacity: prog(t, a + 0.2, 0.5) }}>दो रास्ते</div>

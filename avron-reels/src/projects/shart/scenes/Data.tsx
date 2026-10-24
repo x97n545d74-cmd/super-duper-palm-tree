@@ -31,7 +31,7 @@ export const Market: React.FC<{ t: number }> = ({ t }) => {
           style={{ fontFamily: font.deva, fontWeight: 800, fontSize: 62, color: color.ink }} />
       </div>
       <div style={{ position: "absolute", left: 84, right: 84, top: 430, perspective: 1600 }}>
-        <div style={{ transform: `rotateX(${tilt}deg)`, transformOrigin: "50% 0%", display: "flex", flexDirection: "column", gap: 34 }}>
+        <div style={{ transform: `rotateX(${tilt}deg) rotateY(${lerp(-4, 4, prog(t, a, b - a, ease.inOutCubic))}deg) translateZ(${(t - a) * 6}px)`, transformOrigin: "50% 0%", display: "flex", flexDirection: "column", gap: 34 }}>
           <Glass alert={pulse(brent)} style={{ opacity: prog(t, brent - 0.6, 0.4), transform: `translateY(${(1 - prog(t, brent - 0.6, 0.6, ease.outExpo)) * 40}px)` }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontFamily: font.mono, fontSize: 24, color: color.inkDim, letterSpacing: "0.08em" }}>
               <span>BRENT · DEC CONTRACT</span><span>SETTLE · 22 OCT 2026</span>
@@ -114,7 +114,7 @@ export const Promise: React.FC<{ t: number }> = ({ t }) => {
   return (
     <div style={{ position: "absolute", inset: 0, opacity: enter * (1 - exitP) }}>
       <DataRoom t={t} tint={color.gold} drift={0.4} />
-      <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + pushIn * 1.6})`, transformOrigin: `${(x(5) / 1080) * 100}% ${(y(50) / 1920) * 100}%` }}>
+      <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + (t - a) * 0.008 + pushIn * 1.6})`, transformOrigin: `${(x(5) / 1080) * 100}% ${(y(50) / 1920) * 100}%` }}>
         <div style={{ position: "absolute", top: 285, left: 84, right: 84 }}>
           <div style={{ fontFamily: font.devaSerif, fontWeight: 800, fontSize: 84, color: color.goldHot, opacity: prog(t, a + 0.1, 0.5) }}>सरकार का वादा</div>
           <Label text="Union Budget 2026-27 · 1 Feb 2026" t={t} start={a + 0.4} style={{ marginTop: 6 }} />

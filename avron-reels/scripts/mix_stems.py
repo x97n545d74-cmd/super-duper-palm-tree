@@ -22,7 +22,7 @@ for i, s in enumerate(stems, 1):
     chain = f"[{i}:a]aresample=48000,volume={G[s]}dB"
     if s in DUCKED:
         f.append(f"{chain}[p{i}]")
-        f.append(f"[p{i}][k{i - 1}]sidechaincompress=threshold=0.03:ratio=6:attack=20:release=450:makeup=1[s{i}]")
+        f.append(f"[p{i}][k{i - 1}]sidechaincompress=threshold=0.02:ratio=9:attack=12:release=500:makeup=1[s{i}]")
     else:
         f.append(f"{chain}[s{i}]")
     labels.append(f"[s{i}]")
