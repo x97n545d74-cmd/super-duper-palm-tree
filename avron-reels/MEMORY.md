@@ -26,6 +26,14 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Write Hindi in Roman script** on screen and in captions (e.g. "Sabse zyada maar"), not Devanagari.
 - Read the saved prompts in `ideas/` before designing visuals.
 
+## Images from the internet (user approved, 2026-10-25)
+- Use stock and free-licence images in reels.
+  - **Allowed:** Pexels, Unsplash, Pixabay, Wikimedia Commons (credit per its licence), and government sources (PIB/RBI, check terms).
+  - **Never:** news-agency or Google Images photos, or chart graphics from paid reports (use their numbers, draw our own charts).
+  - **Logos:** only when reporting on that company.
+- Log every image in `projects/<id>/assets/LICENSES.md`: source URL, licence, date, where it's used. Credit on the end card where required.
+- Keep photos dark/blurred behind type so the minimal look holds.
+
 ## Voice preferences
 - The user dislikes "cranky" or robotic TTS and wants a correct Indian accent: "paisaa", not "paise".
 - The best result so far was the user's own ElevenLabs file (Tia Mirza, v4). The user may supply VO again: hand over the script and ask for it.
