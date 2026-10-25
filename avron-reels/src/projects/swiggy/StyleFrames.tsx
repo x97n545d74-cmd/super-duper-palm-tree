@@ -165,11 +165,12 @@ Object.values(CITIES).forEach((c) => { STATE_EDGE[c.state] = c.h2h; });
 const EDGE_COL: Record<string, string> = { Blinkit: C.blinkit, Instamart: C.swiggy };
 const LEADER_COL: Record<string, string> = { Blinkit: C.blinkit, Zepto: "#8B5CF6", Instamart: C.swiggy, "Flipkart Minutes": "#2F80ED", BigBasket: "#84C225" };
 
-export const MapEdge: React.FC<{ t: number; a: number }> = ({ t, a }) => {
+export const MapEdge: React.FC<{ t: number; a: number; z?: number }> = ({ t, a, z }) => {
+  const end = z ?? a + 6;
   const S = 0.94, OX = 110, OY = 40;
   const order = ["Delhi", "Haryana", "Uttar Pradesh", "Gujarat", "Maharashtra", "Karnataka", "Telangana", "Tamil Nadu", "West Bengal"];
   return (
-    <AbsoluteFill style={{ opacity: fade(t, a, a + 6, 0.3, 0.01) }}>
+    <AbsoluteFill style={{ opacity: fade(t, a, end, 0.3, 0.01) }}>
       <PhotoWorld src="swiggy/street_1.jpg" t={t} t0={a} hour="morning" drift={8} />
       <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,14,0.55)", backdropFilter: "blur(6px)" }} />
       <svg width={MAP.w * S} height={MAP.h * S} viewBox={`0 0 ${MAP.w} ${MAP.h}`} style={{ position: "absolute", left: OX, top: OY, filter: "drop-shadow(0 30px 60px rgba(0,0,0,0.5))" }}>

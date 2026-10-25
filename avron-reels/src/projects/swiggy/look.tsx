@@ -51,7 +51,8 @@ export const PhotoWorld: React.FC<{
   src: string; t: number; t0: number; hour: Hour; drift?: number; push?: number; focus?: string; overlay?: { src: string; opacity: number; blend?: React.CSSProperties["mixBlendMode"] };
 }> = ({ src, t, t0, hour, drift = 18, push = 0.035, focus = "50% 50%", overlay }) => {
   const g = GRADE[hour];
-  const k = Math.max(0, t - t0);
+  // drift eases out towards ~14 s of motion, so long plates never over-zoom
+  const k = 14 * (1 - Math.exp(-Math.max(0, t - t0) / 14));
   const s = 1.08 + push * k * 0.25;
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#000" }}>
