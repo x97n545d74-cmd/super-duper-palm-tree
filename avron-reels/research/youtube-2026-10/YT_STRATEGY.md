@@ -78,3 +78,17 @@ Each one gets the same AVRON rules: primary sources, arithmetic shown on screen,
 - **Hidden Ops India:** the D-Mart story, 3.0M.
 
 Study their structure and pacing, not their scripts.
+
+## 7. Company-story shortlist (25 Oct 2026)
+
+Each candidate has a news hook from this month. YouTube coverage was checked with Agent Reach: 15 search results per company, with total views and the number of videos over 100K. Facts are from news and aggregators and still need checking against filings.
+
+| Rank | Story | Hook | YouTube today | Why it's a good bet |
+|---|---|---|---|---|
+| 1 | **Swiggy vs Eternal: the quick-commerce war after Q2** | Swiggy fell ~16% on 23 Oct despite strong revenue | Only results recaps, top video 21K | Quick-commerce stories draw ~1M, and nobody has told this quarter's story yet |
+| 2 | **eMudhra: how one security problem took a third off its value** | ~35% fall in a week after a certificate-authority issue (22 Oct) | One 106K video, the rest small | Fresh, under-covered, and an unusual business (digital trust certificates) |
+| 3 | **Why Indian IT fell 19% in 2026** | Nifty IT down ~19% this year, AI worries | 0.8M total, mostly "should you buy" takes | Big audience; AVRON's edge is facts with no calls |
+| 4 | **What the Jio DRHP actually says** | Jio IPO in the news | 1.7M total, Think School 1.2M | Proven demand; only while the IPO is current |
+| 5 | **Ola Electric: the full story in the filings** | Long-running decline | 8.1M across 15 videos | Huge appetite but crowded; needs a new angle |
+
+Skip: Suzlon (its turnaround is already well covered, top 365K) and "IPOs below issue price" (low demand, about 0.1M).
