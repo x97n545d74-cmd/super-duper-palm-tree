@@ -153,7 +153,7 @@ export const C4Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c4_04")} z={en("c4_04")}>
         {K}
-        <PhotoInsert t={t} at={st("c4_04") + 1.0} src="swiggy/sacks.jpg" credit="Manu Manohar Photography · CC BY 2.0" left={1260} top={360} w={520} h={420} />
+        <PhotoInsert t={t} at={st("c4_04") + 1.0} src="swiggy/sacks.jpg" credit="Manu Manohar Photography · CC BY 2.0" left={1320} top={640} w={460} h={280} />
         <Headline t={t} at={st("c4_04") + 0.2} lines={["Apna saamaan · apna control"]} />
         <div style={{ position: "absolute", left: 140, top: 380, width: 1600 }}>
           {["Better buying prices", "Better margins", "Control over which product sits in which store", "Sellers asked to move to the new model, or be delisted"].map((x, i) => (
@@ -287,9 +287,9 @@ const Ledger: React.FC<{ t: number; a: number }> = ({ t, a }) => {
           );
         })}
       </div>
-      <div style={{ position: "absolute", left: 1150, top: 480 }}>
+      <div style={{ position: "absolute", left: 1100, top: 480 }}>
         <div style={{ fontFamily: mono, fontSize: 26, color: C.inkDim }}>CUMULATIVE NET LOSS</div>
-        <div style={{ fontFamily: serif, fontWeight: 700, fontSize: 150, color: C.loss }}>₹{total.toLocaleString("en-IN")} Cr</div>
+        <div style={{ fontFamily: serif, fontWeight: 700, fontSize: 118, color: C.loss, whiteSpace: "nowrap" }}>₹{total.toLocaleString("en-IN")} Cr</div>
       </div>
       <Note t={t} at={a + 5.6} text="₹ crore · Screener export (annual) + Swiggy results (H1 FY27: 791 + 922) · 22,966 + 1,713 = 24,679" />
     </>
