@@ -1,16 +1,75 @@
 {
  "_note": "Ep 01 v2 script approved 2026-10-25 ('go'). 'cap' = on-screen caption and the line for the user's own TTS; 'tts' = Devanagari spelling for the Kokoro placeholder only. The user records the real VO: one file per id, e.g. b1.wav.",
- "voices": {"boy": {"kokoro": "hm_omega", "speed": 1.32}, "girl": {"kokoro": "hf_alpha", "speed": 1.25}},
+ "voices": {
+  "boy": {
+   "kokoro": "hm_omega",
+   "speed": 1.3
+  },
+  "girl": {
+   "kokoro": "hf_alpha",
+   "speed": 1.22
+  }
+ },
  "lines": [
-  {"id": "b1", "who": "boy",  "cap": "Baby, ₹50 ka share le liya! | Chhota hai, jaldi bada hoga", "tts": "बेबी, पचास रुपये का शेयर ले लिया! छोटा है, जल्दी बड़ा होगा"},
-  {"id": "g1", "who": "girl", "cap": "Har chhoti cheez badi nahi hoti", "tts": "हर छोटी चीज़ बड़ी नहीं होती"},
-  {"id": "g2", "who": "girl", "cap": "Size matter karta hai, par company ka | Use kehte hain market cap", "tts": "साइज़ मैटर करता है, पर कंपनी का। उसे कहते हैं मार्केट कैप"},
-  {"id": "g3", "who": "girl", "cap": "Ek pizza ke 8 slice karo ya 2 | pizza utna hi rehta hai", "tts": "एक पिज़्ज़ा के आठ स्लाइस करो या दो, पिज़्ज़ा उतना ही रहता है"},
-  {"id": "g4", "who": "girl", "cap": "₹50 ke 100 crore shares | matlab ₹5,000 crore ki company", "tts": "पचास रुपये के सौ करोड़ शेयर, मतलब पाँच हज़ार करोड़ की कंपनी"},
-  {"id": "g5", "who": "girl", "cap": "₹500 ke 2 crore shares | matlab ₹1,000 crore ki company", "tts": "पाँच सौ रुपये के दो करोड़ शेयर, मतलब एक हज़ार करोड़ की कंपनी"},
-  {"id": "g6", "who": "girl", "cap": "Price double tabhi hoga | jab company ki value double hogi | price chhota ho ya bada", "tts": "प्राइस डबल तभी होगा जब कंपनी की वैल्यू डबल होगी, प्राइस छोटा हो या बड़ा"},
-  {"id": "b2", "who": "boy",  "cap": "Matlab sasta nahi, bas chhota dikhta hai?", "tts": "मतलब सस्ता नहीं, बस छोटा दिखता है?"},
-  {"id": "b3", "who": "boy",  "cap": "Toh mera size bhi check karegi?", "tts": "तो मेरा साइज़ भी चेक करेगी?"},
-  {"id": "g7", "who": "girl", "cap": "Kar liya | Ek slice bhi nahi", "tts": "कर लिया। एक स्लाइस भी नहीं"}
+  {
+   "id": "b1",
+   "who": "boy",
+   "cap": "Baby, ₹50 ka share le liya! | Chhota hai, jaldi bada hoga",
+   "tts": "बेबी, पचास रुपये का शेयर ले लिया! छोटा है, जल्दी बड़ा होगा"
+  },
+  {
+   "id": "g1",
+   "who": "girl",
+   "cap": "Har chhoti cheez badi nahi hoti",
+   "tts": "हर छोटी चीज़ बड़ी नहीं होती"
+  },
+  {
+   "id": "g2",
+   "who": "girl",
+   "cap": "Size matter karta hai, par company ka | Use kehte hain market cap",
+   "tts": "साइज़ मैटर करता है, पर कंपनी का। उसे कहते हैं मार्केट कैप"
+  },
+  {
+   "id": "g3",
+   "who": "girl",
+   "cap": "Ek pizza ke 8 slice karo ya 2 | pizza utna hi rehta hai",
+   "tts": "एक पिज़्ज़ा के आठ स्लाइस करो या दो, पिज़्ज़ा उतना ही रहता है"
+  },
+  {
+   "id": "g4",
+   "who": "girl",
+   "cap": "₹50 ke 100 crore shares | matlab ₹5,000 crore ki company",
+   "tts": "पचास रुपये के सौ करोड़ शेयर, मतलब पाँच हज़ार करोड़ की कंपनी"
+  },
+  {
+   "id": "g5",
+   "who": "girl",
+   "cap": "₹500 ke 2 crore shares | matlab ₹1,000 crore ki company",
+   "tts": "पाँच सौ रुपये के दो करोड़ शेयर, मतलब एक हज़ार करोड़ की कंपनी"
+  },
+  {
+   "id": "g6",
+   "who": "girl",
+   "cap": "Price double tabhi hoga | jab company ki value double hogi | price chhota ho ya bada",
+   "tts": "प्राइस डबल तभी होगा जब कंपनी की वैल्यू डबल होगी, प्राइस छोटा हो या बड़ा"
+  },
+  {
+   "id": "b2",
+   "who": "boy",
+   "cap": "Matlab sasta nahi, bas chhota dikhta hai?",
+   "tts": "मतलब सस्ता नहीं, बस छोटा दिखता है?"
+  },
+  {
+   "id": "b3",
+   "who": "boy",
+   "cap": "Toh mera size bhi check karegi?",
+   "tts": "तो मेरा साइज़ भी चेक करेगी?"
+  },
+  {
+   "id": "g7",
+   "who": "girl",
+   "cap": "Kar liya | Ek slice bhi nahi",
+   "tts": "कर लिया। एक स्लाइस भी नहीं"
+  }
  ]
 }

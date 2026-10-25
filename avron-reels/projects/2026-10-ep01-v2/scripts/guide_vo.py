@@ -15,7 +15,7 @@ for ln in cfg["lines"]:
     v = cfg["voices"][ln["who"]]
     a, sr = tts.create(ln["tts"], voice=v["kokoro"], speed=v["speed"], lang="hi")
     p = subprocess.run(["ffmpeg", "-v", "error", "-f", "f32le", "-ar", str(sr), "-ac", "1", "-i", "-",
-                        "-af", "atempo=1.15", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-"], input=a.astype(np.float32).tobytes(),
+                        "-f", "f32le", "-ar", str(SR), "-ac", "1", "-"], input=a.astype(np.float32).tobytes(),
                        capture_output=True, check=True)
     a = np.frombuffer(p.stdout, np.float32)
     idx = np.where(np.abs(a) > 0.01)[0]
