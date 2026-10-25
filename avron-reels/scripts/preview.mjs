@@ -2,15 +2,18 @@
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const [comp = "SwiggyFilm", output = "out/preview.mp4"] = process.argv.slice(2);
 const chromiumOptions = { gl: "swangle" };
-const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
+const serveUrl = await bundle({ entryPoint: path.join(root, "src/index.ts") });
 const composition = await selectComposition({ serveUrl, id: comp, chromiumOptions });
 const t0 = Date.now();
 let last = -1;
 await renderMedia({
-  serveUrl, composition, outputLocation: output, chromiumOptions,
+  serveUrl, composition, outputLocation: path.resolve(output), chromiumOptions,
   codec: "h264", crf: 26, scale: 0.5, muted: true, pixelFormat: "yuv420p", colorSpace: "bt709", x264Preset: "veryfast",
  imageFormat: "jpeg", jpegQuality: 95, concurrency: 4,
   onProgress: ({ progress, renderedFrames, encodedFrames }) => {
