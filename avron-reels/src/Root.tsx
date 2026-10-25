@@ -13,6 +13,7 @@ import { SmartphoneReel } from "./projects/smartphone/Reel";
 import { Ep01Reel, DURATION as EP01_DURATION } from "./projects/ep01/Reel";
 import { LineUp } from "./projects/series/LineUp";
 import { Ep02Reel, EP02_DURATION } from "./projects/series/Ep02";
+import { Ep03Reel, EP03_DURATION } from "./projects/series/Ep03";
 import { Ep01v2Reel, DURATION_V2 as EP01V2_DURATION } from "./projects/ep01/Reel2";
 import { SwiggyStyleFrames } from "./projects/swiggy/StyleFrames";
 import { SwiggyFilm } from "./projects/swiggy/film/Film";
@@ -64,6 +65,7 @@ export const Root: React.FC = () => (
     <Composition id="Ep01" component={Ep01Reel} durationInFrames={Math.ceil(EP01_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="Ep01v2" component={Ep01v2Reel} durationInFrames={Math.ceil(EP01V2_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="Ep02" component={Ep02Reel} durationInFrames={Math.ceil(EP02_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
+    <Composition id="Ep03" component={Ep03Reel} durationInFrames={Math.ceil(EP03_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="CastLineUp" component={LineUp} durationInFrames={60} fps={30} width={1080} height={1920} />
     <Composition id="SwiggyFilm" component={SwiggyFilm} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />
     <Composition id="SwiggyBgB" component={SwiggyFilm} defaultProps={{ plan: { c1: "map", c2: "map", c3: "map", c4: "map", c5: "map", c6: "map", c7: "map" } as const }} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />

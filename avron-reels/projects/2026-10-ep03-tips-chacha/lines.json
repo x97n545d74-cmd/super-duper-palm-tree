@@ -1,0 +1,17 @@
+{
+ "_note": "Ep 03 Tips wale Chacha (pump & dump). 'cap' = caption + the line for the user's TTS (file ep03_<id>). 'tts' = Devanagari for the Kokoro placeholder only. Group name is made up.",
+ "voices": {"boy": {"kokoro": "hm_omega", "speed": 1.1}, "girl": {"kokoro": "hf_alpha", "speed": 1.02}, "chacha": {"kokoro": "hm_psi", "speed": 0.98}},
+ "lines": [
+  {"id": "c1", "who": "chacha", "cap": "Beta, group mein tip aayi hai! | Ye ₹3 wala share kal paanch guna!", "tts": "बेटा, ग्रुप में टिप आई है! ये तीन रुपये वाला शेयर कल पाँच गुना!"},
+  {"id": "b1", "who": "boy", "cap": "Paanch guna?! Main abhi le leta hoon!", "tts": "पाँच गुना?! मैं अभी ले लेता हूँ!"},
+  {"id": "g1", "who": "girl", "cap": "Ruko | Ise kehte hain pump and dump", "tts": "रुको। इसे कहते हैं पंप एंड डंप"},
+  {"id": "g2", "who": "girl", "cap": "Pehle group wale sasta share khud khareedte hain | Phir sabko tip bhejte hain", "tts": "पहले ग्रुप वाले सस्ता शेयर ख़ुद ख़रीदते हैं। फिर सबको टिप भेजते हैं"},
+  {"id": "g3", "who": "girl", "cap": "Sab khareedte hain, price upar jaata hai | aur woh apne share bech ke nikal jaate hain", "tts": "सब ख़रीदते हैं, प्राइस ऊपर जाता है, और वो अपने शेयर बेच के निकल जाते हैं"},
+  {"id": "b2", "who": "boy", "cap": "Matlab tip nahi… | tip-tip barsa paisa, unka!", "tts": "मतलब टिप नहीं... टिप टिप बरसा पैसा, उनका!"},
+  {"id": "g4", "who": "girl", "cap": "SEBI aise Telegram channels pe order de chuka hai", "tts": "सेबी ऐसे टेलीग्राम चैनल्स पे ऑर्डर दे चुका है"},
+  {"id": "g5", "who": "girl", "cap": "If it sounds too good to be true | it probably is", "tts": "इफ़ इट साउंड्स टू गुड टू बी ट्रू, इट प्रॉबब्ली इज़"},
+  {"id": "g6", "who": "girl", "cap": "Advice lene se pehle check karo | SEBI-registered hai ya nahi", "tts": "एडवाइस लेने से पहले चेक करो, सेबी रजिस्टर्ड है या नहीं"},
+  {"id": "c2", "who": "chacha", "cap": "Toh main group chhod doon?", "tts": "तो मैं ग्रुप छोड़ दूँ?"},
+  {"id": "g7", "who": "girl", "cap": "Chhod do Chacha | Aur jis dost ke phone mein aise das group hain | usse ye reel bhejo", "tts": "छोड़ दो चाचा। और जिस दोस्त के फ़ोन में ऐसे दस ग्रुप हैं, उसे ये रील भेजो"}
+ ]
+}
