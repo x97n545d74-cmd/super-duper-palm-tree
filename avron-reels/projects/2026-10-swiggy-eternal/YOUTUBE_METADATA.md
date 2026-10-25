@@ -33,6 +33,27 @@ This video is for education only. It is not investment advice and not a recommen
 
 #Swiggy #Eternal #Blinkit #Instamart #Zomato #QuickCommerce #StockMarketIndia
 
+## Tags (paste into the Tags box)
+
+Swiggy, Eternal, Blinkit, Instamart, Zomato, quick commerce, Swiggy Q2 results, Eternal Q2 results, Blinkit vs Instamart, Swiggy share, dark stores, Zepto, Indian stock market, business explained in Hindi, AVRON
+
+## YouTube Studio, step by step (desktop: studio.youtube.com)
+
+1. **Create → Upload videos** → choose `AVRON_Swiggy_vs_Eternal_1080p_upload.mp4`.
+2. **Details**
+   - Title: title #1 above
+   - Description: the whole Description block above (chapters included)
+   - Thumbnail: **Upload file** → `THUMBNAIL.jpg`. Custom thumbnails need a verified channel (phone verification at youtube.com/verify).
+   - Audience: **No, it's not made for kids**
+   - Show more → **Altered content: Yes** (the narration is an AI voice)
+   - Tags: the Tags line above
+   - Language: Hindi · Caption certification: None
+   - Category: **Education**
+3. **Video elements**: add an end screen (subscribe + one video) if you like
+4. **Subtitles**: Add language → Hindi → **Upload file** → *With timing* → `AVRON_Swiggy_vs_Eternal.srt`
+5. **Checks**: wait for the copyright check. The score is original, so it should pass.
+6. **Visibility**: upload as **Unlisted** first and watch it once on your phone, then switch to **Public** (or Schedule).
+
 ## Upload settings
 
 - Subtitles: upload `AVRON_Swiggy_vs_Eternal.srt` (210 captions, timed to the narration)
