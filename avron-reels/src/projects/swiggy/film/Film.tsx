@@ -4,6 +4,7 @@ import { useTime } from "../../../engine/anim";
 import { Grain, SerifFont } from "../look";
 import { OrigamiCard } from "./Origami";
 import { C1Section, C2Section, OpenSection } from "./part1";
+import { C3Section, C4Section, C5Section, C6Section, C7Section, CloseSection } from "./part2";
 import { sec } from "./timeline";
 import { World } from "./World";
 
@@ -28,6 +29,12 @@ export const SwiggyFilm: React.FC = () => {
       {inSec("open") && <OpenSection t={t} />}
       {inSec("c1") && <C1Section t={t} />}
       {inSec("c2") && <C2Section t={t} />}
+      {inSec("c3") && <C3Section t={t} />}
+      {inSec("c4") && <C4Section t={t} />}
+      {inSec("c5") && <C5Section t={t} />}
+      {inSec("c6") && <C6Section t={t} />}
+      {inSec("c7") && <C7Section t={t} />}
+      {t >= sec("close")[0] - 0.5 && <CloseSection t={t} />}
       {CARDS.map((c) => <OrigamiCard key={c.s} t={t} a={sec(c.s)[0]} num={c.num} title={c.title} doodle={c.doodle} />)}
       <Grain />
     </AbsoluteFill>

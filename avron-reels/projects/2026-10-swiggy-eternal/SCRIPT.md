@@ -4,7 +4,7 @@ AVRON · YouTube · 1920×1080 · ~15 min · English opening and close, Hinglish
 Working titles, using the patterns from the YouTube research (a number, a tension, the real story):
 1. **Swiggy loses ₹9.7 crore a day. Blinkit makes ₹2 crore. The real story of Q2**
 2. **Same cities, same customers: why Blinkit profits and Instamart burns**
-3. **Swiggy fell 16% in a day. What the Q2 numbers actually say**
+3. **Swiggy fell as much as 16% in a day. What the Q2 numbers actually say**
 
 Thumbnail: a split frame. Left, an orange scooter on red, with "−₹9.7 Cr/day". Right, a yellow scooter on green, with "+₹2 Cr/day". Three words maximum.
 
@@ -214,7 +214,7 @@ Fact IDs in [brackets] point to `FACTS.md`. Visual direction is in *italics*. On
 **VO:** Is nuksaan ko chalaane ke liye paisa chahiye. Financial year 2026 mein Swiggy ke paas fundraising aur financing se ₹9,397 crore aaye, jabki uske business operations ne ₹2,898 crore khaaye. March 2026 tak uske paas lagbhag ₹10,077 crore cash aur investments the. [S17, S18]
 **ON SCREEN:** FY26 · financing +₹9,397 Cr · operations −₹2,898 Cr · cash + investments ₹10,077 Cr (31 Mar 2026)
 
-**VO:** 23 October ko investors ki chinta yeh thi ki yeh nuksaan kab tak chalega, aur kitna aur hoga. Share ka ek din mein 16 percent girna isi chinta ka asar tha.
+**VO:** 23 October ko investors ki chinta yeh thi ki yeh nuksaan kab tak chalega, aur kitna aur hoga. Ek din mein share ka 16 percent tak gir jaana isi chinta ka asar tha.
 
 ---
 
