@@ -20,7 +20,7 @@ const CARDS = [
 ] as const;
 
 /** Background per chapter: the user picks from A photo / B map / C paper / D type (see BG_OPTIONS.jpg). */
-export const PLAN: BackdropPlan = {};
+export const PLAN: BackdropPlan = { c1: "paper", c2: "map", c3: "photo", c4: "photo", c5: "paper", c6: "photo", c7: "paper" }; // user pick, 2026-10-25
 
 export const SwiggyFilm: React.FC<{ plan?: BackdropPlan }> = ({ plan = PLAN }) => {
   const t = useTime();
