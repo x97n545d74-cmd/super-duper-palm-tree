@@ -3,6 +3,7 @@ import { AbsoluteFill } from "remotion";
 import { clamp01, ease, lerp } from "../../../engine/anim";
 import { C, Glass, mono, Rise, sans, serif } from "../look";
 import { Bars, Headline, Kicker, LOGO, Note, PhotoInsert, Shot, Stat, crore } from "./kit";
+import { OwnershipScene, PaperStage, SeesawScene, TightropeScene } from "./Paper";
 import { DayMeters } from "./part1";
 import { DURATION, en, st } from "./timeline";
 
@@ -76,16 +77,9 @@ export const C3Section: React.FC<{ t: number }> = ({ t }) => {
         </Glass>
       </Shot>
       <Shot t={t} a={st("c3_06")} z={en("c3_06")}>
-        {K}
-        <Headline t={t} at={st("c3_06") + 0.2} lines={["Swiggy · ek business kamata, doosra ganwata"]} size={72} />
-        <Bars t={t} at={st("c3_06") + 1.2} max={895} top={360} rows={[
-          { label: "Food delivery · adj. EBITDA", value: 341, color: C.gain, text: "+₹341 Cr" },
-          { label: "Instamart · adj. EBITDA", value: 895, color: C.loss, text: "−₹895 Cr" },
-        ]} />
-        <div style={{ position: "absolute", left: 140, top: 680, opacity: appear(t, st("c3_06") + 5) }}>
-          <span style={{ fontFamily: serif, fontWeight: 700, fontSize: 130, color: C.loss }}>−₹554 Cr</span>
-          <span style={{ fontFamily: mono, fontSize: 28, color: C.inkDim, marginLeft: 24 }}>341 − 895 = −554</span>
-        </div>
+        <PaperStage t={t} a={st("c3_06")} kicker="03 · KHAANA" title="Swiggy · ek business kamata, doosra ganwata" note="Source: Swiggy press release, Q2 FY27">
+          <SeesawScene t={t} a={st("c3_06")} />
+        </PaperStage>
       </Shot>
       <Shot t={t} a={st("c3_07")} z={en("c3_07")}>
         {K}
@@ -127,19 +121,14 @@ export const C4Section: React.FC<{ t: number }> = ({ t }) => {
   const stamp = (at: number) => { const p = clamp01((t - at) / 0.25); return { transform: `rotate(-10deg) scale(${1.8 - 0.8 * p})`, opacity: p }; };
   return (
     <>
-      <Shot t={t} a={st("c4_00")} z={en("c4_01")}>
+      <Shot t={t} a={st("c4_00")} z={en("c4_00")}>
         {K}
         <Headline t={t} at={st("c4_00") + 0.2} lines={["Saamaan ka maalik kaun hai"]} size={96} />
-        <Glass style={{ left: 140, top: 400, width: 760, height: 430, opacity: appear(t, st("c4_01")) }}>
-          <div style={{ fontFamily: mono, fontSize: 24, color: C.inkDim, letterSpacing: "0.1em" }}>MARKETPLACE</div>
-          <div style={{ fontFamily: sans, fontSize: 40, color: C.ink, marginTop: 20, lineHeight: 1.35 }}>Sellers own the goods · the app takes a cut</div>
-          <div style={{ fontFamily: sans, fontSize: 30, color: C.inkDim, marginTop: 30, lineHeight: 1.4 }}>The only model allowed for online companies with foreign investment above the limit</div>
-        </Glass>
-        <Glass style={{ left: 1020, top: 400, width: 760, height: 430, opacity: appear(t, st("c4_01") + 4) }} tint="rgba(248,203,70,0.10)">
-          <div style={{ fontFamily: mono, fontSize: 24, color: C.blinkit, letterSpacing: "0.1em" }}>INVENTORY</div>
-          <div style={{ fontFamily: sans, fontSize: 40, color: C.ink, marginTop: 20, lineHeight: 1.35 }}>The app owns the goods · buys them, stocks them, sells them</div>
-        </Glass>
-        <Note t={t} at={st("c4_01") + 1} text="India's FDI rules (Press Note 2, 2018) · Source: MediaNama (Jul 2025)" />
+      </Shot>
+      <Shot t={t} a={st("c4_01")} z={en("c4_01")}>
+        <PaperStage t={t} a={st("c4_01")} kicker="04 · RULEBOOK" title="Do model, ek niyam" note="FDI rules, Press Note 2 · MediaNama, Jul 2025">
+          <OwnershipScene t={t} a={st("c4_01")} />
+        </PaperStage>
       </Shot>
       <Shot t={t} a={st("c4_02")} z={en("c4_02")}>
         {K}
@@ -312,10 +301,14 @@ export const C6Section: React.FC<{ t: number }> = ({ t }) => {
   const K = <Kicker text="06 · BLINKIT BHI PERFECT NAHI" />;
   return (
     <>
-      <Shot t={t} a={st("c6_00")} z={en("c6_01")}>
+      <Shot t={t} a={st("c6_00")} z={en("c6_00")}>
         {K}
         <Headline t={t} at={st("c6_00") + 0.1} lines={["Eternal ki kamzoriyaan"]} size={96} />
-        <Stat t={t} at={st("c6_01") + 0.6} label="1 · BLINKIT ADJUSTED EBITDA MARGIN" value={0.9} fmt={(v) => `${v.toFixed(1)}%`} size={190} caption="of NOV · one price war away from a loss" logo={LOGO.blinkit} style={{ left: 140, top: 360, width: 1000 }} tint="rgba(248,203,70,0.10)" />
+      </Shot>
+      <Shot t={t} a={st("c6_01")} z={en("c6_01")}>
+        <PaperStage t={t} a={st("c6_01")} kicker="06 · BLINKIT BHI PERFECT NAHI" title="1 · Blinkit ka margin sirf 0.9%" note="Adjusted EBITDA as % of NOV · Source: Eternal shareholders' letter, Q2 FY27">
+          <TightropeScene t={t} a={st("c6_01")} />
+        </PaperStage>
       </Shot>
       <Shot t={t} a={st("c6_02")} z={en("c6_02")}>
         {K}

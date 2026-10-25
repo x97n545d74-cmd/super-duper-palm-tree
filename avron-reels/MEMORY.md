@@ -60,6 +60,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Main product: a weekly 15–20 min company/stock deep-dive. 15–30 min videos had a median of 161K views vs 10K for 3–8 min.
 - Repurpose reels as Shorts.
 - Skip daily market news and commodity updates.
+- **Long-form look (user asked 2026-10-25 for "more effort" and "10–15 s animation with a character"):** chapters must match the opening's energy. Use the Swiggy film kit (`src/projects/swiggy/film/kit.tsx`: masked-wipe shots, word-by-word headlines, odometer numbers, framed photo inserts, focus pull on the beat) and paper-craft explainer scenes (`film/Paper.tsx`: an original unbranded delivery rider and store picker, labelled "Illustration") under the lines that explain a mechanism. Change the background photo often, with real pans.
 - YouTube blocks yt-dlp detail lookups from the cloud IP. For dates and subscriber counts, get a YouTube Data API key.
 
 ## Research done, not produced

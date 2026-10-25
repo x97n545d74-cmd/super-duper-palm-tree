@@ -53,11 +53,13 @@ export const PhotoWorld: React.FC<{
   const g = GRADE[hour];
   // drift eases out towards ~14 s of motion, so long plates never over-zoom
   const k = 14 * (1 - Math.exp(-Math.max(0, t - t0) / 14));
-  const s = 1.08 + push * k * 0.25;
+  const s = 1.14 + push * k * 0.25;
+  const room = (W * (s - 1)) / 2 - 6;
+  const tx = Math.max(-room, Math.min(room, -drift * k * 0.25));
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#000" }}>
       <Img src={staticFile(src)} style={{ position: "absolute", inset: 0, width: W, height: H, objectFit: "cover", objectPosition: focus,
-        transform: `scale(${s}) translateX(${-drift * k * 0.25}px)`, filter: g.filter }} />
+        transform: `translateX(${tx}px) scale(${s})`, filter: g.filter }} />
       {overlay && (
         <Img src={staticFile(overlay.src)} style={{ position: "absolute", inset: 0, width: W, height: H, objectFit: "cover", opacity: overlay.opacity,
           mixBlendMode: overlay.blend ?? "screen", transform: `scale(${s * 1.05}) translateX(${drift * k * 0.4}px)`, filter: g.filter }} />

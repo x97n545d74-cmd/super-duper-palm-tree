@@ -1,9 +1,10 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { clamp01, ease, lerp } from "../../../engine/anim";
+import { clamp01, ease } from "../../../engine/anim";
 import { C, count, Glass, mono, Rise, sans, serif } from "../look";
 import { MapEdge } from "../StyleFrames";
 import { Bars, Headline, Kicker, LOGO, Note, PhotoInsert, Shot, Stat, crore } from "./kit";
+import { DarkStoreScene, FixedCostScene, PaperStage } from "./Paper";
 import { en, st } from "./timeline";
 
 /* ================================================= COLD OPEN (English, night) */
@@ -130,9 +131,9 @@ export const C1Section: React.FC<{ t: number }> = ({ t }) => (
       <Note t={t} at={st("c1_01") + 2} text="Source: Zomato board approval, 2022 (IIFL, Inc42)" />
     </Shot>
     <Shot t={t} a={st("c1_02")} z={en("c1_02")}>
-      <Kicker text="01 · DO RAASTE" />
-      <Headline t={t} at={st("c1_02") + 0.2} lines={["The dark store"]} size={96} />
-      <DarkStoreDiagram t={t} a={st("c1_02") + 0.8} />
+      <PaperStage t={t} a={st("c1_02")} kicker="01 · DO RAASTE" title="The dark store">
+        <DarkStoreScene t={t} a={st("c1_02")} />
+      </PaperStage>
     </Shot>
     <Shot t={t} a={st("c1_03")} z={en("c1_03")}>
       <Kicker text="01 · DO RAASTE" />
@@ -154,33 +155,6 @@ export const C1Section: React.FC<{ t: number }> = ({ t }) => (
     </Shot>
   </>
 );
-
-/** Dark store explainer: a closed shop, riders in and out, the store-productivity idea. */
-const DarkStoreDiagram: React.FC<{ t: number; a: number }> = ({ t, a }) => {
-  const k = t - a;
-  const pts = ["Mohalle ke paas ek chhota godown", "Grahak andar nahi jaata", "Sirf delivery partner aata-jaata hai", "Zyada bikri = har order sasta"];
-  return (
-    <>
-      <svg width={760} height={520} viewBox="0 0 760 520" style={{ position: "absolute", left: 1000, top: 300 }}>
-        <rect x={180} y={160} width={400} height={260} rx={14} fill="rgba(10,12,16,0.75)" stroke="rgba(245,241,234,0.7)" strokeWidth={3} />
-        <rect x={330} y={300} width={100} height={120} fill="rgba(245,241,234,0.12)" stroke="rgba(245,241,234,0.7)" strokeWidth={3} />
-        {Array.from({ length: 4 }).map((_, i) => <rect key={i} x={210 + i * 90} y={190} width={60} height={70} fill="rgba(248,203,70,0.25)" stroke="rgba(245,241,234,0.4)" />)}
-        <text x={380} y={150} textAnchor="middle" fontFamily="Inter" fontSize={26} fill="rgba(245,241,234,0.75)" letterSpacing={6}>DARK STORE</text>
-        {[0, 1, 2].map((i) => {
-          const ph = ((k * 0.35 + i / 3) % 1);
-          const x = lerp(-40, 760, ph);
-          return <g key={i} transform={`translate(${x} 470)`} opacity={clamp01(k * 2)}><circle r={12} fill={i % 2 ? C.swiggy : C.blinkit} /><rect x={-26} y={-8} width={18} height={16} rx={3} fill={i % 2 ? C.swiggy : C.blinkit} /></g>;
-        })}
-        <line x1={0} y1={480} x2={760} y2={480} stroke="rgba(245,241,234,0.3)" strokeWidth={2} strokeDasharray="10 12" />
-      </svg>
-      <div style={{ position: "absolute", left: 140, top: 360, width: 800 }}>
-        {pts.map((p, i) => (
-          <Rise key={p} t={t} at={a + 0.6 + i * 2.6}><div style={{ fontFamily: sans, fontSize: 40, color: i === 3 ? C.blinkit : C.ink, marginBottom: 26 }}>{p}</div></Rise>
-        ))}
-      </div>
-    </>
-  );
-};
 
 /** GOV vs NOV: two receipts, the discount line strikes through on the second. */
 const Receipts: React.FC<{ t: number; a: number }> = ({ t, a }) => {
@@ -252,10 +226,9 @@ export const C2Section: React.FC<{ t: number }> = ({ t }) => {
         <Note t={t} at={st("c2_06") + 1} text="AVRON calc · NOV ÷ stores at quarter end ÷ 92 days · Blinkit 20,940 Cr ÷ 2,751 ÷ 92 = ₹8.3 lakh · Instamart 6,594 Cr ÷ 1,240 ÷ 92 = ₹5.8 lakh" />
       </Shot>
       <Shot t={t} a={st("c2_07")} z={en("c2_07")}>
-        {K}
-        <PhotoInsert t={t} at={st("c2_07") + 0.8} src="swiggy/shelves.jpg" credit="Dennis S. Hurd · CC0" left={1250} top={250} w={530} h={430} />
-        <Headline t={t} at={st("c2_07") + 0.1} lines={["Kiraya · bijli · staff", "sab fixed"]} size={96} top={220} />
-        <Headline t={t} at={st("c2_07") + 2.5} lines={["Zyada bikri → har order sasta"]} size={60} top={520} color={C.blinkit} />
+        <PaperStage t={t} a={st("c2_07")} kicker="02 · SCOREBOARD" title="Kiraya · bijli · staff · sab fixed" note="Sales per store per day: AVRON calc from company filings">
+          <FixedCostScene t={t} a={st("c2_07")} />
+        </PaperStage>
       </Shot>
       <Shot t={t} a={st("c2_08")} z={en("c2_10")}>
         {K}
