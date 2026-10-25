@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { clamp01, ease, lerp } from "../../../engine/anim";
 import { C, Glass, mono, Rise, sans, serif } from "../look";
-import { Bars, crore, Headline, Kicker, LOGO, Note, Shot, Stat } from "./kit";
+import { Bars, Headline, Kicker, LOGO, Note, PhotoInsert, Shot, Stat, crore } from "./kit";
 import { DayMeters } from "./part1";
 import { DURATION, en, st } from "./timeline";
 
@@ -22,6 +22,7 @@ export const C3Section: React.FC<{ t: number }> = ({ t }) => {
     <>
       <Shot t={t} a={st("c3_00")} z={en("c3_00")}>
         {K}
+        <PhotoInsert t={t} at={st("c3_00") + 1.2} src="swiggy/kitchen.jpg" credit="kohlmann.sascha · CC BY-SA 2.0" left={1320} top={330} w={460} h={560} />
         <Headline t={t} at={st("c3_00") + 0.2} lines={["Swiggy ki achhi khabar khaane se aati hai"]} size={76} />
         <Stat t={t} at={st("c3_00") + 2.0} label="SWIGGY FOOD DELIVERY · ADJUSTED EBITDA · Q2 FY27" value={341} fmt={(v) => `₹${Math.round(v)} Cr`} color={C.gain} size={170}
           caption="Highest ever · 3.4% of GOV · +₹101 Cr YoY" logo={LOGO.swiggy} style={{ left: 140, top: 360, width: 1000 }} tint="rgba(252,128,25,0.12)" />
@@ -34,6 +35,7 @@ export const C3Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c3_02")} z={en("c3_02")}>
         {K}
+        <PhotoInsert t={t} at={st("c3_02") + 1.0} src="swiggy/phone_hand.jpg" credit="Janitors · CC BY 2.0" left={1320} top={330} w={460} h={560} focus="45% 50%" />
         <Headline t={t} at={st("c3_02") + 0.2} lines={["Toing · saste khaane ka alag app"]} />
         <Glass style={{ left: 140, top: 380, width: 1100, opacity: appear(t, st("c3_02") + 1.5) }} tint="rgba(252,128,25,0.10)">
           <div style={{ fontFamily: mono, fontSize: 24, color: C.inkDim }}>NEW TOING USERS · PER SWIGGY</div>
@@ -162,6 +164,7 @@ export const C4Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c4_04")} z={en("c4_04")}>
         {K}
+        <PhotoInsert t={t} at={st("c4_04") + 1.0} src="swiggy/sacks.jpg" credit="Manu Manohar Photography · CC BY 2.0" left={1260} top={360} w={520} h={420} />
         <Headline t={t} at={st("c4_04") + 0.2} lines={["Apna saamaan · apna control"]} />
         <div style={{ position: "absolute", left: 140, top: 380, width: 1600 }}>
           {["Better buying prices", "Better margins", "Control over which product sits in which store", "Sellers asked to move to the new model, or be delisted"].map((x, i) => (
@@ -249,6 +252,7 @@ export const C5Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c5_06")} z={en("c5_06")}>
         {K}
+        <PhotoInsert t={t} at={st("c5_06") + 1.4} src="swiggy/laptop_charts.jpg" credit="ota_photos · CC BY-SA 2.0" left={1320} top={280} w={460} h={560} focus="40% 50%" />
         <Headline t={t} at={st("c5_06") + 0.2} lines={["Kab tak · aur kitna"]} size={130} top={300} />
         <div style={{ position: "absolute", left: 140, top: 560, fontFamily: sans, fontWeight: 800, fontSize: 150, color: C.loss, opacity: appear(t, st("c5_06") + 5) }}>−16% <span style={{ fontSize: 40, color: C.inkDim, fontWeight: 500 }}>intraday · 23 Oct</span></div>
         <Note t={t} at={st("c5_06") + 5} text="Fell as much as ~16–17% intraday · Source: CNBC-TV18, Bloomberg (23 Oct 2026)" />
@@ -339,6 +343,7 @@ export const C6Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c6_05")} z={en("c6_05")}>
         {K}
+        <PhotoInsert t={t} at={st("c6_05") + 1.6} src="swiggy/traffic_3.jpg" credit="Bengaluru · Peter Richmond · CC BY 2.0" left={1180} top={580} w={600} h={360} />
         <Headline t={t} at={st("c6_05") + 0.2} lines={["4 · Das minute ka vaada, aur bhi kar rahe hain"]} size={72} />
         <div style={{ position: "absolute", left: 140, top: 420, display: "flex", gap: 30, flexWrap: "wrap", width: 1640 }}>
           {[["Zepto", "#8B5CF6"], ["Flipkart Minutes", "#2F80ED"], ["Amazon", "#FF9900"]].map(([n, c], i) => (
@@ -424,7 +429,7 @@ export const CloseSection: React.FC<{ t: number }> = ({ t }) => (
 );
 
 const EndCard: React.FC<{ t: number; a: number }> = ({ t, a }) => {
-  const credits = "Images: Vidur Malhotra (PD), bharatte, Navaneeth K N, souravdas, Manoj Kengudelu, wili_hybrid, Peter Richmond, Tracy Hunter, Dennis S. Hurd (CC0), debbietingzon, Robert Stinnett, Rk Rao, Rakesh Krishna Kumar (CC BY-SA), deshpanderohan.law, AndreasPoike, Mahin Fayaz (CC BY 2.0 unless noted), via Openverse · Map: DataMeet India (CC BY 4.0) · Font: Playfair Display (OFL)";
+  const credits = "Images: Vidur Malhotra (PD), bharatte, Navaneeth K N, souravdas, Manoj Kengudelu, wili_hybrid, Peter Richmond, Tracy Hunter, Dennis S. Hurd (CC0), debbietingzon, Robert Stinnett, Rk Rao, Rakesh Krishna Kumar, kohlmann.sascha, Ashwin John, ota_photos (CC BY-SA), deshpanderohan.law, AndreasPoike, Mahin Fayaz, Manu Manohar, Janitors, Melanie-m (CC BY 2.0 unless noted), via Openverse · Map: DataMeet India (CC BY 4.0) · Font: Playfair Display (OFL)";
   return (
     <AbsoluteFill>
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 55%)", opacity: appear(t, a + 3) }} />

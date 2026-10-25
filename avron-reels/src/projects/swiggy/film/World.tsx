@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { clamp01, ease } from "../../../engine/anim";
 import { Hour, PhotoWorld } from "../look";
-import { sec, st } from "./timeline";
+import { BEATS, sec, st } from "./timeline";
 
 /*
  * The world behind the story: one day, night to sunrise. Each plate is a licensed photograph with the grade
@@ -11,11 +11,17 @@ import { sec, st } from "./timeline";
 type Plate = { at: number; src: string; hour: Hour; drift?: number; focus?: string; overlay?: { src: string; opacity: number } };
 const XF = 1.4;
 
-/** During the chapters the world steps back (soft focus, dimmed) so the data reads first; the open and close stay sharp. */
+/**
+ * During the chapters the world steps back (soft focus, dimmed) so the data reads first; the open and close stay sharp.
+ * On every new beat the focus is pulled to the photograph for a moment, then racks back behind the graphics.
+ */
 export const BACKGROUND_FOCUS = (t: number) => {
   const inChapters = t > sec("c1")[0] && t < sec("close")[0];
   const k = inChapters ? Math.min(1, (t - sec("c1")[0]) / 2, (sec("close")[0] - t) / 2) : 0;
-  return { filter: `blur(${3 * k}px) brightness(${1 - 0.28 * k})`, transform: `scale(${1 + 0.02 * k})` };
+  const beat = [...BEATS].reverse().find((x) => x.start <= t + 0.3);
+  const pull = beat ? 1 - ease.inOutCubic(clamp01((t + 0.3 - beat.start) / 1.8)) : 0;
+  const f = k * (1 - 0.75 * pull);
+  return { filter: `blur(${3 * f}px) brightness(${1 - 0.28 * f})`, transform: `scale(${1 + 0.02 * k})` };
 };
 
 export const PLATES: Plate[] = [
@@ -27,14 +33,18 @@ export const PLATES: Plate[] = [
   { at: st("c1_02"), src: "swiggy/street_3.jpg", hour: "morning", drift: 16 },
   { at: sec("c2")[0], src: "swiggy/street_2.jpg", hour: "morning", drift: 24 },
   { at: st("c2_03"), src: "swiggy/street_1.jpg", hour: "morning", drift: 8 },
-  { at: st("c2_05"), src: "swiggy/street_3.jpg", hour: "morning", drift: 14 },
+  { at: st("c2_05"), src: "swiggy/traffic_2.jpg", hour: "morning", drift: 14 },
   { at: sec("c3")[0], src: "swiggy/curry.jpg", hour: "noon", drift: 10 },
   { at: sec("c4")[0], src: "swiggy/dusk_city.jpg", hour: "dusk", drift: 14 },
+  { at: st("c4_00"), src: "swiggy/shelves.jpg", hour: "dusk", drift: 10 },
   { at: st("c4_02"), src: "swiggy/aisle_empty.jpg", hour: "dusk", drift: 10 },
+  { at: st("c4_05"), src: "swiggy/delhi_dusk.jpg", hour: "dusk", drift: 12 },
   { at: sec("c5")[0], src: "swiggy/rain_street.jpg", hour: "storm", drift: 12 },
   { at: st("c5_02"), src: "swiggy/rain_glass.jpg", hour: "storm", drift: 6 },
   { at: st("c5_04"), src: "swiggy/stock_paper.jpg", hour: "storm", drift: 8 },
   { at: sec("c6")[0], src: "swiggy/night_flyover.jpg", hour: "late", drift: 18 },
+  { at: st("c6_03"), src: "swiggy/mumbai_night.jpg", hour: "late", drift: 10 },
+  { at: st("c6_05"), src: "swiggy/blr_night.jpg", hour: "late", drift: 10 },
   { at: sec("c7")[0], src: "swiggy/sunrise_city.jpg", hour: "predawn", drift: 8 },
   { at: sec("close")[0], src: "swiggy/sunrise_city.jpg", hour: "sunrise", drift: 10 },
 ];

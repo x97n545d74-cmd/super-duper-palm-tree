@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { useTime } from "../../../engine/anim";
-import { Grain, SerifFont } from "../look";
+import { clamp01, useTime } from "../../../engine/anim";
+import { C, Grain, mono, SerifFont } from "../look";
 import { OrigamiCard } from "./Origami";
 import { C1Section, C2Section, OpenSection } from "./part1";
 import { C3Section, C4Section, C5Section, C6Section, C7Section, CloseSection } from "./part2";
@@ -36,7 +36,24 @@ export const SwiggyFilm: React.FC = () => {
       {inSec("c7") && <C7Section t={t} />}
       {t >= sec("close")[0] - 0.5 && <CloseSection t={t} />}
       {CARDS.map((c) => <OrigamiCard key={c.s} t={t} a={sec(c.s)[0]} num={c.num} title={c.title} doodle={c.doodle} />)}
+      <ProgressRail t={t} />
       <Grain />
     </AbsoluteFill>
+  );
+};
+
+/** Top-right chapter rail: "03 / 07" and a hairline that fills across the chapter. */
+const ProgressRail: React.FC<{ t: number }> = ({ t }) => {
+  const i = CARDS.findIndex((c) => t >= sec(c.s)[0] + 3 && t < sec(c.s)[1]);
+  if (i < 0) return null;
+  const [a, z] = sec(CARDS[i].s);
+  const o = clamp01((t - a - 3) / 0.6) * clamp01((z - t) / 0.4);
+  return (
+    <div style={{ position: "absolute", right: 140, top: 82, width: 220, opacity: o, fontFamily: mono, fontSize: 22, color: C.inkDim, letterSpacing: "0.12em", textAlign: "right" }}>
+      {CARDS[i].num} / 07
+      <div style={{ height: 2, background: "rgba(245,241,234,0.18)", marginTop: 12 }}>
+        <div style={{ height: 2, width: `${clamp01((t - a - 3) / (z - a - 3)) * 100}%`, background: C.ink }} />
+      </div>
+    </div>
   );
 };

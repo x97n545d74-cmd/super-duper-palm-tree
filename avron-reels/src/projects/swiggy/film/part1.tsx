@@ -3,7 +3,7 @@ import { AbsoluteFill } from "remotion";
 import { clamp01, ease, lerp } from "../../../engine/anim";
 import { C, count, Glass, mono, Rise, sans, serif } from "../look";
 import { MapEdge } from "../StyleFrames";
-import { Bars, crore, Headline, Kicker, LOGO, Note, Shot, Stat } from "./kit";
+import { Bars, Headline, Kicker, LOGO, Note, PhotoInsert, Shot, Stat, crore } from "./kit";
 import { en, st } from "./timeline";
 
 /* ================================================= COLD OPEN (English, night) */
@@ -108,6 +108,7 @@ export const C1Section: React.FC<{ t: number }> = ({ t }) => (
   <>
     <Shot t={t} a={st("c1_00")} z={en("c1_00")}>
       <Kicker text="01 · DO RAASTE" />
+      <PhotoInsert t={t} at={st("c1_00") + 1.4} src="swiggy/traffic_1.jpg" credit="Bengaluru · Peter Richmond · CC BY 2.0" left={1290} top={420} w={490} h={330} />
       <Headline t={t} at={st("c1_00") + 0.2} lines={["Kahani khaane se shuru hoti hai"]} />
       <div style={{ position: "absolute", left: 140, top: 420, display: "flex", gap: 40 }}>
         <Glass style={{ position: "relative", width: 520 }} tint="rgba(226,55,68,0.14)">
@@ -252,6 +253,7 @@ export const C2Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c2_07")} z={en("c2_07")}>
         {K}
+        <PhotoInsert t={t} at={st("c2_07") + 0.8} src="swiggy/shelves.jpg" credit="Dennis S. Hurd · CC0" left={1250} top={250} w={530} h={430} />
         <Headline t={t} at={st("c2_07") + 0.1} lines={["Kiraya · bijli · staff", "sab fixed"]} size={96} top={220} />
         <Headline t={t} at={st("c2_07") + 2.5} lines={["Zyada bikri → har order sasta"]} size={60} top={520} color={C.blinkit} />
       </Shot>

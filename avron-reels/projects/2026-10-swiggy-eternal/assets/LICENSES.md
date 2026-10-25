@@ -24,6 +24,17 @@ All images: Openverse search, filtered to licences that allow commercial use and
 | use/sunrise_city.jpg | daybreak | Mahin Fayaz | CC BY 2.0 | https://www.flickr.com/photos/58385162@N05/6324467338 |
 | use/logo_swiggy.jpg | Swiggy Logo 2024 | Alterbach | CC0 | https://commons.wikimedia.org/w/index.php?curid=151744893 |
 | use/logo_zomato.jpg | Zomato Company Profile Presentation | maichellatin | CC BY-SA 2.0 | https://www.flickr.com/photos/165193274@N07/44329648225 |
+| use/traffic_1.jpg | Random Bangalore Traffic | Peter Richmond | CC BY 2.0 | https://www.flickr.com/photos/69364392@N00/4273320989 |
+| use/traffic_2.jpg | Random Bangalore Traffic | Peter Richmond | CC BY 2.0 | https://www.flickr.com/photos/69364392@N00/4274065188 |
+| use/traffic_3.jpg | Random Bangalore Traffic | Peter Richmond | CC BY 2.0 | https://www.flickr.com/photos/69364392@N00/4274062820 |
+| use/shelves.jpg | Grocery Shelves | Dennis S. Hurd | CC0 1.0 | https://www.flickr.com/photos/43296902@N00/65248068 |
+| use/sacks.jpg | Stock market | Manu Manohar Photography | CC BY 2.0 | https://www.flickr.com/photos/32833136@N04/4845905314 |
+| use/kitchen.jpg | Drink and Click № 4: Man in Restaurant Kitchen, candid | kohlmann.sascha | CC BY-SA 2.0 | https://www.flickr.com/photos/96323831@N06/15865734606 |
+| use/phone_hand.jpg | Samsung Galaxy S5 | Janitors | CC BY 2.0 | https://www.flickr.com/photos/65265630@N03/13467711984 |
+| use/mumbai_night.jpg | Mumbai Night Lights | Ashwin John | CC BY-SA 2.0 | https://www.flickr.com/photos/27232973@N05/16407777033 |
+| use/blr_night.jpg | Bangalore by night | Melanie-m | CC BY 2.0 | https://www.flickr.com/photos/84295554@N00/2674140306 |
+| use/delhi_dusk.jpg | Connaught Place sunset | wili_hybrid | CC BY 2.0 | https://www.flickr.com/photos/62223880@N00/295189351 |
+| use/laptop_charts.jpg | Analyzing Stock Market | ota_photos | CC BY-SA 2.0 | https://www.flickr.com/photos/101332430@N03/9677861633 |
 
 Logos are trademarks of their owners, used editorially to identify the companies being reported on. They are not modified, and no endorsement is implied.
 
