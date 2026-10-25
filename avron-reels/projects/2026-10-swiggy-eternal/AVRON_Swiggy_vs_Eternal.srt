@@ -1,0 +1,965 @@
+1
+00:00:06,000 --> 00:00:06,600
+Ten minutes.
+
+2
+00:00:06,650 --> 00:00:11,040
+That is all it takes now for milk, bread,
+even a phone charger to reach your door,
+
+3
+00:00:11,090 --> 00:00:12,665
+often before the kettle boils.
+
+4
+00:00:13,065 --> 00:00:19,897
+Behind those ten minutes are two companies,
+two apps, and a war that gets more
+
+5
+00:00:19,947 --> 00:00:22,456
+expensive with every quarter.
+
+6
+00:00:22,856 --> 00:00:27,763
+On Friday, the twenty-third of October,
+Swiggy lost as much as sixteen percent of
+
+7
+00:00:27,813 --> 00:00:29,354
+its value in a single day.
+
+8
+00:00:29,404 --> 00:00:32,842
+It was the biggest one-day
+fall in the company's history.
+
+9
+00:00:33,242 --> 00:00:38,242
+That same week, its rival Blinkit, owned
+by Eternal, reported a quick-commerce
+
+10
+00:00:38,292 --> 00:00:41,544
+profit of one hundred and
+eighty-four crore rupees.
+
+11
+00:00:41,594 --> 00:00:46,982
+Both serve the same cities and the same
+customers, with the same ten-minute promise.
+
+12
+00:00:47,382 --> 00:00:52,598
+Swiggy's Instamart is losing about nine
+point seven crore rupees every day.
+
+13
+00:00:52,648 --> 00:00:54,986
+Blinkit is making about two crore.
+
+14
+00:00:55,036 --> 00:00:56,952
+This film is about that gap.
+
+15
+00:00:57,352 --> 00:00:59,380
+Ab is kahani ko shuru se samajhte
+hain, aapki zubaan mein.
+
+16
+00:01:03,380 --> 00:01:05,817
+Kahani khaane se shuru hoti hai.
+
+17
+00:01:05,867 --> 00:01:11,258
+Zomato aur Swiggy, dono ne India ko
+phone se khaana mangwana sikhaaya.
+
+18
+00:01:11,308 --> 00:01:14,444
+Saalon tak dono ek hi race daud rahe the.
+
+19
+00:01:14,494 --> 00:01:18,486
+Restaurant, delivery partner,
+discount, aur nuksaan.
+
+20
+00:01:18,886 --> 00:01:21,576
+Phir dono ne ek aur darwaaza khola.
+
+21
+00:01:21,626 --> 00:01:22,359
+Groceries.
+
+22
+00:01:22,409 --> 00:01:26,742
+Woh cheezein jo aap roz
+khareedte hain, das minute mein.
+
+23
+00:01:26,792 --> 00:01:29,247
+Swiggy ne apna Instamart banaya.
+
+24
+00:01:29,297 --> 00:01:35,744
+Zomato ne 2022 mein Blinkit khareeda, jo
+pehle Grofers tha, lagbhag ₹4,447 crore ki
+
+25
+00:01:35,794 --> 00:01:37,310
+all-stock deal mein.
+
+26
+00:01:37,710 --> 00:01:40,263
+Is business ka dil ek "dark store" hai.
+
+27
+00:01:40,313 --> 00:01:45,470
+Ek chhota godown, aapke mohalle ke paas,
+jahaan grahak kabhi andar nahi jaata.
+
+28
+00:01:45,520 --> 00:01:50,342
+Sirf delivery partner jaata hai,
+saamaan uthata hai, aur nikal jaata hai.
+
+29
+00:01:50,392 --> 00:01:53,279
+Jitne zyada dark store,
+utni jaldi delivery.
+
+30
+00:01:53,329 --> 00:01:57,818
+Aur jitna zyada ek store bechta hai,
+utna sasta har order padta hai.
+
+31
+00:01:58,218 --> 00:02:03,149
+Is video mein do shabd baar baar aayenge,
+toh pehle inhe samajh lete hain.
+
+32
+00:02:03,199 --> 00:02:07,188
+GOV matlab grahak ne jitne ka
+order kiya, discount se pehle.
+
+33
+00:02:07,238 --> 00:02:10,082
+NOV matlab discount ke
+baad ka order value.
+
+34
+00:02:10,132 --> 00:02:15,669
+Dono companies yeh thoda alag tareeke se
+ginti hain, isliye jahaan farak padta hai,
+
+35
+00:02:15,719 --> 00:02:17,823
+wahaan hum screen pe likh denge.
+
+36
+00:02:18,223 --> 00:02:22,799
+Aaj in do companies ki keemat
+mein bahut bada farak hai.
+
+37
+00:02:22,849 --> 00:02:27,013
+Eternal ka market cap
+lagbhag ₹3.06 lakh crore hai.
+
+38
+00:02:27,063 --> 00:02:29,656
+Swiggy ka lagbhag ₹48,600 crore.
+
+39
+00:02:29,706 --> 00:02:33,539
+Eternal ki value Swiggy
+se 6 guna se zyada hai.
+
+40
+00:02:33,939 --> 00:02:38,809
+Do companies, ek hi cheez bechti
+hain, aur keemat mein 6 guna ka farak.
+
+41
+00:02:38,859 --> 00:02:42,482
+Is farak ki wajah Q2 ke
+numbers mein saaf dikhti hai.
+
+42
+00:02:46,482 --> 00:02:50,526
+Pehle sirf quick commerce
+ki baat karte hain.
+
+43
+00:02:50,576 --> 00:02:56,713
+July se September 2026 tak, Blinkit
+pe ₹20,940 crore ke orders aaye.
+
+44
+00:02:56,763 --> 00:02:59,351
+Instamart pe ₹6,594 crore ke.
+
+45
+00:02:59,751 --> 00:03:04,130
+Yaani Blinkit ka business Instamart
+se lagbhag 3.2 guna bada hai.
+
+46
+00:03:04,180 --> 00:03:07,129
+Aur yeh bada business
+bhi tez badh raha hai.
+
+47
+00:03:07,179 --> 00:03:10,059
+Sirf pichhle quarter
+ke muqable 22 percent.
+
+48
+00:03:10,459 --> 00:03:11,682
+Stores dekhiye.
+
+49
+00:03:11,732 --> 00:03:14,992
+Blinkit ke paas 2,751 dark stores hain.
+
+50
+00:03:15,042 --> 00:03:17,962
+Is quarter mein usne 308 naye joda.
+
+51
+00:03:18,012 --> 00:03:24,921
+Instamart ke paas 1,240 hain, aur usne 69
+naye joda, jo uske pichhle teen quarters
+
+52
+00:03:24,971 --> 00:03:26,958
+ke total ke barabar hai.
+
+53
+00:03:27,358 --> 00:03:28,615
+Ab naksha dekhiye.
+
+54
+00:03:28,665 --> 00:03:34,568
+Ek independent tracker, QuickCommerceMap,
+ne July 2026 mein desh ke das sabse bade
+
+55
+00:03:34,618 --> 00:03:36,601
+shehron ke dark stores gine.
+
+56
+00:03:36,651 --> 00:03:42,482
+Blinkit aur Instamart ki seedhi takkar
+mein, das mein se nau shehron mein Blinkit
+
+57
+00:03:42,532 --> 00:03:43,135
+aage hai.
+
+58
+00:03:43,185 --> 00:03:47,636
+Instamart sirf Chennai mein aage
+hai, 67 stores ke muqable 62.
+
+59
+00:03:47,686 --> 00:03:51,339
+Sabse bada farak Delhi mein
+hai, 171 ke muqable 63.
+
+60
+00:03:51,739 --> 00:03:53,939
+Aur yeh do companies akeli nahi hain.
+
+61
+00:03:53,989 --> 00:03:58,925
+Poore market ko dekhein toh Hyderabad aur
+Chennai mein Zepto ka network sabse bada
+
+62
+00:03:58,975 --> 00:04:03,668
+hai, Kolkata mein Flipkart Minutes ka,
+aur baaki saat shehron mein Blinkit ka.
+
+63
+00:04:04,068 --> 00:04:05,767
+Ab sabse zaroori number.
+
+64
+00:04:05,817 --> 00:04:08,463
+Har store, har din, kitna bechta hai.
+
+65
+00:04:08,863 --> 00:04:15,571
+Blinkit ka ek store, average, har din
+lagbhag ₹8.3 lakh ka saamaan bechta hai.
+
+66
+00:04:15,621 --> 00:04:19,296
+Instamart ka ek store
+lagbhag ₹5.8 lakh ka.
+
+67
+00:04:19,696 --> 00:04:23,323
+Dark store ka kiraya, bijli,
+staff, sab fixed hai.
+
+68
+00:04:23,373 --> 00:04:28,104
+Isliye jo store zyada bechta hai,
+uska har order sasta padta hai.
+
+69
+00:04:28,504 --> 00:04:29,284
+Ab profit.
+
+70
+00:04:29,334 --> 00:04:34,017
+Har ₹100 ke order pe Blinkit
+lagbhag 88 paise kamata hai.
+
+71
+00:04:34,067 --> 00:04:38,832
+Instamart har ₹100 ke order pe
+lagbhag ₹13.60 ganwata hai.
+
+72
+00:04:39,232 --> 00:04:43,409
+Blinkit ka margin lagaatar chhe
+quarter se behtar ho raha hai.
+
+73
+00:04:43,459 --> 00:04:47,568
+Saal bhar pehle yahi business
+₹156 crore ke nuksaan mein tha.
+
+74
+00:04:47,968 --> 00:04:51,267
+88 paise sunne mein chhota lagta hai.
+
+75
+00:04:51,317 --> 00:04:57,966
+Lekin ₹20,940 crore ke orders pe, wohi
+88 paise ₹184 crore ban jaate hain.
+
+76
+00:04:58,016 --> 00:05:02,854
+Aur Instamart ka nuksaan,
+₹895 crore, ek quarter mein.
+
+77
+00:05:03,254 --> 00:05:05,050
+Instamart ki growth tez hai.
+
+78
+00:05:05,100 --> 00:05:10,258
+Uske orders saal bhar mein 31 percent
+badhe, aur pichhle quarter se 13 percent.
+
+79
+00:05:10,308 --> 00:05:14,411
+Swiggy ne kaha ki yeh woh growth
+hai jiska usne vaada kiya tha.
+
+80
+00:05:14,461 --> 00:05:17,971
+Dikkat yeh hai ki har order
+abhi bhi nuksaan mein hai.
+
+81
+00:05:21,971 --> 00:05:26,930
+Swiggy ki kahani mein ek achhi khabar
+bhi hai, aur woh khaane se aati hai.
+
+82
+00:05:26,980 --> 00:05:32,210
+Swiggy ka food delivery business is
+quarter apne itihaas ka sabse zyada profit
+
+83
+00:05:32,260 --> 00:05:32,617
+laaya.
+
+84
+00:05:32,667 --> 00:05:37,761
+₹341 crore adjusted EBITDA, yaani rozmarra
+ke kaam se hone wala profit, kuch
+
+85
+00:05:37,811 --> 00:05:39,792
+accounting items ko chhod kar.
+
+86
+00:05:40,192 --> 00:05:45,636
+Swiggy pe har mahine lagbhag 1 crore 98
+lakh log khaana mangwaate hain, aur yeh
+
+87
+00:05:45,686 --> 00:05:48,278
+ginti saal bhar mein 15 percent badhi.
+
+88
+00:05:48,678 --> 00:05:53,276
+Swiggy ne Toing naam ka ek alag app
+bhi banaaya hai, saste khaane ke liye.
+
+89
+00:05:53,326 --> 00:05:55,349
+Yeh 50 se zyada shehron mein hai.
+
+90
+00:05:55,399 --> 00:06:00,436
+Company ke mutaabik Toing ke har teen naye
+users mein se do ne pehle kabhi online
+
+91
+00:06:00,486 --> 00:06:02,258
+khaana mangwaaya hi nahi tha.
+
+92
+00:06:02,658 --> 00:06:05,955
+Zomato ka food delivery
+bhi tez chal raha hai.
+
+93
+00:06:06,005 --> 00:06:10,249
+Uske orders 21.5 percent badhe,
+aur margin 5.5 percent hai.
+
+94
+00:06:10,649 --> 00:06:16,034
+Chaar saal mein Zomato ka food business
+dugna ho gaya, ₹18,160 crore se ₹37,993
+
+95
+00:06:16,084 --> 00:06:16,447
+crore.
+
+96
+00:06:16,497 --> 00:06:19,336
+Aur Eternal ne ek dilchasp baat maani hai.
+
+97
+00:06:19,386 --> 00:06:24,634
+Pichhle saal food ki growth thodi dheemi
+hui, kyunki kuch log jo pehle khaana
+
+98
+00:06:24,684 --> 00:06:28,761
+mangwaate the, ab wahi zaroorat
+Blinkit se poori karne lage.
+
+99
+00:06:28,811 --> 00:06:33,302
+Yaani Blinkit ne kuch hissa apne
+hi ghar ke food business se liya.
+
+100
+00:06:33,352 --> 00:06:36,673
+Eternal ke mutaabik ab
+yeh badlaav tham gaya hai.
+
+101
+00:06:37,073 --> 00:06:40,966
+Swiggy apna margin GOV pe
+batata hai, aur Zomato NOV pe.
+
+102
+00:06:41,016 --> 00:06:46,527
+GOV discount se pehle ka number hai, toh
+dono margins seedha compare nahi hote.
+
+103
+00:06:46,577 --> 00:06:48,217
+Lekin ek cheez saaf hai.
+
+104
+00:06:48,267 --> 00:06:52,089
+Dono ke liye khaana ab paisa
+kamaane wala business hai.
+
+105
+00:06:52,489 --> 00:06:54,688
+Ab Swiggy ki problem dekhiye.
+
+106
+00:06:54,738 --> 00:06:56,938
+Khaana ₹341 crore kamata hai.
+
+107
+00:06:56,988 --> 00:06:59,498
+Instamart ₹895 crore ganwata hai.
+
+108
+00:06:59,548 --> 00:07:04,617
+Ek business ki kamaai doosre ka
+aadha nuksaan bhi nahi bhar paati.
+
+109
+00:07:04,667 --> 00:07:08,961
+Bacha hua gap, ₹554 crore,
+sirf in do businesses ka hai.
+
+110
+00:07:09,361 --> 00:07:10,566
+Eternal mein ulta hai.
+
+111
+00:07:10,616 --> 00:07:15,188
+Wahaan khaana bhi kamata hai, aur Blinkit
+bhi ab kamata hai, toh dono business ek
+
+112
+00:07:15,238 --> 00:07:16,728
+hi taraf kheench rahe hain.
+
+113
+00:07:20,728 --> 00:07:23,958
+Is jung ka ek bada mod
+saamaan ki ownership hai.
+
+114
+00:07:24,008 --> 00:07:28,468
+Dark store mein rakha saamaan kiska
+hai, app ka ya kisi seller ka.
+
+115
+00:07:28,868 --> 00:07:33,543
+India ke foreign investment rules ke hisaab
+se, jis company mein videshi hissedari
+
+116
+00:07:33,593 --> 00:07:37,173
+zyada hai, woh online khud ka
+saamaan rakh kar nahi bech sakti.
+
+117
+00:07:37,223 --> 00:07:41,380
+Woh sirf ek marketplace ban sakti hai,
+jahaan doosre sellers bechte hain.
+
+118
+00:07:41,780 --> 00:07:44,629
+2025 mein Eternal ne ek bada faisla liya.
+
+119
+00:07:44,679 --> 00:07:50,357
+Usne apni videshi hissedari 49.5 percent
+pe rok di, taaki woh ek Indian-owned and
+
+120
+00:07:50,407 --> 00:07:52,337
+controlled company ban sake.
+
+121
+00:07:52,387 --> 00:07:56,863
+Iske baad Blinkit khud saamaan
+khareed kar, khud bech sakta tha.
+
+122
+00:07:56,913 --> 00:07:59,692
+September 2025 se yeh badlaav shuru hua.
+
+123
+00:08:00,092 --> 00:08:06,721
+Isi wajah se Eternal ka revenue ek saal
+mein 77.6 percent badha, ₹13,590 crore se
+
+124
+00:08:06,771 --> 00:08:07,876
+₹24,138 crore.
+
+125
+00:08:07,926 --> 00:08:14,226
+Kyunki ab Blinkit poore saamaan ki keemat
+apne revenue mein dikhata hai, sirf
+
+126
+00:08:14,276 --> 00:08:15,545
+commission nahi.
+
+127
+00:08:15,945 --> 00:08:20,819
+Khud ka saamaan rakhne ka matlab hai behtar
+daam pe khareedna, behtar margin, aur
+
+128
+00:08:20,869 --> 00:08:24,041
+zyada control ki kaun sa
+product kis store mein rahe.
+
+129
+00:08:24,091 --> 00:08:25,987
+Sellers ke liye bhi niyam badle.
+
+130
+00:08:26,037 --> 00:08:31,033
+Blinkit ne unse naye model mein aane ko
+kaha, aur jo nahi aaye, unki listing hatane
+
+131
+00:08:31,083 --> 00:08:31,823
+ki baat kahi.
+
+132
+00:08:32,223 --> 00:08:32,772
+Ab Swiggy.
+
+133
+00:08:32,822 --> 00:08:37,739
+Is quarter Swiggy ne bataya ki use bhi
+Indian-owned and controlled company banne ki
+
+134
+00:08:37,789 --> 00:08:41,450
+zaroori manzoori mil gayi hai,
+aur badlaav shuru ho chuka hai.
+
+135
+00:08:41,850 --> 00:08:48,101
+Matlab jo raasta Blinkit ne 2025 mein liya,
+Swiggy us pe ab chal raha hai, lagbhag
+
+136
+00:08:48,151 --> 00:08:49,100
+ek saal baad.
+
+137
+00:08:49,500 --> 00:08:52,999
+Aur quick commerce mein ek
+saal bahut lamba waqt hai.
+
+138
+00:08:53,049 --> 00:08:58,423
+Is ek saal mein Blinkit ne stores joda,
+suppliers ke saath rishte banaaye, aur ab
+
+139
+00:08:58,473 --> 00:09:00,700
+har quarter profit dikha raha hai.
+
+140
+00:09:04,700 --> 00:09:09,028
+Results Thursday, 22 October ko
+market band hone ke baad aaye.
+
+141
+00:09:09,078 --> 00:09:12,770
+Friday ko market khula, aur
+share seedha neeche gaya.
+
+142
+00:09:13,170 --> 00:09:17,784
+Swiggy ka IPO November 2024
+mein ₹390 pe aaya tha.
+
+143
+00:09:17,834 --> 00:09:21,422
+Aaj share lagbhag ₹176 ke aas paas hai.
+
+144
+00:09:21,472 --> 00:09:25,060
+IPO price se lagbhag 55 percent neeche.
+
+145
+00:09:25,460 --> 00:09:27,332
+Market ne kya dekha.
+
+146
+00:09:27,382 --> 00:09:31,079
+Revenue 36 percent badha, ₹7,571 crore.
+
+147
+00:09:31,129 --> 00:09:38,670
+Lekin kul nuksaan pichhle quarter ke ₹791
+crore se badh kar ₹922 crore ho gaya.
+
+148
+00:09:39,070 --> 00:09:43,988
+Instamart ka contribution margin, yaani
+har order pe store ke level ka hisaab,
+
+149
+00:09:44,038 --> 00:09:45,899
+pichhle quarter se kamzor hua.
+
+150
+00:09:45,949 --> 00:09:50,868
+Aur Instamart ne is ek quarter mein utne
+naye stores khole, jitne pichhle teen
+
+151
+00:09:50,918 --> 00:09:52,970
+quarters mein mila kar khole the.
+
+152
+00:09:53,370 --> 00:09:55,818
+Aur ek lambi tasveer bhi hai.
+
+153
+00:09:55,868 --> 00:10:02,968
+Financial year 2020 se ab tak, Swiggy ka
+kul nuksaan lagbhag ₹24,679 crore ho chuka
+
+154
+00:10:03,018 --> 00:10:03,313
+hai.
+
+155
+00:10:03,713 --> 00:10:07,556
+Is nuksaan ko chalaane
+ke liye paisa chahiye.
+
+156
+00:10:07,606 --> 00:10:14,563
+Financial year 2026 mein Swiggy ke paas
+fundraising aur financing se ₹9,397 crore
+
+157
+00:10:14,613 --> 00:10:19,754
+aaye, jabki uske business
+operations ne ₹2,898 crore khaaye.
+
+158
+00:10:19,804 --> 00:10:25,983
+March 2026 tak uske paas lagbhag
+₹10,077 crore cash aur investments the.
+
+159
+00:10:26,383 --> 00:10:32,304
+23 October ko investors ki chinta yeh thi
+ki yeh nuksaan kab tak chalega, aur kitna
+
+160
+00:10:32,354 --> 00:10:32,951
+aur hoga.
+
+161
+00:10:33,001 --> 00:10:37,339
+Share ka ek din mein 16 percent
+girna isi chinta ka asar tha.
+
+162
+00:10:41,339 --> 00:10:43,582
+Eternal ki apni kamzoriyaan bhi hain.
+
+163
+00:10:43,982 --> 00:10:44,747
+Pehli baat.
+
+164
+00:10:44,797 --> 00:10:48,156
+Blinkit ka profit margin
+sirf 0.9 percent hai.
+
+165
+00:10:48,206 --> 00:10:53,862
+Ek chhoti si galti, ek price war, aur
+yeh profit wapas nuksaan ban sakta hai.
+
+166
+00:10:54,262 --> 00:10:54,726
+Doosri.
+
+167
+00:10:54,776 --> 00:11:00,015
+Eternal ka kul profit ₹125 crore tha,
+lekin tax lagbhag 61 percent laga.
+
+168
+00:11:00,065 --> 00:11:05,819
+Kyunki purane nuksaan pe jo tax ki chhoot
+milti thi, woh ab khatam ho gayi hai.
+
+169
+00:11:06,219 --> 00:11:08,995
+Aur growth ki raftaar
+bhi thodi dheemi hui hai.
+
+170
+00:11:09,045 --> 00:11:13,985
+Blinkit ke orders ab saal bhar mein 79
+percent badh rahe hain, jo pehle se kam hai,
+
+171
+00:11:14,035 --> 00:11:16,269
+kyunki base ab bahut bada ho gaya hai.
+
+172
+00:11:16,319 --> 00:11:21,139
+Company ne agle teen saal ke liye 60
+percent saalaana growth ka target rakha hai,
+
+173
+00:11:21,189 --> 00:11:24,205
+aur kehti hai ki woh abhi
+us se aage chal rahi hai.
+
+174
+00:11:24,605 --> 00:11:25,121
+Teesri.
+
+175
+00:11:25,171 --> 00:11:31,669
+Blinkit March 2027 tak 3,500 aur March
+2028 tak lagbhag 5,000 stores ka plan bana
+
+176
+00:11:31,719 --> 00:11:32,396
+raha hai.
+
+177
+00:11:32,446 --> 00:11:37,812
+Naye stores shuru mein kam bechte
+hain, aur unmein paisa lagta hai.
+
+178
+00:11:38,212 --> 00:11:38,910
+Aur chauthi.
+
+179
+00:11:38,960 --> 00:11:40,966
+Yeh do companies akeli nahi hain.
+
+180
+00:11:41,016 --> 00:11:45,016
+Zepto, Flipkart aur Amazon bhi
+das minute ka vaada kar rahe hain.
+
+181
+00:11:45,066 --> 00:11:50,125
+Blinkit ne khud likha hai ki jin shehron
+mein muqabla zyada hai, wahaan ka unhe ab
+
+182
+00:11:50,175 --> 00:11:51,309
+behtar andaaza hai.
+
+183
+00:11:51,709 --> 00:11:54,352
+Phir bhi ek number
+Blinkit ke paksh mein hai.
+
+184
+00:11:54,402 --> 00:11:58,901
+Uske mature shehron mein margin 5 percent
+se upar hai, aur jin shehron se 70
+
+185
+00:11:58,951 --> 00:12:03,031
+percent business aata hai, woh
+adjusted EBITDA mein profit mein hain.
+
+186
+00:12:07,031 --> 00:12:10,345
+Agle results mein teen number
+dekhiye, aur ek bonus.
+
+187
+00:12:10,745 --> 00:12:10,890
+Ek.
+
+188
+00:12:10,940 --> 00:12:13,032
+Instamart ka contribution margin.
+
+189
+00:12:13,082 --> 00:12:18,357
+Agar yeh zero ke upar jaata hai, toh har
+order kam se kam store ke level pe kamane
+
+190
+00:12:18,407 --> 00:12:18,811
+lagega.
+
+191
+00:12:19,211 --> 00:12:19,367
+Do.
+
+192
+00:12:19,417 --> 00:12:21,289
+Har store, har din ki bikri.
+
+193
+00:12:21,339 --> 00:12:26,919
+Jab tak Instamart ka store Blinkit ke store
+jitna nahi bechta, nuksaan ka gap bana
+
+194
+00:12:26,969 --> 00:12:27,400
+rahega.
+
+195
+00:12:27,800 --> 00:12:28,083
+Teen.
+
+196
+00:12:28,133 --> 00:12:33,350
+Instamart ka inventory model kitni jaldi
+chalu hota hai, aur usse margin pe kya
+
+197
+00:12:33,400 --> 00:12:34,350
+asar padta hai.
+
+198
+00:12:34,750 --> 00:12:37,237
+Aur ek bonus number, Blinkit ka margin.
+
+199
+00:12:37,287 --> 00:12:42,637
+Kya naye stores kholte hue bhi yeh 0.9
+percent se upar jaata hai, jaisa company keh
+
+200
+00:12:42,687 --> 00:12:43,223
+rahi hai.
+
+201
+00:12:47,123 --> 00:12:51,910
+Every night, in nearly four thousand dark
+stores run by these two companies alone,
+
+202
+00:12:51,960 --> 00:12:55,214
+shelves are restocked for
+tomorrow's ten-minute promise.
+
+203
+00:12:55,614 --> 00:12:57,846
+Both companies keep that promise.
+
+204
+00:12:57,896 --> 00:13:02,549
+Instamart pays about nine point
+seven crore rupees a day to keep it.
+
+205
+00:13:02,599 --> 00:13:04,624
+Blinkit earns about two crore.
+
+206
+00:13:05,024 --> 00:13:09,743
+Over the next few quarters, those two
+numbers will decide how this war ends.
+
+207
+00:13:09,793 --> 00:13:13,319
+Watch the store, the margin,
+and the switch to inventory.
+
+208
+00:13:13,369 --> 00:13:16,268
+The answers will be in
+the next set of results.
+
+209
+00:13:16,668 --> 00:13:17,798
+This was AVRON.
+
+210
+00:13:17,848 --> 00:13:19,922
+The story behind the stock.
