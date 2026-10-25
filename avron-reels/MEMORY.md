@@ -67,6 +67,11 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
   - **Final with the user's own VO rendered 2026-10-25:** `EP01_market-cap_FINAL_no-branding_1080x1920.mp4`, 48.1 s, −14 LUFS. The user's mp3s are in `projects/2026-10-ep01-v2/vo_user/`; `scripts/prep_user_vo.py` converts them and runs an ASR check. Not published.
   - Swap: put files in `public/ep01v2/vo/<id>.wav`, then run `projects/2026-10-ep01-v2/scripts/build_timeline.py` → `sfx.py` → `scripts/mix_stems.py` → render.
 
+- **Series Ep 02–11 planned (2026-10-25), waiting for the user's approval and TTS:** `deliverables/series-2026-10/SERIES_PLAN.md` (research, top-10 order, scripts, visuals), `TTS_LINES.md` (105 lines) and `cast_lineup.jpg`.
+  - The user's answers (quiz): Hinglish with one light English line; end every reel with a share CTA; real company names/logos allowed with "maan lo" numbers; add **Tips wale Chacha** (`src/projects/series/Chacha.tsx`, drawn in SVG; deliberately not bald/round-specs, so he never reads as a real person); 30–50 s with slow audio; meme references OK.
+  - I keep made-up numbers on made-up businesses and use real names only for real, checkable facts. This was told to the user.
+  - Posting order: 02 Muhurat (before Sun 8 Nov 2026), 03 Chacha pump&dump, 04 IPO, 05 F&O 93%, 06 profit up/share down, 07 split/bonus, 08 dividend, 09 upper circuit, 10 P/E, 11 demat.
+
 ## YouTube (starting 2026-10-25)
 - Strategy is in `research/youtube-2026-10/YT_STRATEGY.md`, from 474 videos found via Agent Reach searches.
 - Main product: a weekly 15–20 min company/stock deep-dive. 15–30 min videos had a median of 161K views vs 10K for 3–8 min.
