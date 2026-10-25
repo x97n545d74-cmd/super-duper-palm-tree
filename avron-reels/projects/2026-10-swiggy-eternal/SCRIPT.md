@@ -32,7 +32,7 @@ Fact IDs in [brackets] point to `FACTS.md`. Visual direction is in *italics*. On
 
 *The two numbers transform into per-day counters, ticking in opposite directions over the city lights: −₹9.7 Cr per day / +₹2.0 Cr per day.*
 
-**VO:** One of them is losing about nine point seven crore rupees every day. The other is making about two crore. This film is about that gap. [C5]
+**VO:** Swiggy's Instamart is losing about nine point seven crore rupees every day. Blinkit is making about two crore. This film is about that gap. [C5]
 
 *Title sequence: a sheet of paper folds itself into an origami scooter, which drives into the skyline as the title resolves in large serif type.*
 **ON SCREEN:** ₹9.7 Crore a Day · Swiggy vs Eternal · The quick-commerce war after Q2
@@ -202,7 +202,7 @@ Fact IDs in [brackets] point to `FACTS.md`. Visual direction is in *italics*. On
 **VO:** Market ne kya dekha. Revenue 36 percent badha, ₹7,571 crore. Lekin kul nuksaan pichhle quarter ke ₹791 crore se badh kar ₹922 crore ho gaya. [S1, S2, S3, S4]
 **ON SCREEN:** Revenue +36.1% · Loss ₹791 Cr → ₹922 Cr
 
-**VO:** Instamart ka contribution margin, yaani har order pe store ke level ka hisaab, pichhle quarter se kamzor hua. Aur Swiggy ne naye stores kholne ki raftaar dugni kar di. [S7, S8]
+**VO:** Instamart ka contribution margin, yaani har order pe store ke level ka hisaab, pichhle quarter se kamzor hua. Aur Instamart ne is ek quarter mein utne naye stores khole, jitne pichhle teen quarters mein mila kar khole the. [S7, S8]
 
 *Ledger animation: years scroll from FY20 to FY27, each row adding to a growing red total.*
 
@@ -257,7 +257,7 @@ Fact IDs in [brackets] point to `FACTS.md`. Visual direction is in *italics*. On
 **VO:** Do. Har store, har din ki bikri. Jab tak Instamart ka store Blinkit ke store jitna nahi bechta, nuksaan ka gap bana rahega. [C3]
 **ON SCREEN:** 2 · NOV per store per day · ₹5.8 lakh vs ₹8.3 lakh
 
-**VO:** Teen. Swiggy ka inventory model kitni jaldi chalu hota hai, aur usse margin pe kya asar padta hai. [S10]
+**VO:** Teen. Instamart ka inventory model kitni jaldi chalu hota hai, aur usse margin pe kya asar padta hai. [S10]
 **ON SCREEN:** 3 · Instamart inventory switch · timeline
 
 **VO:** Aur ek bonus number, Blinkit ka margin. Kya naye stores kholte hue bhi yeh 0.9 percent se upar jaata hai, jaisa company keh rahi hai. [E5, E13]
@@ -273,7 +273,7 @@ Fact IDs in [brackets] point to `FACTS.md`. Visual direction is in *italics*. On
 
 *The counters hold. One reads −₹9.7 Cr, the other +₹2.0 Cr.*
 
-**VO:** Both companies keep that promise. One pays about nine point seven crore rupees a day to keep it. The other earns about two crore. [C5]
+**VO:** Both companies keep that promise. Instamart pays about nine point seven crore rupees a day to keep it. Blinkit earns about two crore. [C5]
 
 **VO:** Over the next few quarters, those two numbers will decide how this war ends. Watch the store, the margin, and the switch to inventory. The answers will be in the next set of results.
 
