@@ -3,7 +3,7 @@ import { AbsoluteFill } from "remotion";
 import { clamp01, ease } from "../../../engine/anim";
 import { C, count, Glass, mono, Rise, sans, serif } from "../look";
 import { MapEdge } from "../StyleFrames";
-import { Bars, Headline, Kicker, LOGO, Note, PhotoInsert, Shot, Stat, crore } from "./kit";
+import { Bars, crore, Headline, Kicker, LOGO, Note, PhotoInsert, Shot, Stat, warp } from "./kit";
 import { DarkStoreScene, FixedCostScene, PaperStage } from "./Paper";
 import { en, st } from "./timeline";
 
@@ -132,7 +132,7 @@ export const C1Section: React.FC<{ t: number }> = ({ t }) => (
     </Shot>
     <Shot t={t} a={st("c1_02")} z={en("c1_02")}>
       <PaperStage t={t} a={st("c1_02")} kicker="01 · DO RAASTE" title="The dark store">
-        <DarkStoreScene t={t} a={st("c1_02")} />
+        <DarkStoreScene t={warp(t, st("c1_02"), en("c1_02"), 24)} a={st("c1_02")} />
       </PaperStage>
     </Shot>
     <Shot t={t} a={st("c1_03")} z={en("c1_03")}>
@@ -227,7 +227,7 @@ export const C2Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c2_07")} z={en("c2_07")}>
         <PaperStage t={t} a={st("c2_07")} kicker="02 · SCOREBOARD" title="Kiraya · bijli · staff · sab fixed" note="Sales per store per day: AVRON calc from company filings">
-          <FixedCostScene t={t} a={st("c2_07")} />
+          <FixedCostScene t={warp(t, st("c2_07"), en("c2_07"), 9)} a={st("c2_07")} />
         </PaperStage>
       </Shot>
       <Shot t={t} a={st("c2_08")} z={en("c2_10")}>

@@ -15,3 +15,8 @@ public/smartphone/stems/
 experiments/cocktail/out/
 experiments/cocktail/frames/
 experiments/cocktail/audio_pre.wav
+
+# Swiggy film narration (user-supplied ElevenLabs files) and derived audio
+projects/2026-10-swiggy-eternal/vo/*.mp3
+projects/2026-10-swiggy-eternal/vo/*.wav
+projects/2026-10-swiggy-eternal/vo/*.log

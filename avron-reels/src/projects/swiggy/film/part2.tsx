@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { clamp01, ease, lerp } from "../../../engine/anim";
 import { C, Glass, mono, Rise, sans, serif } from "../look";
-import { Bars, Headline, Kicker, LOGO, Note, PhotoInsert, Shot, Stat, crore } from "./kit";
+import { Bars, crore, Headline, Kicker, LOGO, Note, PhotoInsert, Shot, Stat, warp } from "./kit";
 import { OwnershipScene, PaperStage, SeesawScene, TightropeScene } from "./Paper";
 import { DayMeters } from "./part1";
 import { DURATION, en, st } from "./timeline";
@@ -78,7 +78,7 @@ export const C3Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c3_06")} z={en("c3_06")}>
         <PaperStage t={t} a={st("c3_06")} kicker="03 · KHAANA" title="Swiggy · ek business kamata, doosra ganwata" note="Source: Swiggy press release, Q2 FY27">
-          <SeesawScene t={t} a={st("c3_06")} />
+          <SeesawScene t={warp(t, st("c3_06"), en("c3_06"), 15.5)} a={st("c3_06")} />
         </PaperStage>
       </Shot>
       <Shot t={t} a={st("c3_07")} z={en("c3_07")}>
@@ -127,7 +127,7 @@ export const C4Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c4_01")} z={en("c4_01")}>
         <PaperStage t={t} a={st("c4_01")} kicker="04 · RULEBOOK" title="Do model, ek niyam" note="FDI rules, Press Note 2 · MediaNama, Jul 2025">
-          <OwnershipScene t={t} a={st("c4_01")} />
+          <OwnershipScene t={warp(t, st("c4_01"), en("c4_01"), 14)} a={st("c4_01")} />
         </PaperStage>
       </Shot>
       <Shot t={t} a={st("c4_02")} z={en("c4_02")}>
@@ -307,7 +307,7 @@ export const C6Section: React.FC<{ t: number }> = ({ t }) => {
       </Shot>
       <Shot t={t} a={st("c6_01")} z={en("c6_01")}>
         <PaperStage t={t} a={st("c6_01")} kicker="06 · BLINKIT BHI PERFECT NAHI" title="1 · Blinkit ka margin sirf 0.9%" note="Adjusted EBITDA as % of NOV · Source: Eternal shareholders' letter, Q2 FY27">
-          <TightropeScene t={t} a={st("c6_01")} />
+          <TightropeScene t={warp(t, st("c6_01"), en("c6_01"), 9)} a={st("c6_01")} />
         </PaperStage>
       </Shot>
       <Shot t={t} a={st("c6_02")} z={en("c6_02")}>

@@ -167,3 +167,6 @@ export const PhotoInsert: React.FC<{ t: number; at: number; src: string; credit:
     </div>
   );
 };
+
+/** Play a choreographed scene of `design` seconds inside a beat [a, z]: it speeds up if the line is shorter, never slows down. */
+export const warp = (t: number, a: number, z: number, design: number) => a + (t - a) * Math.max(1, design / Math.max(1, z - a));
