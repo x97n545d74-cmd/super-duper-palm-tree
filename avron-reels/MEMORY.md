@@ -70,6 +70,8 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Series Ep 02–11 planned (2026-10-25), waiting for the user's approval and TTS:** `deliverables/series-2026-10/SERIES_PLAN.md` (research, top-10 order, scripts, visuals), `TTS_LINES.md` (105 lines) and `cast_lineup.jpg`.
   - The user's answers (quiz): Hinglish with one light English line; end every reel with a share CTA; real company names/logos allowed with "maan lo" numbers; add **Tips wale Chacha** (`src/projects/series/Chacha.tsx`, drawn in SVG; deliberately not bald/round-specs, so he never reads as a real person); 30–50 s with slow audio; meme references OK.
   - I keep made-up numbers on made-up businesses and use real names only for real, checkable facts. This was told to the user.
+  - **Ep 02 Muhurat built (guide VO):** `deliverables/series-2026-10/ep02/EP02_muhurat_GUIDE-VO_1080x1920.mp4`, 46.3 s. Composition `Ep02` (`src/projects/series/Ep02.tsx`) on the shared kit `src/projects/series/kit.tsx` (Cast, Shot push cuts, Captions, Texture grain+halftone, TickerLine, ShareCTA). User TTS files named `ep02_<id>`; swap = `prep_user_vo.py` → `build_timeline.py` → `sfx.py` → `mix_stems.py` → render (about 10 min with motion blur).
+  - User asked (2026-10-25) for famous company names. Rule: real names only with their real, dated numbers. User asked for Shinchan/Doraemon/Nobita and offered images. Declined (copyright); offered original guest characters or dialogue mentions.
   - Posting order: 02 Muhurat (before Sun 8 Nov 2026), 03 Chacha pump&dump, 04 IPO, 05 F&O 93%, 06 profit up/share down, 07 split/bonus, 08 dividend, 09 upper circuit, 10 P/E, 11 demat.
 
 ## YouTube (starting 2026-10-25)

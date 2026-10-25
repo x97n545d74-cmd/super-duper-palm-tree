@@ -1,0 +1,17 @@
+{
+ "_note": "Ep 02 Muhurat. 'cap' = caption + the line for the user's TTS (file ep02_<id>). 'tts' = Devanagari for the Kokoro placeholder only.",
+ "voices": {"boy": {"kokoro": "hm_omega", "speed": 1.1}, "girl": {"kokoro": "hf_alpha", "speed": 1.02}, "chacha": {"kokoro": "hm_psi", "speed": 0.98}},
+ "lines": [
+  {"id": "c1", "who": "chacha", "cap": "Beta! Muhurat trading mein share lo | saal bhar double!", "tts": "बेटा! मुहूर्त ट्रेडिंग में शेयर लो, साल भर डबल!"},
+  {"id": "b1", "who": "boy", "cap": "Sach mein? Shubh muhurat matlab shubh profit?", "tts": "सच में? शुभ मुहूर्त मतलब शुभ प्रॉफ़िट?"},
+  {"id": "g1", "who": "girl", "cap": "Muhurat trading Diwali ki parampara hai | Is saal 8 November, Sunday | dopahar lagbhag ek ghante ka special session", "tts": "मुहूर्त ट्रेडिंग दिवाली की परंपरा है। इस साल आठ नवंबर, संडे, दोपहर लगभग एक घंटे का स्पेशल सेशन"},
+  {"id": "b2", "who": "boy", "cap": "Toh us ek ghante mein kharida share lucky hota hai?", "tts": "तो उस एक घंटे में ख़रीदा शेयर लकी होता है?"},
+  {"id": "g2", "who": "girl", "cap": "Share ko panchang nahi pata | Use sirf company ki kamaai pata hai", "tts": "शेयर को पंचांग नहीं पता। उसे सिर्फ़ कंपनी की कमाई पता है"},
+  {"id": "g3", "who": "girl", "cap": "Tradition is fine | Research is a must", "tts": "ट्रेडिशन इज़ फ़ाइन। रिसर्च इज़ अ मस्ट"},
+  {"id": "c2", "who": "chacha", "cap": "Arre beti, saal bhar Lakshmi aayegi!", "tts": "अरे बेटी, साल भर लक्ष्मी आएगी!"},
+  {"id": "g4", "who": "girl", "cap": "Lakshmi research se aati hai, Chacha | Forward message se nahi", "tts": "लक्ष्मी रिसर्च से आती है, चाचा। फ़ॉरवर्ड मैसेज से नहीं"},
+  {"id": "b3", "who": "boy", "cap": "Toh main Diwali pe kya karun?", "tts": "तो मैं दिवाली पे क्या करूँ?"},
+  {"id": "g5", "who": "girl", "cap": "Mithai kha | aur ek company ki balance sheet padh", "tts": "मिठाई खा, और एक कंपनी की बैलेंस शीट पढ़"},
+  {"id": "g6", "who": "girl", "cap": "Jo dost Muhurat ko lottery samajhta hai | usse ye reel share karo", "tts": "जो दोस्त मुहूर्त को लॉटरी समझता है, उससे ये रील शेयर करो"}
+ ]
+}
