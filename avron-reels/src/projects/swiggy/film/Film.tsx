@@ -42,7 +42,7 @@ export const SwiggyFilm: React.FC<{ plan?: BackdropPlan }> = ({ plan = PLAN }) =
       <ProgressRail t={t} />
       <Grain />
       {/* narration (user's ElevenLabs recording, re-timed) + original score, mixed to -14 LUFS by scripts/mix_stems.py */}
-      <Audio src={staticFile("swiggy/film_mix.wav")} />
+      <Audio src={staticFile("swiggy/film_mix.flac")} />
     </AbsoluteFill>
   );
 };

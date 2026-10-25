@@ -1,6 +1,7 @@
 // Quick silent review render at half size: node scripts/preview.mjs <compId> <output.mp4>
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,3 +26,5 @@ await renderMedia({
   },
 });
 console.log("DONE", output, ((Date.now() - t0) / 1000).toFixed(0) + "s");
+// remove the temporary bundle (it holds a copy of public/, hundreds of MB)
+fs.rmSync(serveUrl, { recursive: true, force: true });

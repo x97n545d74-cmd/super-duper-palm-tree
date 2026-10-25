@@ -14,3 +14,5 @@ for (const s of times) {
   await renderStill({ serveUrl, composition, frame, output, imageFormat: "jpeg", jpegQuality: 85, chromiumOptions: { gl: "swangle" }, scale: 0.5 });
   console.log("rendered", output);
 }
+// remove the temporary bundle (it holds a copy of public/, hundreds of MB)
+fs.rmSync(serveUrl, { recursive: true, force: true });

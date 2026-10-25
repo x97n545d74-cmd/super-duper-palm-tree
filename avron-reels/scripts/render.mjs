@@ -2,6 +2,7 @@
 // H.264 High / yuv420p / BT.709, AAC 320k, CRF 16. Progress logged to stdout.
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
+import fs from "node:fs";
 import path from "node:path";
 
 const [comp = "FuelGap", output = "out/reel.mp4"] = process.argv.slice(2);
@@ -23,3 +24,5 @@ await renderMedia({
   },
 });
 console.log("DONE", output, ((Date.now() - t0) / 1000).toFixed(0) + "s");
+// remove the temporary bundle (it holds a copy of public/, hundreds of MB)
+fs.rmSync(serveUrl, { recursive: true, force: true });
