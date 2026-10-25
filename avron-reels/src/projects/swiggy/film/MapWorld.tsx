@@ -3,10 +3,11 @@ import { AbsoluteFill } from "remotion";
 import { clamp01, ease, lerp, rand } from "../../../engine/anim";
 import { C } from "../look";
 import MAP from "../india_map.json";
-import { Section, sec, SECTIONS } from "./timeline";
+import { SKY, sectionAt } from "./Backdrops";
+import { Section, sec } from "./timeline";
 
 /*
- * Chapter background (user picked option B, 2026-10-25): a live map of India instead of photographs. The camera drifts from city to
+ * Chapter background option B: a live map of India instead of photographs. The camera drifts from city to
  * city as the story moves; around each city, dots stand for its dark stores (one dot ≈ 4 stores, Blinkit yellow,
  * Instamart orange, QuickCommerceMap July 2026); short delivery strokes keep drawing out of each city. Dot positions
  * around a city are schematic, the counts are not. Colour still follows the hour of the day.
@@ -21,15 +22,9 @@ const ROUTE: Record<Section, string[]> = {
   open: ["Delhi"], c1: ["Gurugram", "Delhi", "Lucknow"], c2: ["Delhi", "Mumbai", "Bengaluru"], c3: ["Mumbai", "Pune"],
   c4: ["Ahmedabad", "Mumbai"], c5: ["Mumbai", "Bengaluru"], c6: ["Hyderabad", "Chennai", "Bengaluru"], c7: ["Kolkata", "Delhi"], close: ["Delhi"],
 };
-/** Base colours by chapter, following the day: dawn, morning, noon, dusk, storm, late night, pre-dawn. */
-const SKY: Record<Section, [string, string]> = {
-  open: ["#0B0F1A", "#05070C"], c1: ["#2A2232", "#141019"], c2: ["#1C2633", "#0E141C"], c3: ["#2A241C", "#14110D"],
-  c4: ["#2E1E16", "#150E0B"], c5: ["#171C22", "#0B0E12"], c6: ["#0D1220", "#06080F"], c7: ["#251A2C", "#120D17"], close: ["#2B1E2A", "#140E14"],
-};
 const K = 2.2; // map zoom: 930 px wide map → ~2,400 px
 const FOCUS_X = 1250, FOCUS_Y = 560; // the city sits right of centre; text lives on the left
 
-const sectionAt = (t: number): Section => [...SECTIONS].reverse().find((s) => t >= sec(s)[0]) ?? "open";
 
 const camera = (t: number) => {
   const s = sectionAt(t);

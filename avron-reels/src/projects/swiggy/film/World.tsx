@@ -2,8 +2,9 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { clamp01, ease } from "../../../engine/anim";
 import { Hour, PhotoWorld } from "../look";
+import { PaperCity, sectionAt, TypeWall } from "./Backdrops";
 import { MapWorld } from "./MapWorld";
-import { BEATS, sec, st } from "./timeline";
+import { BEATS, sec, Section, st } from "./timeline";
 
 /*
  * The world behind the story: one day, night to sunrise. Each plate is a licensed photograph with the grade
@@ -59,16 +60,22 @@ export const PLATES: Plate[] = [
 const pan = (i: number) => (i % 2 ? -1 : 1) * 1.5 * (PLATES[i].drift ?? 18);
 const chapterAmount = (t: number) => (t > sec("c1")[0] && t < sec("close")[0] ? Math.min(1, (t - sec("c1")[0]) / 2, (sec("close")[0] - t) / 2) : 0);
 
-export const World: React.FC<{ t: number; mode?: "photo" | "map" }> = ({ t, mode = "photo" }) => {
+/** Chapter background options: A photographs, B live India map, C paper city, D type wall. */
+export type Backdrop = "photo" | "map" | "paper" | "type";
+export type BackdropPlan = Partial<Record<Section, Backdrop>>;
+
+export const World: React.FC<{ t: number; plan?: BackdropPlan }> = ({ t, plan = {} }) => {
+  const s = sectionAt(t);
+  const mode: Backdrop = s === "open" || s === "close" ? "photo" : plan[s] ?? "photo";
   // the current plate plus the one fading out
   const i = Math.max(0, PLATES.findIndex((p, k) => t >= p.at && (k === PLATES.length - 1 || t < PLATES[k + 1].at)));
   const cur = PLATES[i];
   const prev = i > 0 ? PLATES[i - 1] : null;
   const p = ease.inOutCubic(clamp01((t - cur.at) / XF));
-  const onMap = mode === "map" ? chapterAmount(t) : 0;
+  const alt = mode === "photo" ? 0 : chapterAmount(t);
   return (
     <AbsoluteFill>
-      {onMap < 1 && (
+      {alt < 1 && (
         <AbsoluteFill style={BACKGROUND_FOCUS(t)}>
           {prev && p < 1 && <AbsoluteFill><PhotoWorld src={prev.src} t={t} t0={prev.at} hour={prev.hour} drift={pan(i - 1)} overlay={prev.overlay} /></AbsoluteFill>}
           <AbsoluteFill style={{ opacity: prev ? p : 1 }}>
@@ -78,8 +85,14 @@ export const World: React.FC<{ t: number; mode?: "photo" | "map" }> = ({ t, mode
           <AbsoluteFill style={{ opacity: chapterAmount(t), background: "linear-gradient(90deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.18) 50%, transparent 78%)" }} />
         </AbsoluteFill>
       )}
-      {/* map mode: the live map replaces the photographs for the chapters; the open and close stay photographic */}
-      {onMap > 0 && <AbsoluteFill style={{ opacity: onMap }}><MapWorld t={t} /></AbsoluteFill>}
+      {/* other backdrops replace the photographs chapter by chapter; the change hides under the chapter card */}
+      {alt > 0 && (
+        <AbsoluteFill style={{ opacity: alt }}>
+          {mode === "map" && <MapWorld t={t} />}
+          {mode === "paper" && <PaperCity t={t} />}
+          {mode === "type" && <TypeWall t={t} />}
+        </AbsoluteFill>
+      )}
     </AbsoluteFill>
   );
 };

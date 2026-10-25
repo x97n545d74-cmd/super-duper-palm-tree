@@ -6,7 +6,7 @@ import { OrigamiCard } from "./Origami";
 import { C1Section, C2Section, OpenSection } from "./part1";
 import { C3Section, C4Section, C5Section, C6Section, C7Section, CloseSection } from "./part2";
 import { sec } from "./timeline";
-import { World } from "./World";
+import { BackdropPlan, World } from "./World";
 
 /** "₹9.7 Crore a Day" · Swiggy vs Eternal · 1920×1080 · the full film. */
 const CARDS = [
@@ -19,13 +19,16 @@ const CARDS = [
   { s: "c7", num: "07", title: "Aage kya dekhein", doodle: "scope" },
 ] as const;
 
-export const SwiggyFilm: React.FC<{ bg?: "photo" | "map" }> = ({ bg = "map" }) => {
+/** Background per chapter: the user picks from A photo / B map / C paper / D type (see BG_OPTIONS.jpg). */
+export const PLAN: BackdropPlan = {};
+
+export const SwiggyFilm: React.FC<{ plan?: BackdropPlan }> = ({ plan = PLAN }) => {
   const t = useTime();
   const inSec = (s: Parameters<typeof sec>[0]) => t >= sec(s)[0] - 0.5 && t < sec(s)[1] + 0.5;
   return (
     <AbsoluteFill style={{ background: "#000", overflow: "hidden" }}>
       <SerifFont />
-      <World t={t} mode={bg} />
+      <World t={t} plan={plan} />
       {inSec("open") && <OpenSection t={t} />}
       {inSec("c1") && <C1Section t={t} />}
       {inSec("c2") && <C2Section t={t} />}
