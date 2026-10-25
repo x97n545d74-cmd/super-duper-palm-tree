@@ -2,7 +2,7 @@
 
 The narration came as two ElevenLabs files (part1 = open..chapter 5, part2 = chapter 6..close), spoken from
 VO_TTS_READY.txt, whose 63 non-empty lines are the film's 63 beats in order. faster-whisper word timestamps
-(<project>/vo/partN_words.json) locate where each line starts; each beat then gets its slice of the recording.
+(<project>/vo/partN_words_hi.json, Hindi mode, transliterated) locate where each line starts; each beat then gets its slice of the recording.
 
 The film timeline keeps the structure the shots were built for: an opening pad before the first line, a chapter
 card (CARD seconds) plus a breath before every chapter, a pad before the close, and the end card after it.
@@ -18,6 +18,15 @@ proj, film = sys.argv[1], sys.argv[2]
 SR = 48000
 OPEN_PAD, CARD, BREATH, CLOSE_PAD, END_CARD = 6.0, 3.0, 0.6, 3.5, 8.0
 PART2_FIRST = "c6_00"
+# Four lines were corrected after the user recorded (Instamart named; the store-pace claim fixed). The main files
+# still say the old words, so those beats are matched on the old wording and their audio comes from fix4.mp3.
+OLD = {
+    "open_04": "One of them is losing about nine point seven crore rupees every day.",
+    "c5_03": "Instamart ka contribution margin, yaani har order pe store ke level ka hisaab",
+    "c7_03": "Teen. Swiggy ka inventory model kitni jaldi chalu hota hai,",
+    "close_01": "Both companies keep that promise. One pays about nine point seven crore",
+}
+PATCH = {"open_04": (0.0, 9.62), "c5_03": (10.0, 23.95), "c7_03": (24.38, 30.98), "close_01": (31.30, 40.36)}
 
 beats = json.load(open(f"{film}/beats.json"))["beats"]
 lines = [l for l in open(f"{proj}/VO_TTS_READY.txt").read().split("\n") if l.strip()]
@@ -31,8 +40,11 @@ def load(part):
     return np.frombuffer(pcm, np.float32).copy()
 
 
-audio = {p: load(p) for p in ("part1", "part2")}
-words = {p: json.load(open(f"{proj}/vo/{p}_words.json")) for p in ("part1", "part2")}
+audio = {p: load(p) for p in ("part1", "part2", "fix4")}
+# Hindi-mode ASR writes Hinglish in Devanagari; bring it to Roman so it can be compared with the script
+from indic_transliteration import sanscript
+roman = lambda w: sanscript.transliterate(w, sanscript.DEVANAGARI, sanscript.ITRANS) if re.search("[\u0900-\u097F]", w) else w
+words = {p: [dict(x, w=roman(x["w"])) for x in json.load(open(f"{proj}/vo/{p}_words_hi.json"))] for p in ("part1", "part2")}
 
 # 1 · find each line's first word in the transcript (monotonic, fuzzy on the first few words)
 starts = {}
@@ -44,7 +56,7 @@ for b, line in zip(beats, lines):
         p = "part2"
     part_of[b["id"]] = p
     W = words[p]
-    ref = norm(" ".join(line.split()[:5]))
+    ref = norm(" ".join(OLD.get(b["id"], line).split()[:5]))
     if cursor[p] == 0 and (b["id"] == "open_00" or b["id"] == PART2_FIRST):
         starts[b["id"]] = W[0]["s"]; cursor[p] = 1; continue
     best, bj = 0.0, None
@@ -73,6 +85,8 @@ for i, b in enumerate(beats):
     end_raw = starts[nxt] if nxt and part_of[nxt] == p else len(audio[p]) / SR
     a = max(0.0, starts[b["id"]] - 0.08)
     b["src"] = {"part": p, "a": round(a, 3), "b": round(min(trim_end(audio[p], a, end_raw), end_raw), 3)}
+    if b["id"] in PATCH:
+        b["src"] = {"part": "fix4", "a": PATCH[b["id"]][0], "b": PATCH[b["id"]][1], "replaces": b["src"]}
 
 # 3 · lay the beats on the film clock
 t = OPEN_PAD
