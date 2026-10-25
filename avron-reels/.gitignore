@@ -20,3 +20,4 @@ experiments/cocktail/audio_pre.wav
 projects/2026-10-swiggy-eternal/vo/*.mp3
 projects/2026-10-swiggy-eternal/vo/*.wav
 projects/2026-10-swiggy-eternal/vo/*.log
+projects/2026-10-swiggy-eternal/vo/*_words*.json
