@@ -1,0 +1,130 @@
+{
+ "_note": "Dialogue is the user's script, unchanged. 'tts' is a Devanagari spelling for the Kokoro guide voice only; 'say' is the eleven_v4 prompt for the real VO; 'cap' is the on-screen caption (Roman Hinglish, no full stops).",
+ "voices": {
+  "boy": {
+   "kokoro": "hm_omega",
+   "speed": 1.32,
+   "eleven": "KWuQEGxZQtpWhRutt6g6 (Samar – Fun & Playful Comedy Actor)"
+  },
+  "girl": {
+   "kokoro": "hf_alpha",
+   "speed": 1.25,
+   "eleven": "tyOTyLYwi6G1V4rsb6uy (Tia Mirza – Composed & Confident)"
+  }
+ },
+ "lines": [
+  {
+   "id": "b1",
+   "who": "boy",
+   "scene": 1,
+   "cap": "Baby, ₹50 ka share mil gaya! Itna sasta, full paisa vasool!",
+   "say": "[excited] Baby, pachaas rupaye ka share mil gaya! Itna sasta, full paisaa vasool!",
+   "tts": "बेबी, पचास रुपये का शेयर मिल गया! इतना सस्ता, फुल पैसा वसूल!"
+  },
+  {
+   "id": "g1",
+   "who": "girl",
+   "scene": 1,
+   "cap": "Toh ₹50 mein iPhone bhi le lega?",
+   "say": "[amused, teasing] Toh pachaas rupaye mein iPhone bhi le lega?",
+   "tts": "तो पचास रुपये में आईफ़ोन भी ले लेगा?"
+  },
+  {
+   "id": "b2",
+   "who": "boy",
+   "scene": 1,
+   "cap": "Arre, har cheez ki apni value hoti hai!",
+   "say": "[offended] Arre, har cheez ki apni value hoti hai!",
+   "tts": "अरे, हर चीज़ की अपनी वैल्यू होती है!"
+  },
+  {
+   "id": "g2",
+   "who": "girl",
+   "scene": 2,
+   "cap": "Exactly! Share ka price chhota hone se company cheap nahi ho jaati",
+   "say": "[playful, sharp] Exactly! Share ka price chhota hone se company cheap nahi ho jaati.",
+   "tts": "एग्ज़ैक्टली! शेयर का प्राइस छोटा होने से कंपनी चीप नहीं हो जाती।"
+  },
+  {
+   "id": "b3",
+   "who": "boy",
+   "scene": 2,
+   "cap": "Toh phir sasta kya hota hai?",
+   "say": "[confused] Toh phir sasta kya hota hai?",
+   "tts": "तो फिर सस्ता क्या होता है?"
+  },
+  {
+   "id": "g3",
+   "who": "girl",
+   "scene": 2,
+   "cap": "Teri research!",
+   "say": "[deadpan] Teri research!",
+   "tts": "तेरी रिसर्च!"
+  },
+  {
+   "id": "g4",
+   "who": "girl",
+   "scene": 3,
+   "vo": true,
+   "cap": "Ek dukaan ka share ₹50, doosri ka ₹500 | Sirf price dekh ke kaise pata chalega kaunsi better deal hai?",
+   "say": "[storytelling] Ek dukaan ka share pachaas rupaye, doosri ka paanch sau. Sirf price dekh ke kaise pata chalega, kaunsi better deal hai?",
+   "tts": "एक दुकान का शेयर पचास रुपये, दूसरी का पाँच सौ। सिर्फ़ प्राइस देख के कैसे पता चलेगा, कौन सी बेटर डील है?"
+  },
+  {
+   "id": "g5",
+   "who": "girl",
+   "scene": 3,
+   "cap": "Company kitna kamaati hai, kitna karza hai | kitni grow kar sakti hai aur uske liye kitna pay kar raha hai | Yeh sab dekh!",
+   "say": "[confident] Company kitna kamaati hai, kitna karza hai, kitni grow kar sakti hai, aur uske liye kitna pay kar raha hai. Yeh sab dekh!",
+   "tts": "कंपनी कितना कमाती है, कितना कर्ज़ा है, कितनी ग्रो कर सकती है, और उसके लिए कितना पे कर रहा है। ये सब देख!"
+  },
+  {
+   "id": "b4",
+   "who": "boy",
+   "scene": 3,
+   "cap": "Matlab sirf price tag dekh ke rishta pakka nahi karna?",
+   "say": "[slowly realising] Matlab sirf price tag dekh ke rishta pakka nahi karna?",
+   "tts": "मतलब सिर्फ़ प्राइस टैग देख के रिश्ता पक्का नहीं करना?"
+  },
+  {
+   "id": "g6",
+   "who": "girl",
+   "scene": 3,
+   "cap": "Finally, kuch toh samjha!",
+   "say": "[teasing laugh] Finally, kuch toh samjha!",
+   "tts": "फ़ाइनली, कुछ तो समझा!"
+  },
+  {
+   "id": "b5",
+   "who": "boy",
+   "scene": 4,
+   "cap": "Achha, toh mere andar bhi hidden value hai!",
+   "say": "[smug, fixing his hair] Achha, toh mere andar bhi hidden value hai!",
+   "tts": "अच्छा, तो मेरे अंदर भी हिडन वैल्यू है!"
+  },
+  {
+   "id": "g7",
+   "who": "girl",
+   "scene": 4,
+   "cap": "Ho sakti hai | Pehle apna balance sheet dikha!",
+   "say": "[flirty, slow] Ho sakti hai. Pehle apna balance sheet dikha!",
+   "tts": "हो सकती है। पहले अपना बैलेंस शीट दिखा!"
+  },
+  {
+   "id": "b6",
+   "who": "boy",
+   "scene": 4,
+   "cap": "Baby, personal mat ho!",
+   "say": "[panicked, whiny] Baby, personal mat ho!",
+   "tts": "बेबी, पर्सनल मत हो!"
+  },
+  {
+   "id": "g8",
+   "who": "girl",
+   "scene": 5,
+   "cap": "Invest karne se pehle price nahi, business samajh!",
+   "say": "[warm, to camera] Invest karne se pehle price nahi, business samajh!",
+   "tts": "इन्वेस्ट करने से पहले प्राइस नहीं, बिज़नेस समझ!"
+  }
+ ]
+}

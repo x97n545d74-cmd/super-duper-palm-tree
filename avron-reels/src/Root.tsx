@@ -10,6 +10,7 @@ import { DURATION as VIVIANA_DURATION } from "./projects/viviana/config";
 import { Viviana2Reel } from "./projects/viviana2/Reel";
 import { DURATION as VIVIANA2_DURATION } from "./projects/viviana2/config";
 import { SmartphoneReel } from "./projects/smartphone/Reel";
+import { Ep01Reel, DURATION as EP01_DURATION } from "./projects/ep01/Reel";
 import { SwiggyStyleFrames } from "./projects/swiggy/StyleFrames";
 import { SwiggyFilm } from "./projects/swiggy/film/Film";
 import { DURATION as SWIGGY_DURATION } from "./projects/swiggy/film/timeline";
@@ -57,6 +58,7 @@ export const Root: React.FC = () => (
       width={layout.width}
       height={layout.height}
     />
+    <Composition id="Ep01" component={Ep01Reel} durationInFrames={Math.ceil(EP01_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="SwiggyFilm" component={SwiggyFilm} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />
     <Composition id="SwiggyBgB" component={SwiggyFilm} defaultProps={{ plan: { c1: "map", c2: "map", c3: "map", c4: "map", c5: "map", c6: "map", c7: "map" } as const }} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />
     <Composition id="SwiggyBgC" component={SwiggyFilm} defaultProps={{ plan: { c1: "paper", c2: "paper", c3: "paper", c4: "paper", c5: "paper", c6: "paper", c7: "paper" } as const }} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />

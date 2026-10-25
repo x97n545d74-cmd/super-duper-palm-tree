@@ -55,6 +55,11 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
   - Not published.
 - **ElevenLabs credits:** check the balance before generating a VO. One ~600-character eleven_v4 read costs about 577 credits per take, and the default is 2 takes.
 
+- **Ep 01 "₹50 ka share sasta hai?"** (2026-10-25): the first episode of the boy + girl finance-comedy series, from the user's own brief. Guide-VO draft in `deliverables/2026-10-ep01-sasta-share/`, with the full package in `PRODUCTION.md`. Not published.
+  - The characters are the user's reference sheet (`projects/2026-10-ep01-sasta-share/work/ref.png`), cut out by `scripts/cutout.py`. Only the eyes, brows and mouth are rebuilt so they can animate; the rest is the original drawing. The Remotion composition is `Ep01` (`src/projects/ep01/`), and `Character.tsx` is the reusable puppet for future episodes.
+  - Voices cast: girl = Tia Mirza Composed (`tyOTyLYwi6G1V4rsb6uy`), boy = Samar Fun & Playful (`KWuQEGxZQtpWhRutt6g6`). Not generated: ElevenLabs still has **276 credits** (2026-10-25) and needs about 1,960. The swap steps are in `PRODUCTION.md`.
+  - The guide VO runs 44.4 s; the brief asked for 30–35 s. Suggested trims are listed but not applied (the user's call).
+
 ## YouTube (starting 2026-10-25)
 - Strategy is in `research/youtube-2026-10/YT_STRATEGY.md`, from 474 videos found via Agent Reach searches.
 - Main product: a weekly 15–20 min company/stock deep-dive. 15–30 min videos had a median of 161K views vs 10K for 3–8 min.

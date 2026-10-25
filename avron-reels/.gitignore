@@ -21,3 +21,9 @@ projects/2026-10-swiggy-eternal/vo/*.mp3
 projects/2026-10-swiggy-eternal/vo/*.wav
 projects/2026-10-swiggy-eternal/vo/*.log
 projects/2026-10-swiggy-eternal/vo/*_words*.json
+
+# Ep01: regenerable by projects/2026-10-ep01-sasta-share/scripts/sfx.py; review/debug crops
+public/ep01/stems/
+public/ep01/chars/*_orig.png
+projects/2026-10-ep01-sasta-share/work/*
+!projects/2026-10-ep01-sasta-share/work/ref.png
