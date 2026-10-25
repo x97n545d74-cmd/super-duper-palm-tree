@@ -39,6 +39,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - The best result so far was the user's own ElevenLabs file (Tia Mirza, v4). The user may supply VO again: hand over the script and ask for it.
 
 ## Delivered
+- **Swiggy vs Eternal, 13:28 YouTube film (2026-10-25):** user's ElevenLabs VO (Tia Mirza Crisp and Commanding, v4) plus a 4-line fix file, re-timed with `scripts/timeline_swiggy.py`, original score (`score_swiggy.py`), -14 LUFS. Final at `out/AVRON_Swiggy_vs_Eternal_FINAL.mp4` (637 MB) and a 417 MB upload copy. SRT and upload kit are in the project folder. Not published.
 - **Fuel Gap** (₹30/litre gap): v3 final with the Tia Mirza VO, in `deliverables/2026-10-fuel-gap/`.
 - **शर्त (The Fine Print)**: a 68 s Hinglish oil/fiscal/2029 reel, in `deliverables/2026-10-oil-2029/`. The user called the story weak ("shit story g"), so make future stories more intriguing.
 
