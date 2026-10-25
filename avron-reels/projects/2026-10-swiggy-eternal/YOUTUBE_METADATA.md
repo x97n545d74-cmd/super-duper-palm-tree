@@ -43,7 +43,7 @@ Swiggy, Eternal, Blinkit, Instamart, Zomato, quick commerce, Swiggy Q2 results, 
 2. **Details**
    - Title: title #1 above
    - Description: the whole Description block above (chapters included)
-   - Thumbnail: **Upload file** → `THUMBNAIL.jpg`. Custom thumbnails need a verified channel (phone verification at youtube.com/verify).
+   - Thumbnail: **Upload file** → the chosen `THUMB_*.jpg` (split, rider or crash). Custom thumbnails need a verified channel (phone verification at youtube.com/verify).
    - Audience: **No, it's not made for kids**
    - Show more → **Altered content: Yes** (the narration is an AI voice)
    - Tags: the Tags line above
