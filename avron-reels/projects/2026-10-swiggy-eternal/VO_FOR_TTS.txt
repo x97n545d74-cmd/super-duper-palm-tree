@@ -1,11 +1,14 @@
-SWIGGY vs ETERNAL · narration for TTS (Hinglish, Roman script)
-Record one file per chapter, or one file with a 1.5 s pause between chapters.
+SWIGGY vs ETERNAL · narration for TTS
+Cold open and close are in ENGLISH; chapters 1–7 are Hinglish (Roman script).
+Record one file per section, or one file with a 1.5 s pause between sections.
 
-=== 00:00 Cold open (about 1 min) ===
-Das minute. Itne mein aapka doodh, bread, aur shaayad ek phone charger bhi ghar aa jaata hai. Is das minute ke peeche do companies hain, do apps hain, aur ek jung hai jo har quarter ke results ke saath aur mehngi hoti ja rahi hai.
-23 October, Friday. Swiggy ke share ek din mein 16 percent tak gire. Company ke itihaas ki sabse badi ek din ki giraawat.
-Usi hafte, ek doosri company ne apne quick commerce business se ₹184 crore ka profit dikhaya. Same cities. Same customers. Same das minute ka vaada.
-Ek company har din lagbhag ₹9.7 crore ganwa rahi hai. Doosri har din ₹2 crore kama rahi hai. Yeh video is farak ki kahani hai.
+=== 00:00 Cold open, in English (about 1 min 10 s) ===
+Ten minutes. That is all it takes now for milk, bread, even a phone charger to reach your door, often before the kettle boils.
+Behind those ten minutes are two companies, two apps, and a war that gets more expensive with every quarter.
+On Friday, the twenty-third of October, Swiggy lost as much as sixteen percent of its value in a single day. It was the biggest one-day fall in the company's history.
+That same week, its rival Blinkit, owned by Eternal, reported a quick-commerce profit of one hundred and eighty-four crore rupees. Both serve the same cities and the same customers, with the same ten-minute promise.
+One of them is losing about nine point seven crore rupees every day. The other is making about two crore. This film is about that gap.
+Ab is kahani ko shuru se samajhte hain, aapki zubaan mein.
 
 === 01:10 Chapter 1: Do raaste (about 1 min 50 s) ===
 Kahani khaane se shuru hoti hai. Zomato aur Swiggy, dono ne India ko phone se khaana mangwana sikhaaya. Saalon tak dono ek hi race daud rahe the. Restaurant, delivery partner, discount, aur nuksaan.
@@ -28,7 +31,7 @@ Blinkit ka margin lagaatar chhe quarter se behtar ho raha hai. Saal bhar pehle y
 Instamart ki growth tez hai. Uske orders saal bhar mein 31 percent badhe, aur pichhle quarter se 13 percent. Swiggy ne kaha ki yeh woh growth hai jiska usne vaada kiya tha. Dikkat yeh hai ki har order abhi bhi nuksaan mein hai.
 
 === 05:40 Chapter 3: Khaana, jo paisa kamata hai (about 1 min 50 s) ===
-Swiggy ki kahani mein ek achhi khabar bhi hai, aur woh khaane se aati hai. Swiggy ka food delivery business is quarter apne itihaas ka sabse zyada profit laaya. ₹341 crore adjusted EBITDA.
+Swiggy ki kahani mein ek achhi khabar bhi hai, aur woh khaane se aati hai. Swiggy ka food delivery business is quarter apne itihaas ka sabse zyada profit laaya. ₹341 crore adjusted EBITDA, yaani rozmarra ke kaam se hone wala profit, kuch accounting items ko chhod kar.
 Swiggy pe har mahine lagbhag 1 crore 98 lakh log khaana mangwaate hain, aur yeh ginti saal bhar mein 15 percent badhi.
 Swiggy ne Toing naam ka ek alag app bhi banaaya hai, saste khaane ke liye. Yeh 50 se zyada shehron mein hai. Company ke mutaabik Toing ke har teen naye users mein se do ne pehle kabhi online khaana mangwaaya hi nahi tha.
 Zomato ka food delivery bhi tez chal raha hai. Uske orders 21.5 percent badhe, aur margin 5.5 percent hai.
@@ -72,5 +75,8 @@ Do. Har store, har din ki bikri. Jab tak Instamart ka store Blinkit ke store jit
 Teen. Swiggy ka inventory model kitni jaldi chalu hota hai, aur usse margin pe kya asar padta hai.
 Aur ek bonus number, Blinkit ka margin. Kya naye stores kholte hue bhi yeh 0.9 percent se upar jaata hai, jaisa company keh rahi hai.
 
-=== 14:50 Close (about 25 s) ===
-Das minute ka vaada dono nibha rahe hain. Farak yeh hai ki ek company ko yeh vaada har din ₹9.7 crore ka padta hai, aur doosri ko har din ₹2 crore deta hai. Agle quarter yeh numbers kis taraf jaate hain, wahi is jung ka faisla karega.
+=== 14:50 Close, in English (about 50 s) ===
+Every night, in nearly four thousand dark stores run by these two companies alone, shelves are restocked for tomorrow's ten-minute promise.
+Both companies keep that promise. One pays about nine point seven crore rupees a day to keep it. The other earns about two crore.
+Over the next few quarters, those two numbers will decide how this war ends. Watch the store, the margin, and the switch to inventory. The answers will be in the next set of results.
+This was AVRON. The story behind the stock.

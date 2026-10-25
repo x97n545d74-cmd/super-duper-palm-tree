@@ -10,6 +10,7 @@ import { DURATION as VIVIANA_DURATION } from "./projects/viviana/config";
 import { Viviana2Reel } from "./projects/viviana2/Reel";
 import { DURATION as VIVIANA2_DURATION } from "./projects/viviana2/config";
 import { SmartphoneReel } from "./projects/smartphone/Reel";
+import { SwiggyStyleFrames } from "./projects/swiggy/StyleFrames";
 import { DURATION as SMARTPHONE_DURATION } from "./projects/smartphone/config";
 
 export const Root: React.FC = () => (
@@ -54,5 +55,6 @@ export const Root: React.FC = () => (
       width={layout.width}
       height={layout.height}
     />
+    <Composition id="SwiggyStyle" component={SwiggyStyleFrames} durationInFrames={15 * 30} fps={30} width={1920} height={1080} />
   </>
 );

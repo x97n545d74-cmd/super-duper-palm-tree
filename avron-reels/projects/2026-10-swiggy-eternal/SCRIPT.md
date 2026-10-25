@@ -1,5 +1,5 @@
 # "₹9.7 Crore a Day": Swiggy vs Eternal, the quick-commerce war after Q2
-AVRON · YouTube · 1920×1080 · ~15 min · Hinglish narration (Roman script on screen)
+AVRON · YouTube · 1920×1080 · ~15 min · English opening and close, Hinglish narration in the chapters (Roman script on screen)
 
 Working titles, using the patterns from the YouTube research (a number, a tension, the real story):
 1. **Swiggy loses ₹9.7 crore a day. Blinkit makes ₹2 crore. The real story of Q2**
@@ -12,26 +12,33 @@ Fact IDs in [brackets] point to `FACTS.md`. Visual direction is in *italics*. On
 
 ---
 
-## 00:00 Cold open (about 1 min)
+## 00:00 Cold open, in English (about 1 min 10 s)
 
-*Black. A single phone notification sound. A phone screen glows: "Your order is arriving in 10 minutes". Push in until the screen fills the frame and the "10" becomes a ticking clock.*
+*NIGHT. A real Mumbai skyline at 2 a.m. (photo, slow 2.5D parallax, natural sodium-orange grade). Light trails stream over a flyover. A single phone notification chimes. A phone rises into frame: "Your order is arriving in 10 minutes." Push in until the "10" fills the screen and becomes a ticking clock.*
 
-**VO:** Das minute. Itne mein aapka doodh, bread, aur shaayad ek phone charger bhi ghar aa jaata hai. Is das minute ke peeche do companies hain, do apps hain, aur ek jung hai jo har quarter ke results ke saath aur mehngi hoti ja rahi hai.
+**VO (English):** Ten minutes. That is all it takes now for milk, bread, even a phone charger to reach your door, often before the kettle boils.
 
-*Hard cut on the beat. A ticker tape. "SWIGGY −16%" drops in and the screen shakes once (a single hit, no repeated shake).*
+*Match cut: the clock's second hand becomes a scooter's headlight cutting through the night street.*
 
-**VO:** 23 October, Friday. Swiggy ke share ek din mein 16 percent tak gire. Company ke itihaas ki sabse badi ek din ki giraawat. [S11]
+**VO:** Behind those ten minutes are two companies, two apps, and a war that gets more expensive with every quarter.
 
-*Split screen wipes in. Left, orange: "Instamart −₹895 Cr". Right, yellow: "Blinkit +₹184 Cr".*
+*The real Swiggy logo appears on a dark glass panel. A stock ticker slides beneath it and turns red: "SWIGGY −16%". One deep impact, a single camera jolt, then stillness.*
 
-**VO:** Usi hafte, ek doosri company ne apne quick commerce business se ₹184 crore ka profit dikhaya. Same cities. Same customers. Same das minute ka vaada. [E5, S6]
+**VO:** On Friday, the twenty-third of October, Swiggy lost as much as sixteen percent of its value in a single day. It was the biggest one-day fall in the company's history. [S11]
 
-*The two numbers rotate into per-day counters: −₹9.7 Cr / din and +₹2.0 Cr / din.*
+*The Blinkit logo appears opposite, on warm light. "+₹184 Cr".*
 
-**VO:** Ek company har din lagbhag ₹9.7 crore ganwa rahi hai. Doosri har din ₹2 crore kama rahi hai. Yeh video is farak ki kahani hai. [C5]
+**VO:** That same week, its rival Blinkit, owned by Eternal, reported a quick-commerce profit of one hundred and eighty-four crore rupees. Both serve the same cities and the same customers, with the same ten-minute promise. [E5]
 
-*Title card: an origami paper scooter folds itself out of a flat sheet and drives off frame, leaving the title:*
-**ON SCREEN:** ₹9.7 Crore a Day · Swiggy vs Eternal · Q2 FY27
+*The two numbers transform into per-day counters, ticking in opposite directions over the city lights: −₹9.7 Cr per day / +₹2.0 Cr per day.*
+
+**VO:** One of them is losing about nine point seven crore rupees every day. The other is making about two crore. This film is about that gap. [C5]
+
+*Title sequence: a sheet of paper folds itself into an origami scooter, which drives into the skyline as the title resolves in large serif type.*
+**ON SCREEN:** ₹9.7 Crore a Day · Swiggy vs Eternal · The quick-commerce war after Q2
+
+*Language switch: a short line on screen, "Ab kahani, aapki zubaan mein" (Now the story, in your language), and the narration moves to Hinglish.*
+**VO:** Ab is kahani ko shuru se samajhte hain, aapki zubaan mein.
 
 ---
 
@@ -111,7 +118,7 @@ Fact IDs in [brackets] point to `FACTS.md`. Visual direction is in *italics*. On
 *Chapter card: an origami plate with a paper biryani.*
 **ON SCREEN:** 03 · Khaana
 
-**VO:** Swiggy ki kahani mein ek achhi khabar bhi hai, aur woh khaane se aati hai. Swiggy ka food delivery business is quarter apne itihaas ka sabse zyada profit laaya. ₹341 crore adjusted EBITDA. [S9]
+**VO:** Swiggy ki kahani mein ek achhi khabar bhi hai, aur woh khaane se aati hai. Swiggy ka food delivery business is quarter apne itihaas ka sabse zyada profit laaya. ₹341 crore adjusted EBITDA, yaani rozmarra ke kaam se hone wala profit, kuch accounting items ko chhod kar. [S9]
 **ON SCREEN:** Swiggy food · ₹341 Cr · highest ever
 
 **VO:** Swiggy pe har mahine lagbhag 1 crore 98 lakh log khaana mangwaate hain, aur yeh ginti saal bhar mein 15 percent badhi. [S15]
@@ -250,19 +257,59 @@ Fact IDs in [brackets] point to `FACTS.md`. Visual direction is in *italics*. On
 
 ---
 
-## 14:50 Close (about 25 s)
+## 14:50 Close, in English (about 50 s)
 
-*Back to the cold-open phone. "Arriving in 10 minutes." Pull out slowly. The two per-day counters return, one ticking down, one up.*
+*PRE-DAWN into SUNRISE. Back to the city, now at 5 a.m. A real skyline photo as the sky warms from violet to gold. Inside a dark store, shelves are being restocked (photo, slow push). The two per-day counters return, small, over the sunrise.*
 
-**VO:** Das minute ka vaada dono nibha rahe hain. Farak yeh hai ki ek company ko yeh vaada har din ₹9.7 crore ka padta hai, aur doosri ko har din ₹2 crore deta hai. Agle quarter yeh numbers kis taraf jaate hain, wahi is jung ka faisla karega. [C5]
+**VO (English):** Every night, in nearly four thousand dark stores run by these two companies alone, shelves are restocked for tomorrow's ten-minute promise. [E6, S8]
 
-*End card. AVRON wordmark. Sources list. Disclaimer.*
-**ON SCREEN:** Sources · Swiggy Q2 FY27 results and press release (NSE, 22 Oct 2026) · Eternal shareholders' letter and results (NSE, 21 Oct 2026) · Screener (market cap, annual losses) · CNBC-TV18, Bloomberg (23 Oct move) · IIFL/Inc42 (Blinkit deal) · MediaNama (inventory model) · Education only · Not investment advice · No buy, sell or hold call · AVRON is not SEBI-registered
+*The counters hold. One reads −₹9.7 Cr, the other +₹2.0 Cr.*
+
+**VO:** Both companies keep that promise. One pays about nine point seven crore rupees a day to keep it. The other earns about two crore. [C5]
+
+**VO:** Over the next few quarters, those two numbers will decide how this war ends. Watch the store, the margin, and the switch to inventory. The answers will be in the next set of results.
+
+*The sun clears the skyline. The AVRON mark resolves in the light.*
+
+**VO:** This was AVRON. The story behind the stock.
+
+*End card over the sunrise: AVRON wordmark, sources, image credits, disclaimer.*
+**ON SCREEN:** Sources · Swiggy Q2 FY27 results and press release (NSE, 22 Oct 2026) · Eternal shareholders' letter and results (NSE, 21 Oct 2026) · Screener (market cap, annual losses) · CNBC-TV18, Bloomberg (23 Oct move) · IIFL/Inc42 (Blinkit deal) · MediaNama (inventory model) · Image credits: see LICENSES · Logos are trademarks of their owners, used editorially · Education only · Not investment advice · No buy, sell or hold call · AVRON is not SEBI-registered
 
 ---
 
+## Visual bible: the film moves through one day
+
+The background is never a flat colour. Each chapter lives in a real place at a real time of day: licensed photographs with slow 2.5D parallax (foreground and background layers drift at different speeds), a natural colour grade, light grain and lens vignetting. Data graphics sit on top as glass panels and clean type, lit to match that hour.
+
+| Section | Time of day | World (real photo) | Grade | Data look |
+|---|---|---|---|---|
+| Cold open | 2 a.m. night | Mumbai skyline, flyover light trails | Sodium orange and deep blue, high contrast | Glowing ticker, logos on dark glass |
+| Ch 1 · Do raaste | Dawn | Misty sunrise, then a waking city | Soft gold, lifted shadows | Origami interlude; India map drawn in ink |
+| Ch 2 · Scoreboard | Morning | Bengaluru street traffic, delivery scooters | Clean daylight, neutral | Two-column board, map dots, ₹100 notes |
+| Ch 3 · Khaana | Lunch | Curry close-up, restaurant warmth | Warm amber | Buckets and pipes, line chart |
+| Ch 4 · Rulebook | Dusk | City at dusk, store aisle | Magenta-orange dusk | Paper rulebook, diagram flip, "Approved" stamp |
+| Ch 5 · Friday | Storm | Mumbai rain street, rain on glass, stock listings | Desaturated steel, cold | Falling chart, red ledger |
+| Ch 6 · Blinkit | Late night | Night trails again, quieter | Cool blue | Cracked crown, multiplying dots |
+| Ch 7 · What to watch | Pre-dawn | Skyline, first light | Violet to rose | Three clean cards |
+| Close | Sunrise | Pink-gold city skyline | Gold, hopeful | Counters, AVRON mark in the light |
+
+Transitions follow the clock. Between chapters the light shifts (a time-lapse colour drift across the same skyline) instead of a hard cut to black.
+
+## 7 Cs of business communication: script check
+
+| C | Check | Status |
+|---|---|---|
+| Clear | Jargon explained on first use: dark store, GOV/NOV, contribution margin, adjusted EBITDA | Fixed (EBITDA explanation added in ch 3) |
+| Concise | No filler; every chapter carries one idea; nine AI-pattern lines removed | Pass |
+| Concrete | Every claim carries a number, a date or a named source; per-day and per-₹100 framings | Pass |
+| Correct | All figures from filings, logged in FACTS.md with arithmetic; press-only figures marked; one date error fixed | Pass |
+| Coherent | Night-to-sunrise arc; the ₹9.7 crore/day motif in the open, ch 2 and the close | Pass |
+| Complete | Both sides told (Blinkit's weaknesses in ch 6); what to watch next; sources and credits | Pass |
+| Courteous | No mockery of either company or its people; no buy/sell calls; competitors named neutrally | Pass |
+
 ## Production notes
-- **Look:** dark background, two brand-neutral accents (orange for Instamart, yellow for Blinkit, deliberately not the official logos' exact colours), plus AVRON amber for the narration.
+- **Look:** see the visual bible. Official logos (editorial use), real licensed photographs, natural grading. Colour coding follows the brands: Swiggy orange, Blinkit yellow, Zomato red.
 - **Chapter cards:** a warm origami/doodle paper-craft interlude for each chapter (your prompt). Paper folds, soft shadows, slow and handmade, with no explanatory text beyond the chapter title.
 - **Data shots:** masked reveals, odometer counters, match cuts (₹100 note → bar → map dot), one camera language with slow push-ins, cuts on the music grid.
 - **Images:** Wikimedia Commons (credited on the end card) for delivery riders, dark stores and city streets. No news-agency photos. Company logos only where we report on that company.

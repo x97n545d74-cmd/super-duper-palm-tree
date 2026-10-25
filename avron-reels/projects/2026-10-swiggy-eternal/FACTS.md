@@ -53,6 +53,7 @@ Primary sources are in `sources/`:
 | S17 | Swiggy cash from financing activities FY26: ₹9,397 cr; cash from operations FY26: −₹2,898 cr | RF | Screener export (cash flow) |
 | S18 | Swiggy cash & bank ₹4,043 cr + investments ₹6,034 cr at 31 Mar 2026 = ₹10,077 cr | RF / AC | Screener export (balance sheet) |
 | X2 | Definitions: GOV is the total value of orders including taxes and fees before discounts; NOV is order value after discounts. Each company defines them slightly differently | Note | Swiggy / Eternal definitions |
+| C7 | Dark stores run by the two companies: 2,751 + 1,240 = **3,991** ("nearly four thousand") | AC | E6, S8 |
 | A1 | Quick commerce is now a game of store productivity and the inventory model; Blinkit is about a year ahead on inventory | AI | from C3, E11, S10 |
 
 Not used (could not verify from a primary source): Swiggy's "losses have peaked" quote (only in press reports of the shareholder letter, whose NSE PDF is corrupted at the source); Instamart's launch date; analysts' estimates and targets (and no targets on AVRON anyway).
