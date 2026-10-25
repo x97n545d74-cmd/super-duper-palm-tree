@@ -89,7 +89,7 @@ const Mouth: React.FC<{ who: Who; open: number; mode: MouthMode; amt: number }> 
 };
 
 /** One character. `x`,`y` = where the feet centre lands on the canvas; `k` = scale from the 2x sheet. */
-export const Character: React.FC<{ who: Who; t: number; frame: number; keys: Key[]; x: number; y: number; k: number; mouth?: number[]; walk?: number }> = ({ who, t, frame, keys, x, y, k, mouth, walk = 0 }) => {
+export const Character: React.FC<{ who: Who; t: number; frame: number; keys: Key[]; x: number; y: number; k: number; mouth?: number[]; walk?: number; body?: string }> = ({ who, t, frame, keys, x, y, k, mouth, walk = 0, body }) => {
   const r = RIG[who];
   const [w, h] = r.size;
   const f = faceAt(keys, t);
@@ -124,7 +124,7 @@ export const Character: React.FC<{ who: Who; t: number; frame: number; keys: Key
       transformOrigin: "50% 100%", transform: `translate(${f.dx}px, ${f.dy + bob * k + hop}px) rotate(${sway + f.lean + rock}deg) scaleY(${breath})`,
     }}>
       <div style={{ position: "absolute", left: 0, top: 0, width: w, height: h, transform: `scale(${k})`, transformOrigin: "0 0" }}>
-        <Img src={staticFile(`ep01/chars/${who}_body.png`)} style={{ position: "absolute", left: 0, top: 0 }} />
+        <Img src={staticFile(body ?? `ep01/chars/${who}_body.png`)} style={{ position: "absolute", left: 0, top: 0 }} />
         {sprite("eyeL", eyeT)}
         {sprite("eyeR", eyeT)}
         {sprite("browL", browT("L", f.browL))}

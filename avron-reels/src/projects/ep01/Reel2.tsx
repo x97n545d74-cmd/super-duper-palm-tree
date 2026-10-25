@@ -5,11 +5,10 @@ import timeline from "../../../projects/2026-10-ep01-v2/timeline.json";
 import mouthData from "../../../public/ep01v2/mouth.json";
 import { color, font } from "../../brand/tokens";
 import { clamp01, ease, lerp, prog } from "../../engine/anim";
-import { Intro } from "../smartphone/Intro";
 import { Character, faceCenter, Key, Who } from "./Character";
 
 /*
- * AVRON Ep 01 v2 — "₹50 ka share, chhota hai par…"
+ * Ep 01 v2 — "₹50 ka share, chhota hai par…" (posts on a separate account: no AVRON branding)
  * One idea: share price doesn't tell you company size; market cap = price × total shares.
  * House motion rules: masked type reveals, one amber accent, push cuts with real motion blur,
  * no shake, particles, glows, flashes or bouncy easing. The two leads walk between the graphics.
@@ -143,7 +142,7 @@ const Leads: React.FC<{ t: number; frame: number; cam?: { x: number; y: number; 
       <Shadow x={b.x} k={b.k} />
       <Shadow x={g.x} k={g.k} />
       <Character who="boy" t={t} frame={frame} keys={BOY} x={b.x} y={FEET} k={b.k} mouth={MOUTH.boy} walk={b.walk} />
-      <Character who="girl" t={t} frame={frame} keys={GIRL} x={g.x} y={FEET} k={g.k} mouth={MOUTH.girl} walk={g.walk} />
+      <Character who="girl" t={t} frame={frame} keys={GIRL} x={g.x} y={FEET} k={g.k} mouth={MOUTH.girl} walk={g.walk} body="ep01/chars/girl_body_plain.png" />
     </AbsoluteFill>
   );
 };
@@ -365,19 +364,21 @@ const Captions: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-// ---------- end card ----------
+// ---------- end card: the takeaway, no logo ----------
 const EndCard: React.FC<{ t: number }> = ({ t }) => {
   if (t < C.endCard) return null;
   const u = t - C.endCard;
-  const a = prog(u, 0.85, 0.5, outX), b = prog(u, 1.1, 0.5, outX);
+  const a = prog(u, 0.2, 0.5, outX), b = prog(u, 0.45, 0.5, outX), ul = prog(u, 0.8, 0.5, inOut);
   return (
-    <AbsoluteFill style={{ opacity: prog(u, 0, 0.2) }}>
-      <div style={{ position: "absolute", inset: 0, transform: "translateY(-150px)" }}><Intro t={Math.min(2.2, 0.5 + u * 1.2)} /></div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 1200, textAlign: "center", fontFamily: font.display, fontWeight: 800, fontSize: 80, letterSpacing: "-0.02em", lineHeight: 1.08 }}>
-        <Rise p={a}><span style={{ color: color.ink }}>SHARE PRICE NAHI</span></Rise>
-        <Rise p={b}><span style={{ color: color.amber }}>MARKET CAP DEKH</span></Rise>
+    <AbsoluteFill style={{ opacity: prog(u, 0, 0.2), background: color.bg }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 760, textAlign: "center", fontFamily: font.display, fontWeight: 800, fontSize: 104, letterSpacing: "-0.03em", lineHeight: 1.02 }}>
+        <Rise p={a}><span style={{ color: color.ink }}>SHARE PRICE</span></Rise>
+        <Rise p={a}><span style={{ color: color.ink }}>NAHI</span></Rise>
+        <Rise p={b} style={{ marginTop: 18 }}><span style={{ color: color.amber }}>MARKET CAP</span></Rise>
+        <Rise p={b}><span style={{ color: color.amber }}>DEKH</span></Rise>
+        <div style={{ margin: "34px auto 0", width: 520, height: 8, background: color.amber, transformOrigin: "50% 50%", transform: `scaleX(${ul})` }} />
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 1470, textAlign: "center", fontFamily: font.text, fontWeight: 500, fontSize: 25, letterSpacing: "0.05em", color: color.inkFaint, opacity: prog(u, 1.3, 0.4) }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 1470, textAlign: "center", fontFamily: font.text, fontWeight: 500, fontSize: 25, letterSpacing: "0.05em", color: color.inkFaint, opacity: prog(u, 1.0, 0.4) }}>
         Illustrative numbers · Educational content only · Not investment advice
       </div>
     </AbsoluteFill>
