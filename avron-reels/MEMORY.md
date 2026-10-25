@@ -60,6 +60,11 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
   - Voices cast: girl = Tia Mirza Composed (`tyOTyLYwi6G1V4rsb6uy`), boy = Samar Fun & Playful (`KWuQEGxZQtpWhRutt6g6`). Not generated: ElevenLabs still has **276 credits** (2026-10-25) and needs about 1,960. The swap steps are in `PRODUCTION.md`.
   - The guide VO runs 44.4 s; the brief asked for 30–35 s. Suggested trims are listed but not applied (the user's call).
 
+- **Ep 01 v2 "₹50 ka share, chhota hai par…"** (2026-10-25, replaces v1): the user found v1 unclear and asked for one idea only, told with the 7 C of communication (clear, concise, concrete, correct, coherent, complete, courteous). That means no 7 C list inside the reel. It also needed double-meaning humour that stays IG-safe, moving graphics, and the characters walking around.
+  - Lesson: share price ≠ company size; market cap = price × shares. The pizza example (8 slices or 2, same pizza). A ₹50 × 100 cr vs ₹500 × 2 cr pair, both doubling. Punchline: "Toh mera size bhi check karegi?" "Kar liya. Ek slice bhi nahi".
+  - `deliverables/2026-10-ep01-v2/` holds the 34.3 s guide-VO cut. Composition `Ep01v2` (`src/projects/ep01/Reel2.tsx`). **The user records the VO themselves**; the line sheet is `VO_LINES.md`.
+  - Swap: put files in `public/ep01v2/vo/<id>.wav`, then run `projects/2026-10-ep01-v2/scripts/build_timeline.py` → `sfx.py` → `scripts/mix_stems.py` → render.
+
 ## YouTube (starting 2026-10-25)
 - Strategy is in `research/youtube-2026-10/YT_STRATEGY.md`, from 474 videos found via Agent Reach searches.
 - Main product: a weekly 15–20 min company/stock deep-dive. 15–30 min videos had a median of 161K views vs 10K for 3–8 min.

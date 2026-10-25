@@ -89,11 +89,15 @@ const Mouth: React.FC<{ who: Who; open: number; mode: MouthMode; amt: number }> 
 };
 
 /** One character. `x`,`y` = where the feet centre lands on the canvas; `k` = scale from the 2x sheet. */
-export const Character: React.FC<{ who: Who; t: number; frame: number; keys: Key[]; x: number; y: number; k: number }> = ({ who, t, frame, keys, x, y, k }) => {
+export const Character: React.FC<{ who: Who; t: number; frame: number; keys: Key[]; x: number; y: number; k: number; mouth?: number[]; walk?: number }> = ({ who, t, frame, keys, x, y, k, mouth, walk = 0 }) => {
   const r = RIG[who];
   const [w, h] = r.size;
   const f = faceAt(keys, t);
-  const open = f.mouth === "talk" ? MOUTH[who][Math.min(frame, MOUTH[who].length - 1)] ?? 0 : 0;
+  const mt = mouth ?? MOUTH[who];
+  const open = f.mouth === "talk" ? mt[Math.min(frame, mt.length - 1)] ?? 0 : 0;
+  // walking: a two-beat bob and rock while `walk` (0..1) is on
+  const step = Math.sin(t * Math.PI * 2 * 2.3);
+  const hop = -Math.abs(step) * 26 * walk, rock = step * 3 * walk;
   const ph = who === "boy" ? 0 : 1.7;
   const sway = 0.55 * Math.sin((t / 3.1) * Math.PI * 2 + ph);
   const breath = 1 + 0.006 * Math.sin((t / 2.4) * Math.PI * 2 + ph);
@@ -117,7 +121,7 @@ export const Character: React.FC<{ who: Who; t: number; frame: number; keys: Key
   return (
     <div style={{
       position: "absolute", left: x - (w * k) / 2, top: y - h * k, width: w * k, height: h * k,
-      transformOrigin: "50% 100%", transform: `translate(${f.dx}px, ${f.dy + bob * k}px) rotate(${sway + f.lean}deg) scaleY(${breath})`,
+      transformOrigin: "50% 100%", transform: `translate(${f.dx}px, ${f.dy + bob * k + hop}px) rotate(${sway + f.lean + rock}deg) scaleY(${breath})`,
     }}>
       <div style={{ position: "absolute", left: 0, top: 0, width: w, height: h, transform: `scale(${k})`, transformOrigin: "0 0" }}>
         <Img src={staticFile(`ep01/chars/${who}_body.png`)} style={{ position: "absolute", left: 0, top: 0 }} />
