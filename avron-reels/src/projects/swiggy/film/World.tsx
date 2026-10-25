@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { clamp01, ease } from "../../../engine/anim";
 import { Hour, PhotoWorld } from "../look";
+import { MapWorld } from "./MapWorld";
 import { BEATS, sec, st } from "./timeline";
 
 /*
@@ -58,20 +59,27 @@ export const PLATES: Plate[] = [
 const pan = (i: number) => (i % 2 ? -1 : 1) * 1.5 * (PLATES[i].drift ?? 18);
 const chapterAmount = (t: number) => (t > sec("c1")[0] && t < sec("close")[0] ? Math.min(1, (t - sec("c1")[0]) / 2, (sec("close")[0] - t) / 2) : 0);
 
-export const World: React.FC<{ t: number }> = ({ t }) => {
+export const World: React.FC<{ t: number; mode?: "photo" | "map" }> = ({ t, mode = "photo" }) => {
   // the current plate plus the one fading out
   const i = Math.max(0, PLATES.findIndex((p, k) => t >= p.at && (k === PLATES.length - 1 || t < PLATES[k + 1].at)));
   const cur = PLATES[i];
   const prev = i > 0 ? PLATES[i - 1] : null;
   const p = ease.inOutCubic(clamp01((t - cur.at) / XF));
+  const onMap = mode === "map" ? chapterAmount(t) : 0;
   return (
-    <AbsoluteFill style={BACKGROUND_FOCUS(t)}>
-      {prev && p < 1 && <AbsoluteFill><PhotoWorld src={prev.src} t={t} t0={prev.at} hour={prev.hour} drift={pan(i - 1)} overlay={prev.overlay} /></AbsoluteFill>}
-      <AbsoluteFill style={{ opacity: prev ? p : 1 }}>
-        <PhotoWorld src={cur.src} t={t} t0={cur.at} hour={cur.hour} drift={pan(i)} overlay={cur.overlay} />
-      </AbsoluteFill>
-      {/* reading side: a soft dark falloff on the left, where headlines and cards sit */}
-      <AbsoluteFill style={{ opacity: chapterAmount(t), background: "linear-gradient(90deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.18) 50%, transparent 78%)" }} />
+    <AbsoluteFill>
+      {onMap < 1 && (
+        <AbsoluteFill style={BACKGROUND_FOCUS(t)}>
+          {prev && p < 1 && <AbsoluteFill><PhotoWorld src={prev.src} t={t} t0={prev.at} hour={prev.hour} drift={pan(i - 1)} overlay={prev.overlay} /></AbsoluteFill>}
+          <AbsoluteFill style={{ opacity: prev ? p : 1 }}>
+            <PhotoWorld src={cur.src} t={t} t0={cur.at} hour={cur.hour} drift={pan(i)} overlay={cur.overlay} />
+          </AbsoluteFill>
+          {/* reading side: a soft dark falloff on the left, where headlines and cards sit */}
+          <AbsoluteFill style={{ opacity: chapterAmount(t), background: "linear-gradient(90deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.18) 50%, transparent 78%)" }} />
+        </AbsoluteFill>
+      )}
+      {/* map mode: the live map replaces the photographs for the chapters; the open and close stay photographic */}
+      {onMap > 0 && <AbsoluteFill style={{ opacity: onMap }}><MapWorld t={t} /></AbsoluteFill>}
     </AbsoluteFill>
   );
 };

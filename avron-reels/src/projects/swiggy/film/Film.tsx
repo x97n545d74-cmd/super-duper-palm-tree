@@ -19,13 +19,13 @@ const CARDS = [
   { s: "c7", num: "07", title: "Aage kya dekhein", doodle: "scope" },
 ] as const;
 
-export const SwiggyFilm: React.FC = () => {
+export const SwiggyFilm: React.FC<{ bg?: "photo" | "map" }> = ({ bg = "photo" }) => {
   const t = useTime();
   const inSec = (s: Parameters<typeof sec>[0]) => t >= sec(s)[0] - 0.5 && t < sec(s)[1] + 0.5;
   return (
     <AbsoluteFill style={{ background: "#000", overflow: "hidden" }}>
       <SerifFont />
-      <World t={t} />
+      <World t={t} mode={bg} />
       {inSec("open") && <OpenSection t={t} />}
       {inSec("c1") && <C1Section t={t} />}
       {inSec("c2") && <C2Section t={t} />}
