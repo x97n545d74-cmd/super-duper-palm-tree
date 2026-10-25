@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill } from "remotion";
+import { AbsoluteFill, Audio, staticFile } from "remotion";
 import { clamp01, useTime } from "../../../engine/anim";
 import { C, Grain, mono, SerifFont } from "../look";
 import { OrigamiCard } from "./Origami";
@@ -41,6 +41,8 @@ export const SwiggyFilm: React.FC<{ plan?: BackdropPlan }> = ({ plan = PLAN }) =
       {CARDS.map((c) => <OrigamiCard key={c.s} t={t} a={sec(c.s)[0]} num={c.num} title={c.title} doodle={c.doodle} />)}
       <ProgressRail t={t} />
       <Grain />
+      {/* narration (user's ElevenLabs recording, re-timed) + original score, mixed to -14 LUFS by scripts/mix_stems.py */}
+      <Audio src={staticFile("swiggy/film_mix.wav")} />
     </AbsoluteFill>
   );
 };

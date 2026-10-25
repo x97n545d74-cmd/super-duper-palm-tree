@@ -49,7 +49,7 @@ export const PaperCity: React.FC<{ t: number }> = ({ t }) => {
   return (
     <AbsoluteFill style={{ background: `linear-gradient(180deg, ${top} 0%, ${bottom} 100%)` }}>
       <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
-        <circle cx={1760} cy={205 + Math.sin(t / 20) * 6} r={46} fill={sun} opacity={0.7} style={{ filter: "drop-shadow(0 8px 0 rgba(0,0,0,0.2))" }} />
+        <circle cx={1735} cy={168 + Math.sin(t / 20) * 4} r={34} fill={sun} opacity={s === "c5" ? 0 : 0.65} style={{ filter: "drop-shadow(0 8px 0 rgba(0,0,0,0.2))" }} />
         {layer(FAR, far, 4)}
         {layer(MID, mid, 9)}
         {layer(NEAR, near, 18)}

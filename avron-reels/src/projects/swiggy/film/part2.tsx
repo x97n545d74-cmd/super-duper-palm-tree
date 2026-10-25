@@ -409,9 +409,9 @@ export const CloseSection: React.FC<{ t: number }> = ({ t }) => (
       <DayMeters t={t} a={st("close_01") + 1.2} top={520} />
     </Shot>
     <Shot t={t} a={st("close_02")} z={en("close_02")}>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 380, display: "flex", justifyContent: "center", gap: 90 }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 380, display: "flex", justifyContent: "center", gap: 70 }}>
         {["The store", "The margin", "The switch"].map((w, i) => (
-          <Rise key={w} t={t} at={st("close_02") + 4 + i * 0.6}><div style={{ fontFamily: serif, fontWeight: 700, fontSize: 104, color: C.ink }}>{w}</div></Rise>
+          <Rise key={w} t={t} at={st("close_02") + 4 + i * 0.6}><div style={{ fontFamily: serif, fontWeight: 700, fontSize: 90, color: C.ink, whiteSpace: "nowrap" }}>{w}</div></Rise>
         ))}
       </div>
     </Shot>

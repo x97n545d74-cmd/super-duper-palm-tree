@@ -58,9 +58,6 @@ export const Root: React.FC = () => (
       height={layout.height}
     />
     <Composition id="SwiggyFilm" component={SwiggyFilm} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />
-    <Composition id="SwiggyBgB" component={SwiggyFilm} defaultProps={{ plan: { c1: "map", c2: "map", c3: "map", c4: "map", c5: "map", c6: "map", c7: "map" } as const }} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />
-    <Composition id="SwiggyBgC" component={SwiggyFilm} defaultProps={{ plan: { c1: "paper", c2: "paper", c3: "paper", c4: "paper", c5: "paper", c6: "paper", c7: "paper" } as const }} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />
-    <Composition id="SwiggyBgD" component={SwiggyFilm} defaultProps={{ plan: { c1: "type", c2: "type", c3: "type", c4: "type", c5: "type", c6: "type", c7: "type" } as const }} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />
     <Composition id="SwiggyStyle" component={SwiggyStyleFrames} durationInFrames={21 * 30} fps={30} width={1920} height={1080} />
   </>
 );

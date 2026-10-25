@@ -1,5 +1,6 @@
 {
- "duration": 952.65,
+ "duration": 807.97,
+ "voice": "ElevenLabs v4 · Tia Mirza (Crisp and Commanding), user-generated",
  "beats": [
   {
    "id": "open_00",
@@ -8,7 +9,12 @@
    "words": 24,
    "est": 10.98,
    "start": 6.0,
-   "end": 16.98
+   "end": 12.715,
+   "src": {
+    "part": "part1",
+    "a": 0.0,
+    "b": 6.715
+   }
   },
   {
    "id": "open_01",
@@ -16,8 +22,13 @@
    "text": "Behind those ten minutes are two companies, two apps, and a war that gets more expensive with every quarter.",
    "words": 19,
    "est": 8.81,
-   "start": 16.98,
-   "end": 25.79
+   "start": 13.065,
+   "end": 22.506,
+   "src": {
+    "part": "part1",
+    "a": 6.91,
+    "b": 16.351
+   }
   },
   {
    "id": "open_02",
@@ -25,8 +36,13 @@
    "text": "On Friday, the twenty-third of October, Swiggy lost as much as sixteen percent of its value in a single day. It was the biggest one-day fall in the company's history.",
    "words": 30,
    "est": 13.59,
-   "start": 25.79,
-   "end": 39.38
+   "start": 22.856,
+   "end": 32.892,
+   "src": {
+    "part": "part1",
+    "a": 16.71,
+    "b": 26.746
+   }
   },
   {
    "id": "open_03",
@@ -34,8 +50,13 @@
    "text": "That same week, its rival Blinkit, owned by Eternal, reported a quick-commerce profit of one hundred and eighty-four crore rupees. Both serve the same cities and the same customers, with the same ten-minute promise.",
    "words": 34,
    "est": 15.33,
-   "start": 39.38,
-   "end": 54.71
+   "start": 33.242,
+   "end": 47.032,
+   "src": {
+    "part": "part1",
+    "a": 27.11,
+    "b": 40.9
+   }
   },
   {
    "id": "open_04",
@@ -43,8 +64,18 @@
    "text": "Swiggy's Instamart is losing about nine point seven crore rupees every day. Blinkit is making about two crore. This film is about that gap.",
    "words": 26,
    "est": 11.85,
-   "start": 54.71,
-   "end": 66.56
+   "start": 47.382,
+   "end": 57.002,
+   "src": {
+    "part": "fix4",
+    "a": 0.0,
+    "b": 9.62,
+    "replaces": {
+     "part": "part1",
+     "a": 41.11,
+     "b": 50.09
+    }
+   }
   },
   {
    "id": "open_05",
@@ -52,8 +83,13 @@
    "text": "Ab is kahani ko shuru se samajhte hain, aapki zubaan mein.",
    "words": 11,
    "est": 5.33,
-   "start": 66.56,
-   "end": 71.89
+   "start": 57.352,
+   "end": 59.43,
+   "src": {
+    "part": "part1",
+    "a": 50.41,
+    "b": 52.488
+   }
   },
   {
    "id": "c1_00",
@@ -61,8 +97,13 @@
    "text": "Kahani khaane se shuru hoti hai. Zomato aur Swiggy, dono ne India ko phone se khaana mangwana sikhaaya. Saalon tak dono ek hi race daud rahe the. Restaurant, delivery partner, discount, aur nuksaan.",
    "words": 33,
    "est": 15.9,
-   "start": 74.89,
-   "end": 90.79
+   "start": 63.38,
+   "end": 78.536,
+   "src": {
+    "part": "part1",
+    "a": 52.68,
+    "b": 67.836
+   }
   },
   {
    "id": "c1_01",
@@ -70,8 +111,13 @@
    "text": "Phir dono ne ek aur darwaaza khola. Groceries. Woh cheezein jo aap roz khareedte hain, das minute mein. Swiggy ne apna Instamart banaya. Zomato ne 2022 mein Blinkit khareeda, jo pehle Grofers tha, lagbhag ₹4,447 crore ki all-stock deal mein.",
    "words": 40,
    "est": 19.15,
-   "start": 90.79,
-   "end": 109.94
+   "start": 78.886,
+   "end": 97.36,
+   "src": {
+    "part": "part1",
+    "a": 68.09,
+    "b": 86.564
+   }
   },
   {
    "id": "c1_02",
@@ -79,8 +125,13 @@
    "text": "Is business ka dil ek \"dark store\" hai. Ek chhota godown, aapke mohalle ke paas, jahaan grahak kabhi andar nahi jaata. Sirf delivery partner jaata hai, saamaan uthata hai, aur nikal jaata hai. Jitne zyada dark store, utni jaldi delivery. Aur jitna zyada ek store bechta hai, utna sasta har order padta hai.",
    "words": 53,
    "est": 25.2,
-   "start": 109.94,
-   "end": 135.14
+   "start": 97.71,
+   "end": 117.868,
+   "src": {
+    "part": "part1",
+    "a": 86.79,
+    "b": 106.948
+   }
   },
   {
    "id": "c1_03",
@@ -88,8 +139,13 @@
    "text": "Is video mein do shabd baar baar aayenge, toh pehle inhe samajh lete hain. GOV matlab grahak ne jitne ka order kiya, discount se pehle. NOV matlab discount ke baad ka order value. Dono companies yeh thoda alag tareeke se ginti hain, isliye jahaan farak padta hai, wahaan hum screen pe likh denge.",
    "words": 53,
    "est": 25.2,
-   "start": 135.14,
-   "end": 160.34
+   "start": 118.218,
+   "end": 137.873,
+   "src": {
+    "part": "part1",
+    "a": 107.2,
+    "b": 126.855
+   }
   },
   {
    "id": "c1_04",
@@ -97,8 +153,13 @@
    "text": "Aaj in do companies ki keemat mein bahut bada farak hai. Eternal ka market cap lagbhag ₹3.06 lakh crore hai. Swiggy ka lagbhag ₹48,600 crore. Eternal ki value Swiggy se 6 guna se zyada hai.",
    "words": 35,
    "est": 16.83,
-   "start": 160.34,
-   "end": 177.17
+   "start": 138.223,
+   "end": 153.589,
+   "src": {
+    "part": "part1",
+    "a": 127.15,
+    "b": 142.516
+   }
   },
   {
    "id": "c1_05",
@@ -106,8 +167,13 @@
    "text": "Do companies, ek hi cheez bechti hain, aur keemat mein 6 guna ka farak. Is farak ki wajah Q2 ke numbers mein saaf dikhti hai.",
    "words": 25,
    "est": 12.18,
-   "start": 177.17,
-   "end": 189.35
+   "start": 153.939,
+   "end": 162.532,
+   "src": {
+    "part": "part1",
+    "a": 142.73,
+    "b": 151.323
+   }
   },
   {
    "id": "c2_00",
@@ -115,8 +181,13 @@
    "text": "Pehle sirf quick commerce ki baat karte hain. July se September 2026 tak, Blinkit pe ₹20,940 crore ke orders aaye. Instamart pe ₹6,594 crore ke.",
    "words": 25,
    "est": 12.18,
-   "start": 192.35,
-   "end": 204.53
+   "start": 166.482,
+   "end": 179.401,
+   "src": {
+    "part": "part1",
+    "a": 151.61,
+    "b": 164.529
+   }
   },
   {
    "id": "c2_01",
@@ -124,8 +195,13 @@
    "text": "Yaani Blinkit ka business Instamart se lagbhag 3.2 guna bada hai. Aur yeh bada business bhi tez badh raha hai. Sirf pichhle quarter ke muqable 22 percent.",
    "words": 27,
    "est": 13.11,
-   "start": 204.53,
-   "end": 217.64
+   "start": 179.751,
+   "end": 190.109,
+   "src": {
+    "part": "part1",
+    "a": 164.57,
+    "b": 174.928
+   }
   },
   {
    "id": "c2_02",
@@ -133,8 +209,13 @@
    "text": "Stores dekhiye. Blinkit ke paas 2,751 dark stores hain. Is quarter mein usne 308 naye joda. Instamart ke paas 1,240 hain, aur usne 69 naye joda, jo uske pichhle teen quarters ke total ke barabar hai.",
    "words": 36,
    "est": 17.29,
-   "start": 217.64,
-   "end": 234.93
+   "start": 190.459,
+   "end": 207.008,
+   "src": {
+    "part": "part1",
+    "a": 175.18,
+    "b": 191.729
+   }
   },
   {
    "id": "c2_03",
@@ -142,8 +223,13 @@
    "text": "Ab naksha dekhiye. Ek independent tracker, QuickCommerceMap, ne July 2026 mein desh ke das sabse bade shehron ke dark stores gine. Blinkit aur Instamart ki seedhi takkar mein, das mein se nau shehron mein Blinkit aage hai. Instamart sirf Chennai mein aage hai, 67 stores ke muqable 62. Sabse bada farak Delhi mein hai, 171 ke muqable 63.",
    "words": 58,
    "est": 27.53,
-   "start": 234.93,
-   "end": 262.46
+   "start": 207.358,
+   "end": 231.389,
+   "src": {
+    "part": "part1",
+    "a": 191.99,
+    "b": 216.021
+   }
   },
   {
    "id": "c2_04",
@@ -151,8 +237,13 @@
    "text": "Aur yeh do companies akeli nahi hain. Poore market ko dekhein toh Hyderabad aur Chennai mein Zepto ka network sabse bada hai, Kolkata mein Flipkart Minutes ka, aur baaki saat shehron mein Blinkit ka.",
    "words": 34,
    "est": 16.36,
-   "start": 262.46,
-   "end": 278.82
+   "start": 231.739,
+   "end": 243.718,
+   "src": {
+    "part": "part1",
+    "a": 216.23,
+    "b": 228.209
+   }
   },
   {
    "id": "c2_05",
@@ -160,8 +251,13 @@
    "text": "Ab sabse zaroori number. Har store, har din, kitna bechta hai.",
    "words": 11,
    "est": 5.67,
-   "start": 278.82,
-   "end": 284.49
+   "start": 244.068,
+   "end": 248.513,
+   "src": {
+    "part": "part1",
+    "a": 228.47,
+    "b": 232.915
+   }
   },
   {
    "id": "c2_06",
@@ -169,8 +265,13 @@
    "text": "Blinkit ka ek store, average, har din lagbhag ₹8.3 lakh ka saamaan bechta hai. Instamart ka ek store lagbhag ₹5.8 lakh ka.",
    "words": 22,
    "est": 10.78,
-   "start": 284.49,
-   "end": 295.27
+   "start": 248.863,
+   "end": 259.346,
+   "src": {
+    "part": "part1",
+    "a": 233.08,
+    "b": 243.563
+   }
   },
   {
    "id": "c2_07",
@@ -178,8 +279,13 @@
    "text": "Dark store ka kiraya, bijli, staff, sab fixed hai. Isliye jo store zyada bechta hai, uska har order sasta padta hai.",
    "words": 21,
    "est": 10.32,
-   "start": 295.27,
-   "end": 305.59
+   "start": 259.696,
+   "end": 268.154,
+   "src": {
+    "part": "part1",
+    "a": 243.72,
+    "b": 252.178
+   }
   },
   {
    "id": "c2_08",
@@ -187,8 +293,13 @@
    "text": "Ab profit. Har ₹100 ke order pe Blinkit lagbhag 88 paise kamata hai. Instamart har ₹100 ke order pe lagbhag ₹13.60 ganwata hai.",
    "words": 23,
    "est": 11.25,
-   "start": 305.59,
-   "end": 316.84
+   "start": 268.504,
+   "end": 278.882,
+   "src": {
+    "part": "part1",
+    "a": 252.39,
+    "b": 262.768
+   }
   },
   {
    "id": "c2_09",
@@ -196,8 +307,13 @@
    "text": "Blinkit ka margin lagaatar chhe quarter se behtar ho raha hai. Saal bhar pehle yahi business ₹156 crore ke nuksaan mein tha.",
    "words": 22,
    "est": 10.78,
-   "start": 316.84,
-   "end": 327.62
+   "start": 279.232,
+   "end": 287.618,
+   "src": {
+    "part": "part1",
+    "a": 262.93,
+    "b": 271.316
+   }
   },
   {
    "id": "c2_10",
@@ -205,8 +321,13 @@
    "text": "88 paise sunne mein chhota lagta hai. Lekin ₹20,940 crore ke orders pe, wohi 88 paise ₹184 crore ban jaate hain. Aur Instamart ka nuksaan, ₹895 crore, ek quarter mein.",
    "words": 30,
    "est": 14.5,
-   "start": 327.62,
-   "end": 342.12
+   "start": 287.968,
+   "end": 302.904,
+   "src": {
+    "part": "part1",
+    "a": 271.52,
+    "b": 286.456
+   }
   },
   {
    "id": "c2_11",
@@ -214,8 +335,13 @@
    "text": "Instamart ki growth tez hai. Uske orders saal bhar mein 31 percent badhe, aur pichhle quarter se 13 percent. Swiggy ne kaha ki yeh woh growth hai jiska usne vaada kiya tha. Dikkat yeh hai ki har order abhi bhi nuksaan mein hai.",
    "words": 43,
    "est": 20.55,
-   "start": 342.12,
-   "end": 362.67
+   "start": 303.254,
+   "end": 318.021,
+   "src": {
+    "part": "part1",
+    "a": 286.7,
+    "b": 301.467
+   }
   },
   {
    "id": "c3_00",
@@ -223,8 +349,13 @@
    "text": "Swiggy ki kahani mein ek achhi khabar bhi hai, aur woh khaane se aati hai. Swiggy ka food delivery business is quarter apne itihaas ka sabse zyada profit laaya. ₹341 crore adjusted EBITDA, yaani rozmarra ke kaam se hone wala profit, kuch accounting items ko chhod kar.",
    "words": 47,
    "est": 22.41,
-   "start": 365.67,
-   "end": 388.08
+   "start": 321.971,
+   "end": 339.842,
+   "src": {
+    "part": "part1",
+    "a": 301.7,
+    "b": 319.571
+   }
   },
   {
    "id": "c3_01",
@@ -232,8 +363,13 @@
    "text": "Swiggy pe har mahine lagbhag 1 crore 98 lakh log khaana mangwaate hain, aur yeh ginti saal bhar mein 15 percent badhi.",
    "words": 22,
    "est": 10.78,
-   "start": 388.08,
-   "end": 398.86
+   "start": 340.192,
+   "end": 348.328,
+   "src": {
+    "part": "part1",
+    "a": 319.73,
+    "b": 327.866
+   }
   },
   {
    "id": "c3_02",
@@ -241,8 +377,13 @@
    "text": "Swiggy ne Toing naam ka ek alag app bhi banaaya hai, saste khaane ke liye. Yeh 50 se zyada shehron mein hai. Company ke mutaabik Toing ke har teen naye users mein se do ne pehle kabhi online khaana mangwaaya hi nahi tha.",
    "words": 43,
    "est": 20.55,
-   "start": 398.86,
-   "end": 419.41
+   "start": 348.678,
+   "end": 362.308,
+   "src": {
+    "part": "part1",
+    "a": 328.03,
+    "b": 341.66
+   }
   },
   {
    "id": "c3_03",
@@ -250,8 +391,13 @@
    "text": "Zomato ka food delivery bhi tez chal raha hai. Uske orders 21.5 percent badhe, aur margin 5.5 percent hai.",
    "words": 19,
    "est": 9.39,
-   "start": 419.41,
-   "end": 428.8
+   "start": 362.658,
+   "end": 370.299,
+   "src": {
+    "part": "part1",
+    "a": 341.91,
+    "b": 349.551
+   }
   },
   {
    "id": "c3_04",
@@ -259,8 +405,13 @@
    "text": "Chaar saal mein Zomato ka food business dugna ho gaya, ₹18,160 crore se ₹37,993 crore. Aur Eternal ne ek dilchasp baat maani hai. Pichhle saal food ki growth thodi dheemi hui, kyunki kuch log jo pehle khaana mangwaate the, ab wahi zaroorat Blinkit se poori karne lage. Yaani Blinkit ne kuch hissa apne hi ghar ke food business se liya. Eternal ke mutaabik ab yeh badlaav tham gaya hai.",
    "words": 69,
    "est": 32.64,
-   "start": 428.8,
-   "end": 461.44
+   "start": 370.649,
+   "end": 396.723,
+   "src": {
+    "part": "part1",
+    "a": 349.75,
+    "b": 375.824
+   }
   },
   {
    "id": "c3_05",
@@ -268,8 +419,13 @@
    "text": "Swiggy apna margin GOV pe batata hai, aur Zomato NOV pe. GOV discount se pehle ka number hai, toh dono margins seedha compare nahi hote. Lekin ek cheez saaf hai. Dono ke liye khaana ab paisa kamaane wala business hai.",
    "words": 40,
    "est": 19.15,
-   "start": 461.44,
-   "end": 480.59
+   "start": 397.073,
+   "end": 412.139,
+   "src": {
+    "part": "part1",
+    "a": 376.03,
+    "b": 391.096
+   }
   },
   {
    "id": "c3_06",
@@ -277,8 +433,13 @@
    "text": "Ab Swiggy ki problem dekhiye. Khaana ₹341 crore kamata hai. Instamart ₹895 crore ganwata hai. Ek business ki kamaai doosre ka aadha nuksaan bhi nahi bhar paati. Bacha hua gap, ₹554 crore, sirf in do businesses ka hai.",
    "words": 38,
    "est": 18.22,
-   "start": 480.59,
-   "end": 498.81
+   "start": 412.489,
+   "end": 429.011,
+   "src": {
+    "part": "part1",
+    "a": 391.35,
+    "b": 407.872
+   }
   },
   {
    "id": "c3_07",
@@ -286,8 +447,13 @@
    "text": "Eternal mein ulta hai. Wahaan khaana bhi kamata hai, aur Blinkit bhi ab kamata hai, toh dono business ek hi taraf kheench rahe hain.",
    "words": 24,
    "est": 11.71,
-   "start": 498.81,
-   "end": 510.52
+   "start": 429.361,
+   "end": 436.778,
+   "src": {
+    "part": "part1",
+    "a": 408.07,
+    "b": 415.487
+   }
   },
   {
    "id": "c4_00",
@@ -295,8 +461,13 @@
    "text": "Is jung ka ek bada mod saamaan ki ownership hai. Dark store mein rakha saamaan kiska hai, app ka ya kisi seller ka.",
    "words": 23,
    "est": 11.25,
-   "start": 513.52,
-   "end": 524.77
+   "start": 440.728,
+   "end": 448.518,
+   "src": {
+    "part": "part1",
+    "a": 415.66,
+    "b": 423.45
+   }
   },
   {
    "id": "c4_01",
@@ -304,8 +475,13 @@
    "text": "India ke foreign investment rules ke hisaab se, jis company mein videshi hissedari zyada hai, woh online khud ka saamaan rakh kar nahi bech sakti. Woh sirf ek marketplace ban sakti hai, jahaan doosre sellers bechte hain.",
    "words": 37,
    "est": 17.76,
-   "start": 524.77,
-   "end": 542.53
+   "start": 448.868,
+   "end": 461.43,
+   "src": {
+    "part": "part1",
+    "a": 423.62,
+    "b": 436.182
+   }
   },
   {
    "id": "c4_02",
@@ -313,8 +489,13 @@
    "text": "2025 mein Eternal ne ek bada faisla liya. Usne apni videshi hissedari 49.5 percent pe rok di, taaki woh ek Indian-owned and controlled company ban sake. Iske baad Blinkit khud saamaan khareed kar, khud bech sakta tha. September 2025 se yeh badlaav shuru hua.",
    "words": 44,
    "est": 21.02,
-   "start": 542.53,
-   "end": 563.55
+   "start": 461.78,
+   "end": 479.742,
+   "src": {
+    "part": "part1",
+    "a": 436.35,
+    "b": 454.312
+   }
   },
   {
    "id": "c4_03",
@@ -322,8 +503,13 @@
    "text": "Isi wajah se Eternal ka revenue ek saal mein 77.6 percent badha, ₹13,590 crore se ₹24,138 crore. Kyunki ab Blinkit poore saamaan ki keemat apne revenue mein dikhata hai, sirf commission nahi.",
    "words": 32,
    "est": 15.43,
-   "start": 563.55,
-   "end": 578.98
+   "start": 480.092,
+   "end": 495.595,
+   "src": {
+    "part": "part1",
+    "a": 454.47,
+    "b": 469.973
+   }
   },
   {
    "id": "c4_04",
@@ -331,8 +517,13 @@
    "text": "Khud ka saamaan rakhne ka matlab hai behtar daam pe khareedna, behtar margin, aur zyada control ki kaun sa product kis store mein rahe. Sellers ke liye bhi niyam badle. Blinkit ne unse naye model mein aane ko kaha, aur jo nahi aaye, unki listing hatane ki baat kahi.",
    "words": 49,
    "est": 23.34,
-   "start": 578.98,
-   "end": 602.32
+   "start": 495.945,
+   "end": 511.873,
+   "src": {
+    "part": "part1",
+    "a": 470.17,
+    "b": 486.098
+   }
   },
   {
    "id": "c4_05",
@@ -340,8 +531,13 @@
    "text": "Ab Swiggy. Is quarter Swiggy ne bataya ki use bhi Indian-owned and controlled company banne ki zaroori manzoori mil gayi hai, aur badlaav shuru ho chuka hai.",
    "words": 27,
    "est": 13.11,
-   "start": 602.32,
-   "end": 615.43
+   "start": 512.223,
+   "end": 521.5,
+   "src": {
+    "part": "part1",
+    "a": 486.28,
+    "b": 495.557
+   }
   },
   {
    "id": "c4_06",
@@ -349,8 +545,13 @@
    "text": "Matlab jo raasta Blinkit ne 2025 mein liya, Swiggy us pe ab chal raha hai, lagbhag ek saal baad.",
    "words": 19,
    "est": 9.39,
-   "start": 615.43,
-   "end": 624.82
+   "start": 521.85,
+   "end": 529.15,
+   "src": {
+    "part": "part1",
+    "a": 495.74,
+    "b": 503.04
+   }
   },
   {
    "id": "c4_07",
@@ -358,8 +559,13 @@
    "text": "Aur quick commerce mein ek saal bahut lamba waqt hai. Is ek saal mein Blinkit ne stores joda, suppliers ke saath rishte banaaye, aur ab har quarter profit dikha raha hai.",
    "words": 31,
    "est": 14.97,
-   "start": 624.82,
-   "end": 639.79
+   "start": 529.5,
+   "end": 540.75,
+   "src": {
+    "part": "part1",
+    "a": 502.96,
+    "b": 514.21
+   }
   },
   {
    "id": "c5_00",
@@ -367,8 +573,13 @@
    "text": "Results Thursday, 22 October ko market band hone ke baad aaye. Friday ko market khula, aur share seedha neeche gaya.",
    "words": 20,
    "est": 9.85,
-   "start": 642.79,
-   "end": 652.64
+   "start": 544.7,
+   "end": 552.82,
+   "src": {
+    "part": "part1",
+    "a": 514.13,
+    "b": 522.25
+   }
   },
   {
    "id": "c5_01",
@@ -376,8 +587,13 @@
    "text": "Swiggy ka IPO November 2024 mein ₹390 pe aaya tha. Aaj share lagbhag ₹176 ke aas paas hai. IPO price se lagbhag 55 percent neeche.",
    "words": 25,
    "est": 12.18,
-   "start": 652.64,
-   "end": 664.82
+   "start": 553.17,
+   "end": 565.11,
+   "src": {
+    "part": "part1",
+    "a": 522.17,
+    "b": 534.11
+   }
   },
   {
    "id": "c5_02",
@@ -385,8 +601,13 @@
    "text": "Market ne kya dekha. Revenue 36 percent badha, ₹7,571 crore. Lekin kul nuksaan pichhle quarter ke ₹791 crore se badh kar ₹922 crore ho gaya.",
    "words": 25,
    "est": 12.18,
-   "start": 664.82,
-   "end": 677.0
+   "start": 565.46,
+   "end": 578.72,
+   "src": {
+    "part": "part1",
+    "a": 534.03,
+    "b": 547.29
+   }
   },
   {
    "id": "c5_03",
@@ -394,8 +615,18 @@
    "text": "Instamart ka contribution margin, yaani har order pe store ke level ka hisaab, pichhle quarter se kamzor hua. Aur Instamart ne is ek quarter mein utne naye stores khole, jitne pichhle teen quarters mein mila kar khole the.",
    "words": 29,
    "est": 14.04,
-   "start": 677.0,
-   "end": 691.04
+   "start": 579.07,
+   "end": 593.02,
+   "src": {
+    "part": "fix4",
+    "a": 10.0,
+    "b": 23.95,
+    "replaces": {
+     "part": "part1",
+     "a": 547.21,
+     "b": 557.759
+    }
+   }
   },
   {
    "id": "c5_04",
@@ -403,8 +634,13 @@
    "text": "Aur ek lambi tasveer bhi hai. Financial year 2020 se ab tak, Swiggy ka kul nuksaan lagbhag ₹24,679 crore ho chuka hai.",
    "words": 22,
    "est": 10.78,
-   "start": 691.04,
-   "end": 701.82
+   "start": 593.37,
+   "end": 603.363,
+   "src": {
+    "part": "part1",
+    "a": 558.04,
+    "b": 568.033
+   }
   },
   {
    "id": "c5_05",
@@ -412,8 +648,13 @@
    "text": "Is nuksaan ko chalaane ke liye paisa chahiye. Financial year 2026 mein Swiggy ke paas fundraising aur financing se ₹9,397 crore aaye, jabki uske business operations ne ₹2,898 crore khaaye. March 2026 tak uske paas lagbhag ₹10,077 crore cash aur investments the.",
    "words": 42,
    "est": 20.08,
-   "start": 701.82,
-   "end": 721.9
+   "start": 603.713,
+   "end": 626.033,
+   "src": {
+    "part": "part1",
+    "a": 568.2,
+    "b": 590.52
+   }
   },
   {
    "id": "c5_06",
@@ -421,8 +662,13 @@
    "text": "23 October ko investors ki chinta yeh thi ki yeh nuksaan kab tak chalega, aur kitna aur hoga. Share ka ek din mein 16 percent girna isi chinta ka asar tha.",
    "words": 31,
    "est": 14.97,
-   "start": 721.9,
-   "end": 736.87
+   "start": 626.383,
+   "end": 637.389,
+   "src": {
+    "part": "part1",
+    "a": 590.44,
+    "b": 601.446
+   }
   },
   {
    "id": "c6_00",
@@ -430,8 +676,13 @@
    "text": "Eternal ki apni kamzoriyaan bhi hain.",
    "words": 6,
    "est": 3.34,
-   "start": 739.87,
-   "end": 743.21
+   "start": 641.339,
+   "end": 643.632,
+   "src": {
+    "part": "part2",
+    "a": 0.0,
+    "b": 2.293
+   }
   },
   {
    "id": "c6_01",
@@ -439,8 +690,13 @@
    "text": "Pehli baat. Blinkit ka profit margin sirf 0.9 percent hai. Ek chhoti si galti, ek price war, aur yeh profit wapas nuksaan ban sakta hai.",
    "words": 25,
    "est": 12.18,
-   "start": 743.21,
-   "end": 755.39
+   "start": 643.982,
+   "end": 653.912,
+   "src": {
+    "part": "part2",
+    "a": 2.48,
+    "b": 12.41
+   }
   },
   {
    "id": "c6_02",
@@ -448,8 +704,13 @@
    "text": "Doosri. Eternal ka kul profit ₹125 crore tha, lekin tax lagbhag 61 percent laga. Kyunki purane nuksaan pe jo tax ki chhoot milti thi, woh ab khatam ho gayi hai.",
    "words": 30,
    "est": 14.5,
-   "start": 755.39,
-   "end": 769.89
+   "start": 654.262,
+   "end": 665.869,
+   "src": {
+    "part": "part2",
+    "a": 12.76,
+    "b": 24.367
+   }
   },
   {
    "id": "c6_03",
@@ -457,8 +718,13 @@
    "text": "Aur growth ki raftaar bhi thodi dheemi hui hai. Blinkit ke orders ab saal bhar mein 79 percent badh rahe hain, jo pehle se kam hai, kyunki base ab bahut bada ho gaya hai. Company ne agle teen saal ke liye 60 percent saalaana growth ka target rakha hai, aur kehti hai ki woh abhi us se aage chal rahi hai.",
    "words": 61,
    "est": 28.92,
-   "start": 769.89,
-   "end": 798.81
+   "start": 666.219,
+   "end": 684.255,
+   "src": {
+    "part": "part2",
+    "a": 24.56,
+    "b": 42.596
+   }
   },
   {
    "id": "c6_04",
@@ -466,8 +732,13 @@
    "text": "Teesri. Blinkit March 2027 tak 3,500 aur March 2028 tak lagbhag 5,000 stores ka plan bana raha hai. Naye stores shuru mein kam bechte hain, aur unmein paisa lagta hai.",
    "words": 30,
    "est": 14.5,
-   "start": 798.81,
-   "end": 813.31
+   "start": 684.605,
+   "end": 697.862,
+   "src": {
+    "part": "part2",
+    "a": 42.85,
+    "b": 56.107
+   }
   },
   {
    "id": "c6_05",
@@ -475,8 +746,13 @@
    "text": "Aur chauthi. Yeh do companies akeli nahi hain. Zepto, Flipkart aur Amazon bhi das minute ka vaada kar rahe hain. Blinkit ne khud likha hai ki jin shehron mein muqabla zyada hai, wahaan ka unhe ab behtar andaaza hai.",
    "words": 39,
    "est": 18.69,
-   "start": 813.31,
-   "end": 832.0
+   "start": 698.212,
+   "end": 711.359,
+   "src": {
+    "part": "part2",
+    "a": 56.35,
+    "b": 69.497
+   }
   },
   {
    "id": "c6_06",
@@ -484,8 +760,13 @@
    "text": "Phir bhi ek number Blinkit ke paksh mein hai. Uske mature shehron mein margin 5 percent se upar hai, aur jin shehron se 70 percent business aata hai, woh adjusted EBITDA mein profit mein hain.",
    "words": 35,
    "est": 16.83,
-   "start": 832.0,
-   "end": 848.83
+   "start": 711.709,
+   "end": 723.081,
+   "src": {
+    "part": "part2",
+    "a": 69.64,
+    "b": 81.012
+   }
   },
   {
    "id": "c7_00",
@@ -493,8 +774,13 @@
    "text": "Agle results mein teen number dekhiye, aur ek bonus.",
    "words": 9,
    "est": 4.74,
-   "start": 851.83,
-   "end": 856.57
+   "start": 727.031,
+   "end": 730.395,
+   "src": {
+    "part": "part2",
+    "a": 81.23,
+    "b": 84.594
+   }
   },
   {
    "id": "c7_01",
@@ -502,8 +788,13 @@
    "text": "Ek. Instamart ka contribution margin. Agar yeh zero ke upar jaata hai, toh har order kam se kam store ke level pe kamane lagega.",
    "words": 24,
    "est": 11.71,
-   "start": 856.57,
-   "end": 868.28
+   "start": 730.745,
+   "end": 738.861,
+   "src": {
+    "part": "part2",
+    "a": 84.75,
+    "b": 92.866
+   }
   },
   {
    "id": "c7_02",
@@ -511,8 +802,13 @@
    "text": "Do. Har store, har din ki bikri. Jab tak Instamart ka store Blinkit ke store jitna nahi bechta, nuksaan ka gap bana rahega.",
    "words": 23,
    "est": 11.25,
-   "start": 868.28,
-   "end": 879.53
+   "start": 739.211,
+   "end": 747.45,
+   "src": {
+    "part": "part2",
+    "a": 92.99,
+    "b": 101.229
+   }
   },
   {
    "id": "c7_03",
@@ -520,8 +816,18 @@
    "text": "Teen. Instamart ka inventory model kitni jaldi chalu hota hai, aur usse margin pe kya asar padta hai.",
    "words": 18,
    "est": 8.92,
-   "start": 879.53,
-   "end": 888.45
+   "start": 747.8,
+   "end": 754.4,
+   "src": {
+    "part": "fix4",
+    "a": 24.38,
+    "b": 30.98,
+    "replaces": {
+     "part": "part2",
+     "a": 101.35,
+     "b": 107.473
+    }
+   }
   },
   {
    "id": "c7_04",
@@ -529,8 +835,13 @@
    "text": "Aur ek bonus number, Blinkit ka margin. Kya naye stores kholte hue bhi yeh 0.9 percent se upar jaata hai, jaisa company keh rahi hai.",
    "words": 25,
    "est": 12.18,
-   "start": 888.45,
-   "end": 900.63
+   "start": 754.75,
+   "end": 763.273,
+   "src": {
+    "part": "part2",
+    "a": 107.6,
+    "b": 116.123
+   }
   },
   {
    "id": "close_00",
@@ -538,8 +849,13 @@
    "text": "Every night, in nearly four thousand dark stores run by these two companies alone, shelves are restocked for tomorrow's ten-minute promise.",
    "words": 21,
    "est": 9.68,
-   "start": 904.63,
-   "end": 914.31
+   "start": 767.123,
+   "end": 775.264,
+   "src": {
+    "part": "part2",
+    "a": 116.5,
+    "b": 124.641
+   }
   },
   {
    "id": "close_01",
@@ -547,8 +863,18 @@
    "text": "Both companies keep that promise. Instamart pays about nine point seven crore rupees a day to keep it. Blinkit earns about two crore.",
    "words": 24,
    "est": 10.98,
-   "start": 914.31,
-   "end": 925.29
+   "start": 775.614,
+   "end": 784.674,
+   "src": {
+    "part": "fix4",
+    "a": 31.3,
+    "b": 40.36,
+    "replaces": {
+     "part": "part2",
+     "a": 124.75,
+     "b": 132.69
+    }
+   }
   },
   {
    "id": "close_02",
@@ -556,8 +882,13 @@
    "text": "Over the next few quarters, those two numbers will decide how this war ends. Watch the store, the margin, and the switch to inventory. The answers will be in the next set of results.",
    "words": 34,
    "est": 15.33,
-   "start": 925.29,
-   "end": 940.62
+   "start": 785.024,
+   "end": 796.318,
+   "src": {
+    "part": "part2",
+    "a": 132.82,
+    "b": 144.114
+   }
   },
   {
    "id": "close_03",
@@ -565,8 +896,13 @@
    "text": "This was AVRON. The story behind the stock.",
    "words": 8,
    "est": 4.03,
-   "start": 940.62,
-   "end": 944.65
+   "start": 796.668,
+   "end": 799.972,
+   "src": {
+    "part": "part2",
+    "a": 144.24,
+    "b": 147.544
+   }
   }
  ]
 }
