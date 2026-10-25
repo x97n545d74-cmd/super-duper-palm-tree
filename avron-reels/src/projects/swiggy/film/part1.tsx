@@ -35,7 +35,7 @@ export const DayMeters: React.FC<{ t: number; a: number; top?: number; left?: nu
   return (
     <div style={{ position: "absolute", left, top, display: "flex", gap: 40, transform: `scale(${scale})`, transformOrigin: "0 0", opacity: p }}>
       <Glass style={{ position: "relative", width: 640 }} tint="rgba(252,128,25,0.14)">
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>{LOGO.swiggy}<span style={{ fontFamily: mono, fontSize: 24, color: C.inkDim }}>INSTAMART · EVERY DAY</span></div>
+        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>{LOGO.instamart}<span style={{ fontFamily: mono, fontSize: 24, color: C.inkDim }}>EVERY DAY</span></div>
         <div style={{ fontFamily: sans, fontWeight: 800, fontSize: 110, color: C.loss, letterSpacing: "-0.04em", marginTop: 14 }}>−₹{count(t, a + 0.3, 9.7, 1.4).toFixed(1)} Cr</div>
         <div style={{ fontFamily: mono, fontSize: 22, color: C.inkDim }}>lost so far in this shot · ₹{(tick * 9.7e7 / 86400 / 1e5).toFixed(2)} lakh</div>
       </Glass>
@@ -65,9 +65,9 @@ export const OpenSection: React.FC<{ t: number }> = ({ t }) => {
       <Shot t={t} a={st("open_01")} z={en("open_01")}>
         {shade}
         <div style={{ position: "absolute", left: 0, right: 0, top: 300, display: "flex", justifyContent: "center", gap: 220, alignItems: "center" }}>
-          {[LOGO.swiggy, LOGO.blinkit].map((l, i) => {
+          {[LOGO.instamart, LOGO.blinkit].map((l, i) => {
             const p = ease.outExpo(clamp01((t - st("open_01") - 0.3 - i * 0.3) / 0.8));
-            return <div key={i} style={{ transform: `translateX(${(i ? 1 : -1) * (1 - p) * 300}px) scale(2.2)`, opacity: p }}>{l}</div>;
+            return <div key={i} style={{ transform: `translateX(${(i ? 1 : -1) * (1 - p) * 300}px) scale(${i ? 2.2 : 1.4})`, opacity: p }}>{l}</div>;
           })}
         </div>
         <Headline t={t} at={st("open_01") + 1.2} lines={["Two companies · two apps", "one expensive war"]} size={78} top={620} />
@@ -193,7 +193,7 @@ export const C2Section: React.FC<{ t: number }> = ({ t }) => {
   const K = <Kicker text="02 · SCOREBOARD · Q2 FY27 (JUL–SEP 2026)" />;
   const two = (a: number, left: { label: string; v: number; fmt?: (v: number) => string; cap?: string }, right: { label: string; v: number; fmt?: (v: number) => string; cap?: string }) => (
     <>
-      <Stat t={t} at={a} label={left.label} value={left.v} fmt={left.fmt} caption={left.cap} logo={LOGO.swiggy} style={{ left: 140, top: 300, width: 760 }} tint="rgba(252,128,25,0.12)" />
+      <Stat t={t} at={a} label={left.label} value={left.v} fmt={left.fmt} caption={left.cap} logo={LOGO.instamart} style={{ left: 140, top: 300, width: 760 }} tint="rgba(252,128,25,0.12)" />
       <Stat t={t} at={a + 0.25} label={right.label} value={right.v} fmt={right.fmt} caption={right.cap} logo={<div style={{ display: "flex", gap: 18, alignItems: "center" }}>{LOGO.blinkit}<span style={{ fontFamily: sans, fontSize: 28, color: C.inkDim }}>by Eternal</span></div>}
         style={{ left: 1020, top: 300, width: 760 }} tint="rgba(248,203,70,0.12)" />
     </>

@@ -5,8 +5,20 @@ import { C, Glass, mono, Rise, sans, serif } from "../look";
 
 /* Shot kit: the few layouts every beat is built from, so 63 beats read as one film. */
 
+/**
+ * Set to true once the official Instamart logo is in public/swiggy/logo_instamart.png. Until then Instamart cards
+ * show Swiggy's mark with an "Instamart" label, which is how the app itself is listed (Swiggy Instamart).
+ */
+const HAS_INSTAMART_LOGO = false;
+
 export const LOGO = {
   swiggy: <Img src={staticFile("swiggy/logo_swiggy.png")} style={{ height: 64 }} />,
+  instamart: HAS_INSTAMART_LOGO ? <Img src={staticFile("swiggy/logo_instamart.png")} style={{ height: 64 }} /> : (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 14 }}>
+      <Img src={staticFile("swiggy/logo_swiggy.png")} style={{ height: 52 }} />
+      <span style={{ fontFamily: sans, fontWeight: 800, fontSize: 40, color: C.ink, letterSpacing: "-0.02em" }}>Instamart</span>
+    </div>
+  ),
   blinkit: <Img src={staticFile("swiggy/logo_blinkit.svg")} style={{ height: 64, width: 64, borderRadius: 14 }} />,
   eternal: (
     <div style={{ background: "rgba(245,241,234,0.92)", borderRadius: 12, padding: "10px 16px", display: "inline-flex" }}>
