@@ -65,6 +65,16 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Instamart vs Swiggy:** name Instamart whenever a number is Instamart's. Use the Instamart mark on quick-commerce cards and keep the Swiggy logo for company-level facts.
 - YouTube blocks yt-dlp detail lookups from the cloud IP. For dates and subscriber counts, get a YouTube Data API key.
 
+## Video tools from GitHub (installed 2026-10-25, to use on future reels)
+The user asked to install these 5 for later reels. `avron-reels/tools/install_video_tools.sh` reinstalls them after a container reset (the SessionStart hook runs it in the background). Clones live in `~/github-tools/`.
+- **HyperFrames** (heygen-com/hyperframes, Apache-2.0): HTML-to-video engine. Plugin `hyperframes@hyperframes`; skills hyperframes, hyperframes-cli, media-use, slideshow, remotion-to-hyperframes.
+- **onetake** (feitangyuan/onetake, **PolyForm Noncommercial**): launch-style kinetic motion clips, one HTML composition with motion blur. Skill in `~/.claude/skills/onetake`. Check the licence before using it on monetised/sponsored reels.
+- **gbro-collage-broll** (pyang5166, MIT): 5 s halftone paper-collage B-roll, three approval gates. Needs `GEMINI_API_KEY` (paid) and an image tool. Skill in `~/.claude/skills/gbro-collage-broll`.
+- **Claude Animation Base** (JohnHeibel, MIT): p5.js hand-drawn character animation kit (Clawd). Not a skill: work in `~/github-tools/ClaudeAnimationBase`, read `ANIMATION_GUIDE.md`, render with `node render.mjs --clip --soft-gl` (no GPU, slow on watercolour fills).
+- **Lemo-Opuscar** (lemomo-ai, MIT): film-directing plugin `lemo-opuscar@lemolab`; downloads its library to `~/lemo-opuscar` on first use.
+- SkillSpector (pattern mode) flagged all except the animation kit; manual review found no malicious code (API keys only go to their own vendor, flags were doc comments and credential docs).
+- onetake needs Python Playwright pinned to the Node Playwright version (1.63.0) to find the container's Chromium.
+
 ## Research done, not produced
 - **MosChip:** `projects/2026-10-moschip/PROJECT_REPORT.md`. It fails the revenue-guidance screen because the company gives no guidance.
 - **Viviana Power Tech:** `projects/2026-10-viviana/PROJECT_REPORT.md` (v1). The open items were resolved in `SOURCE_VERIFICATION.md`.

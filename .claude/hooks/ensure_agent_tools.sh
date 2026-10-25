@@ -4,6 +4,10 @@
 export PATH="$HOME/.local/bin:$PATH"
 root="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 
+# Video tools from GitHub (HyperFrames, onetake, etc.): reinstall in the background if missing.
+[ -d "$HOME/.claude/skills/onetake" ] && [ -d "$HOME/github-tools/ClaudeAnimationBase/node_modules" ] \
+  || nohup bash "$root/avron-reels/tools/install_video_tools.sh" >/tmp/video_tools_install.log 2>&1 &
+
 if command -v agent-reach >/dev/null && command -v skillspector >/dev/null \
    && [ -d "$HOME/.claude/plugins/cache/thedotmack/claude-mem" ]; then
   npx -y claude-mem start >/dev/null 2>&1 || true
