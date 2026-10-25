@@ -63,6 +63,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Ep 01 v2 "₹50 ka share, chhota hai par…"** (2026-10-25, replaces v1): the user found v1 unclear and asked for one idea only, told with the 7 C of communication (clear, concise, concrete, correct, coherent, complete, courteous). That means no 7 C list inside the reel. It also needed double-meaning humour that stays IG-safe, moving graphics, and the characters walking around.
   - Lesson: share price ≠ company size; market cap = price × shares. The pizza example (8 slices or 2, same pizza). A ₹50 × 100 cr vs ₹500 × 2 cr pair, both doubling. Punchline: "Toh mera size bhi check karegi?" "Kar liya. Ek slice bhi nahi".
   - `deliverables/2026-10-ep01-v2/` holds the 34.3 s guide-VO cut. Composition `Ep01v2` (`src/projects/ep01/Reel2.tsx`). **The user records the VO themselves**; the line sheet is `VO_LINES.md`.
+  - **Final with the user's own VO rendered 2026-10-25:** `AVRON_ep01v2_market-cap_FINAL_1080x1920.mp4`, 48.1 s, −14 LUFS. The user's mp3s are in `projects/2026-10-ep01-v2/vo_user/`; `scripts/prep_user_vo.py` converts them and runs an ASR check. Not published.
   - Swap: put files in `public/ep01v2/vo/<id>.wav`, then run `projects/2026-10-ep01-v2/scripts/build_timeline.py` → `sfx.py` → `scripts/mix_stems.py` → render.
 
 ## YouTube (starting 2026-10-25)

@@ -16,16 +16,16 @@ SR, FPS = 48000, 30
 
 # (line id, gap before it in seconds). Gaps are the comedy: reaction beats live in them.
 SEQ = [
-    ("b1", 0.65),  # he walks in already talking
-    ("g1", 0.50),
-    ("g2", 0.75),  # push cut to the MARKET CAP wall
-    ("g3", 0.70),  # push cut to the pizza
-    ("g4", 0.75),  # push cut to the two companies
-    ("g5", 0.50),
-    ("g6", 0.60),
-    ("b2", 0.80),  # push cut back to the two of them
-    ("b3", 0.55),
-    ("g7", 0.75),  # she checks his phone first
+    ("b1", 0.35),  # he walks in already talking
+    ("g1", 0.20),
+    ("g2", 0.45),  # push cut to the MARKET CAP wall
+    ("g3", 0.40),  # push cut to the pizza
+    ("g4", 0.45),  # push cut to the two companies
+    ("g5", 0.20),
+    ("g6", 0.30),
+    ("b2", 0.50),  # push cut back to the two of them
+    ("b3", 0.25),
+    ("g7", 0.45),  # she checks his phone first
 ]
 END_HOLD = 3.3  # freeze + trombone, then the end card
 
