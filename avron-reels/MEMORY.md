@@ -61,6 +61,8 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Repurpose reels as Shorts.
 - Skip daily market news and commodity updates.
 - **Long-form look (user asked 2026-10-25 for "more effort" and "10–15 s animation with a character"):** chapters must match the opening's energy. Use the Swiggy film kit (`src/projects/swiggy/film/kit.tsx`: masked-wipe shots, word-by-word headlines, odometer numbers, framed photo inserts, focus pull on the beat) and paper-craft explainer scenes (`film/Paper.tsx`: an original unbranded delivery rider and store picker, labelled "Illustration") under the lines that explain a mechanism. Change the background photo often, with real pans.
+- **Swiggy film background (user picked "B", 2026-10-25):** the chapters run on a live India map (`film/MapWorld.tsx`), with the camera travelling between cities and store dots from real counts; the open and close stay on graded photographs. Photo mode is still available via `bg="photo"`.
+- **Instamart vs Swiggy:** name Instamart whenever a number is Instamart's. Use the Instamart mark on quick-commerce cards and keep the Swiggy logo for company-level facts.
 - YouTube blocks yt-dlp detail lookups from the cloud IP. For dates and subscriber counts, get a YouTube Data API key.
 
 ## Research done, not produced

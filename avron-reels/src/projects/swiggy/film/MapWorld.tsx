@@ -6,7 +6,7 @@ import MAP from "../india_map.json";
 import { Section, sec, SECTIONS } from "./timeline";
 
 /*
- * Alternative chapter background: a live map of India instead of photographs. The camera drifts from city to
+ * Chapter background (user picked option B, 2026-10-25): a live map of India instead of photographs. The camera drifts from city to
  * city as the story moves; around each city, dots stand for its dark stores (one dot ≈ 4 stores, Blinkit yellow,
  * Instamart orange, QuickCommerceMap July 2026); short delivery strokes keep drawing out of each city. Dot positions
  * around a city are schematic, the counts are not. Colour still follows the hour of the day.

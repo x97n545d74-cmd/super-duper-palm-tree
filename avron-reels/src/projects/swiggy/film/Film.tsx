@@ -19,7 +19,7 @@ const CARDS = [
   { s: "c7", num: "07", title: "Aage kya dekhein", doodle: "scope" },
 ] as const;
 
-export const SwiggyFilm: React.FC<{ bg?: "photo" | "map" }> = ({ bg = "photo" }) => {
+export const SwiggyFilm: React.FC<{ bg?: "photo" | "map" }> = ({ bg = "map" }) => {
   const t = useTime();
   const inSec = (s: Parameters<typeof sec>[0]) => t >= sec(s)[0] - 0.5 && t < sec(s)[1] + 0.5;
   return (
