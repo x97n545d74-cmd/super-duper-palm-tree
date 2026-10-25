@@ -89,6 +89,14 @@ Fact IDs in [brackets] point to `FACTS.md`. Visual direction is in *italics*. On
 **VO:** Stores dekhiye. Blinkit ke paas 2,751 dark stores hain. Is quarter mein usne 308 naye joda. Instamart ke paas 1,240 hain, aur usne 69 naye joda, jo uske pichhle teen quarters ke total ke barabar hai. [E6, S8]
 **ON SCREEN:** Stores · 2,751 vs 1,240
 
+*THE MAP. India's official map (Survey of India boundaries, full Jammu & Kashmir and Ladakh). States fill one by one in the colour of whoever leads the Blinkit vs Instamart head-to-head in that state's big city. Then city dots appear, sized by total dark stores and coloured by the whole-market leader.*
+
+**VO:** Ab naksha dekhiye. Ek independent tracker, QuickCommerceMap, ne July 2026 mein desh ke das sabse bade shehron ke dark stores gine. Blinkit aur Instamart ki seedhi takkar mein, das mein se nau shehron mein Blinkit aage hai. Instamart sirf Chennai mein aage hai, 67 stores ke muqable 62. Sabse bada farak Delhi mein hai, 171 ke muqable 63. [Q1, Q2, Q3]
+**ON SCREEN:** Blinkit vs Instamart · ahead in 9 of 10 cities · Chennai 67 vs 62 · Delhi 171 vs 63
+
+**VO:** Aur yeh do companies akeli nahi hain. Poore market ko dekhein toh Hyderabad aur Chennai mein Zepto ka network sabse bada hai, Kolkata mein Flipkart Minutes ka, aur baaki saat shehron mein Blinkit ka. [Q4]
+**ON SCREEN:** Largest network · Blinkit 7 cities · Zepto Hyderabad, Chennai · Flipkart Minutes Kolkata · QuickCommerceMap, Jul 2026 (lower-bound counts)
+
 **VO:** Ab sabse zaroori number. Har store, har din, kitna bechta hai.
 
 *Zoom into one yellow store and one orange store. A counter runs above each.*

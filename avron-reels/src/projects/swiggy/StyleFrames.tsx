@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, Img, staticFile } from "remotion";
 import { useTime } from "../../engine/anim";
 import { Grain } from "./look";
+import MAP from "./india_map.json";
 import { C, count, fade, Glass, mono, PhotoWorld, Rise, sans, serif, SerifFont } from "./look";
 
 /** Style frames for approval: one shot per hour of the film's day. 3 s each. */
@@ -115,7 +116,7 @@ const clampScale = (t: number, at: number) => { const p = Math.min(1, Math.max(0
 const Sunrise: React.FC<{ t: number }> = ({ t }) => {
   const a = A[4];
   return (
-    <AbsoluteFill style={{ opacity: fade(t, a, a + 3, 0.3, 0.01) }}>
+    <AbsoluteFill style={{ opacity: fade(t, a, a + 3, 0.3, 0.3) }}>
       <PhotoWorld src="swiggy/sunrise_city.jpg" t={t} t0={a} hour="sunrise" drift={10} />
       <div style={{ position: "absolute", left: 160, top: 230, width: 1100 }}>
         <Rise t={t} at={a + 0.2}><div style={{ fontFamily: serif, fontWeight: 600, fontSize: 80, color: C.ink, lineHeight: 1.1 }}>Both keep the promise</div></Rise>
@@ -148,8 +149,80 @@ export const SwiggyStyleFrames: React.FC = () => {
       {t >= 2.7 && t < 6.05 && <Title t={t} />}
       {t >= 5.7 && t < 9.05 && <Scoreboard t={t} />}
       {t >= 8.7 && t < 12.05 && <Rulebook t={t} />}
-      {t >= 11.7 && <Sunrise t={t} />}
+      {t >= 11.7 && t < 15.05 && <Sunrise t={t} />}
+      {t >= 14.7 && <MapEdge t={t} a={15} />}
       <Grain />
+    </AbsoluteFill>
+  );
+};
+
+/* ------------------------------------------------ India map: who has the edge where (QuickCommerceMap, July 2026) */
+type City = { x: number; y: number; state: string; counts: Record<string, number>; total: number; leader: string; h2h: string };
+const CITIES = MAP.cities as Record<string, City>;
+const STATE_EDGE: Record<string, string> = {};
+// each tracked state has one tracked city, except Maharashtra (Mumbai and Pune, both Blinkit-ahead)
+Object.values(CITIES).forEach((c) => { STATE_EDGE[c.state] = c.h2h; });
+const EDGE_COL: Record<string, string> = { Blinkit: C.blinkit, Instamart: C.swiggy };
+const LEADER_COL: Record<string, string> = { Blinkit: C.blinkit, Zepto: "#8B5CF6", Instamart: C.swiggy, "Flipkart Minutes": "#2F80ED", BigBasket: "#84C225" };
+
+export const MapEdge: React.FC<{ t: number; a: number }> = ({ t, a }) => {
+  const S = 0.94, OX = 110, OY = 40;
+  const order = ["Delhi", "Haryana", "Uttar Pradesh", "Gujarat", "Maharashtra", "Karnataka", "Telangana", "Tamil Nadu", "West Bengal"];
+  return (
+    <AbsoluteFill style={{ opacity: fade(t, a, a + 6, 0.3, 0.01) }}>
+      <PhotoWorld src="swiggy/street_1.jpg" t={t} t0={a} hour="morning" drift={8} />
+      <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,14,0.55)", backdropFilter: "blur(6px)" }} />
+      <svg width={MAP.w * S} height={MAP.h * S} viewBox={`0 0 ${MAP.w} ${MAP.h}`} style={{ position: "absolute", left: OX, top: OY, filter: "drop-shadow(0 30px 60px rgba(0,0,0,0.5))" }}>
+        {Object.entries(MAP.states as Record<string, string>).map(([name, d]) => {
+          const edge = STATE_EDGE[name];
+          const k = edge ? order.indexOf(name) : -1;
+          const p = k >= 0 ? Math.min(1, Math.max(0, (t - a - 0.6 - k * 0.12) / 0.4)) : 0;
+          return <path key={name} d={d} fill={edge ? EDGE_COL[edge] : "rgba(245,241,234,0.08)"} fillOpacity={edge ? 0.12 + 0.6 * p : 1}
+            stroke="rgba(245,241,234,0.55)" strokeWidth={1.1} strokeLinejoin="round" />;
+        })}
+        {Object.entries(CITIES).map(([name, c], i) => {
+          const p = Math.min(1, Math.max(0, (t - a - 1.8 - i * 0.08) / 0.35));
+          const r = 6 + Math.sqrt(c.total) * 0.9;
+          return (
+            <g key={name} opacity={p} transform={`translate(${c.x} ${c.y}) scale(${0.6 + 0.4 * p})`}>
+              <circle r={r} fill={LEADER_COL[c.leader]} fillOpacity={0.35} stroke={LEADER_COL[c.leader]} strokeWidth={2.5} />
+              <circle r={4} fill="#fff" />
+            </g>
+          );
+        })}
+      </svg>
+      {/* labels for the cities that matter in the head-to-head */}
+      {(["Delhi", "Chennai", "Bengaluru", "Mumbai", "Kolkata", "Hyderabad"] as const).map((n, i) => {
+        const c = CITIES[n]; const p = Math.min(1, Math.max(0, (t - a - 2.4 - i * 0.1) / 0.4));
+        const right = ["Chennai", "Kolkata", "Hyderabad", "Delhi"].includes(n);
+        return (
+          <div key={n} style={{ position: "absolute", left: OX + c.x * S + (right ? 26 : n === "Bengaluru" ? -64 : -26), top: OY + c.y * S - (n === "Bengaluru" ? 70 : 22), transform: right ? "none" : "translateX(-100%)", opacity: p,
+            fontFamily: sans, fontSize: 22, color: C.ink, whiteSpace: "nowrap", background: "rgba(8,10,14,0.72)", padding: "4px 12px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.14)" }}>
+            <b>{n}</b> <span style={{ color: C.blinkit }}>B {c.counts.Blinkit}</span> · <span style={{ color: C.swiggy }}>I {c.counts.Instamart}</span>
+          </div>
+        );
+      })}
+      <div style={{ position: "absolute", left: 1060, top: 110, width: 760 }}>
+        <div style={{ fontFamily: sans, fontSize: 24, letterSpacing: "0.24em", color: C.inkDim, whiteSpace: "nowrap" }}>DARK STORES · TOP 10 CITIES · JUL 2026</div>
+        <Rise t={t} at={a + 0.2} style={{ marginTop: 18 }}><div style={{ fontFamily: serif, fontWeight: 600, fontSize: 64, color: C.ink, lineHeight: 1.1 }}>Kis shehar mein kiska zor</div></Rise>
+        <Glass style={{ position: "relative", marginTop: 40 }} tint="rgba(248,203,70,0.10)">
+          <div style={{ fontFamily: mono, fontSize: 22, color: C.inkDim, letterSpacing: "0.08em" }}>BLINKIT vs INSTAMART · HEAD TO HEAD</div>
+          <div style={{ fontFamily: sans, fontWeight: 800, fontSize: 64, color: C.blinkit, marginTop: 10 }}>9 of 10 cities</div>
+          <div style={{ fontFamily: sans, fontSize: 30, color: C.ink, marginTop: 6 }}>Instamart ahead only in Chennai · 67 vs 62</div>
+          <div style={{ fontFamily: sans, fontSize: 30, color: C.ink, marginTop: 6 }}>Biggest gap: Delhi · 171 vs 63</div>
+        </Glass>
+        <Glass style={{ position: "relative", marginTop: 26 }}>
+          <div style={{ fontFamily: mono, fontSize: 22, color: C.inkDim, letterSpacing: "0.08em" }}>WHOLE MARKET · LARGEST NETWORK (dot colour)</div>
+          <div style={{ display: "flex", gap: 26, marginTop: 14, fontFamily: sans, fontSize: 28, color: C.ink, flexWrap: "wrap" }}>
+            {[["Blinkit", "7 cities"], ["Zepto", "Hyderabad, Chennai"], ["Flipkart Minutes", "Kolkata"]].map(([k, v]) => (
+              <span key={k}><span style={{ display: "inline-block", width: 16, height: 16, borderRadius: 16, background: LEADER_COL[k], marginRight: 10 }} />{k} · <span style={{ color: C.inkDim }}>{v}</span></span>
+            ))}
+          </div>
+        </Glass>
+        <div style={{ fontFamily: mono, fontSize: 18, color: C.inkDim, marginTop: 24, lineHeight: 1.5 }}>
+          Source: QuickCommerceMap, July 2026 (public store-locator data; counts are a lower bound) · State shading = that state's tracked city · Map: India boundaries by DataMeet (CC BY 4.0), as per Survey of India
+        </div>
+      </div>
     </AbsoluteFill>
   );
 };

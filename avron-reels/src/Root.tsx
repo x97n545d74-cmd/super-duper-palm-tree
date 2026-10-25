@@ -55,6 +55,6 @@ export const Root: React.FC = () => (
       width={layout.width}
       height={layout.height}
     />
-    <Composition id="SwiggyStyle" component={SwiggyStyleFrames} durationInFrames={15 * 30} fps={30} width={1920} height={1080} />
+    <Composition id="SwiggyStyle" component={SwiggyStyleFrames} durationInFrames={21 * 30} fps={30} width={1920} height={1080} />
   </>
 );

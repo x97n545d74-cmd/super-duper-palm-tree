@@ -26,3 +26,9 @@ All images: Openverse search, filtered to licences that allow commercial use and
 | use/logo_zomato.jpg | Zomato Company Profile Presentation | maichellatin | CC BY-SA 2.0 | https://www.flickr.com/photos/165193274@N07/44329648225 |
 
 Logos are trademarks of their owners, used editorially to identify the companies being reported on. They are not modified, and no endorsement is implied.
+
+## Map and data
+- India state boundaries: [DataMeet India community](http://datameet.org/), `States/Admin2` from github.com/datameet/maps, licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Shown per Survey of India, with Jammu & Kashmir and Ladakh in full.
+- Dark-store counts: QuickCommerceMap, "Top 10 Cities by Dark Store Density", July 2026 (cited as a source).
+- Blinkit logo: Wikimedia Commons "Blinkit-yellow-rounded.svg". Eternal logo: eternal.com. Both are trademarks of their owners, used editorially.
+- Title font: Playfair Display, SIL Open Font License 1.1.

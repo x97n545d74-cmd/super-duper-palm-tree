@@ -54,6 +54,11 @@ Primary sources are in `sources/`:
 | S18 | Swiggy cash & bank ₹4,043 cr + investments ₹6,034 cr at 31 Mar 2026 = ₹10,077 cr | RF / AC | Screener export (balance sheet) |
 | X2 | Definitions: GOV is the total value of orders including taxes and fees before discounts; NOV is order value after discounts. Each company defines them slightly differently | Note | Swiggy / Eternal definitions |
 | C7 | Dark stores run by the two companies: 2,751 + 1,240 = **3,991** ("nearly four thousand") | AC | E6, S8 |
+| Q1 | Dark stores per platform in India's top 10 cities, July 2026 (Blinkit, Zepto, Instamart, Flipkart Minutes, BigBasket): Bengaluru 165/159/116/94/95; Delhi 171/98/63/87/55; Hyderabad 94/110/77/61/64; Chennai 62/80/67/64/47; Mumbai 83/80/44/54/17; Pune 84/54/46/38/22; Kolkata 58/34/29/68/31; Gurugram 75/49/31/18/18; Lucknow 49/30/17/23/16; Ahmedabad 44/20/17/29/12 | RF (third party) | QuickCommerceMap "Top 10 Cities by Dark Store Density", July 2026. Public store-locator data, counts are a lower bound; city totals match its published totals |
+| Q2 | Blinkit vs Instamart head-to-head: Blinkit ahead in 9 of 10 cities; Instamart ahead only in Chennai (67 vs 62) | AC | from Q1 |
+| Q3 | Largest head-to-head gap: Delhi, 171 − 63 = 108 stores | AC | from Q1 |
+| Q4 | Largest network in each city: Blinkit 7 (Bengaluru, Delhi, Mumbai, Pune, Gurugram, Lucknow, Ahmedabad); Zepto 2 (Hyderabad, Chennai); Flipkart Minutes 1 (Kolkata) | AC | from Q1. CLSA's August 2026 count (via Entrackr) has Blinkit leading 6 of 10 and Zepto 3: a later snapshot and a different method; the video cites the July QuickCommerceMap data |
+| Q5 | Map boundaries: DataMeet "States/Admin2" (CC BY 4.0), aligned with Survey of India. J&K and Ladakh shown in full (Ladakh extends to 37.08°N, 80.33°E) | RF | DataMeet maps repository |
 | A1 | Quick commerce is now a game of store productivity and the inventory model; Blinkit is about a year ahead on inventory | AI | from C3, E11, S10 |
 
 Not used (could not verify from a primary source): Swiggy's "losses have peaked" quote (only in press reports of the shareholder letter, whose NSE PDF is corrupted at the source); Instamart's launch date; analysts' estimates and targets (and no targets on AVRON anyway).
