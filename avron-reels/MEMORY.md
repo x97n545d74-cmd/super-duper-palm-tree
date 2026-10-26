@@ -67,7 +67,9 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - YouTube blocks yt-dlp detail lookups from the cloud IP. For dates and subscriber counts, get a YouTube Data API key.
 - **Silver crash film** (Hinglish YouTube, ~12 min, started 2026-10-26): script in `projects/2026-10-silver-crash/SCRIPT.md`, adapted from Why X's "Silver Is Running Out... So Why Is It Crashing?" with our own characters (Gupta ji, Rohan) and analogies.
   - Look approved 2026-10-26: Bahi-Khata ledger (D) as the main look, Phone-First (E) for Rohan, Paper Craft (B) for Gupta ji. Per-chapter map is in SCRIPT.md. Demos: `src/projects/silver/Demos.tsx`, rendered with `scripts/silver_demos.mjs`.
-  - Next: VO (Tia Mirza, check ElevenLabs credits first, or the user supplies it), then build the film. The ⚠ facts in the script's fact list still need primary-source checks.
+  - Delivered 2026-10-26: `out/AVRON_Silver_Film_master.mp4` (10:19, 1080p30, 160 MB, −14 LUFS) from the user's Tia Mirza Crisp & Commanding v4 VO (one file, 9:49). Pipeline: `scripts/timeline_silver.py` (faster-whisper words → beats.json), `src/projects/silver/film/`, `scripts/score_silver.py` (original 5-phase score + SFX, user brief), `scripts/mix_stems.py` (music −11 dB, ducked). Upload kit: `projects/2026-10-silver-crash/UPLOAD_KIT.md`. Not published.
+  - Open: at film ~3:40 the transcription heard "3,69,000" for ₹3,59,000; user to listen and resend that line if wrong.
+  - The user writes their own VO in ElevenLabs from a paste-ready script (Devanagari Hindi + Latin English, numbers spelled out), one block with a two-half fallback.
 
 ## Research done, not produced
 - **MosChip:** `projects/2026-10-moschip/PROJECT_REPORT.md`. It fails the revenue-guidance screen because the company gives no guidance.
