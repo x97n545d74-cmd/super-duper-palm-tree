@@ -1,0 +1,16 @@
+# Paste-ready VO (Tia Mirza – Crisp and Commanding, eleven_v4)
+
+Voice: "Tia Mirza – Tough Recovery & Collections Specialist" (`OUBnvvuqEKdDWtapoJFn`, the crisp/commanding one).
+ElevenLabs balance on 2026-10-26: 276 credits; this read needs about 948 per take. Top up or record it yourself, then send me the file and I'll re-time the reel to it (beat ids stay the same).
+
+```
+[confident, fast-paced] एक महीने में महंगाई चार पॉइंट आठ तीन परसेंट से सीधा पाँच पॉइंट पाँच चार परसेंट पर पहुँच गई। और सबसे बड़ा झटका आपकी थाली पर है।
+मॉस्पी का CPI आपके घर की टोकरी का दाम नापता है।
+खाने की महंगाई पाँच पॉइंट नौ सात से सात पॉइंट सात चार परसेंट पर आ गई। प्याज़ साल भर में एक सौ आठ परसेंट महंगा। आलू और टमाटर थोड़े सस्ते।
+गाँव में महंगाई छह पॉइंट शून्य आठ, शहर में चार पॉइंट आठ आठ।
+RBI ने repo rate सवा पाँच से बढ़ाकर साढ़े पाँच परसेंट कर दिया। FY twenty-seven का अनुमान पाँच पॉइंट दो परसेंट है। अनुमान है, guarantee नहीं।
+असली return मतलब return minus महंगाई। सात परसेंट की FD पर असली कमाई सिर्फ़ एक पॉइंट चार छह परसेंट।
+आपकी थाली में सबसे महंगा क्या हुआ? Comment करो।
+```
+
+Two-half fallback: split after "…चार पॉइंट आठ आठ।"

@@ -28,7 +28,7 @@ export const chunkWords = (words: CaptionWord[], maxWords = 3): CaptionChunk[] =
 };
 
 /** Word-synchronised captions: active word lights up, chunk rises in. */
-const TONES: Record<string, string> = { amber: color.amberHot, loss: color.loss, gold: color.goldHot, red: "#FF6A6A" };
+const TONES: Record<string, string> = { amber: color.amberHot, loss: color.loss, gold: color.goldHot, red: "#FF6A6A", green: "#4FD18B" };
 
 export const Captions: React.FC<{ t: number; chunks: CaptionChunk[]; y?: number; family?: string; size?: number }> = ({
   t, chunks, y = layout.captionY, family = font.display, size = 66,

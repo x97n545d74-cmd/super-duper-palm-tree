@@ -19,9 +19,19 @@ import { SwiggyFilm } from "./projects/swiggy/film/Film";
 import { SwiggyThumbnail } from "./projects/swiggy/film/Thumbnail";
 import { DURATION as SWIGGY_DURATION } from "./projects/swiggy/film/timeline";
 import { DURATION as SMARTPHONE_DURATION } from "./projects/smartphone/config";
+import { ThaliReel } from "./projects/thali/Reel";
+import { DURATION as THALI_DURATION } from "./projects/thali/config";
 
 export const Root: React.FC = () => (
-  <>
+  <>    <Composition
+      id="Thali"
+      component={ThaliReel}
+      durationInFrames={Math.ceil(THALI_DURATION * layout.fps)}
+      fps={layout.fps}
+      width={layout.width}
+      height={layout.height}
+    />
+
     <Composition
       id="FuelGap"
       component={FuelGapReel}
