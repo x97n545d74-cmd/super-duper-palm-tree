@@ -20,7 +20,7 @@ const mono = "'JetBrains Mono', monospace";
 const serif = "'Playfair Display', Georgia, serif";
 
 /** 0..1 progress, eased. */
-const p = (t: number, a: number, d: number, fn = ease.outExpo) => fn(clamp01((t - a) / d));
+export const p = (t: number, a: number, d: number, fn = ease.outExpo) => fn(clamp01((t - a) / d));
 /** Shot visibility with a masked wipe in and a short lift out. */
 const shot = (t: number, a: number, z: number) => ({
   on: t > a - 0.05 && t < z + 0.4,
@@ -46,7 +46,7 @@ const Slate: React.FC<{ t: number; letter: string; name: string; note: string; i
 );
 
 /** Illustrative price path: a long climb to the January peak, then the 30 January break. x,y in 0..1. */
-const PTS: [number, number][] = (() => {
+export const PTS: [number, number][] = (() => {
   const out: [number, number][] = [];
   const n = 60;
   for (let i = 0; i <= n; i++) {
@@ -57,11 +57,11 @@ const PTS: [number, number][] = (() => {
   out.push([0.83, 0.5], [0.86, 0.56], [0.92, 0.6], [1, 0.62]);
   return out;
 })();
-const PEAK = 60;
-const pathOf = (pts: [number, number][], w: number, h: number) => pts.map(([x, y], i) => `${i ? "L" : "M"}${(x * w).toFixed(1)},${(y * h).toFixed(1)}`).join(" ");
+export const PEAK = 60;
+export const pathOf = (pts: [number, number][], w: number, h: number) => pts.map(([x, y], i) => `${i ? "L" : "M"}${(x * w).toFixed(1)},${(y * h).toFixed(1)}`).join(" ");
 
 /** Draws the chart up to progress `k` (0..1 across all points); returns the climb and the break as two paths. */
-const Chart: React.FC<{ k: number; w: number; h: number; up: string; down: string; width?: number; dash?: string }> = ({ k, w, h, up, down, width = 5, dash }) => {
+export const Chart: React.FC<{ k: number; w: number; h: number; up: string; down: string; width?: number; dash?: string }> = ({ k, w, h, up, down, width = 5, dash }) => {
   const n = PTS.length - 1;
   const upto = k * n;
   const climb = PTS.slice(0, Math.min(PEAK, Math.floor(upto)) + 1);
@@ -129,8 +129,8 @@ export const DemoA: React.FC = () => {
 
 /* ======================================================================= B · Paper craft */
 const paperBg = "radial-gradient(120% 90% at 30% 20%, #F1EBDD, #E2D8C3 70%, #D3C6AC)";
-const cut = (dy = 10): React.CSSProperties => ({ boxShadow: `0 ${dy}px ${dy * 1.6}px rgba(60,40,20,0.28), 0 1px 0 rgba(255,255,255,0.5) inset` });
-const Person: React.FC<{ kind: "gupta" | "rohan"; t: number; at: number }> = ({ kind, t, at }) => {
+export const cut = (dy = 10): React.CSSProperties => ({ boxShadow: `0 ${dy}px ${dy * 1.6}px rgba(60,40,20,0.28), 0 1px 0 rgba(255,255,255,0.5) inset` });
+export const Person: React.FC<{ kind: "gupta" | "rohan"; t: number; at: number }> = ({ kind, t, at }) => {
   const k = p(t, at, 0.9, ease.outCubic);
   const kurta = kind === "gupta" ? "#E8E1D0" : "#2F4A6B";
   return (
@@ -263,7 +263,7 @@ export const DemoC: React.FC = () => {
 
 /* ======================================================================= D · Bahi-khata ledger */
 const ledgerBg = "#F3EBD6";
-const Ledger: React.FC = () => (
+export const Ledger: React.FC = () => (
   <AbsoluteFill style={{ background: ledgerBg }}>
     {Array.from({ length: 17 }).map((_, i) => <div key={i} style={{ position: "absolute", left: 0, right: 0, top: 120 + i * 58, height: 1, background: "rgba(60,90,150,0.22)" }} />)}
     {[150, 158, 1500, 1508].map((x) => <div key={x} style={{ position: "absolute", top: 0, bottom: 0, left: x, width: 2, background: "rgba(180,40,40,0.55)" }} />)}
@@ -271,7 +271,7 @@ const Ledger: React.FC = () => (
   </AbsoluteFill>
 );
 /** Ink written left to right. */
-const Ink: React.FC<{ t: number; at: number; dur?: number; children: React.ReactNode; style?: React.CSSProperties }> = ({ t, at, dur = 0.9, children, style }) => (
+export const Ink: React.FC<{ t: number; at: number; dur?: number; children: React.ReactNode; style?: React.CSSProperties }> = ({ t, at, dur = 0.9, children, style }) => (
   <div style={{ clipPath: `inset(-20% ${100 - 100 * p(t, at, dur, ease.inOutCubic)}% -20% 0)`, ...style }}>{children}</div>
 );
 export const DemoD: React.FC = () => {
@@ -321,7 +321,7 @@ export const DemoD: React.FC = () => {
 };
 
 /* ======================================================================= E · Phone-first */
-const Phone: React.FC<{ children: React.ReactNode; x?: number }> = ({ children, x = 1130 }) => (
+export const Phone: React.FC<{ children: React.ReactNode; x?: number }> = ({ children, x = 1130 }) => (
   <div style={{ position: "absolute", left: x, top: 90, width: 470, height: 900, borderRadius: 64, background: "#0B0C10", border: "2px solid #2A2D35",
     boxShadow: "0 60px 120px rgba(0,0,0,0.6)", overflow: "hidden" }}>
     <div style={{ position: "absolute", left: 185, top: 18, width: 100, height: 28, borderRadius: 20, background: "#000", zIndex: 5 }} />
