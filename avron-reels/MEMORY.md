@@ -15,7 +15,15 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Never publish, schedule or boost content without explicit approval.
 - Do not generate an AI likeness of real people. Only use assets that are licensed or owned by the user.
 - Pick a topic or idea first, then wait for approval before producing anything.
-- **Prompt library reminder (2026-10-26):** every time we start a new reel, ask the user whether to bring the prompts in `insta-reel-avron-page/` into the new project, and which one. Current list: 1. Motion Graphic One (AVRON Pro blueprint), 2. Two (product launch 20s, also the default motion direction), 3. Three (Ultracode × Opus 5.5), 4. Four (portfolio reel), 5. Five (AIsa 15s), 6. Six (chain.wtf pitch), 7. Seven (MotionSites launch). The thali V2 reel used all of them (`deliverables/2026-10-thali/AVRON_thali_V2_all-prompts_1080x1920.mp4`). The user will add more; keep the table in `insta-reel-avron-page/README.md` up to date.
+- **Prompt library reminder (2026-10-26):** every time we start a new reel, ask the user whether to bring the prompts in `insta-reel-avron-page/` into the new project, and which one. Current list: 1. Motion Graphic One (AVRON Pro blueprint), 2. Two (product launch 20s, also the default motion direction), 3. Three (Ultracode × Opus 5.5), 4. Four (portfolio reel), 5. Five (AIsa 15s), 6. Six (chain.wtf pitch), 7. Seven (MotionSites launch), 8. Eight (website motion graphic), 9. Nine (recipe-style explainer), 10. Ten (2D Apple-keynote launch film). The thali V2 reel used all of them (`deliverables/2026-10-thali/AVRON_thali_V2_all-prompts_1080x1920.mp4`). The user will add more; keep the table in `insta-reel-avron-page/README.md` up to date.
+
+## User's tool list file (`AVRON-tools.md`, uploaded 2026-10-26)
+- Handle: @avronindia. Audience: active traders, serious investors, business owners, financially curious young Indians.
+- Facts from government/regulator sites (SEBI, RBI, NSE, BSE). Never publish automatically; save drafts for review.
+- VO style: everyday Hinglish, sounds like an intellect talking, not formal Hindi.
+- **[ASK GROK] rule:** when research needs accurate, current info, write a short "[ASK GROK]" request, stop, wait for the user to paste Grok's answer, then use it and mark anything mixed with our own knowledge.
+- **Open conflict:** the file names ElevenLabs "Sia – Warm & Real Companion" as the reel voice; the last reels used Tia Mirza. Ask the user which is default now.
+- Tools listed: HyperFrames (HeyGen), Remotion, ComfyUI (user's own computer), Playwright + Playwright MCP, librosa, Whisper (later), ffmpeg, nsepython, Agent Reach, Supermetrics/Metricool/Typefully connectors.
 
 ## Two separate Instagram pages (user, 2026-10-26)
 - **AVRON**: professional finance content (these reels). Not connected to Metricool yet, so there is no AVRON analytics.
