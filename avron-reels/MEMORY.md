@@ -54,6 +54,10 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
   - The user will record **their own TTS** for the post-clip lines. Slots are in `deliverables/2026-10-smartphone/VO_TIMING.md`.
   - The reel ships with a ducked music bed (`bed.wav`) and no captions until that VO arrives.
   - Not published.
+- **Retail inflation thali** (2026-10-26): a 52 s Hinglish reel from the user's "AVRON Pro Reel Master Blueprint" (6-step framework: hook, context, data, split, central bank, real-return formula + CTA). Final with the user's Tia VO in `deliverables/2026-10-thali/` (QC 9/11, the 2 flags reviewed in `QC_NOTES.md`). Caption, sources and paste-ready VO are in the same folder. Not published.
+  - The blueprint said RBI held the repo rate; RBI **raised** it 5.25% → 5.50% on 7 Oct 2026. Always check blueprint facts against MoSPI/RBI primary documents (Agent Reach reads both when WebFetch fails).
+  - Pipeline: `scripts/narration_thali.py` → `scripts/timeline_thali_user.py` (user VO, one continuous read, Whisper digit matching for spoken numbers) → `fix_timeline.py` → `score_thali.py` → `mix_stems.py` (music −16 dB keeps Hinglish numbers clear) → `src/projects/thali/`.
+  - The user prefers to TTS the VO themselves: give the script in one block (Devanagari + Latin English, numbers spelled out).
 - **ElevenLabs credits:** check the balance before generating a VO. One ~600-character eleven_v4 read costs about 577 credits per take, and the default is 2 takes.
 
 ## YouTube (starting 2026-10-25)
