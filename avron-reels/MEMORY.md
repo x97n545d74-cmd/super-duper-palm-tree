@@ -22,7 +22,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Facts from government/regulator sites (SEBI, RBI, NSE, BSE). Never publish automatically; save drafts for review.
 - VO style: everyday Hinglish, sounds like an intellect talking, not formal Hindi.
 - **[ASK GROK] rule:** when research needs accurate, current info, write a short "[ASK GROK]" request, stop, wait for the user to paste Grok's answer, then use it and mark anything mixed with our own knowledge.
-- **Open conflict:** the file names ElevenLabs "Sia – Warm & Real Companion" as the reel voice; the last reels used Tia Mirza. Ask the user which is default now.
+- **Voice decided (2026-10-26):** Tia Mirza – Crisp and Commanding stays the default reel voice. This overrides "Sia – Warm & Real Companion" in `AVRON-tools.md`.
 - Tools listed: HyperFrames (HeyGen), Remotion, ComfyUI (user's own computer), Playwright + Playwright MCP, librosa, Whisper (later), ffmpeg, nsepython, Agent Reach, Supermetrics/Metricool/Typefully connectors.
 - Set up 2026-10-26:
   - **HyperFrames:** skills `hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `remotion-to-hyperframes` copied into `.claude/skills/` from heygen-com/hyperframes @ 9ebc1f8. The CLI runs via `npx hyperframes` (0.8.205).

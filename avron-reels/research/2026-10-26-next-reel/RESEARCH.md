@@ -1,6 +1,6 @@
 # Next reel: research and topic options (2026-10-26)
 
-Status: user picked **Topic A (gold FoF freeze + rupee)** on 2026-10-26. Waiting on: [ASK GROK] answer, prompt-library choice, voice (Sia or Tia).
+Status: user picked **Topic A (gold FoF freeze + rupee)** on 2026-10-26. Voice: Tia Mirza. Waiting on: [ASK GROK] answer, prompt-library choice.
 
 ## 1. Our weaknesses (Supermetrics IGI, @avronindia, 22–26 Oct, 9 reels)
 - Skip rate 66–80% on 8 of 9 reels. The one reel under 50% (Shree Refrigerations, 45.9%) got 1,497 views, 2x the next.
