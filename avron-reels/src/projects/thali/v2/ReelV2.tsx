@@ -190,7 +190,7 @@ const Mospi: React.FC<{ t: number }> = ({ t }) => {
 };
 
 /* ================================================ 4. FOOD: wall of tiles, glowing 5.97 → 7.74, scan line picks 3 winners */
-const TILES = ["thali.jpg", "market.jpg", "subji.jpg", "grocery.jpg", "onion.jpg", "sacks.jpg", "potato.jpg", "thali_b.jpg", "tomato.jpg", "street_1.jpg", "grocery.jpg", "market.jpg"];
+const TILES = ["thali.jpg", "market.jpg", "subji.jpg", "grocery.jpg", "onion.jpg", "sacks.jpg", "potato.jpg", "thali_b.jpg", "market.jpg", "street_1.jpg", "grocery.jpg", "market.jpg"];
 const WIN: Record<number, { name: string; c: string }> = { 4: { name: "PYAAZ", c: RED }, 6: { name: "ALOO", c: GREEN }, 8: { name: "TAMATAR", c: GREEN } };
 const Food: React.FC<{ t: number }> = ({ t }) => {
   const [a, b] = S.food;
@@ -243,7 +243,7 @@ const Food: React.FC<{ t: number }> = ({ t }) => {
 const VEG = [
   { name: "Pyaaz", v: "+108.09%", c: RED, img: "onion.jpg", w: "108%" },
   { name: "Aloo", v: "−11.50%", c: GREEN, img: "potato.jpg", w: "Aloo" },
-  { name: "Tamatar", v: "−8.62%", c: GREEN, img: "tomato.jpg", w: "tamatar" },
+  { name: "Tamatar", v: "−8.62%", c: GREEN, img: "market.jpg", w: "tamatar" },
 ];
 const CARDS = [VEG[0], { name: "Dal", v: "", c: GOLD, img: "sacks.jpg", w: "" }, VEG[1], { name: "Bazaar", v: "", c: GOLD, img: "market.jpg", w: "" }, VEG[2], { name: "Sabzi", v: "", c: GOLD, img: "subji.jpg", w: "" }];
 const Veg: React.FC<{ t: number }> = ({ t }) => {

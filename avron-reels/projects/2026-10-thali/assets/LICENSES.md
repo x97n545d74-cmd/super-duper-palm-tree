@@ -14,3 +14,4 @@ Only CC0, public domain and CC BY (no SA). CC BY credits are on the end card. Lo
 | public/thali2/subji.jpg | Subji-walli | Meanest Indian | CC BY 2.0 | https://www.flickr.com/photos/56252733@N00/2179187363 | yes |
 | public/thali2/thali.jpg | South Indian Thali Plate | Rohit Motwani | CC0 1.0 | https://wordpress.org/photos/photo/66865bead0/ | no |
 | public/thali2/thali_b.jpg | My traditional Indian thali meal | shankar s. | CC BY 2.0 | https://www.flickr.com/photos/77742560@N06/48625245542 | yes |
+| public/thali2/village.jpg | Rural Indian Village House | Nithi clicks | CC BY 2.0 | https://www.flickr.com/photos/47850033@N08/44431531434 | yes |
