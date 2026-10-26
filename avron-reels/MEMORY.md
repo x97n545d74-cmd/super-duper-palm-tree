@@ -15,7 +15,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Never publish, schedule or boost content without explicit approval.
 - Do not generate an AI likeness of real people. Only use assets that are licensed or owned by the user.
 - Pick a topic or idea first, then wait for approval before producing anything.
-- **Prompt library reminder (2026-10-26):** every time we start a new reel, ask the user whether to bring the prompts in `insta-reel-avron-page/` into the new project, and which one. Current list: 1. Motion Graphic One (the AVRON Pro master prompt + 6-step blueprint). The user will add more; keep the table in `insta-reel-avron-page/README.md` up to date.
+- **Prompt library reminder (2026-10-26):** every time we start a new reel, ask the user whether to bring the prompts in `insta-reel-avron-page/` into the new project, and which one. Current list: 1. Motion Graphic One (AVRON Pro blueprint), 2. Two (product launch 20s, also the default motion direction), 3. Three (Ultracode × Opus 5.5), 4. Four (portfolio reel), 5. Five (AIsa 15s), 6. Six (chain.wtf pitch), 7. Seven (MotionSites launch). The thali V2 reel used all of them (`deliverables/2026-10-thali/AVRON_thali_V2_all-prompts_1080x1920.mp4`). The user will add more; keep the table in `insta-reel-avron-page/README.md` up to date.
 
 ## Motion and on-screen text (user feedback 2026-10-24: "itna ganda graphic")
 - **Default motion direction for every reel:** the direction saved in `ideas/2026-10-product-launch-20s/PROMPT.md`.
