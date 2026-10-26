@@ -42,13 +42,13 @@
     const stamp = (sel, at) => tl.fromTo(sel, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.12, ease: "expo.out" }, at);
     const show = (sel, at, d = 0.3) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d, ease: "power2.out" }, at);
 
-    rise("#s4-h1", 0.1); rise("#s4-h2", 0.25);
-    tl.fromTo("#s4-r0, #s4-r1, #s4-r2, #s4-r3, #s4-r4", { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.5, ease: "power3.inOut", stagger: 0.06 }, 1.0);
-    rise("#s4-a", 1.6); stamp("#s4-sa", 1.9);
-    rise("#s4-b", 2.6); stamp("#s4-sb", 2.9);
-    rise("#s4-c", 3.6); stamp("#s4-sc", 3.9);
-    rise("#s4-d", 5.4); stamp("#s4-sd", 5.7);
-    show("#s4-src", 6.0);
+    rise("#s4-h1", 0.0); rise("#s4-h2", 0.0 + 0.15);
+    show("#s4-src", 0.6);
+    tl.fromTo("#s4-r0, #s4-r1, #s4-r2, #s4-r3, #s4-r4", { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.5, ease: "power3.inOut", stagger: 0.06 }, 0.8);
+    rise("#s4-a", 1.35); stamp("#s4-sa", 2.9);
+    rise("#s4-b", 3.45); stamp("#s4-sb", 3.85);
+    rise("#s4-c", 4.75); stamp("#s4-sc", 6.65);
+    rise("#s4-d", 7.7); stamp("#s4-sd", 8.05);
 
     window.__timelines["s4"] = tl;
   </script>

@@ -34,3 +34,8 @@ public/thali/stems/
 
 # HyperFrames snapshot/render artifacts
 .hyperframes/
+
+# Gold reel: rebuildable audio (score_gold.py + mix_stems.py)
+projects/2026-10-gold-freeze/audio/**/*.wav
+projects/2026-10-gold-freeze/audio/*.wav
+projects/2026-10-gold-freeze/hf/assets/*.wav

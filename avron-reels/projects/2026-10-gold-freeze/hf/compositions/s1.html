@@ -28,12 +28,13 @@
       <div class="disp" id="s1-h1">Gold SIP</div>
       <div class="disp gold" id="s1-h2">band?</div>
     </div>
+    <div class="abs" style="left:72px; top:486px; width:828px;"><div class="mask"><span class="body" id="s1-tease" style="font-size:40px;">Aur 2013 mein bhi yahi hua tha</span></div></div>
     <div class="abs" id="s1-phone">
       <div id="s1-screen">
-        <div class="tag">Mutual fund app</div>
+        <div class="tag" style="font-size:30px;">Mutual fund app</div>
         <div class="body" style="margin-top:18px;">Gold ETF<br>Fund of Funds</div>
         <div class="rule" style="margin-top:36px;"></div>
-        <div class="tag" style="margin-top:28px;">SIP amount</div>
+        <div class="tag" style="margin-top:28px; font-size:30px;">SIP amount</div>
         <div class="body" style="margin-top:8px;">₹2,000 / month</div>
         <div id="s1-btn">Start SIP</div>
         <div id="s1-stamp" class="stamp">PAUSED</div>
@@ -47,9 +48,10 @@
     const stamp = (sel, at) => tl.fromTo(sel, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.12, ease: "expo.out" }, at);
     const show = (sel, at, d = 0.3) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d, ease: "power2.out" }, at);
 
-    tl.fromTo("#s1-btn", { backgroundColor: "#e3b04b", color: "#16140f" }, { backgroundColor: "#3a362e", color: "#7d776b", duration: 0.25, ease: "power2.out" }, 1.0);
-    stamp("#s1-stamp", 1.15);
-    tl.fromTo("#s1-phone", { scale: 1 }, { scale: 0.94, duration: 0.6, ease: "power3.inOut" }, 2.35);
+    rise("#s1-tease", 3.6);
+    tl.fromTo("#s1-btn", { backgroundColor: "#e3b04b", color: "#16140f" }, { backgroundColor: "#3a362e", color: "#b3ac9f", duration: 0.25, ease: "power2.out" }, 2.2);
+    stamp("#s1-stamp", 3.14);
+    tl.fromTo("#s1-phone", { scale: 1 }, { scale: 0.94, duration: 0.8, ease: "power3.inOut" }, 4.4);
 
     window.__timelines["s1"] = tl;
   </script>

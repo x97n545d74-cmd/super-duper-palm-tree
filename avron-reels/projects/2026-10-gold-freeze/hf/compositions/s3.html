@@ -65,19 +65,19 @@
     const stamp = (sel, at) => tl.fromTo(sel, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.12, ease: "expo.out" }, at);
     const show = (sel, at, d = 0.3) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d, ease: "power2.out" }, at);
 
-    tl.fromTo("#s3-bar", { yPercent: 40, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: "power4.out" }, 0.1);
-    rise("#s3-t1", 0.4); rise("#s3-t2", 0.55);
-    show("#s3-in, #s3-out", 1.8);
-    tl.fromTo("#s3-line", { scaleY: 0, transformOrigin: "50% 0" }, { scaleY: 1, duration: 0.5, ease: "power3.inOut" }, 1.8);
+    tl.fromTo("#s3-bar", { yPercent: 40, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: "power4.out" }, 0.0);
+    rise("#s3-t1", 0.9); rise("#s3-t2", 0.9 + 0.15);
+    show("#s3-in, #s3-out", 2.1);
+    tl.fromTo("#s3-line", { scaleY: 0, transformOrigin: "50% 0" }, { scaleY: 1, duration: 0.5, ease: "power3.inOut" }, 2.1);
     ["#s3-n1", "#s3-n2", "#s3-n3"].forEach((n, i) => {
       tl.fromTo(n, { x: 72 + i * 230, opacity: 0 }, { x: 72 + i * 230, opacity: 1, duration: 0.2 }, 2.3 + i * 0.1);
-      tl.to(n, { x: 1180 + i * 60, duration: 1.4, ease: "power3.in" }, 3.4 + i * 0.15);
+      tl.to(n, { x: 1180 + i * 60, duration: 1.4, ease: "power3.in" }, 5.3 + i * 0.15);
     });
     rise("#s3-t3", 2.6);
-    rise("#s3-rate", 5.2, 0.6); rise("#s3-t4", 5.5); show("#s3-src1", 5.8);
-    tl.fromTo("#s3-r1", { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.5, ease: "power3.inOut" }, 7.6);
-    rise("#s3-d", 7.9); show("#s3-dt", 8.1);
-    rise("#s3-m", 9.4); show("#s3-mt", 9.6); show("#s3-src2", 9.9);
+    rise("#s3-rate", 8.95, 0.6); rise("#s3-t4", 9.4); show("#s3-src1", 9.4 + 0.3);
+    tl.fromTo("#s3-r1", { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.5, ease: "power3.inOut" }, 10.7);
+    rise("#s3-d", 11.85); show("#s3-dt", 11.85 + 0.2);
+    rise("#s3-m", 15.4); show("#s3-mt", 15.4 + 0.2); show("#s3-src2", 15.9);
 
     window.__timelines["s3"] = tl;
   </script>

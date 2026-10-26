@@ -46,12 +46,13 @@ S["s1"] = ("""
       <div class="disp" id="s1-h1">Gold SIP</div>
       <div class="disp gold" id="s1-h2">band?</div>
     </div>
+    <div class="abs" style="left:72px; top:486px; width:828px;"><div class="mask"><span class="body" id="s1-tease" style="font-size:40px;">Aur 2013 mein bhi yahi hua tha</span></div></div>
     <div class="abs" id="s1-phone">
       <div id="s1-screen">
-        <div class="tag">Mutual fund app</div>
+        <div class="tag" style="font-size:30px;">Mutual fund app</div>
         <div class="body" style="margin-top:18px;">Gold ETF<br>Fund of Funds</div>
         <div class="rule" style="margin-top:36px;"></div>
-        <div class="tag" style="margin-top:28px;">SIP amount</div>
+        <div class="tag" style="margin-top:28px; font-size:30px;">SIP amount</div>
         <div class="body" style="margin-top:8px;">₹2,000 / month</div>
         <div id="s1-btn">Start SIP</div>
         <div id="s1-stamp" class="stamp">PAUSED</div>
@@ -237,6 +238,7 @@ S["s6"] = ("""
     show("#s6-1", 1.6); show("#s6-2", 2.0); show("#s6-3", 2.4);
     show("#s6-cta", 3.2); show("#s6-fine", 3.4);
 """)
+exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scene_cues.py')).read())
 os.makedirs(OUT, exist_ok=True)
 for sid, (css, html, js) in S.items():
     open(os.path.join(OUT, f"{sid}.html"), "w").write(scene(sid, css, html, js))
