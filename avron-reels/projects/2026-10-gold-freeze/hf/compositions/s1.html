@@ -1,0 +1,56 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: Inter, sans-serif; color: #f2eee6; }
+    #root .abs { position: absolute; }
+    #root .mask { display: block; overflow: hidden; padding-bottom: 0.08em; }
+    #root .mask > span { display: block; }
+    #root .disp { font-weight: 900; font-size: 132px; letter-spacing: -0.03em; line-height: 0.95; }
+    #root .body { font-weight: 700; font-size: 46px; letter-spacing: -0.01em; line-height: 1.15; }
+    #root .tag { font-weight: 400; font-size: 28px; color: rgba(242,238,230,0.6); }
+    #root .gold { color: #e3b04b; }
+    #root .red { color: #e5484d; }
+    #root .green { color: #3dbe7a; }
+    #root .rule { height: 2px; background: rgba(242,238,230,0.18); }
+    #root .stamp { display: inline-block; font-weight: 900; font-size: 40px; letter-spacing: 0.04em; padding: 6px 18px;
+                   border: 6px solid #e5484d; color: #e5484d; border-radius: 4px; transform: rotate(-4deg); }
+    #root .stamp.ok { border-color: #3dbe7a; color: #3dbe7a; }
+
+    #s1-phone { left: 210px; top: 560px; width: 600px; height: 760px; border: 18px solid #2b2822; border-radius: 72px; background: #0e0d0a; }
+    #s1-screen { position: absolute; inset: 40px 40px 40px 40px; }
+    #s1-btn { position: absolute; left: 0; right: 0; top: 420px; height: 120px; border-radius: 24px; background: #e3b04b; color: #16140f;
+              font-weight: 900; font-size: 48px; display: flex; align-items: center; justify-content: center; }
+    #s1-stamp { position: absolute; left: 60px; top: 560px; font-size: 52px; }
+
+  </style>
+  <div id="root" data-composition-id="s1" data-width="1080" data-height="1920">
+
+    <div class="abs" style="left:72px; top:230px; width:900px;">
+      <div class="disp" id="s1-h1">Gold SIP</div>
+      <div class="disp gold" id="s1-h2">band?</div>
+    </div>
+    <div class="abs" id="s1-phone">
+      <div id="s1-screen">
+        <div class="tag">Mutual fund app</div>
+        <div class="body" style="margin-top:18px;">Gold ETF<br>Fund of Funds</div>
+        <div class="rule" style="margin-top:36px;"></div>
+        <div class="tag" style="margin-top:28px;">SIP amount</div>
+        <div class="body" style="margin-top:8px;">₹2,000 / month</div>
+        <div id="s1-btn">Start SIP</div>
+        <div id="s1-stamp" class="stamp">PAUSED</div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const rise = (sel, at, d = 0.5) => tl.fromTo(sel, { yPercent: 105 }, { yPercent: 0, duration: d, ease: "power4.out" }, at);
+    const stamp = (sel, at) => tl.fromTo(sel, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.12, ease: "expo.out" }, at);
+    const show = (sel, at, d = 0.3) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d, ease: "power2.out" }, at);
+
+    tl.fromTo("#s1-btn", { backgroundColor: "#e3b04b", color: "#16140f" }, { backgroundColor: "#3a362e", color: "#7d776b", duration: 0.25, ease: "power2.out" }, 1.0);
+    stamp("#s1-stamp", 1.15);
+    tl.fromTo("#s1-phone", { scale: 1 }, { scale: 0.94, duration: 0.6, ease: "power3.inOut" }, 2.35);
+
+    window.__timelines["s1"] = tl;
+  </script>
+</template>

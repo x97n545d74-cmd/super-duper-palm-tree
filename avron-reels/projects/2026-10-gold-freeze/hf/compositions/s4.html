@@ -1,0 +1,55 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: Inter, sans-serif; color: #f2eee6; }
+    #root .abs { position: absolute; }
+    #root .mask { display: block; overflow: hidden; padding-bottom: 0.08em; }
+    #root .mask > span { display: block; }
+    #root .disp { font-weight: 900; font-size: 132px; letter-spacing: -0.03em; line-height: 0.95; }
+    #root .body { font-weight: 700; font-size: 46px; letter-spacing: -0.01em; line-height: 1.15; }
+    #root .tag { font-weight: 400; font-size: 28px; color: rgba(242,238,230,0.6); }
+    #root .gold { color: #e3b04b; }
+    #root .red { color: #e5484d; }
+    #root .green { color: #3dbe7a; }
+    #root .rule { height: 2px; background: rgba(242,238,230,0.18); }
+    #root .stamp { display: inline-block; font-weight: 900; font-size: 40px; letter-spacing: 0.04em; padding: 6px 18px;
+                   border: 6px solid #e5484d; color: #e5484d; border-radius: 4px; transform: rotate(-4deg); }
+    #root .stamp.ok { border-color: #3dbe7a; color: #3dbe7a; }
+
+    .s4-row { position: absolute; left: 72px; width: 828px; height: 150px; display: flex; align-items: center; justify-content: space-between; }
+
+  </style>
+  <div id="root" data-composition-id="s4" data-width="1080" data-height="1920">
+
+    <div class="abs" style="left:72px; top:220px; width:900px;">
+      <div class="mask"><span class="disp" id="s4-h1" style="font-size:112px;">Aapke SIP</span></div>
+      <div class="mask"><span class="disp gold" id="s4-h2" style="font-size:112px;">par asar</span></div>
+    </div>
+    <div class="abs rule" style="left:72px; top:520px; width:828px;" id="s4-r0"></div>
+    <div class="s4-row" style="top:530px;"><div class="mask"><span class="body" id="s4-a">Purana SIP</span></div><div class="stamp ok" id="s4-sa">CHALU</div></div>
+    <div class="abs rule" style="left:72px; top:680px; width:828px;" id="s4-r1"></div>
+    <div class="s4-row" style="top:690px;"><div class="mask"><span class="body" id="s4-b">Redemption</span></div><div class="stamp ok" id="s4-sb">CHALU</div></div>
+    <div class="abs rule" style="left:72px; top:840px; width:828px;" id="s4-r2"></div>
+    <div class="s4-row" style="top:850px;"><div class="mask"><span class="body" id="s4-c">Gold ETF<br><span class="tag">exchange par</span></span></div><div class="stamp ok" id="s4-sc" style="font-size:32px;">NAYI ROK NAHI</div></div>
+    <div class="abs rule" style="left:72px; top:1000px; width:828px;" id="s4-r3"></div>
+    <div class="s4-row" style="top:1010px;"><div class="mask"><span class="body gold" id="s4-d">Naya paisa</span></div><div class="stamp" id="s4-sd">BAND</div></div>
+    <div class="abs rule" style="left:72px; top:1160px; width:828px;" id="s4-r4"></div>
+    <div class="abs tag" style="left:72px; top:1190px; width:828px;" id="s4-src">Scheme ke hisaab se alag · apne AMC ka notice dekho</div>
+
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const rise = (sel, at, d = 0.5) => tl.fromTo(sel, { yPercent: 105 }, { yPercent: 0, duration: d, ease: "power4.out" }, at);
+    const stamp = (sel, at) => tl.fromTo(sel, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.12, ease: "expo.out" }, at);
+    const show = (sel, at, d = 0.3) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d, ease: "power2.out" }, at);
+
+    rise("#s4-h1", 0.1); rise("#s4-h2", 0.25);
+    tl.fromTo("#s4-r0, #s4-r1, #s4-r2, #s4-r3, #s4-r4", { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.5, ease: "power3.inOut", stagger: 0.06 }, 1.0);
+    rise("#s4-a", 1.6); stamp("#s4-sa", 1.9);
+    rise("#s4-b", 2.6); stamp("#s4-sb", 2.9);
+    rise("#s4-c", 3.6); stamp("#s4-sc", 3.9);
+    rise("#s4-d", 5.4); stamp("#s4-sd", 5.7);
+    show("#s4-src", 6.0);
+
+    window.__timelines["s4"] = tl;
+  </script>
+</template>

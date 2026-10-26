@@ -1,0 +1,61 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: Inter, sans-serif; color: #f2eee6; }
+    #root .abs { position: absolute; }
+    #root .mask { display: block; overflow: hidden; padding-bottom: 0.08em; }
+    #root .mask > span { display: block; }
+    #root .disp { font-weight: 900; font-size: 132px; letter-spacing: -0.03em; line-height: 0.95; }
+    #root .body { font-weight: 700; font-size: 46px; letter-spacing: -0.01em; line-height: 1.15; }
+    #root .tag { font-weight: 400; font-size: 28px; color: rgba(242,238,230,0.6); }
+    #root .gold { color: #e3b04b; }
+    #root .red { color: #e5484d; }
+    #root .green { color: #3dbe7a; }
+    #root .rule { height: 2px; background: rgba(242,238,230,0.18); }
+    #root .stamp { display: inline-block; font-weight: 900; font-size: 40px; letter-spacing: 0.04em; padding: 6px 18px;
+                   border: 6px solid #e5484d; color: #e5484d; border-radius: 4px; transform: rotate(-4deg); }
+    #root .stamp.ok { border-color: #3dbe7a; color: #3dbe7a; }
+
+    #s2-num { font-weight: 900; font-size: 360px; letter-spacing: -0.05em; line-height: 0.85; }
+    .s2-row { position: absolute; left: 72px; width: 828px; height: 112px; display: flex; align-items: center; justify-content: space-between; }
+
+  </style>
+  <div id="root" data-composition-id="s2" data-width="1080" data-height="1920">
+
+    <div class="abs" style="left:72px; top:220px;">
+      <div class="mask"><span id="s2-num" class="gold">17</span></div>
+    </div>
+    <div class="abs" style="left:520px; top:300px; width:400px;">
+      <div class="mask"><span class="body" id="s2-l1">fund houses</span></div>
+      <div class="mask"><span class="body" id="s2-l2">16 Oct se</span></div>
+    </div>
+    <div class="abs rule" style="left:72px; top:700px; width:828px;" id="s2-r0"></div>
+    <div class="s2-row" style="top:720px;"><div class="mask"><span class="body" id="s2-a">Naya SIP</span></div><div class="stamp" id="s2-sa">BAND</div></div>
+    <div class="abs rule" style="left:72px; top:842px; width:828px;" id="s2-r1"></div>
+    <div class="s2-row" style="top:862px;"><div class="mask"><span class="body" id="s2-b">Lump sum</span></div><div class="stamp" id="s2-sb">BAND</div></div>
+    <div class="abs rule" style="left:72px; top:984px; width:828px;" id="s2-r2"></div>
+    <div class="s2-row" style="top:1004px;"><div class="mask"><span class="body" id="s2-c">Switch-in</span></div><div class="stamp" id="s2-sc">BAND</div></div>
+    <div class="abs rule" style="left:72px; top:1126px; width:828px;" id="s2-r3"></div>
+    <div class="abs tag" style="left:72px; top:1150px;" id="s2-src">Source: AMC notices, 15–16 Oct 2026</div>
+    <div class="abs" style="left:72px; top:1210px; width:828px;">
+      <div class="mask"><span class="body" id="s2-why" style="font-size:40px;">Notice mein wajah nahi · Reports: SEBI se charcha ke baad</span></div>
+    </div>
+
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const rise = (sel, at, d = 0.5) => tl.fromTo(sel, { yPercent: 105 }, { yPercent: 0, duration: d, ease: "power4.out" }, at);
+    const stamp = (sel, at) => tl.fromTo(sel, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.12, ease: "expo.out" }, at);
+    const show = (sel, at, d = 0.3) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d, ease: "power2.out" }, at);
+
+    rise("#s2-num", 0.1, 0.6);
+    rise("#s2-l1", 0.4); rise("#s2-l2", 0.55);
+    tl.fromTo("#s2-r0, #s2-r1, #s2-r2, #s2-r3", { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.5, ease: "power3.inOut", stagger: 0.06 }, 1.6);
+    rise("#s2-a", 2.0); stamp("#s2-sa", 2.3);
+    rise("#s2-b", 2.45); stamp("#s2-sb", 2.75);
+    rise("#s2-c", 2.9); stamp("#s2-sc", 3.2);
+    show("#s2-src", 3.4);
+    rise("#s2-why", 4.6);
+
+    window.__timelines["s2"] = tl;
+  </script>
+</template>

@@ -31,3 +31,6 @@ projects/2026-10-silver-crash/vo/*_words*.json
 projects/2026-10-silver-crash/mix/
 public/silver/
 public/thali/stems/
+
+# HyperFrames snapshot/render artifacts
+.hyperframes/
