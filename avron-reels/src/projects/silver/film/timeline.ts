@@ -7,7 +7,7 @@ import data from "./beats.json";
  * (the moment a key word is spoken). Shots only read times from here, so a new recording re-times everything.
  */
 export type Beat = { id: string; section: string; text: string; start: number; end: number; cues: Record<string, number> };
-export const BEATS = data.beats as Beat[];
+export const BEATS = data.beats as unknown as Beat[];
 export const DURATION: number = data.duration;
 export const CARDS = data.cards as Record<string, number>;
 export const CARD = 3.0;
