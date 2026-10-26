@@ -23,3 +23,10 @@ projects/2026-10-swiggy-eternal/vo/*.log
 projects/2026-10-swiggy-eternal/vo/*_words*.json
 projects/2026-10-swiggy-eternal/mix/
 public/swiggy/film_mix.flac
+
+# Silver film narration (user-supplied ElevenLabs file) and derived audio
+projects/2026-10-silver-crash/vo/*.mp3
+projects/2026-10-silver-crash/vo/*.wav
+projects/2026-10-silver-crash/vo/*_words*.json
+projects/2026-10-silver-crash/mix/
+public/silver/

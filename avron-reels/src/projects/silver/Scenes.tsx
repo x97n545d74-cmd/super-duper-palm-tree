@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useContext } from "react";
 import { AbsoluteFill, Sequence } from "remotion";
 import { clamp01, ease, lerp, useTime } from "../../engine/anim";
 import { Grain, Rise, SerifFont } from "../swiggy/look";
@@ -10,6 +10,19 @@ import { Chart, cut, Ink, Ledger, PEAK, Person, Phone, PTS } from "./Demos";
  * approved look (ledger main, phone for Rohan, paper for Gupta ji) and the house motion rules:
  * no glow, particles, shake, flashes or bounce. Each scene starts at local time 0.
  */
+/** The film can re-time a scene: it provides a map from film time (local to the scene) to the scene's design time. */
+export const SceneTime = createContext<((t: number) => number) | null>(null);
+const useSceneTime = () => {
+  const t = useTime();
+  const map = useContext(SceneTime);
+  return map ? map(t) : t;
+};
+/** Piecewise-linear map through [filmT, sceneT] keys, clamped at both ends. */
+export const keys = (k: [number, number][]) => (t: number) => {
+  if (t <= k[0][0]) return k[0][1] + (t - k[0][0]);
+  for (let i = 1; i < k.length; i++) if (t <= k[i][0]) return lerp(k[i - 1][1], k[i][1], (t - k[i - 1][0]) / (k[i][0] - k[i - 1][0]));
+  return k[k.length - 1][1] + (t - k[k.length - 1][0]);
+};
 const sans = "'Inter Display', 'Inter', sans-serif";
 const mono = "'JetBrains Mono', monospace";
 const serif = "'Playfair Display', Georgia, serif";
@@ -18,7 +31,7 @@ const hand: React.CSSProperties = { fontFamily: serif, fontStyle: "italic", colo
 
 /** Masked wipe in over the previous scene, then a slow push for the whole scene. No fade out: the next scene wipes over it. */
 const Frame: React.FC<{ dur: number; bg: string; children: React.ReactNode }> = ({ dur, bg, children }) => {
-  const t = useTime();
+  const t = useSceneTime();
   const pin = ease.inOutCubic(clamp01(t / 0.6));
   return (
     <AbsoluteFill style={{ background: bg, clipPath: pin < 1 ? `inset(0 ${100 - pin * 100}% 0 0)` : undefined, transform: `scale(${1 + 0.015 * clamp01(t / dur)})` }}>
@@ -31,7 +44,7 @@ const Foot: React.FC<{ text: string; dark?: boolean }> = ({ text, dark }) => (
 );
 
 /* ------------------------------------------------------------------ 1 · Hook: the coin and the cut (7 s) */
-const Coin: React.FC<{ size: number; cutAt: number; t: number }> = ({ size, cutAt, t }) => {
+export const Coin: React.FC<{ size: number; cutAt: number; t: number }> = ({ size, cutAt, t }) => {
   const split = ease.outCubic(clamp01((t - cutAt) / 0.9)) * 14;
   const half = (clip: string, dx: number, dy: number): React.ReactNode => (
     <div style={{ position: "absolute", inset: 0, clipPath: clip, transform: `translate(${dx}px, ${dy}px)` }}>
@@ -53,7 +66,7 @@ const Coin: React.FC<{ size: number; cutAt: number; t: number }> = ({ size, cutA
   );
 };
 export const SceneHook: React.FC = () => {
-  const t = useTime();
+  const t = useSceneTime();
   const drop = ease.outCubic(clamp01((t - 0.2) / 0.9));
   const line = ease.inOutCubic(clamp01((t - 2.2) / 1.1));
   // the cut runs top-left to bottom-right across the whole frame, through the coin, then leaves the frame
@@ -88,7 +101,7 @@ export const SceneHook: React.FC = () => {
 /* ------------------------------------------------------------------ 2 · Teen shak: cards struck and tilted back (8 s) */
 const MYTHS = [["01", "Kami nakli hai", "Metals Focus ginta hai · kami asli"], ["02", "Sab Fed ka khel hai", "Sona −11% · chandi −31% · usi din"], ["03", "Ab koi chandi nahi chahta", "Coins aur bars · +18% anuman"]];
 export const SceneMyths: React.FC = () => {
-  const t = useTime();
+  const t = useSceneTime();
   return (
     <Frame dur={8} bg={PAPER}>
       <SerifFont />
@@ -124,7 +137,7 @@ export const SceneMyths: React.FC = () => {
 
 /* ------------------------------------------------------------------ 3 · Gupta ji vs Rohan: warm and slow vs cold and fast (10 s) */
 export const SceneSplit: React.FC = () => {
-  const t = useTime();
+  const t = useSceneTime();
   const crash = 5.6;
   const door = ease.inOutCubic(clamp01((t - 1.0) / 1.6));
   const crashed = t > crash;
@@ -183,7 +196,7 @@ export const SceneSplit: React.FC = () => {
 
 /* ------------------------------------------------------------------ 4 · 30 January: the dominoes on the curve (9 s) */
 export const SceneDominoes: React.FC = () => {
-  const t = useTime();
+  const t = useSceneTime();
   const W = 1500, H = 640, OX = 210, OY = 230;
   const draw = clamp01(t / 2.4) * (PEAK / (PTS.length - 1)) + clamp01((t - 3.0) / 0.6) * (1 - PEAK / (PTS.length - 1));
   const FIG = [40, 43, 46, 49, 51, 53, 55, 57, 59];
@@ -220,7 +233,7 @@ export const SceneDominoes: React.FC = () => {
 
 /* ------------------------------------------------------------------ 5 · ETF: the NAV rubber band (8 s) */
 export const SceneRubberBand: React.FC = () => {
-  const t = useTime();
+  const t = useSceneTime();
   const base = 640, unit = 22, NAVH = 380; // px per % of premium, NAV bar height
   const stretch = ease.inOutCubic(clamp01((t - 1.2) / 2.2)) * 12; // +12% premium (21 Jan)
   const snap = ease.inCubic(clamp01((t - 4.6) / 0.22)); // hard stop, no recoil
@@ -252,7 +265,7 @@ export const SceneRubberBand: React.FC = () => {
 
 /* ------------------------------------------------------------------ 6 · Flow vs pile: the vault in depth (10 s) */
 export const SceneVault: React.FC = () => {
-  const t = useTime();
+  const t = useSceneTime();
   const open = ease.inOutCubic(clamp01((t - 1.6) / 1.8));
   const dolly = ease.inOutCubic(clamp01((t - 3.0) / 6));
   const layer = (depth: number) => ({ transform: `translate(${-dolly * 40 * depth}px, ${-dolly * 12 * depth}px) scale(${1 + dolly * 0.1 * depth})` });

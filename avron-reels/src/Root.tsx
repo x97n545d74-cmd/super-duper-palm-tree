@@ -13,6 +13,7 @@ import { SmartphoneReel } from "./projects/smartphone/Reel";
 import { SwiggyStyleFrames } from "./projects/swiggy/StyleFrames";
 import { DemoA, DemoB, DemoC, DemoD, DemoE, DemoAll, DEMO_DUR } from "./projects/silver/Demos";
 import { SilverScenes, SCENES_DUR } from "./projects/silver/Scenes";
+import { SilverFilm, SILVER_DURATION } from "./projects/silver/film/Film";
 import { SwiggyFilm } from "./projects/swiggy/film/Film";
 import { SwiggyThumbnail } from "./projects/swiggy/film/Thumbnail";
 import { DURATION as SWIGGY_DURATION } from "./projects/swiggy/film/timeline";
@@ -70,5 +71,6 @@ export const Root: React.FC = () => (
     <Composition id="SilverDemoE" component={DemoE} durationInFrames={DEMO_DUR * 30} fps={30} width={1920} height={1080} />
     <Composition id="SilverDemoAll" component={DemoAll} durationInFrames={DEMO_DUR * 5 * 30} fps={30} width={1920} height={1080} />
     <Composition id="SilverScenes" component={SilverScenes} durationInFrames={SCENES_DUR * 30} fps={30} width={1920} height={1080} />
+    <Composition id="SilverFilm" component={SilverFilm} durationInFrames={Math.ceil(SILVER_DURATION * 30)} fps={30} width={1920} height={1080} />
   </>
 );
