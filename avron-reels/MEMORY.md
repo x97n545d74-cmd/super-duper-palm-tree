@@ -30,10 +30,11 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
   - Skipped `media-use` (HeyGen TTS/BGM, score 100), `figma` and `slideshow`.
   - **Playwright MCP:** in `.mcp.json` (project scope) with `--headless --no-sandbox --executable-path /opt/pw-browsers/chromium`. It needs `--no-sandbox` because we run as root. Approve it once when a new session starts.
   - **Remotion:** `npm install` in `avron-reels/` after every reset (node_modules isn't committed).
-  - **Still open:** ComfyUI (user's computer), Supermetrics login (claude.ai connector settings), openai-whisper (faster-whisper covers it).
+  - Playwright MCP approved and tested live 2026-10-26.
+  - ComfyUI: the user said 2026-10-26 it is installed on their computer (can't be checked from the cloud session). openai-whisper still skipped; faster-whisper covers it.
 
 ## Two separate Instagram pages (user, 2026-10-26)
-- **AVRON**: professional finance content (these reels). Not connected to Metricool yet, so there is no AVRON analytics.
+- **AVRON**: professional finance content (these reels). Not on Metricool, but **Supermetrics Instagram Insights (ds `IGI`) is connected** since 2026-10-26: account "AVRON · Stock Research India", id `17841456157136889`. Use it for AVRON analytics.
 - **@marketkibatt ("Market Ki Baat")**: character-based content, e.g. the ₹50-share pizza reel (25 Oct). This is the page connected to Metricool (brand id 7601365, "Avron" label).
 - Don't mix the two brands on screen. The user downloads finished reels and posts them by hand.
 
