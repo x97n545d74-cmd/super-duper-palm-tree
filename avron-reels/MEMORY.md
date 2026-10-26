@@ -44,7 +44,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 ## Voice preferences
 - The user dislikes "cranky" or robotic TTS and wants a correct Indian accent: "paisaa", not "paise".
 - The best result so far was the user's own ElevenLabs file (Tia Mirza, v4). The user may supply VO again: hand over the script and ask for it.
-- The user has ElevenLabs premium (2026-10-26) and records VO in their own account. The connector here showed only 276 credits, so it is probably a different workspace. Default: give a paste-ready script and wait for their file.
+- The user has ElevenLabs premium. On 2026-10-26 they reconnected the ElevenLabs connector and confirmed the premium account in their own dashboard. Before a long generation, still run `estimate_only` and say the cost. The default voice is "Tia Mirza – Crisp and Commanding" (`OUBnvvuqEKdDWtapoJFn`, eleven_v4). The user may also record VO themselves from a paste-ready script.
 
 ## Delivered
 - **Swiggy vs Eternal, 13:28 YouTube film (2026-10-25):** user's ElevenLabs VO (Tia Mirza Crisp and Commanding, v4) plus a 4-line fix file, re-timed with `scripts/timeline_swiggy.py`, original score (`score_swiggy.py`), -14 LUFS. Final at `out/AVRON_Swiggy_vs_Eternal_FINAL.mp4` (637 MB) and a 417 MB upload copy. SRT and upload kit are in the project folder. Not published.
