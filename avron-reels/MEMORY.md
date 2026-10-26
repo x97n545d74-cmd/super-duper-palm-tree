@@ -1,6 +1,6 @@
 # AVRON: project memory
 
-This file records long-lived facts and decisions for this repo. Read it at the start of every session. Last updated 2026-10-24.
+This file records long-lived facts and decisions for this repo. Read it at the start of every session. Last updated 2026-10-26.
 
 Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on every script, and `scripts/fix_timeline.py` after alignment.
 
@@ -65,6 +65,9 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Swiggy film backgrounds are chosen per chapter by the user** (2026-10-25: "not the whole film, give options, I will select"). Options: A photographs, B live India map (`film/MapWorld.tsx`), C paper city, D type wall (`film/Backdrops.tsx`). Set the choice in `PLAN` in `film/Film.tsx`. The open and close always stay on photographs. User picked (2026-10-25): 1 C, 2 B, 3 A, 4 A, 5 C, 6 A, 7 C.
 - **Instamart vs Swiggy:** name Instamart whenever a number is Instamart's. Use the Instamart mark on quick-commerce cards and keep the Swiggy logo for company-level facts.
 - YouTube blocks yt-dlp detail lookups from the cloud IP. For dates and subscriber counts, get a YouTube Data API key.
+- **Silver crash film** (Hinglish YouTube, ~12 min, started 2026-10-26): script in `projects/2026-10-silver-crash/SCRIPT.md`, adapted from Why X's "Silver Is Running Out... So Why Is It Crashing?" with our own characters (Gupta ji, Rohan) and analogies.
+  - Look approved 2026-10-26: Bahi-Khata ledger (D) as the main look, Phone-First (E) for Rohan, Paper Craft (B) for Gupta ji. Per-chapter map is in SCRIPT.md. Demos: `src/projects/silver/Demos.tsx`, rendered with `scripts/silver_demos.mjs`.
+  - Next: VO (Tia Mirza, check ElevenLabs credits first, or the user supplies it), then build the film. The ⚠ facts in the script's fact list still need primary-source checks.
 
 ## Research done, not produced
 - **MosChip:** `projects/2026-10-moschip/PROJECT_REPORT.md`. It fails the revenue-guidance screen because the company gives no guidance.

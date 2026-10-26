@@ -28,6 +28,24 @@ Thumbnail: a single Dhanteras silver coin on a brass thali, dark background. A t
 
 ---
 
+## Look (user approved 2026-10-26)
+
+Three styles from the demos in `src/projects/silver/Demos.tsx`, each with its own job:
+- **D · Bahi-Khata** is the main look: red-lined ledger paper, numbers written in ink, red-ink stamps. Every data beat lives here.
+- **E · Phone-First** is Rohan's world: lock screen, trading app, the Chandi Squad chat, the margin call sheet.
+- **B · Paper Craft** is Gupta ji's world: the almirah, the coins, the sarafa bazaar, and the paper explainers (vault, factory).
+
+| Chapter | Look |
+|---|---|
+| Hook | D, opening on the coin and brass thali |
+| Teen shak | D: three ledger entries struck through in red ink |
+| Gupta ji aur Rohan | B for Gupta ji, E for Rohan, cutting between them; the ₹1 lakh sums in D |
+| 30 January | E for the app crash and the dominoes, D for the 1980 Silver Thursday page |
+| ETF premium | D: NAV and bazaar daam as two ledger columns |
+| Kami aur bhandaar | D for the salary/FD sum, B for the vault and the melted payal |
+| Solar ka twist | B: paper solar cell and factory; the 17% in D |
+| Close | B for Gupta ji's locker, D for the two questions written in the ledger |
+
 ## Phase 3: Script
 
 ### 00:00 Hook (about 50 s)
