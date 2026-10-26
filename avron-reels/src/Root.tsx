@@ -11,6 +11,7 @@ import { Viviana2Reel } from "./projects/viviana2/Reel";
 import { DURATION as VIVIANA2_DURATION } from "./projects/viviana2/config";
 import { SmartphoneReel } from "./projects/smartphone/Reel";
 import { SwiggyStyleFrames } from "./projects/swiggy/StyleFrames";
+import { DemoA, DemoB, DemoC, DemoD, DemoE, DemoAll, DEMO_DUR } from "./projects/silver/Demos";
 import { SwiggyFilm } from "./projects/swiggy/film/Film";
 import { SwiggyThumbnail } from "./projects/swiggy/film/Thumbnail";
 import { DURATION as SWIGGY_DURATION } from "./projects/swiggy/film/timeline";
@@ -61,5 +62,11 @@ export const Root: React.FC = () => (
     <Composition id="SwiggyFilm" component={SwiggyFilm} durationInFrames={Math.ceil(SWIGGY_DURATION * 30)} fps={30} width={1920} height={1080} />
     <Composition id="SwiggyThumbnail" component={SwiggyThumbnail} durationInFrames={1} fps={30} width={1280} height={720} />
     <Composition id="SwiggyStyle" component={SwiggyStyleFrames} durationInFrames={21 * 30} fps={30} width={1920} height={1080} />
+    <Composition id="SilverDemoA" component={DemoA} durationInFrames={DEMO_DUR * 30} fps={30} width={1920} height={1080} />
+    <Composition id="SilverDemoB" component={DemoB} durationInFrames={DEMO_DUR * 30} fps={30} width={1920} height={1080} />
+    <Composition id="SilverDemoC" component={DemoC} durationInFrames={DEMO_DUR * 30} fps={30} width={1920} height={1080} />
+    <Composition id="SilverDemoD" component={DemoD} durationInFrames={DEMO_DUR * 30} fps={30} width={1920} height={1080} />
+    <Composition id="SilverDemoE" component={DemoE} durationInFrames={DEMO_DUR * 30} fps={30} width={1920} height={1080} />
+    <Composition id="SilverDemoAll" component={DemoAll} durationInFrames={DEMO_DUR * 5 * 30} fps={30} width={1920} height={1080} />
   </>
 );
