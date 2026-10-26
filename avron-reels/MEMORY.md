@@ -24,6 +24,13 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **[ASK GROK] rule:** when research needs accurate, current info, write a short "[ASK GROK]" request, stop, wait for the user to paste Grok's answer, then use it and mark anything mixed with our own knowledge.
 - **Open conflict:** the file names ElevenLabs "Sia – Warm & Real Companion" as the reel voice; the last reels used Tia Mirza. Ask the user which is default now.
 - Tools listed: HyperFrames (HeyGen), Remotion, ComfyUI (user's own computer), Playwright + Playwright MCP, librosa, Whisper (later), ffmpeg, nsepython, Agent Reach, Supermetrics/Metricool/Typefully connectors.
+- Set up 2026-10-26:
+  - **HyperFrames:** skills `hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `remotion-to-hyperframes` copied into `.claude/skills/` from heygen-com/hyperframes @ 9ebc1f8. The CLI runs via `npx hyperframes` (0.8.205).
+  - SkillSpector said DO_NOT_INSTALL. The flagged lines were reviewed by hand: they are HTML comments, plus docs and code that read HeyGen's own API key or AWS docs. Treated as false positives.
+  - Skipped `media-use` (HeyGen TTS/BGM, score 100), `figma` and `slideshow`.
+  - **Playwright MCP:** in `.mcp.json` (project scope) with `--headless --no-sandbox --executable-path /opt/pw-browsers/chromium`. It needs `--no-sandbox` because we run as root. Approve it once when a new session starts.
+  - **Remotion:** `npm install` in `avron-reels/` after every reset (node_modules isn't committed).
+  - **Still open:** ComfyUI (user's computer), Supermetrics login (claude.ai connector settings), openai-whisper (faster-whisper covers it).
 
 ## Two separate Instagram pages (user, 2026-10-26)
 - **AVRON**: professional finance content (these reels). Not connected to Metricool yet, so there is no AVRON analytics.
