@@ -8,7 +8,7 @@ Prompt library (user: "prompt bhi use krlena"), each used where it fits the stor
 - **Ten (2D keynote):** one continuous take in the save-card beat: the gold coin floods the frame and contracts into the 3-case card; shape morphs, no crossfades.
 - **Three to Eight:** brand-specific briefs (Ultracode, portfolio, AIsa, chain.wtf, MotionSites, website); nothing to take for a finance explainer.
 
-**Blocked on:** the [ASK GROK] answer, then a primary-source check of every number (RBI reference rate, AMC addenda/notices, SEBI/AMFI, 2013 RBI/government curbs). No fact goes on screen without a claim ID in `research/sources.json`.
+**Grok skipped (user, 2026-10-26).** Facts checked by us: see `research/sources.json`. Rule kept: of every number (RBI reference rate, AMC addenda/notices, SEBI/AMFI, 2013 RBI/government curbs). No fact goes on screen without a claim ID in `research/sources.json`.
 
 ## Fixes for last week's weaknesses (from Supermetrics, see `research/2026-10-26-next-reel/RESEARCH.md`)
 | Weakness | Fix in this reel |
