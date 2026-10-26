@@ -17,6 +17,11 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Pick a topic or idea first, then wait for approval before producing anything.
 - **Prompt library reminder (2026-10-26):** every time we start a new reel, ask the user whether to bring the prompts in `insta-reel-avron-page/` into the new project, and which one. Current list: 1. Motion Graphic One (AVRON Pro blueprint), 2. Two (product launch 20s, also the default motion direction), 3. Three (Ultracode × Opus 5.5), 4. Four (portfolio reel), 5. Five (AIsa 15s), 6. Six (chain.wtf pitch), 7. Seven (MotionSites launch). The thali V2 reel used all of them (`deliverables/2026-10-thali/AVRON_thali_V2_all-prompts_1080x1920.mp4`). The user will add more; keep the table in `insta-reel-avron-page/README.md` up to date.
 
+## Two separate Instagram pages (user, 2026-10-26)
+- **AVRON**: professional finance content (these reels). Not connected to Metricool yet, so there is no AVRON analytics.
+- **@marketkibatt ("Market Ki Baat")**: character-based content, e.g. the ₹50-share pizza reel (25 Oct). This is the page connected to Metricool (brand id 7601365, "Avron" label).
+- Don't mix the two brands on screen. The user downloads finished reels and posts them by hand.
+
 ## Motion and on-screen text (user feedback 2026-10-24: "itna ganda graphic")
 - **Default motion direction for every reel:** the direction saved in `ideas/2026-10-product-launch-20s/PROMPT.md`.
   - High-end minimal, one idea per shot, lots of empty space, one accent colour.
@@ -34,10 +39,12 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
   - **Logos:** only when reporting on that company.
 - Log every image in `projects/<id>/assets/LICENSES.md`: source URL, licence, date, where it's used. Credit on the end card where required.
 - Keep photos dark/blurred behind type so the minimal look holds.
+- **Photo workflow (user, 2026-10-26):** Flickr/Wikimedia/Openverse rate-limit this cloud IP, and Pexels/Unsplash need a key. So for each reel, give the user a shot list of photos with ready-to-paste search queries aimed at free-licence sites (e.g. `site:pexels.com onion pile`, Google Images with Tools → Usage rights → Creative Commons). The user finds and uploads them. Before using one, ask where it's from so it can be logged in LICENSES.md.
 
 ## Voice preferences
 - The user dislikes "cranky" or robotic TTS and wants a correct Indian accent: "paisaa", not "paise".
 - The best result so far was the user's own ElevenLabs file (Tia Mirza, v4). The user may supply VO again: hand over the script and ask for it.
+- The user has ElevenLabs premium (2026-10-26) and records VO in their own account. The connector here showed only 276 credits, so it is probably a different workspace. Default: give a paste-ready script and wait for their file.
 
 ## Delivered
 - **Swiggy vs Eternal, 13:28 YouTube film (2026-10-25):** user's ElevenLabs VO (Tia Mirza Crisp and Commanding, v4) plus a 4-line fix file, re-timed with `scripts/timeline_swiggy.py`, original score (`score_swiggy.py`), -14 LUFS. Final at `out/AVRON_Swiggy_vs_Eternal_FINAL.mp4` (637 MB) and a 417 MB upload copy. SRT and upload kit are in the project folder. Not published.
