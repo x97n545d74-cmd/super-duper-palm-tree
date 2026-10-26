@@ -15,6 +15,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Never publish, schedule or boost content without explicit approval.
 - Do not generate an AI likeness of real people. Only use assets that are licensed or owned by the user.
 - Pick a topic or idea first, then wait for approval before producing anything.
+- **Prompt library reminder (2026-10-26):** every time we start a new reel, ask the user whether to bring the prompts in `insta-reel-avron-page/` into the new project, and which one. Current list: 1. Motion Graphic One (the AVRON Pro master prompt + 6-step blueprint). The user will add more; keep the table in `insta-reel-avron-page/README.md` up to date.
 
 ## Motion and on-screen text (user feedback 2026-10-24: "itna ganda graphic")
 - **Default motion direction for every reel:** the direction saved in `ideas/2026-10-product-launch-20s/PROMPT.md`.

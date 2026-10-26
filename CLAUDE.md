@@ -2,6 +2,9 @@
 
 At the start of every session, read `avron-reels/MEMORY.md`. It holds this project's rules, the user's preferences, finished and parked work, and saved prompts. Update it when a durable decision changes.
 
+## Before every new reel
+Ask the user whether to bring the prompt library in `avron-reels/insta-reel-avron-page/` into the new project, and which prompt (for example "Motion Graphic One"). Ask even if they don't bring it up. Don't apply a prompt without their answer.
+
 ## Agent tools: always on
 The user wants these used every time, without being asked:
 - **no-ai-slop**: run every script, caption, VO line and post text through it before showing the user.
