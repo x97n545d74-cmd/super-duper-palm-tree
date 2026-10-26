@@ -1,7 +1,12 @@
 # Gold FoF freeze reel: production plan
 
 Topic A, picked by the user 2026-10-26. Voice: Tia Mirza – Crisp and Commanding (eleven_v4); the user generates the VO from a paste-ready script.
-Prompt library: Motion Graphic One (script framework) + Motion Graphic Two (motion direction). The user asked for the Insta Reel tools to be used well.
+Prompt library (user: "prompt bhi use krlena"), each used where it fits the story:
+- **One:** 6-step script framework, gold/red/green colour code, dark synth BGM with glitch/whoosh/beat-drop SFX (kept subtle to match the house look).
+- **Two:** motion direction (minimal, one accent, masked type, match cuts, push cuts with motion blur, cuts on the beat via librosa, `seek(t)` HTML + Playwright subframes).
+- **Nine (recipe-style):** the "why" beat is built like a recipe: gold goes into the cart → dollars go out → rupee weakens, each ingredient added on screen with its number.
+- **Ten (2D keynote):** one continuous take in the save-card beat: the gold coin floods the frame and contracts into the 3-case card; shape morphs, no crossfades.
+- **Three to Eight:** brand-specific briefs (Ultracode, portfolio, AIsa, chain.wtf, MotionSites, website); nothing to take for a finance explainer.
 
 **Blocked on:** the [ASK GROK] answer, then a primary-source check of every number (RBI reference rate, AMC addenda/notices, SEBI/AMFI, 2013 RBI/government curbs). No fact goes on screen without a claim ID in `research/sources.json`.
 
