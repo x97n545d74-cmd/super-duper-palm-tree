@@ -20,21 +20,21 @@ SR = 48000
 OPEN_PAD, CARD, BREATH, CLOSE_BREATH, END_CARD = 2.6, 3.0, 0.5, 1.0, 6.0
 SECTIONS = ["hook", "shak", "gupta", "jan", "etf", "pile", "solar", "close"]
 KW = {
-    "hook_0": {"half": ["आधे"]}, "hook_1": {"tomato": ["टमाटर"]}, "hook_2": {"six": ["छठा"]},
+    "hook_0": {"half": ["आधे"]}, "hook_1": {"tomato": ["टमाटर"]}, "hook_2": {"six": ["छठा", "चठा"]},
     "shak_0": {"asli": ["असली"]}, "shak_1": {"warsh": ["warsh", "वॉर्श", "वार्ष", "वार्श"], "dollar": ["dollar", "डॉलर"]},
-    "shak_2": {"gold": ["सोना"], "silver": ["चांदी"]}, "shak_3": {"coins": ["coins", "कॉइन्स", "कॉइंस", "कोइन्स"]},
-    "gupta_0": {"dhanteras": ["धनतेरस"], "coin": ["सिक्का"], "app": ["app", "ऐप", "एप"]},
+    "shak_2": {"gold": ["सोना"], "silver": ["चांदी", "चान्दी"]}, "shak_3": {"coins": ["coins", "कॉइन्स", "कॉइंस", "कोइन्स", "कौइन्ज"]},
+    "gupta_0": {"dhanteras": ["धनतेरस", "धन"], "coin": ["सिक्का"], "app": ["app", "ऐप", "एप", "आप"]},
     "gupta_1": {"telegram": ["telegram", "टेलीग्राम"], "mcx": ["mcx", "एमसीएक्स"]},
     "gupta_2": {"margin": ["margin", "मार्जिन"], "udhaar": ["उधार"]},
-    "gupta_3": {"seventy": ["सत्तर"], "slept": ["सो"]}, "gupta_4": {"ten": ["दस"], "three": ["तीन"], "two": ["दो"]},
+    "gupta_3": {"seventy": ["सत्तर", "70"], "slept": ["सो"]}, "gupta_4": {"ten": ["दस"], "three": ["तीन", "3"], "two": ["दो"]},
     "gupta_5": {"call": ["call", "कॉल"]},
-    "jan_0": {"record": ["record", "रिकॉर्ड"], "dollar": ["dollar", "डॉलर"]}, "jan_1": {"twice": ["दो"]},
+    "jan_0": {"record": ["record", "रिकॉर्ड", "रेकॉड", "रेकौड"], "dollar": ["dollar", "डॉलर", "121"]}, "jan_1": {"twice": ["दो"]},
     "jan_2": {"drop": ["31", "इकतीस"], "friday": ["friday", "फ्राइडे"]}, "jan_4": {"thursday": ["thursday", "थर्सडे"]},
     "etf_1": {"crore": ["करोड़"], "premium": ["12", "बारह"]}, "etf_2": {"below": ["नीचे"]},
     "pile_2": {"fd": ["fd", "एफडी"]}, "pile_4": {"n91": ["इक्यानवे"], "n30": ["तीस"]}, "pile_5": {"recycling": ["recycling", "रीसाइक्लिंग"]},
     "solar_1": {"solar": ["solar", "सोलर"]}, "solar_3": {"thirty": ["30", "तीस"], "ten": ["10", "दस"]},
     "solar_4": {"seventeen": ["17", "सत्रह"]}, "solar_5": {"surplus": ["surplus", "सरप्लस"]},
-    "close_0": {"price": ["दाम"]}, "close_1": {"gupta": ["गुप्ता"]}, "close_2": {"questions": ["सवाल"]}, "close_3": {"second": ["दूसरा"]},
+    "close_0": {"price": ["दाम", "डाम"]}, "close_1": {"gupta": ["गुप्ता"]}, "close_2": {"questions": ["सवाल"]}, "close_3": {"second": ["दूसरा"]},
 }
 
 
