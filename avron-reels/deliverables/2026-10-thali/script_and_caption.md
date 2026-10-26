@@ -20,20 +20,26 @@ Passed through no-ai-slop. Changes vs the blueprint are listed at the bottom.
 
 Sound: dark synth pulse at 112 BPM with a ticking-clock undertone, glitch pops on the hook numbers, whooshes on each card/shot, riser into the CTA, then the beat drop (kick + full pad) on "Aapki thali". Original, synthesised (`scripts/score_thali.py`). Mixed −14 LUFS.
 
-## Instagram caption
-September 2026 mein retail mehengai 5.54% rahi. August mein 4.83% thi.
+## Instagram caption (final, 2026-10-26)
+Angle check via Agent Reach (YouTube): other channels lead with "5.54%, 23-month high" and onion +108%. None of the titles found mention the repo hike or the wallet math, so this caption leads with the thali and the real return. "23-month high" is left out: it is not in the MoSPI release.
 
-Khaane ki mehengai 5.97% se 7.74% pe pahunchi. Pyaaz saal bhar mein 108% mehenga hua, aloo 11.5% aur tamatar 8.6% saste hue. Gaon mein mehengai 6.08% hai, shehar mein 4.88%.
+```
+Pyaaz saal bhar mein 108% mehenga. Aapki thali ka kya haal hai? 🧅
 
-RBI ne 7 October ko repo rate 5.25% se 5.50% kiya. FY27 ke liye CPI anuman 5.2% hai. Anuman hai, guarantee nahi.
+September 2026 mein retail mehengai 5.54% pahunchi, August mein 4.83% thi. Khaane ki mehengai 5.97% se 7.74% ho gayi. Aloo (−11.5%) aur tamatar (−8.6%) thode saste hue, par pyaaz sabse aage raha.
+
+Gaon mein mehengai 6.08% rahi, shehar mein 4.88%.
+
+7 October ko RBI ne repo rate 5.25% se badhakar 5.50% kar diya. FY27 ke liye RBI ka CPI anuman 5.2% hai. Anuman hai, guarantee nahi.
 
 Asli return = Return − Mehengai. 7% ki FD aur 5.54% mehengai, toh tax se pehle asli kamai sirf 1.46%.
 
-Aapki thali mein sabse mehenga kya hua? Comment karo 👇
+Aapki thali mein sabse mehenga kya hua? Comment mein likho 👇
 
 Source: MoSPI CPI release, 12 Oct 2026 (September data provisional). RBI MPC resolution, 7 Oct 2026. AVRON is not SEBI-registered. Education only, not financial advice.
 
-#inflation #personalfinance #CPI #financialliteracy #indianeconomy #stockmarketindia #moneyhinglish
+#mehengai #inflation #CPI #RBI #reporate #personalfinance #indianeconomy #moneyhinglish
+```
 
 ## What changed vs the blueprint
 - **Fact fix:** RBI raised the repo rate (5.25% → 5.50%) on 7 Oct; the blueprint said it held it.
