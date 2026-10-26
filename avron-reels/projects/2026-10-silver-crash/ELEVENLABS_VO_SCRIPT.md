@@ -1,0 +1,94 @@
+# Silver film: voiceover text for ElevenLabs
+
+**Voice:** Tia Mirza – Crisp and Commanding (`OUBnvvuqEKdDWtapoJFn`, listed in ElevenLabs as "Tia Mirza – Tough Recovery & Collections Specialist"). This is the voice of the Swiggy film. For a softer read, use Tia Mirza – Composed & Confident (`tyOTyLYwi6G1V4rsb6uy`), the Viviana voice.
+**Model:** Eleven v4. The tags in [brackets] are v4 audio directions; delete them if you use Multilingual v2.
+**Cost:** about 1 credit per character, so about 8,400 credits for all 8 parts, per take (ElevenLabs estimate, 26 Oct 2026).
+
+How to send it back:
+- Generate each part separately and name the files `01_hook` … `08_close` (mp3 at the highest quality, or wav). If one part reads badly, regenerate only that part.
+- If you generate the whole script in one go instead, that works too: I split it by the silences.
+- The text matches `SCRIPT.md` line for line. Hindi is in Devanagari so the voice says "पैसा", not "paise". Numbers are written the way they should be spoken.
+
+---
+
+## 01_hook (about 50 s)
+```
+[serious] पाँच साल से दुनिया जितनी चाँदी use कर रही है, खदानों से उतनी निकल ही नहीं रही। हर साल कमी। [short pause] और January के peak से आज तक, चाँदी का दाम आधे से भी ज़्यादा गिर चुका है। [pause]
+[calm] ये दोनों बातें एक साथ सच नहीं होनी चाहिए। School में एक ही rule याद रहता है: चीज़ कम, दाम ज़्यादा। 2023 में टमाटर सौ रुपये किलो गया था, वही rule था। [pause]
+और ये कमी किसी WhatsApp forward की कहानी नहीं है। ये Silver Institute का data है, जो दुनिया की हर खदान और हर factory की चाँदी गिनता है। 2026 लगातार छठा साल होगा जब demand, supply से ज़्यादा रहेगी। [pause]
+[curious] तो जो चीज़ कम पड़ रही है, वो इतनी बुरी तरह गिरी कैसे? आज यही समझेंगे, और समझेंगे कि इस crash में पैसा किसने गँवाया और किसने नहीं।
+```
+
+## 02_teen_shak (about 1 min 30 s)
+```
+[calm] मेरा पहला शक था कि शायद कमी ही नकली है। पर Silver Institute के numbers Metals Focus बनाता है, खदान और factory एक-एक करके। 2025 में कमी चार करोड़ ounce से ज़्यादा थी, और 2026 के लिए अनुमान 4.6 करोड़ ounce का है। [short pause] कमी असली है। [pause]
+दूसरा शक, America का Fed. थोड़ा सच है। 30 January को खबर आई कि Kevin Warsh अगले Fed chairman होंगे। Market ने सोचा rates जल्दी नहीं गिरेंगे, dollar ऊपर गया। और जो चीज़ ब्याज नहीं देती, जैसे सोना और चाँदी, वो दबाव में आती है। [pause]
+[serious] पर उसी दिन सोना लगभग 11 percent गिरा, और चाँदी 31 percent. खबर एक, दिन एक, और चाँदी को तीन गुना मार पड़ी। Fed ने शुरुआत की, पर इतनी बड़ी गिरावट अकेले Fed की वजह से नहीं थी। [pause]
+[calm] तीसरा शक, कि लोगों का मन भर गया। उल्टा हुआ। 2026 में coins और bars की demand 18 percent बढ़ने का अनुमान है। [pause]
+मतलब कमी भी असली, crash भी असली। दोनों साथ कैसे चल रहे हैं, ये समझने के लिए एक परिवार की दिवाली देखते हैं।
+```
+
+## 03_gupta_rohan (about 2 min 20 s)
+```
+[warm] ये हैं गुप्ता जी। तिरसठ साल, Indore, railway से retire. हर धनतेरस को सराफ़ा बाज़ार जाते हैं, दस ग्राम का एक चाँदी का सिक्का लेते हैं, और अलमारी के locker में रख देते हैं। गुप्ता जी ने ज़िंदगी में कभी चाँदी का दाम app पे check नहीं किया। [pause]
+[upbeat] और ये हैं उनके भतीजे रोहन। सत्ताईस साल, Pune में job, YouTube पे trading videos two-x speed पे देखता है। उसका एक Telegram group है, "चाँदी Squad"। रोहन के पास भी चाँदी है, पर उसने उसे कभी छुआ नहीं। उसके पास MCX पे silver futures का contract है। [pause]
+[calm] Futures का मतलब है एक वादा, कि आगे एक तय दाम पे चाँदी खरीदेंगे या बेचेंगे। और इसमें पूरा पैसा नहीं लगता। आप एक छोटा हिस्सा जमा करते हो, जैसे किराये के घर का security deposit. इसको margin कहते हैं। बाकी पैसा उधार का होता है। [pause]
+अब एक सीधा हिसाब। गुप्ता जी ने एक लाख रुपये के सिक्के लिए। चाँदी 30 percent गिरी, तो सिक्के सत्तर हज़ार के रह गए। [short pause] गुप्ता जी सो गए। [pause]
+[serious] रोहन ने एक लाख रुपये margin डाला और दस लाख की चाँदी control की। चाँदी 30 percent गिरी, तो नुकसान तीन लाख। उसका एक लाख पूरा गया, और ऊपर से दो लाख का घाटा, अगर broker ने बीच में position नहीं काटी। [pause]
+इस message का नाम है margin call. मतलब deposit कम पड़ गया है, अभी पैसा डालो, वरना हम तुम्हारी position, जो भी दाम screen पे है, उस पे बेच देंगे। [short pause] रोहन से पूछा नहीं जाता।
+```
+
+## 04_30_january (about 2 min)
+```
+[calm] पिछले साल के दूसरे हिस्से में रोहन genius लग रहा था। चाँदी हर हफ़्ते नया high बना रही थी। 27 January को MCX पे चाँदी तीन लाख उनसठ हज़ार रुपये किलो के record पे थी, और 29 January को international दाम एक सौ इक्कीस dollar के ऊपर। चाँदी Squad में रोज़ screenshot आते थे। [pause]
+उससे पहले December में CME, जहाँ दुनिया के सबसे बड़े silver futures चलते हैं, एक हफ़्ते में दो बार margin बढ़ा चुका था। मतलब हर रोहन को एक ही position के लिए ज़्यादा deposit चाहिए था। [pause]
+[serious] फिर आया Friday, 30 January. Warsh की खबर, dollar ऊपर, और silver futures एक दिन में 31 percent गिरे। 1980 के बाद चाँदी का सबसे बुरा दिन। [pause]
+अब जो लोग बेचना नहीं चाहते थे, उन्हें बेचना पड़ा। Deposit खत्म हुआ, system ने position काट दी, और हर ज़बरदस्ती की sale ने दाम और गिराया। इससे अगले आदमी का deposit खत्म हुआ, और उसकी भी sale हुई। एक के बाद एक, और हर एक के phone पे वही message था जो रोहन के phone पे था। [pause]
+[calm] ये पहली बार नहीं हुआ। 1980 में America के Hunt भाइयों ने उधार के पैसे से इतनी चाँदी खरीदी कि दाम आसमान छू गए। फिर exchange ने rules बदले, margin बढ़े, और 27 March 1980 को दाम ऐसा गिरा कि उस दिन को आज भी Silver Thursday कहते हैं। [pause]
+आज Hunt भाइयों की जगह रोहन जैसे छोटे traders हैं, और दोनों बार गिरावट उधार के पैसे ने तेज़ की।
+```
+
+## 05_etf (about 1 min 10 s)
+```
+[calm] और India में एक और trap था, जो रोहन जैसे traders तक सीमित नहीं था। Silver ETF. ये mutual fund जैसा है, जिसके पीछे असली चाँदी रखी होती है। इसका एक असली मोल होता है, NAV. [pause]
+January में इतने लोग एक साथ silver ETF पे टूट पड़े कि silver ETFs में नौ हज़ार चार सौ तिरसठ करोड़ रुपये आए। कई ETFs अपने NAV से 9 से 12 percent ऊपर बिक रहे थे। मतलब सौ रुपये की चाँदी के लिए लोग एक सौ दस रुपये से ज़्यादा दे रहे थे। [pause]
+[serious] फिर 30 January को उल्टा हुआ। कुछ silver ETFs अपने NAV से 11.6 percent नीचे बिक गए। जिसने premium पे खरीदा और discount पे बेचा, उसे चाँदी की गिरावट के ऊपर से ये मार अलग से पड़ी। [pause]
+यहाँ किसी ने उधार नहीं लिया था। भीड़ ने दाम NAV से ऊपर खींचा, और भीड़ हटते ही नीचे।
+```
+
+## 06_kami_bhandaar (about 2 min)
+```
+[calm] रोहन का account साफ़ हो गया और चाँदी Squad चुप हो गया। पर एक सवाल बचता है। अगर crash सिर्फ़ उधार की वजह से था, तो forced selling खत्म होने के बाद दाम वापस क्यों नहीं उछला? कमी तो अब भी थी। [pause]
+कमी आपको सिर्फ़ हर साल का हिसाब बताती है। कितनी चाँदी पहले से जमा पड़ी है, ये नहीं बताती। [pause]
+[warm] अपने घर से समझिए। Salary चालीस हज़ार, खर्चा इकतालीस हज़ार। हर महीने एक हज़ार की कमी। पर bank में तीन लाख की FD पड़ी है। आप ग़रीब नहीं हो रहे, बस धीरे-धीरे कम अमीर हो रहे हो। ये कमी सालों तक चल सकती है। [pause]
+[calm] चाँदी के साथ भी यही है। दुनिया हर साल थोड़ी ज़्यादा use करती है। पर इंसान हज़ारों साल से चाँदी जमा कर रहा है, bank vaults में, exchange के गोदामों में, factories के stock में, और हाँ, हमारी दादी-नानी की अलमारी में भी। [pause]
+Deutsche Bank के हिसाब से August 2026 के end में सिर्फ़ London के vaults में इक्यानवे करोड़ ounce से ज़्यादा चाँदी थी। इसमें से तीस करोड़ ounce से ज़्यादा ऐसी थी जो खुले में खरीदी जा सकती है। ये 2026 की पूरी कमी का लगभग साढ़े छह गुना है। [pause]
+और जब दाम आसमान पे गए, तो छुपी हुई चाँदी भी बाहर आई। पुरानी पायल, बिछिया, पूजा की थाली, पुराने बर्तन, factory का scrap. सब पिघलने गया। 2025 में recycling तेरह साल के high पे पहुँची।
+```
+
+## 07_solar (about 1 min 40 s)
+```
+[calm] अब चाँदी के सबसे बड़े खरीदार की बात। [pause]
+हम चाँदी को गहनों और सिक्कों से जोड़ते हैं। पर दुनिया की आधी से ज़्यादा चाँदी industry use करती है: phone, गाड़ी, और सबसे ज़्यादा solar panel. हर solar cell पे चाँदी की पतली लकीरें होती हैं जो बिजली इकट्ठा करती हैं। [pause]
+[warm] अब 2023 याद कीजिए, जब टमाटर सौ रुपये किलो गया। घर में खाना बंद नहीं हुआ। सब्ज़ी में टमाटर थोड़ा कम पड़ा, कहीं इमली आ गई, कहीं दही। और कई घरों में दाम गिरने के बाद भी टमाटर उतना वापस नहीं आया। [pause]
+[calm] Solar के साथ यही हुआ। Early 2026 में solar module बनाने के खर्चे का 30 percent से ज़्यादा सिर्फ़ चाँदी का था। एक साल पहले ये 10 percent से कम था। [pause]
+तो engineers ने लकीरें और पतली कर दीं, paste में ताँबा मिलाया, और design बदला ताकि कम चाँदी लगे। इसे thrifting कहते हैं। Deutsche Bank का अनुमान है कि 2026 में हर solar cell में चाँदी 17 percent कम लगेगी, और solar की कुल चाँदी demand 20 percent से ज़्यादा गिरेगी। [pause]
+और factory जो तरीका एक बार सीख लेती है, वो दाम गिरने पे भूल नहीं जाती। इसलिए Deutsche Bank 2027 में चाँदी को कमी से निकल कर surplus में जाता देख रहा है। [short pause] ये एक bank का अनुमान है, पक्की बात नहीं।
+```
+
+## 08_close (about 1 min 10 s)
+```
+[calm] तो चाँदी के इस crash में कोई साज़िश नहीं थी। कमी सालों के हिसाब से चलती है, खदान की speed से। दाम मिनटों में चलता है, margin call की speed से। नुकसान उन लोगों का हुआ जिन्होंने उधार लेकर सालों वाली कहानी पे हफ़्तों का दाँव लगाया। [pause]
+होली तक रोहन ने trading app delete कर दिया था और चाँदी Squad छोड़ दिया था। गुप्ता जी ने उस January-February में एक बार भी locker नहीं खोला। [pause]
+[warm] इस साल धनतेरस 6 November को है। बहुत लोग चाँदी लेंगे, कुछ पूजा के लिए, कुछ निवेश समझ कर। हम किसी को खरीदने या न खरीदने की सलाह नहीं देते। बस जब कोई कहे कि "ये चीज़ खत्म हो रही है, अभी ले लो", तो दो सवाल पूछिए। [pause]
+पहला, जो पहले से जमा है वो कितना बड़ा है। दूसरा, खरीदने वाले अपना पैसा लगा रहे हैं या उधार का। [short pause] अगर भंडार बड़ा है और खरीदार उधार पे हैं, तो सिर्फ़ कमी के भरोसे दाम ऊपर नहीं टिकता। [pause]
+[upbeat] अगली बार किस चीज़ की कहानी तोड़ें, comment में लिखिए। मैं हूँ AVRON, मिलते हैं अगले video में।
+```
+
+---
+
+## Differences from `SCRIPT.md`
+- "khaan" is read as "खदान" (the common word for a mine). On-screen text is unchanged.
+- In part 5, the repeated "January" is removed: "…टूट पड़े कि silver ETFs में … आए".
+- Numbers are written the way they should be spoken (₹3.59 lakh → "तीन लाख उनसठ हज़ार", ₹9,463 crore → "नौ हज़ार चार सौ तिरसठ करोड़", % → "percent").
+- The AMFI ₹9,463 crore figure and the Dhanteras date (Fri 6 Nov) were checked on 26 Oct. The other ⚠ items in `SCRIPT.md`'s fact list are secondary-source figures; changing one later means regenerating only that part.

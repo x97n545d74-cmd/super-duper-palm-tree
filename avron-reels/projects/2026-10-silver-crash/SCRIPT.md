@@ -244,12 +244,12 @@ Status: ✅ = matches a named source. ⚠ = secondary source only, check the pri
 | F3 | CME raised silver margins twice in one week in late Dec 2025 | [FinancialContent](https://markets.financialcontent.com/stocks/article/marketminute-2025-12-31-the-silver-flash-crash-year-end-dive-shakes-commodity-markets-as-2026-looms) | ⚠ confirm on CME's own notices |
 | M1 | ₹1 lakh margin controlling ₹10 lakh | Illustrative example, not a quoted MCX margin rate | Label "udaaharan" on screen |
 | H1 | Hunt brothers, COMEX rule changes, Silver Thursday 27 Mar 1980 | Historical record | ⚠ cite one archive source in the description |
-| E1 | ₹9,463 crore into silver ETFs in Jan 2026 | [Mudrex](https://mudrex.com/learn/what-is-silver-etf-how-to-buy-it-in-india/) citing AMFI | ⚠ confirm on AMFI monthly data |
+| E1 | ₹9,463 crore into silver ETFs in Jan 2026 | AMFI data via [Free Press Journal](https://www.freepressjournal.in/amp/business/gold-silver-etfs-surge-past-3-lakh-crore-aum-in-january-2026-nearly-tripling-in-five-months-on-record-inflows), [PL Capital](https://www.plindia.com/news/what-does-the-january-mutual-fund-data-tell-us-about-investors-move-into-gold-and-silver/), [Mudrex](https://mudrex.com/learn/what-is-silver-etf-how-to-buy-it-in-india/) | ✅ checked 26 Oct |
 | E2 | Silver ETFs at about 9–12% above NAV (21 Jan) | [Finnovate](https://www.finnovate.in/learn/blog/silver-etf-froth-price-vs-nav) | ⚠ |
 | E3 | Up to 11.6% below NAV on 30 Jan | [Value Research](https://www.valueresearchonline.com/stories/227846/silver-etfs-buying-at-premiums-can-wreck-your-returns-fast/) | ✅ |
 | V1 | London vaults 914M oz end-Aug 2026, 300M+ oz free float; 300 ÷ 46.3 ≈ 6.5 | Deutsche Bank via [Reporte Minero](https://www.reporteminero.cl/noticia/noticias/2026/10/plata-superavit-2027-deutsche-bank-demanda-solar) | ⚠ |
 | T1 | Silver over 30% of module cost in early 2026, under 10% in early 2025 | Single Spanish-language report of a Deutsche Bank note | ⚠ estimate, one source |
 | T2 | Silver per solar cell −17% in 2026; solar silver demand −20%+; surplus expected 2027 | Deutsche Bank via [Reporte Minero](https://www.reporteminero.cl/noticia/noticias/2026/10/plata-superavit-2027-deutsche-bank-demanda-solar), [PrimeXBT](https://primexbt.com/news/deutsche-bank-and-stonex-surplus-calls-face-silvers-solar-shortfall-math/) | ⚠ |
-| D1 | Dhanteras on 6 Nov 2026 | Panchang | ⚠ confirm |
+| D1 | Dhanteras on Fri 6 Nov 2026 | [Shubh Panchang](https://shubhpanchang.com/festivals/dhanteras), [Dekho Panchang](https://dekhopanchang.com/en/festivals/dhanteras) | ✅ checked 26 Oct |
 
 Removed from the pasted draft because no source was found: the Matt Maley quote, the "+14% retail last year" figure, "20–30% less silver per cell" (the source says 17%), and "what the banks aren't telling you".
