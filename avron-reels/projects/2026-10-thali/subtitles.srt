@@ -1,56 +1,56 @@
 1
-00:00:00,250 --> 00:00:05,854
-Ek mahine mein mehengai 4.83% se seedha 5.54% pe pahunch gayi.
+00:00:00,250 --> 00:00:07,000
+Ek mahine mein mehengai 4.83% se seedha 5.54% pe pahunch gayi
 
 2
-00:00:05,804 --> 00:00:08,534
-Aur sabse bada jhatka aapki thali pe hai.
+00:00:06,850 --> 00:00:09,980
+Aur sabse bada jhatka aapki thali pe hai
 
 3
-00:00:08,665 --> 00:00:12,235
-MoSPI ka CPI aapke ghar ki tokri ka daam naapta hai.
+00:00:09,830 --> 00:00:13,460
+MoSPI ka CPI aapke ghar ki tokri ka daam naapta hai
 
 4
-00:00:12,317 --> 00:00:16,867
-Khaane ki mehengai 5.97% se 7.74% pe aa gayi.
+00:00:13,310 --> 00:00:18,596
+Khaane ki mehengai 5.97% se 7.74% pe aa gayi
 
 5
-00:00:16,843 --> 00:00:19,773
-Pyaaz saal bhar mein 108% mehenga.
+00:00:18,446 --> 00:00:21,940
+Pyaaz saal bhar mein 108% mehenga
 
 6
-00:00:19,623 --> 00:00:21,493
-Aloo aur tamatar thode saste.
+00:00:21,910 --> 00:00:24,280
+Aloo aur tamatar thode saste
 
 7
-00:00:21,625 --> 00:00:25,743
-Gaon mein mehengai 6.08% shehar mein 4.88%.
+00:00:24,130 --> 00:00:28,280
+Gaon mein mehengai 6.08% shehar mein 4.88%
 
 8
-00:00:25,843 --> 00:00:30,473
-RBI ne repo rate 5.25 se badhakar 5.50% kar diya.
+00:00:28,650 --> 00:00:33,960
+RBI ne repo rate 5.25 se badhakar 5.50% kar diya
 
 9
-00:00:30,454 --> 00:00:33,804
-FY27 ka anuman 5.2% hai.
+00:00:33,810 --> 00:00:37,260
+FY27 ka anuman 5.2% hai
 
 10
-00:00:33,654 --> 00:00:35,224
-Anuman hai, guarantee nahi.
+00:00:37,210 --> 00:00:39,320
+Anuman hai, guarantee nahi
 
 11
-00:00:35,363 --> 00:00:38,213
-Asli return matlab return minus mehengai.
+00:00:39,170 --> 00:00:42,140
+Asli return matlab return minus mehengai
 
 12
-00:00:38,063 --> 00:00:42,476
-7% ki FD pe asli kamai sirf 1.46%.
+00:00:41,990 --> 00:00:45,960
+7% ki FD pe asli kamai sirf 1.46%
 
 13
-00:00:42,526 --> 00:00:45,076
+00:00:46,590 --> 00:00:48,920
 Aapki thali mein sabse mehenga kya hua?
 
 14
-00:00:45,066 --> 00:00:45,736
-Comment karo.
+00:00:48,890 --> 00:00:49,780
+Comment karo
 

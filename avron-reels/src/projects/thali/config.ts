@@ -13,8 +13,9 @@ export const at = (beatId: string, display: string, nth = 0) => {
 export const B = (id: string) => beat(id).start;
 export const END = beat("b8_cta").voEnd + 0.15;
 
-const words: CaptionWord[] = timeline.beats.flatMap((b) => b.words.map((w) => ({ w: w.w.replace(/[.।]+$/, ""), s: w.s, e: w.e, tone: w.tone })));
-export const CAPTIONS = chunkWords(words, 3);
+const words: CaptionWord[] = timeline.beats.flatMap((b) => b.words.map((w) => ({ w: w.w, s: w.s, e: w.e, tone: w.tone })));
+// Chunk on the punctuation, then drop full stops from what is shown (house rule: no full stops on screen).
+export const CAPTIONS = chunkWords(words, 3).map((c) => ({ ...c, words: c.words.map((w) => ({ ...w, w: w.w.replace(/[.।]+$/, "") })) }));
 
 /** Shot windows (absolute seconds). */
 export const S = {
