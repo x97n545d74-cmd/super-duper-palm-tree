@@ -12,24 +12,24 @@ import { clamp01, ease, lerp, prog, rand, useTime } from "../../engine/anim";
  */
 export const BLUEPRINT10_DUR = 10;
 
-const NAVY = "#060B1C";
-const NAVY2 = "#0E1A3A";
-const GOLD = "#FFC94D";
-const GOLD_SOFT = "#F5D58A";
-const RED = "#FF4D4D";
-const INK = "#F3F1EC";
-const DIM = "rgba(243,241,236,0.5)";
+export const NAVY = "#060B1C";
+export const NAVY2 = "#0E1A3A";
+export const GOLD = "#FFC94D";
+export const GOLD_SOFT = "#F5D58A";
+export const RED = "#FF4D4D";
+export const INK = "#F3F1EC";
+export const DIM = "rgba(243,241,236,0.5)";
 const G = 84;
 
-const glow = (c: string, k = 1) =>
+export const glow = (c: string, k = 1) =>
   `0 0 ${18 * k}px ${c}AA, 0 0 ${48 * k}px ${c}66, 0 0 ${110 * k}px ${c}33`;
 
-const display = (size: number, weight = 900): React.CSSProperties => ({
+export const display = (size: number, weight = 900): React.CSSProperties => ({
   fontFamily: font.display, fontWeight: weight, fontSize: size, letterSpacing: "-0.045em", lineHeight: 1, color: INK,
 });
 
 /** Masked rise. */
-const Mask: React.FC<{ t: number; start: number; children: React.ReactNode; style?: React.CSSProperties; dur?: number }> = ({ t, start, children, style, dur = 0.55 }) => {
+export const Mask: React.FC<{ t: number; start: number; children: React.ReactNode; style?: React.CSSProperties; dur?: number }> = ({ t, start, children, style, dur = 0.55 }) => {
   const p = ease.outExpo(clamp01((t - start) / dur));
   return (
     <div style={{ overflow: "hidden", paddingBottom: "0.14em", marginBottom: "-0.14em", ...style }}>
@@ -39,7 +39,7 @@ const Mask: React.FC<{ t: number; start: number; children: React.ReactNode; styl
 };
 
 /** Navy stage: deep gradient, slow light pool, faint vertical scan of gold dust lines. */
-const Backdrop: React.FC<{ t: number; heat: number }> = ({ t, heat }) => (
+export const Backdrop: React.FC<{ t: number; heat: number }> = ({ t, heat }) => (
   <AbsoluteFill style={{ background: `radial-gradient(90% 60% at 50% ${lerp(44, 40, clamp01(t / 10))}%, ${NAVY2} 0%, ${NAVY} 70%)` }}>
     <div style={{ position: "absolute", left: "50%", top: "38%", width: 1300, height: 1300, marginLeft: -650, marginTop: -650, borderRadius: "50%",
       background: `radial-gradient(circle, ${GOLD}${Math.round(lerp(0x10, 0x26, heat)).toString(16).padStart(2, "0")} 0%, transparent 60%)`,
@@ -54,7 +54,7 @@ const Backdrop: React.FC<{ t: number; heat: number }> = ({ t, heat }) => (
 );
 
 /** Glitch layer: RGB-split + horizontal slice offsets for a short burst. */
-const Glitch: React.FC<{ t: number; at: number; dur?: number; children: React.ReactNode }> = ({ t, at, dur = 0.22, children }) => {
+export const Glitch: React.FC<{ t: number; at: number; dur?: number; children: React.ReactNode }> = ({ t, at, dur = 0.22, children }) => {
   const k = clamp01(1 - Math.abs(t - at) / (dur / 2));
   if (k <= 0) return <>{children}</>;
   const f = Math.floor(t * 30);
@@ -79,21 +79,21 @@ const Glitch: React.FC<{ t: number; at: number; dur?: number; children: React.Re
 };
 
 /* ------------------------------------------------ icons (original line art) */
-const IconFood: React.FC<{ c: string }> = ({ c }) => (
+export const IconFood: React.FC<{ c: string }> = ({ c }) => (
   <svg viewBox="0 0 100 100" width="100%" height="100%">
     <ellipse cx={50} cy={60} rx={38} ry={14} fill="none" stroke={c} strokeWidth={6} />
     <path d="M14 58 Q50 100 86 58" fill={`${c}33`} stroke={c} strokeWidth={6} strokeLinejoin="round" />
     <path d="M36 40 q6 -10 0 -20 M50 42 q6 -12 0 -24 M64 40 q6 -10 0 -20" stroke={c} strokeWidth={5} fill="none" strokeLinecap="round" />
   </svg>
 );
-const IconHouse: React.FC<{ c: string }> = ({ c }) => (
+export const IconHouse: React.FC<{ c: string }> = ({ c }) => (
   <svg viewBox="0 0 100 100" width="100%" height="100%">
     <path d="M12 50 L50 16 L88 50" fill="none" stroke={c} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
     <path d="M22 44 V86 H78 V44" fill={`${c}22`} stroke={c} strokeWidth={6} strokeLinejoin="round" />
     <rect x={42} y={60} width={16} height={26} fill="none" stroke={c} strokeWidth={5} />
   </svg>
 );
-const IconBus: React.FC<{ c: string }> = ({ c }) => (
+export const IconBus: React.FC<{ c: string }> = ({ c }) => (
   <svg viewBox="0 0 100 100" width="100%" height="100%">
     <rect x={14} y={18} width={72} height={56} rx={10} fill={`${c}22`} stroke={c} strokeWidth={6} />
     <path d="M14 46 H86" stroke={c} strokeWidth={5} />

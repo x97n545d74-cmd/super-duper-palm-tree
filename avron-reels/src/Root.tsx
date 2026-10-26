@@ -20,11 +20,20 @@ import { SwiggyThumbnail } from "./projects/swiggy/film/Thumbnail";
 import { DURATION as SWIGGY_DURATION } from "./projects/swiggy/film/timeline";
 import { DURATION as SMARTPHONE_DURATION } from "./projects/smartphone/config";
 import { ThaliReel } from "./projects/thali/Reel";
+import { ThaliReelV2 } from "./projects/thali/v2/ReelV2";
 import { ThaliBlueprint10, BLUEPRINT10_DUR } from "./projects/thali/Blueprint10";
 import { DURATION as THALI_DURATION } from "./projects/thali/config";
 
 export const Root: React.FC = () => (
   <>
+    <Composition
+      id="ThaliV2"
+      component={ThaliReelV2}
+      durationInFrames={Math.ceil(THALI_DURATION * layout.fps)}
+      fps={layout.fps}
+      width={layout.width}
+      height={layout.height}
+    />
     <Composition
       id="ThaliBlueprint10"
       component={ThaliBlueprint10}
