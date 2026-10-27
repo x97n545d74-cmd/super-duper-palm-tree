@@ -93,7 +93,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - The user wants Finance with Sharan-style content with fresh scripts.
 
 ## Parked
-- **ComfyUI.** The user said "leave comfyui". The workflows are in `comfy/` (Flux schnell plus Wan 2.2 I2V), and the README was never written.
+- **ComfyUI.** The user said "leave comfyui", then on 2026-10-27 asked to install it. ComfyUI 0.43 is installed in `/home/user/ComfyUI` (its own venv, CPU PyTorch). It does not survive a container reset, and this container has no GPU. No models are downloaded. The workflows are in `comfy/` (Flux schnell plus Wan 2.2 I2V), and the README was never written.
 
 ## Saved prompts, waiting on inputs (`ideas/`)
 1. `2026-10-ultracode-x-post`: a Claude Code terminal → ultracode effort → Claude-icon film-set animation. Needs the user's two reference videos.
