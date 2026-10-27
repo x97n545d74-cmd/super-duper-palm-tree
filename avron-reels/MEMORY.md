@@ -17,6 +17,11 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Pick a topic or idea first, then wait for approval before producing anything.
 - **Prompt library reminder (2026-10-26):** every time we start a new reel, ask the user whether to bring the prompts in `insta-reel-avron-page/` into the new project, and which one. Current list: 1. Motion Graphic One (AVRON Pro blueprint), 2. Two (product launch 20s, also the default motion direction), 3. Three (Ultracode × Opus 5.5), 4. Four (portfolio reel), 5. Five (AIsa 15s), 6. Six (chain.wtf pitch), 7. Seven (MotionSites launch). The thali V2 reel used all of them (`deliverables/2026-10-thali/AVRON_thali_V2_all-prompts_1080x1920.mp4`). The user will add more; keep the table in `insta-reel-avron-page/README.md` up to date.
 
+## Defaults the user confirmed (2026-10-27)
+- **Prompt library: always bring it in** ("insta reel tools always work"); the user may add reference videos per reel.
+- **Voice: ElevenLabs Tia Mirza** is the default for VO.
+- **Reels in progress:** Musk SpaceX-kids (done: `deliverables/2026-10-musk-spacex-kids/`, AI anchor, Tia VO fitted to the timeline, caption + SEO + cover). Footballer-stocks short (no anchor, Indian stocks): `projects/2026-10-footballer-stocks/SCRIPT.md`.
+
 ## Two separate Instagram pages (user, 2026-10-26)
 - **AVRON**: professional finance content (these reels). Not connected to Metricool yet, so there is no AVRON analytics.
 - **@marketkibatt ("Market Ki Baat")**: character-based content, e.g. the ₹50-share pizza reel (25 Oct). This is the page connected to Metricool (brand id 7601365, "Avron" label).
