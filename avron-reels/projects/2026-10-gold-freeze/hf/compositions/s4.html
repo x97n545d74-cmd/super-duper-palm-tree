@@ -17,6 +17,9 @@
 
     .s4-row { position: absolute; left: 72px; width: 828px; height: 150px; display: flex; align-items: center; justify-content: space-between; }
 
+    #s4-tick { position: absolute; left: 0; top: 1252px; width: 1080px; height: 66px; overflow: hidden; background: #e3b04b; }
+    #s4-tick span { position: absolute; left: 0; top: 10px; white-space: nowrap; font-weight: 900; font-size: 40px; color: #16140f; letter-spacing: 0.01em; }
+
   </style>
   <div id="root" data-composition-id="s4" data-width="1080" data-height="1920">
 
@@ -35,6 +38,8 @@
     <div class="abs rule" style="left:72px; top:1160px; width:828px;" id="s4-r4"></div>
     <div class="abs tag" style="left:72px; top:1190px; width:828px;" id="s4-src">Scheme ke hisaab se alag · apne AMC ka notice dekho</div>
 
+    <div id="s4-tick" data-layout-allow-overflow><span id="s4-tickt">Purana SIP chalu · Naya paisa band · Gold ETF khula · Purana SIP chalu · Naya paisa band · Gold ETF khula · Purana SIP chalu · Naya paisa band · Gold ETF khula</span></div>
+
   </div>
   <script>
     const tl = gsap.timeline({ paused: true });
@@ -49,6 +54,9 @@
     rise("#s4-b", 3.45); stamp("#s4-sb", 3.85);
     rise("#s4-c", 4.75); stamp("#s4-sc", 6.65);
     rise("#s4-d", 7.7); stamp("#s4-sd", 8.05);
+
+    tl.fromTo("#s4-tick", { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, 5.6);
+    tl.fromTo("#s4-tickt", { x: 40 }, { x: -1500, duration: 3.74, ease: "none" }, 5.6);
 
     window.__timelines["s4"] = tl;
   </script>

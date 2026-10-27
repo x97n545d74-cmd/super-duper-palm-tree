@@ -8,7 +8,7 @@ CUES = {
         "duty": 11.85, "imp": 15.4, "src2": 15.9},
  "s4": {"h": 0.0, "src": 0.6, "rules": 0.8, "a": 1.35, "sa": 2.9, "b": 3.45, "sb": 3.85, "c": 4.75, "sc": 6.65, "d": 7.7, "sd": 8.05},
  "s5": {"year": 0.0, "sub": 0.55, "src": 0.9, "rules": 1.4, "a": 1.9, "av": 2.42, "b": 2.95, "bv": 3.2, "c": 4.0, "cv": 5.5, "d": 6.2, "e": 8.0},
- "s6": {"flood": 0.0, "shrink": 0.55, "h": 0.95, "r1": 1.5, "r2": 2.0, "r3": 2.5, "cta": 3.0, "fine": 3.3},
+ "s6": {"flood": 0.0, "shrink": 0.55, "h": 0.95, "r1": 1.5, "r2": 2.0, "r3": 2.5, "cta": 2.8, "fine": 2.9},
 }
 c = CUES
 JS = {
@@ -71,6 +71,7 @@ JS = {
 """,
 }
 S = {k: (v[0], v[1], JS[k]) for k, v in S.items()}
+exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "scenes_v2.py")).read())
 _tl = _json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "timeline.json")))
 _starts = {f"s{i+1}": b["start"] if i else 0.0 for i, b in enumerate(_tl["beats"])}
 _json.dump({"sceneStart": _starts, "abs": {k: {n: round(_starts[k] + t, 3) for n, t in v.items()} for k, v in CUES.items()}},

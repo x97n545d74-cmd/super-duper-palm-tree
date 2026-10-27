@@ -187,8 +187,11 @@ place(mus, pad(["C3", "G3", "Eb4", "Bb3"], C["cta"], DUR - 1.0, 0.45, 3200, atta
 kick = lambda: boom(0.45, 46) * 0.9
 for tc in np.arange(C["cta"], DUR - 0.8, beat):
     place(mus, st2(kick()), tc, 0.5)
-for k, tc in enumerate(np.arange(0.0, C["cta"] - 0.05, beat)):
-    place(mus, st2(tick(2600 if k % 2 == 0 else 2000)), tc, 0.05)
+cuts = [0.0, C["s2"], C["s3"], C["s4"], C["s5"], C["cta"]]
+for a, b in zip(cuts, cuts[1:]):  # tick grid restarts on every cut, so each cut lands on a downbeat
+    for k, tc in enumerate(np.arange(a, b - 0.05, beat)):
+        place(mus, st2(tick(2600 if k % 4 == 0 else 2000)), tc, 0.07 if k % 4 == 0 else 0.045)
+    place(mus, st2(boom(0.45, 46) * 0.9), a, 0.32)  # soft downbeat on the cut
 music = verb(mus, HALL, 0.26)
 
 

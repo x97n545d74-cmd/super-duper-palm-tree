@@ -27,36 +27,40 @@
     #s3-rate { font-weight: 900; font-size: 190px; letter-spacing: -0.04em; line-height: 0.9; }
     .s3-row { position: absolute; left: 72px; width: 828px; display: flex; align-items: baseline; justify-content: space-between; }
 
-  </style>
-  <div id="root" data-composition-id="s3" data-width="1080" data-height="1920">
+    #s3-stage { perspective: 1700px; }
+    #s3-ring { position: absolute; left: 180px; top: 40px; width: 720px; height: 480px; transform-style: preserve-3d; }
+    .s3-card { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 20px; overflow: hidden;
+               -webkit-box-reflect: below 10px linear-gradient(transparent 55%, rgba(0,0,0,0.22)); }
+    .s3-card img { width: 720px; height: 480px; object-fit: cover; display: block; }
+    .s3-card b { position: absolute; left: 24px; top: 20px; padding: 8px 16px; background: rgba(22,20,15,0.82); color: #f2eee6;
+                 font-weight: 700; font-size: 34px; border-radius: 8px; }
 
-    <div class="abs" id="s3-bar"><div class="shadow"></div><div class="top"></div><div class="front">999.9</div></div>
-    <div class="abs" style="left:510px; top:240px; width:400px;">
-      <div class="mask"><span class="body" id="s3-t1">Gold bahar</span></div>
-      <div class="mask"><span class="body" id="s3-t2">se aata hai</span></div>
+  </style>
+  <div data-hf-id="hf-vizh" id="root" data-composition-id="s3" data-width="1080" data-height="1920">
+
+    <div data-hf-id="hf-hq2l" class="abs" id="s3-stage" style="left:0; top:170px; width:1080px; height:600px;" data-layout-allow-overflow="" data-layout-ignore="">
+      <div data-hf-id="hf-g82m" id="s3-ring">
+        <div data-hf-id="hf-askn" class="s3-card" id="s3-c0" style="transform: rotateY(0deg) translateZ(560px);"><img data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:-0.25,&quot;contrast&quot;:0.08,&quot;highlights&quot;:0,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:0,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.1},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;}" data-hf-id="hf-0d49" src="assets/img/card_goldbar.jpg"><b data-hf-id="hf-2jkj">Gold</b></div>
+        <div data-hf-id="hf-nkcz" class="s3-card" id="s3-c1" style="transform: rotateY(120deg) translateZ(560px);"><img data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:-0.25,&quot;contrast&quot;:0.08,&quot;highlights&quot;:0,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:0,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.1},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;}" data-hf-id="hf-tpwf" src="assets/img/card_port.jpg"><b data-hf-id="hf-bimk">Import · $ mein payment</b></div>
+        <div data-hf-id="hf-x5wb" class="s3-card" id="s3-c2" style="transform: rotateY(240deg) translateZ(560px);"><img data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:-0.25,&quot;contrast&quot;:0.08,&quot;highlights&quot;:0,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:0,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.1},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;}" data-hf-id="hf-bkzr" src="assets/img/card_rupee.jpg"><b data-hf-id="hf-624r">Rupya dabav mein</b></div>
+      </div>
     </div>
-    <div class="abs tag" style="left:72px; top:470px;" id="s3-in">INDIA</div>
-    <div class="abs tag" style="left:790px; top:470px;" id="s3-out">BAHAR</div>
-    <div class="abs" id="s3-line"></div>
-    <div class="abs" style="left:0; top:540px; width:1080px; height:110px;" data-layout-allow-overflow>
-      <div class="s3-note" id="s3-n1">$<i></i></div>
-      <div class="s3-note" id="s3-n2">$<i></i></div>
-      <div class="s3-note" id="s3-n3">$<i></i></div>
+    <div data-hf-id="hf-5lvl" class="abs" style="left:72px; top:700px; width:828px; height:62px;" data-layout-allow-overlap="" data-layout-allow-occlusion="">
+      <div data-hf-id="hf-109a" class="mask abs" style="left:0; top:0;"><span data-hf-id="hf-3x1y" class="body" id="s3-t1">Gold bahar se aata hai</span></div>
+      <div data-hf-id="hf-e0lu" class="mask abs" style="left:0; top:0;"><span data-hf-id="hf-bppy" class="body" id="s3-t3">Payment dollar mein</span></div>
+      <div data-hf-id="hf-eewv" class="mask abs" style="left:0; top:0;"><span data-hf-id="hf-vr5r" class="body" id="s3-t5">Jitna gold, utne dollar bahar</span></div>
     </div>
-    <div class="abs" style="left:72px; top:680px; width:700px;">
-      <div class="mask"><span class="body" id="s3-t3">Payment dollar mein</span></div>
+    <div data-hf-id="hf-5rp7" class="abs" style="left:72px; top:790px;">
+      <div data-hf-id="hf-dolc" class="mask"><span data-hf-id="hf-jx1s" id="s3-rate" class="red">₹95.22</span></div>
     </div>
-    <div class="abs" style="left:72px; top:790px;">
-      <div class="mask"><span id="s3-rate" class="red">₹95.22</span></div>
+    <div data-hf-id="hf-z08z" class="abs" style="left:72px; top:980px; width:828px;">
+      <div data-hf-id="hf-i5rs" class="mask"><span data-hf-id="hf-2wg6" class="body" id="s3-t4">per dollar · 26 Oct</span></div>
+      <div data-hf-id="hf-yugd" class="tag" id="s3-src1" style="margin-top:6px;">Source: PTI, provisional close</div>
     </div>
-    <div class="abs" style="left:72px; top:980px; width:828px;">
-      <div class="mask"><span class="body" id="s3-t4">per dollar · 26 Oct</span></div>
-      <div class="tag" id="s3-src1" style="margin-top:6px;">Source: PTI, provisional close</div>
-    </div>
-    <div class="abs rule" style="left:72px; top:1110px; width:828px;" id="s3-r1"></div>
-    <div class="s3-row" style="top:1128px;"><div class="mask"><span class="body" id="s3-d">Import duty 6% → <b class="gold">15%</b></span></div><div class="tag" id="s3-dt">13 May 2026</div></div>
-    <div class="s3-row" style="top:1208px;"><div class="mask"><span class="body" id="s3-m">Gold imports <b class="red">−27%</b></span></div><div class="tag" id="s3-mt">Apr–Sep 2026</div></div>
-    <div class="abs tag" style="left:72px; top:1284px;" id="s3-src2">Source: customs notifications, commerce ministry</div>
+    <div data-hf-id="hf-51lb" class="abs rule" style="left:72px; top:1110px; width:828px;" id="s3-r1"></div>
+    <div data-hf-id="hf-atvt" class="s3-row" style="top:1128px;"><div data-hf-id="hf-gyup" class="mask"><span data-hf-id="hf-ki58" class="body" id="s3-d">Import duty 6% → <b data-hf-id="hf-ji98" class="gold">15%</b></span></div><div data-hf-id="hf-njim" class="tag" id="s3-dt">13 May 2026</div></div>
+    <div data-hf-id="hf-duqa" class="s3-row" style="top:1208px;"><div data-hf-id="hf-hd5q" class="mask"><span data-hf-id="hf-jbxz" class="body" id="s3-m">Gold imports <b data-hf-id="hf-cldy" class="red">−27%</b></span></div><div data-hf-id="hf-575q" class="tag" id="s3-mt">Apr–Sep 2026</div></div>
+    <div data-hf-id="hf-yj74" class="abs tag" style="left:72px; top:1284px;" id="s3-src2">Source: customs notifications, commerce ministry</div>
 
   </div>
   <script>
@@ -65,15 +69,15 @@
     const stamp = (sel, at) => tl.fromTo(sel, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.12, ease: "expo.out" }, at);
     const show = (sel, at, d = 0.3) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d, ease: "power2.out" }, at);
 
-    tl.fromTo("#s3-bar", { yPercent: 40, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: "power4.out" }, 0.0);
-    rise("#s3-t1", 0.9); rise("#s3-t2", 0.9 + 0.15);
-    show("#s3-in, #s3-out", 2.1);
-    tl.fromTo("#s3-line", { scaleY: 0, transformOrigin: "50% 0" }, { scaleY: 1, duration: 0.5, ease: "power3.inOut" }, 2.1);
-    ["#s3-n1", "#s3-n2", "#s3-n3"].forEach((n, i) => {
-      tl.fromTo(n, { x: 72 + i * 230, opacity: 0 }, { x: 72 + i * 230, opacity: 1, duration: 0.2 }, 2.3 + i * 0.1);
-      tl.to(n, { x: 1180 + i * 60, duration: 1.4, ease: "power3.in" }, 5.3 + i * 0.15);
-    });
-    rise("#s3-t3", 2.6);
+    tl.fromTo("#s3-ring", { rotationY: 0, z: -560 }, { rotationY: 0, z: -560, duration: 0.01 }, 0);
+    tl.fromTo("#s3-stage", { yPercent: 8, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: "power4.out" }, 0.0);
+    rise("#s3-t1", 0.9);
+    tl.to("#s3-ring", { rotationY: -120, duration: 0.55, ease: "power3.inOut" }, 2.45);
+    tl.to("#s3-t1", { yPercent: -105, duration: 0.3, ease: "power2.in" }, 2.45);
+    rise("#s3-t3", 2.45 + 0.3);
+    tl.to("#s3-t3", { yPercent: -105, duration: 0.3, ease: "power2.in" }, 5.3 - 0.3);
+    rise("#s3-t5", 5.3);
+    tl.to("#s3-ring", { rotationY: -240, duration: 0.55, ease: "power3.inOut" }, 6.55);
     rise("#s3-rate", 8.95, 0.6); rise("#s3-t4", 9.4); show("#s3-src1", 9.4 + 0.3);
     tl.fromTo("#s3-r1", { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.5, ease: "power3.inOut" }, 10.7);
     rise("#s3-d", 11.85); show("#s3-dt", 11.85 + 0.2);

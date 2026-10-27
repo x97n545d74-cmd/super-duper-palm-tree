@@ -6,7 +6,7 @@ Prompt library (user: "prompt bhi use krlena"), each used where it fits the stor
 - **Two:** motion direction (minimal, one accent, masked type, match cuts, push cuts with motion blur, cuts on the beat via librosa, `seek(t)` HTML + Playwright subframes).
 - **Nine (recipe-style):** the "why" beat is built like a recipe: gold goes into the cart → dollars go out → rupee weakens, each ingredient added on screen with its number.
 - **Ten (2D keynote):** one continuous take in the save-card beat: the gold coin floods the frame and contracts into the 3-case card; shape morphs, no crossfades.
-- **Three to Eight:** brand-specific briefs (Ultracode, portfolio, AIsa, chain.wtf, MotionSites, website); nothing to take for a finance explainer.
+- **v3 (2026-10-27, user: "use images and other prompts"):** Two adds the circle drop out of the Start SIP button, a 3D photo carousel with floor reflection and whips (gold → port → rupee), a 3-word ticker, cuts re-phased onto music downbeats (librosa check: every cut within 20–37 ms of an onset) and real motion blur (90 fps render, 3-frame blend to 30 fps). Ten adds an iris opening onto the 2013 photo. Four (pro-designer brief) is applied as the frame-by-frame review pass. Five, Three, Six, Seven and Eight are briefs for other brands (AIsa, Ultracode, chain.wtf, MotionSites, a website); their only reusable idea ("go all out", dynamic motion) is covered by the above. Photos: 4 rawpixel CC0 + 1 Wikimedia CC BY 4.0, logged in `assets/LICENSES.md`.
 
 **Grok skipped (user, 2026-10-26).** Facts checked by us: see `research/sources.json`. Rule kept: of every number (RBI reference rate, AMC addenda/notices, SEBI/AMFI, 2013 RBI/government curbs). No fact goes on screen without a claim ID in `research/sources.json`.
 
