@@ -299,7 +299,7 @@ const B5: React.FC<{ t: number }> = ({ t }) => {
         <div style={sx(110, 800)}>$904B</div>
         <div style={{ ...lbl(DIM, 18), marginTop: 12 }}>MUSK NET WORTH</div>
       </div>
-      <div style={{ position: "absolute", right: 70, top: 120, textAlign: "right", opacity: slice }}>
+      <div style={{ position: "absolute", right: 70, top: 200, textAlign: "right", opacity: slice }}>
         <div style={sx(64, 800, GREEN)}>≈1.2%</div>
         <div style={{ ...lbl(INK, 17), marginTop: 6 }}>= THE $10.6B GIFT</div>
       </div>
@@ -333,8 +333,8 @@ const B6: React.FC<{ t: number }> = ({ t }) => {
       })}
       {/* the pendulum pin line lifting the top block (kinetic-type reference) */}
       <div style={{ position: "absolute", left: 480 + lift * 220 + 99, top: 0, width: 2, height: Math.max(0, 760 - 9 * 62 - lift * 230), background: INK_D, opacity: lift > 0 ? 1 : 0 }} />
-      <div style={{ position: "absolute", left: 70, top: 140, transform: `rotate(-8deg) scale(${lerp(1.6, 1, stamp)})`, opacity: stamp, padding: "12px 24px", border: `5px solid ${RED}`, borderRadius: 8, ...sx(52, 900, RED) }}>CASH ✕</div>
-      <div style={{ position: "absolute", left: 70, top: 280, opacity: lift }}>
+      <div style={{ position: "absolute", left: 70, top: 210, transform: `rotate(-8deg) scale(${lerp(1.6, 1, stamp)})`, opacity: stamp, padding: "12px 24px", border: `5px solid ${RED}`, borderRadius: 8, ...sx(52, 900, RED) }}>CASH ✕</div>
+      <div style={{ position: "absolute", left: 70, top: 350, opacity: lift }}>
         <div style={sf(56, INK_D, true)}>apne shares</div>
         <div style={{ ...lbl("rgba(22,24,42,0.6)", 18), marginTop: 10 }}>1 SHARE PER BACHCHA</div>
       </div>
@@ -349,9 +349,9 @@ const B7: React.FC<{ t: number }> = ({ t }) => {
   return (
     <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: HALF, overflow: "hidden", ...push(t, start, 1.04) }}>
       <Desk t={t} h={HALF} />
-      <Notif t={t} a={at("b7_trump", "Trump") - 0.15} y={170} app="US Treasury" title="Trump Account" icon="$" body="Bachchon ke liye naya sarkari investment account" />
-      <Notif t={t} a={at("b7_trump", "bachchon") - 0.1} y={370} app="now" title="+1 SpaceX share" icon="1" body="Shayad isi raste se aayega" />
-      <Notif t={t} a={at("b7_trump", "Accounts", 1) - 0.1} y={570} app="pending" title="Plan details" icon="?" body="Eligibility aur process abhi announce nahi" />
+      <Notif t={t} a={at("b7_trump", "Trump") - 0.15} y={210} app="US Treasury" title="Trump Account" icon="$" body="Bachchon ke liye naya sarkari investment account" />
+      <Notif t={t} a={at("b7_trump", "bachchon") - 0.1} y={400} app="now" title="+1 SpaceX share" icon="1" body="Shayad isi raste se aayega" />
+      <Notif t={t} a={at("b7_trump", "Accounts", 1) - 0.1} y={590} app="pending" title="Plan details" icon="?" body="Eligibility aur process abhi announce nahi" />
       <div style={{ position: "absolute", left: 0, right: 0, top: 360, display: "flex", justifyContent: "center", opacity: stamp }}>
         <div style={{ transform: `rotate(-8deg) scale(${lerp(1.6, 1, stamp)})`, padding: "16px 30px", border: `6px solid ${RED}`, borderRadius: 10, background: "rgba(255,255,255,0.85)", ...sx(66, 900, RED) }}>PLAN FINAL NAHI</div>
       </div>
@@ -430,7 +430,7 @@ const B10: React.FC<{ t: number }> = ({ t }) => {
       <GreenTunnel t={t} h={HALF} />
       {bar("SALARY", lerp(0.85, 0.35, q), INK, 230)}
       {bar("SHARES", lerp(0.25, 0.85, ans), GREEN, 630)}
-      <div style={{ position: "absolute", left: 0, right: 0, top: 90, textAlign: "center", ...sf(52, INK, true) }}>kamai kahan se?</div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 200, textAlign: "center", ...sf(52, INK, true) }}>kamai kahan se?</div>
     </div>
   );
 };
@@ -524,11 +524,11 @@ export const MuskReel: React.FC = () => {
       </CameraMotionBlur>
       {/* the anchor: one continuous lip-synced take, shown in the bottom half on split beats */}
       <div style={{ position: "absolute", left: 0, top: HALF, width: 1080, height: 1920 - HALF, overflow: "hidden", opacity: split && !ended ? 1 : 0 }}>
-        <OffthreadVideo src={staticFile("musk/anchor.mov")} muted style={{ position: "absolute", left: 0, top: -90, width: 1080, height: 1920 }} />
+        <OffthreadVideo src={staticFile("musk/anchor.mov")} muted style={{ position: "absolute", left: 0, top: -30, width: 1080, height: 1920 }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, transparent 18%, transparent 70%, rgba(0,0,0,0.35) 100%)" }} />
       </div>
       {split && !ended && <div style={{ position: "absolute", left: 0, right: 0, top: HALF - 2, height: 4, background: INK }} />}
-      {!ended && <Captions t={t} chunks={CAPS} family={sans} size={52} y={split ? HALF - 34 : 1390} />}
+      {!ended && <Captions t={t} chunks={CAPS} family={sans} size={52} y={split ? HALF - 34 : 1460} />}
       {!ended && (
         <>
           <div style={{ position: "absolute", left: 70, top: 110, padding: "8px 14px", borderRadius: 999, background: "rgba(7,9,13,0.72)", ...sx(26, 800), letterSpacing: "0.42em" }}>AVRON</div>
