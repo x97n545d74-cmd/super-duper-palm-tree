@@ -26,9 +26,11 @@ import { DURATION as THALI_DURATION } from "./projects/thali/config";
 import { AnchorDemo } from "./projects/anchor/Reel";
 import { AnchorDemoV2 } from "./projects/anchor/ReelV2";
 import { MuskReel, MUSK_DURATION } from "./projects/musk/Reel";
+import { MuskCover } from "./projects/musk/Cover";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="MuskCover" component={MuskCover} durationInFrames={1} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition
       id="MuskSpacexKids"
       component={MuskReel}
