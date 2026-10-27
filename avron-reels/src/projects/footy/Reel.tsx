@@ -161,15 +161,15 @@ const Hook: React.FC<{ t: number }> = ({ t }) => {
   const cards = [{ k: KITS.pele, g: "OLD GEN", bg: RED }, { k: KITS.messi, g: "MID GEN", bg: "#0F6A56" }, { k: KITS.yamal, g: "NEW GEN", bg: ORANGE }];
   const q = pop(t, ron, 0.45);
   return (
-    <AbsoluteFill style={push(t, start)}>
+    <AbsoluteFill>
       <Sunburst t={t} />
       <div style={{ position: "absolute", left: 0, right: 0, top: 300, textAlign: "center" }}>
-        <div style={{ ...sf(76, INK_D), opacity: prog(t, start + 0.05, 0.3) }}>Agar footballers</div>
-        <div style={{ ...sx(120, 900, INK_D), opacity: prog(t, at("hook", "stocks") - 0.1, 0.25), marginTop: 6 }}>STOCKS HOTE…</div>
+        <div style={sf(76, INK_D)}>Agar footballers</div>
+        <div style={{ ...sx(120, 900, INK_D), marginTop: 6 }}>STOCKS HOTE…</div>
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 640, display: "flex", justifyContent: "center", gap: 20 }}>
         {cards.map((c, i) => {
-          const p = pop(t, start + 0.35 + i * 0.22, 0.45);
+          const p = t < 0.04 ? 1 : pop(t, start + 0.15 + i * 0.12, 0.4);
           return (
             <div key={c.g} style={{ width: 310, padding: "18px 0 24px", borderRadius: 26, background: c.bg, textAlign: "center", transform: `translateY(${(1 - p) * 300}px) rotate(${(i - 1) * 4}deg)`, opacity: clamp01(p * 3), boxShadow: "0 20px 40px rgba(0,0,0,0.35)" }}>
               <div style={lbl(INK, 22)}>{c.g}</div>
@@ -376,7 +376,7 @@ export const FootyReel: React.FC = () => {
       <CameraMotionBlur shutterAngle={180} samples={5}>
         <Graphics />
       </CameraMotionBlur>
-      {!ended && (
+      {!ended && CAPS.some((c) => t >= c.s - 0.05 && t < c.e) && (
         <div style={{ position: "absolute", left: 0, right: 0, top: 1460, height: 160 }}>
           <div style={{ position: "absolute", inset: "10px 60px", borderRadius: 24, background: "rgba(23,24,31,0.72)" }} />
           <Captions t={t} chunks={CAPS} family={sans} size={54} y={40} />
