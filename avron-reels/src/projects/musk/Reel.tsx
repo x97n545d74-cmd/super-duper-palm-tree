@@ -532,7 +532,6 @@ export const MuskReel: React.FC = () => {
       {!ended && (
         <>
           <div style={{ position: "absolute", left: 70, top: 110, padding: "8px 14px", borderRadius: 999, background: "rgba(7,9,13,0.72)", ...sx(26, 800), letterSpacing: "0.42em" }}>AVRON</div>
-          <div style={{ position: "absolute", right: 70, top: 112, padding: "7px 14px", borderRadius: 999, background: "rgba(7,9,13,0.72)", ...lbl(INK, 17) }}>AI ANCHOR</div>
         </>
       )}
       {ended && <End t={t} a={END_A} />}
