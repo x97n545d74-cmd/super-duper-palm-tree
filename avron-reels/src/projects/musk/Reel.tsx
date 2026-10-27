@@ -350,7 +350,7 @@ const B7: React.FC<{ t: number }> = ({ t }) => {
     <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: HALF, overflow: "hidden", ...push(t, start, 1.04) }}>
       <Desk t={t} h={HALF} />
       <Notif t={t} a={at("b7_trump", "Trump") - 0.15} y={210} app="US Treasury" title="Trump Account" icon="$" body="Bachchon ke liye naya sarkari investment account" />
-      <Notif t={t} a={at("b7_trump", "bachchon") - 0.1} y={400} app="now" title="+1 SpaceX share" icon="1" body="Shayad isi raste se aayega" />
+      <Notif t={t} a={at("b7_trump", "Bachche") - 0.1} y={400} app="now" title="+1 SpaceX share" icon="1" body="Shayad isi raste se aayega" />
       <Notif t={t} a={at("b7_trump", "Accounts", 1) - 0.1} y={590} app="pending" title="Plan details" icon="?" body="Eligibility aur process abhi announce nahi" />
       <div style={{ position: "absolute", left: 0, right: 0, top: 360, display: "flex", justifyContent: "center", opacity: stamp }}>
         <div style={{ transform: `rotate(-8deg) scale(${lerp(1.6, 1, stamp)})`, padding: "16px 30px", border: `6px solid ${RED}`, borderRadius: 10, background: "rgba(255,255,255,0.85)", ...sx(66, 900, RED) }}>PLAN FINAL NAHI</div>
