@@ -28,9 +28,11 @@ import { AnchorDemoV2 } from "./projects/anchor/ReelV2";
 import { MuskReel, MUSK_DURATION } from "./projects/musk/Reel";
 import { MuskCover } from "./projects/musk/Cover";
 import { FootyReel, FOOTY_DURATION, FootyCover } from "./projects/footy/Reel";
+import { DcPharmaReel, DCPHARMA_DURATION } from "./projects/dcpharma/Reel";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="DcPharma" component={DcPharmaReel} durationInFrames={Math.round(DCPHARMA_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="FootyCover" component={FootyCover} durationInFrames={1} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="FootballerStocks" component={FootyReel} durationInFrames={Math.ceil(FOOTY_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="MuskCover" component={MuskCover} durationInFrames={1} fps={layout.fps} width={layout.width} height={layout.height} />

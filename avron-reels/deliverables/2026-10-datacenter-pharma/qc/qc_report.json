@@ -1,0 +1,163 @@
+{
+ "file": "deliverables/2026-10-datacenter-pharma/AVRON_dcpharma_animatic_1080x1920.mp4",
+ "checks": {
+  "dimensions_1080x1920": {
+   "pass": true,
+   "detail": "1080x1920"
+  },
+  "fps_30": {
+   "pass": true,
+   "detail": 30.0
+  },
+  "h264_yuv420p": {
+   "pass": true,
+   "detail": "h264 yuv420p"
+  },
+  "aac_audio": {
+   "pass": true,
+   "detail": "aac"
+  },
+  "duration_matches_timeline": {
+   "pass": true,
+   "detail": "60.01s vs 60.0s"
+  },
+  "no_black_segments": {
+   "pass": false,
+   "detail": [
+    [
+     "9.16667",
+     "9.46667"
+    ],
+    [
+     "16.6333",
+     "16.8667"
+    ],
+    [
+     "21.9",
+     "22.4"
+    ],
+    [
+     "50.7",
+     "50.8667"
+    ],
+    [
+     "58.7",
+     "59.9667"
+    ]
+   ]
+  },
+  "no_frozen_segments_over_1.2s": {
+   "pass": false,
+   "detail": [
+    "58.7"
+   ]
+  },
+  "loudness_-14_LUFS_pm1": {
+   "pass": true,
+   "detail": -14.1
+  },
+  "true_peak_below_-1dB": {
+   "pass": true,
+   "detail": -2.0
+  },
+  "no_near_static_seconds": {
+   "pass": false,
+   "detail": {
+    "seconds_below_0.35": [
+     59
+    ]
+   }
+  }
+ },
+ "specs": {
+  "width": 1080,
+  "height": 1920,
+  "fps": 30.0,
+  "vcodec": "h264",
+  "profile": "High",
+  "pix_fmt": "yuv420p",
+  "color_space": "bt709",
+  "duration": 60.011,
+  "bitrate_mbps": 2.66,
+  "acodec": "aac",
+  "sample_rate": "48000",
+  "channels": 2
+ },
+ "loudness": {
+  "integrated_lufs": -14.1,
+  "true_peak_dbfs": -2.0
+ },
+ "motion_per_second": [
+  5.25,
+  0.57,
+  0.57,
+  6.05,
+  2.15,
+  2.23,
+  1.91,
+  7.05,
+  2.57,
+  3.83,
+  1.25,
+  1.26,
+  1.43,
+  6.37,
+  2.76,
+  2.96,
+  10.95,
+  1.98,
+  1.43,
+  33.19,
+  8.11,
+  35.82,
+  1.38,
+  0.82,
+  0.68,
+  5.8,
+  27.72,
+  2.09,
+  10.26,
+  0.72,
+  21.09,
+  2.19,
+  1.26,
+  16.76,
+  10.72,
+  2.94,
+  2.97,
+  21.34,
+  27.23,
+  0.42,
+  0.42,
+  0.43,
+  8.11,
+  8.98,
+  11.37,
+  1.01,
+  5.4,
+  18.9,
+  0.81,
+  0.63,
+  13.96,
+  3.29,
+  2.35,
+  2.53,
+  3.52,
+  5.61,
+  4.93,
+  4.45,
+  5.32,
+  0.0
+ ],
+ "asr": {
+  "error": "No module named 'faster_whisper'"
+ },
+ "sheets": [
+  "deliverables/2026-10-datacenter-pharma/qc/sheet_transitions.jpg",
+  "deliverables/2026-10-datacenter-pharma/qc/sheet_timeline.jpg"
+ ],
+ "summary": {
+  "passed": 7,
+  "total": 10
+ }
+}
