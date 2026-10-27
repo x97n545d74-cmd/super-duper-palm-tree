@@ -25,9 +25,18 @@ import { ThaliBlueprint10, BLUEPRINT10_DUR } from "./projects/thali/Blueprint10"
 import { DURATION as THALI_DURATION } from "./projects/thali/config";
 import { AnchorDemo } from "./projects/anchor/Reel";
 import { AnchorDemoV2 } from "./projects/anchor/ReelV2";
+import { MuskReel, MUSK_DURATION } from "./projects/musk/Reel";
 
 export const Root: React.FC = () => (
   <>
+    <Composition
+      id="MuskSpacexKids"
+      component={MuskReel}
+      durationInFrames={Math.ceil(MUSK_DURATION * layout.fps)}
+      fps={layout.fps}
+      width={layout.width}
+      height={layout.height}
+    />
     <Composition
       id="AnchorDemoV2"
       component={AnchorDemoV2}
