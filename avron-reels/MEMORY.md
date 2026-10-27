@@ -68,6 +68,8 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
   - The user prefers to TTS the VO themselves: give the script in one block (Devanagari + Latin English, numbers spelled out).
 - **ElevenLabs credits:** check the balance before generating a VO. One ~600-character eleven_v4 read costs about 577 credits per take, and the default is 2 takes.
 
+- **AI anchor demo** (2026-10-27): the user supplied an AI anchor character (black pantsuit, long wavy hair; sheets in `public/anchor/`, 8 cutouts). Direction from the user: she is the recurring narrator but **secondary**; motion graphics are the visual focus, with a visual change every 4–5 s, small framing/split screens/cutaways, a premium financial-documentary look, no talking-head shots, no generic AI effects or neon, 9:16. Demo = thali story re-cut with her: `deliverables/2026-10-anchor-demo/`, code `src/projects/anchor/Reel.tsx` (`AnchorDemo`). No lip-sync (stills only); upgrade path is short lip-synced clips from HeyGen/Hedra/Higgsfield. Always tag "AI ANCHOR". Her origin (original vs. real person's likeness) is not yet confirmed.
+
 ## YouTube (starting 2026-10-25)
 - Strategy is in `research/youtube-2026-10/YT_STRATEGY.md`, from 474 videos found via Agent Reach searches.
 - Main product: a weekly 15–20 min company/stock deep-dive. 15–30 min videos had a median of 161K views vs 10K for 3–8 min.

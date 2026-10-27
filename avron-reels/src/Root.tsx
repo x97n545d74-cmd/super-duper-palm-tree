@@ -23,9 +23,18 @@ import { ThaliReel } from "./projects/thali/Reel";
 import { ThaliReelV2 } from "./projects/thali/v2/ReelV2";
 import { ThaliBlueprint10, BLUEPRINT10_DUR } from "./projects/thali/Blueprint10";
 import { DURATION as THALI_DURATION } from "./projects/thali/config";
+import { AnchorDemo } from "./projects/anchor/Reel";
 
 export const Root: React.FC = () => (
   <>
+    <Composition
+      id="AnchorDemo"
+      component={AnchorDemo}
+      durationInFrames={Math.ceil(THALI_DURATION * layout.fps)}
+      fps={layout.fps}
+      width={layout.width}
+      height={layout.height}
+    />
     <Composition
       id="ThaliV2"
       component={ThaliReelV2}
