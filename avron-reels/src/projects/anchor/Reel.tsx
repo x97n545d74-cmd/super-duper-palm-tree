@@ -41,7 +41,7 @@ const lbl = (c = DIM): React.CSSProperties => ({ fontFamily: mono, fontWeight: 5
 const pct = (v: number, d = 2) => `${v.toFixed(d)}%`;
 
 /** Masked rise for type. */
-const Rise: React.FC<{ t: number; a: number; dur?: number; children: React.ReactNode; style?: React.CSSProperties }> = ({ t, a, dur = 0.55, children, style }) => {
+export const Rise: React.FC<{ t: number; a: number; dur?: number; children: React.ReactNode; style?: React.CSSProperties }> = ({ t, a, dur = 0.55, children, style }) => {
   const p = ease.outExpo(clamp01((t - a) / dur));
   return (
     <div style={{ overflow: "hidden", paddingBottom: "0.12em", marginBottom: "-0.12em", ...style }}>
@@ -51,13 +51,13 @@ const Rise: React.FC<{ t: number; a: number; dur?: number; children: React.React
 };
 
 /** Push cut: the incoming shot lands with an eased push; CameraMotionBlur smears the first frames. */
-const push = (t: number, a: number, from = 1.08): React.CSSProperties => {
+export const push = (t: number, a: number, from = 1.08): React.CSSProperties => {
   const p = ease.outExpo(clamp01((t - a) / 0.5));
   return { transform: `scale(${lerp(from, 1, p)})`, opacity: clamp01((t - a) / 0.05) };
 };
 
 /** Film grain: static noise re-seeded every 2 frames keeps flat colour organic. */
-const Grain: React.FC<{ t: number; o?: number }> = ({ t, o = 0.09 }) => (
+export const Grain: React.FC<{ t: number; o?: number }> = ({ t, o = 0.09 }) => (
   <svg width={1080} height={1920} style={{ position: "absolute", inset: 0, opacity: o, mixBlendMode: "overlay", pointerEvents: "none" }}>
     <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={2} seed={Math.floor(t * 15)} /><feColorMatrix type="saturate" values="0" /></filter>
     <rect width="100%" height="100%" filter="url(#grain)" />
@@ -95,7 +95,7 @@ const Photo: React.FC<{ n: string; t: number; a: number; b: number; dark?: numbe
 };
 
 /** The anchor as a cutout. Bottom-anchored; slides in from a side, breathes, slides out. */
-const Anchor: React.FC<{ t: number; a: number; b: number; pose: Pose; x: number; bottom: number; h: number; from?: "left" | "right" | "bottom"; flip?: boolean; shadow?: boolean }> = ({
+export const Anchor: React.FC<{ t: number; a: number; b: number; pose: Pose; x: number; bottom: number; h: number; from?: "left" | "right" | "bottom"; flip?: boolean; shadow?: boolean }> = ({
   t, a, b, pose, x, bottom, h, from = "right", flip, shadow = true,
 }) => {
   const pin = ease.outExpo(clamp01((t - a) / 0.7));
@@ -114,7 +114,7 @@ const Anchor: React.FC<{ t: number; a: number; b: number; pose: Pose; x: number;
 };
 
 /** Presenter window: a small studio frame with the anchor inside, plus a name strap. */
-const Window: React.FC<{ t: number; a: number; b: number; pose: Pose; x: number; y: number; w: number; h: number; zoom?: number; dy?: number; dx?: number; round?: boolean }> = ({
+export const Window: React.FC<{ t: number; a: number; b: number; pose: Pose; x: number; y: number; w: number; h: number; zoom?: number; dy?: number; dx?: number; round?: boolean }> = ({
   t, a, b, pose, x, y, w, h, zoom = 1.25, dy = 0, dx = 0, round,
 }) => {
   const pin = ease.outExpo(clamp01((t - a) / 0.6));
