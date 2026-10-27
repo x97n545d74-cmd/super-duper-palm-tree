@@ -30,6 +30,7 @@ Build a claim registry before the script: `research/claims.md` with one row per 
 - Source order: company filings and investor decks → NSE/BSE announcements → government and regulators (RBI, SEBI, MoSPI, PIB, USFDA, CDSCO, patent offices) → reputable financial press.
 - Use the built-in web tools first and Agent Reach when they fail. Read-only.
 - `WRONG` claims are corrected or cut, never softened. `UNVERIFIED` claims are cut or said as a clearly labelled possibility. A company only appears as a "beneficiary" if a filing or the company's own statement links it to the theme; otherwise call it AVRON's reading.
+- Check every time word in the brief ("upcoming", "abhi", "is saal", "paanch saal se") against today's date. Briefs are often written weeks before the run: the data-centre/pharma brief called the 20 March 2026 semaglutide expiry "upcoming" in October.
 - A theme can have structural growth and still fall in a crash. Never turn a thesis into a return promise.
 - If there are no research tools at all, mark every number `UNVERIFIED` and say so at the top of the report. Don't fill gaps from memory.
 
