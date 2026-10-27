@@ -388,3 +388,30 @@ export const FootyReel: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+/* Reel cover. Key text sits inside the centre 4:5 crop (y ≈ 285–1635) so the profile grid keeps it. */
+export const FootyCover: React.FC = () => (
+  <AbsoluteFill style={{ background: CREAM, overflow: "hidden" }}>
+    <SerifFont />
+    <Sunburst t={0} />
+    <div style={{ position: "absolute", left: 0, right: 0, top: 300, textAlign: "center" }}>
+      <div style={sf(80, INK_D)}>Agar footballers</div>
+      <div style={{ ...sx(118, 900, INK_D), marginTop: 6, whiteSpace: "nowrap" }}>STOCKS HOTE…</div>
+    </div>
+    <div style={{ position: "absolute", left: 0, right: 0, top: 600, display: "flex", justifyContent: "center", gap: 40 }}>
+      {[{ k: KITS.messi, s: "TCS", f: "#2F6FB0", r: -5 }, { k: KITS.ronaldo, s: "RELIANCE", f: "#1F4EA0", r: 5 }].map((x) => (
+        <div key={x.s} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, transform: `rotate(${x.r}deg)` }}>
+          <Jersey k={x.k} size={350} />
+          <div style={sx(90, 900, INK_D)}>=</div>
+          <StockHex t={9} a={0} ticker={x.s} fill={x.f} size={310} />
+        </div>
+      ))}
+    </div>
+    <div style={{ position: "absolute", left: 0, right: 0, top: 1500, display: "flex", justifyContent: "center", gap: 14 }}>
+      {[{ g: "OLD GEN", bg: RED }, { g: "MID GEN", bg: "#0F6A56" }, { g: "NEW GEN", bg: ORANGE }].map((c) => (
+        <span key={c.g} style={{ padding: "12px 22px", borderRadius: 14, background: c.bg, ...lbl(INK, 26) }}>{c.g}</span>
+      ))}
+    </div>
+    <div style={{ position: "absolute", left: 70, top: 110, padding: "8px 14px", borderRadius: 999, background: "rgba(7,9,13,0.72)", ...sx(26, 800), letterSpacing: "0.42em" }}>AVRON</div>
+  </AbsoluteFill>
+);
