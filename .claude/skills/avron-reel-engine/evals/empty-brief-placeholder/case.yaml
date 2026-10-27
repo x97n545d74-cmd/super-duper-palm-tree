@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: empty-brief-placeholder
+expected_outcome: |
+  The run notices there is no brief, does not invent a topic or produce a full reel on a made-up subject, does not stall on a question, and leaves a short note saying a brief is needed (optionally with the folder prepared).

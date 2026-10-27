@@ -1,6 +1,6 @@
 # AVRON: project memory
 
-This file records long-lived facts and decisions for this repo. Read it at the start of every session. Last updated 2026-10-26.
+This file records long-lived facts and decisions for this repo. Read it at the start of every session. Last updated 2026-10-27.
 
 Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on every script, and `scripts/fix_timeline.py` after alignment.
 
@@ -21,6 +21,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Prompt library: always bring it in** ("insta reel tools always work"); the user may add reference videos per reel.
 - **Motion references: `references/motion/README.md`.** All the user's reference videos/images (paper collage, comic burst, blue grid, green tunnel, orbit squares, red/cream sunburst, teal warp grid, kinetic type, phone notifications, motion board, plus the Musk reel as a structure reference), with which code already implements each look. Use them with the prompt library on every new reel.
 - **Voice: ElevenLabs Tia Mirza** is the default for VO.
+- **Viral reel engine (2026-10-27):** the user's "AVRON Autonomous Viral Reel Engine" master loop prompt is saved as prompt #8 (`insta-reel-avron-page/viral-reel-engine/PROMPT.md`) and runs as the `avron-reel-engine` skill (`.claude/skills/avron-reel-engine/`): brief → claim registry → 10 scored hooks → up to 8 rounds → adversarial critique → 10-part pack in `projects/<id>/ENGINE_REPORT.md`, plus `scripts/vo_fit.py` (Tia pace 2.45 words/s, measured from past reads; 60 s ≈ 140 words). When the user says they're asleep or "don't ask", it runs on the confirmed defaults and lists its calls at the end. HyperFrames `compose`/`render_video` are refused from Claude Code, so Remotion stays the render path.
 - **Reels in progress:** Musk SpaceX-kids (done: `deliverables/2026-10-musk-spacex-kids/`, AI anchor, Tia VO fitted to the timeline, caption + SEO + cover). Footballer-stocks short (no anchor, Indian stocks): `projects/2026-10-footballer-stocks/SCRIPT.md`.
 
 ## Two separate Instagram pages (user, 2026-10-26)
