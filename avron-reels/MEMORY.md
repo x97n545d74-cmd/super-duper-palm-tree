@@ -19,6 +19,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 
 ## Defaults the user confirmed (2026-10-27)
 - **Prompt library: always bring it in** ("insta reel tools always work"); the user may add reference videos per reel.
+- **Motion references: `references/motion/README.md`.** All the user's reference videos/images (paper collage, comic burst, blue grid, green tunnel, orbit squares, red/cream sunburst, teal warp grid, kinetic type, phone notifications, motion board, plus the Musk reel as a structure reference), with which code already implements each look. Use them with the prompt library on every new reel.
 - **Voice: ElevenLabs Tia Mirza** is the default for VO.
 - **Reels in progress:** Musk SpaceX-kids (done: `deliverables/2026-10-musk-spacex-kids/`, AI anchor, Tia VO fitted to the timeline, caption + SEO + cover). Footballer-stocks short (no anchor, Indian stocks): `projects/2026-10-footballer-stocks/SCRIPT.md`.
 
