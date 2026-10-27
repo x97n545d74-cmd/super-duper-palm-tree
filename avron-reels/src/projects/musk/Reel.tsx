@@ -165,7 +165,7 @@ const B2: React.FC<{ t: number }> = ({ t }) => {
         })}
       </svg>
       <div style={{ position: "absolute", left: 0, right: 0, top: 1170, textAlign: "center" }}>
-        <div style={{ ...sx(150, 800), fontVariantNumeric: "tabular-nums" }}>{n.toLocaleString("en-US")}{fill > 0.98 ? "+" : ""}</div>
+        <div style={{ ...sx(150, 800), fontVariantNumeric: "tabular-nums" }}>{(fill >= 0.98 ? 72000000 : n).toLocaleString("en-US")}{fill >= 0.98 ? "+" : ""}</div>
         <div style={{ ...sf(54, GREEN, true), marginTop: 10 }}>bachche</div>
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 360, textAlign: "center", ...lbl(INK, 22) }}>AMERICA · UNDER 18</div>
