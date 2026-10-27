@@ -27,9 +27,11 @@ import { AnchorDemo } from "./projects/anchor/Reel";
 import { AnchorDemoV2 } from "./projects/anchor/ReelV2";
 import { MuskReel, MUSK_DURATION } from "./projects/musk/Reel";
 import { MuskCover } from "./projects/musk/Cover";
+import { FootyReel, FOOTY_DURATION } from "./projects/footy/Reel";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="FootballerStocks" component={FootyReel} durationInFrames={Math.ceil(FOOTY_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="MuskCover" component={MuskCover} durationInFrames={1} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition
       id="MuskSpacexKids"
