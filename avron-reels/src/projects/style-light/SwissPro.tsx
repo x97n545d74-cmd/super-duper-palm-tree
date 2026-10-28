@@ -87,8 +87,9 @@ const KnifeLine: React.FC<{ t: number; at: number; x: number; y: number; w: numb
   return <div style={{ position: "absolute", left: x, top: y - 1, width: w * l, height: 3, background: INK, opacity: 1 - c }} />;
 };
 
+/** Corner tags: on for the opening and the dashboard, cleared before the grid scene (whose own Fig. 03 row takes the top). */
 const Tech: React.FC<{ t: number; text: string; right?: boolean }> = ({ t, text, right }) => (
-  <div style={{ position: "absolute", top: 236, ...(right ? { right: M } : { left: M }), opacity: clamp01((t - 0.3) / 0.3) }}><Mono size={22} color={L.ink3}>{text}</Mono></div>
+  <div style={{ position: "absolute", top: 236, ...(right ? { right: M } : { left: M }), opacity: clamp01((t - 0.3) / 0.3) * (1 - clamp01((t - (C.match - 0.3)) / 0.3)) }}><Mono size={22} color={L.ink3}>{text}</Mono></div>
 );
 
 /* ---------------------------------------------------------------- layer icons (drawn, no logos) */
@@ -109,7 +110,7 @@ const Headline: React.FC<{ t: number }> = ({ t }) => {
   const lift = ant(t, C.shrink, 8);
   return (
     <>
-      <div style={{ position: "absolute", left: cx(0) - 6, top: lerp(540, 268, s) + lift, transformOrigin: "0 0", transform: `scale(${lerp(1, 0.36, s)})` }}>
+      <div style={{ position: "absolute", left: cx(0) - 6, top: lerp(540, 300, s) + lift, transformOrigin: "0 0", transform: `scale(${lerp(1, 0.36, s)})` }}>
         <Chars t={t} a={C.headline_chars} text="Data centre" size={150} stagger={0.03} out={C.match} />
         <div style={{ marginTop: 10 }}><Chars t={t} a={C.boom} text="boom" size={330} gradient stagger={0.06} track={-0.065} out={C.match + 0.06} /></div>
       </div>
