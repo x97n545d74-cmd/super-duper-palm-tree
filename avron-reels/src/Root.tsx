@@ -29,9 +29,12 @@ import { MuskReel, MUSK_DURATION } from "./projects/musk/Reel";
 import { MuskCover } from "./projects/musk/Cover";
 import { FootyReel, FOOTY_DURATION, FootyCover } from "./projects/footy/Reel";
 import { DcPharmaReel, DCPHARMA_DURATION } from "./projects/dcpharma/Reel";
+import { BrandDemo, BrandCover, BRAND_DEMO_DURATION } from "./projects/brand-demo/Demo";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="BrandDemo" component={BrandDemo} durationInFrames={BRAND_DEMO_DURATION * layout.fps} fps={layout.fps} width={layout.width} height={layout.height} />
+    <Composition id="BrandCover" component={BrandCover} durationInFrames={1} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="DcPharma" component={DcPharmaReel} durationInFrames={Math.round(DCPHARMA_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="FootyCover" component={FootyCover} durationInFrames={1} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="FootballerStocks" component={FootyReel} durationInFrames={Math.ceil(FOOTY_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
