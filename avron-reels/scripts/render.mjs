@@ -14,7 +14,9 @@ let last = -1;
 await renderMedia({
   serveUrl, composition, outputLocation: output, chromiumOptions,
   codec: "h264", crf: 16, pixelFormat: "yuv420p", colorSpace: "bt709", x264Preset: "slow",
-  audioCodec: "aac", audioBitrate: "320k", imageFormat: "jpeg", jpegQuality: 95, concurrency: 4,
+  audioCodec: "aac", audioBitrate: "320k", imageFormat: "jpeg", jpegQuality: 95,
+  // 3D scenes on software GL need more time per frame: RENDER_TIMEOUT_MS / RENDER_CONCURRENCY override
+  concurrency: Number(process.env.RENDER_CONCURRENCY ?? 4), timeoutInMilliseconds: Number(process.env.RENDER_TIMEOUT_MS ?? 30000),
   onProgress: ({ progress, renderedFrames, encodedFrames }) => {
     const pct = Math.floor(progress * 100);
     if (pct !== last) {
