@@ -32,9 +32,11 @@ import { DcPharmaReel, DCPHARMA_DURATION } from "./projects/dcpharma/Reel";
 import { BrandDemo, BrandCover, BRAND_DEMO_DURATION } from "./projects/brand-demo/Demo";
 import { CardStudy, CARD_STUDY_DURATION } from "./projects/card-study/Study";
 import { CardStudyV2, CARD_STUDY_V2_DURATION } from "./projects/card-study/StudyV2";
+import { StyleLight, STYLE_LIGHT_DURATION } from "./projects/style-light/Light";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="StyleLight" component={StyleLight} durationInFrames={Math.round(STYLE_LIGHT_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="CardStudyV2" component={CardStudyV2} durationInFrames={Math.round(CARD_STUDY_V2_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="CardStudy" component={CardStudy} durationInFrames={Math.round(CARD_STUDY_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="BrandDemo" component={BrandDemo} durationInFrames={BRAND_DEMO_DURATION * layout.fps} fps={layout.fps} width={layout.width} height={layout.height} />
