@@ -48,6 +48,8 @@ Repetition builds recognition. Every reel uses moves 1, 2, 3, 5 and 7. 4 and 6 w
 6. **Insight toast.** AVRON's reading, or a caution ("Strong theme bhi crash mein girta hai"), slides in as a toast. (`Toast`)
 7. **End card by reel goal.** Same frame every reel, content set by the one goal (script method, `insta-reel-avron-page/script-method/PROMPT.md`): comments → `Poll` with an easy, meaningful question; saves → a checklist panel worth coming back to; shares → who should receive it; followers → what the next reel in the series answers; leads → one natural next step. Always followed by the `Saved to AVRON Watchlist` toast and the disclaimer line. (`Poll`, `Saved`, `Disclaimer`)
 
+8. **Card moves** (from the user's references, 2026-10-28, `src/engine/ui/cards.tsx`): the **card wheel** for a set of choices (lands one card on top, the others dim); the **card flip** for question → proof (edge-on entrance, sheen, flip; the back carries the number and its source); and **cause → effect** (a gold puck is pressed, a pulse runs down a cable, the target slab swells per pulse, then splits; estimates split into dashed pieces). Use at most two of the three per reel so each stays special.
+
 Plus on every number: a mono source chip under it (`Source`), and `ANUMAAN` with a dashed shape for estimates.
 
 ## 5. Sound (fixed)

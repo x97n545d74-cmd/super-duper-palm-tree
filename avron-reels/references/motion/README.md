@@ -5,6 +5,14 @@
 ## Brand v2 taste references
 Add UI/SaaS motion references here (what to learn from each: timing, staging, a transition idea).
 
+Step 1 batch from the user (2026-10-28). Silent 540p copies in `brand-v2/`. Built in `src/engine/ui/cards.tsx`, shown in `CardStudy` (`deliverables/2026-10-brand-v2/AVRON_card-study_1080x1920.mp4`).
+
+| File | What the user likes | What AVRON takes (and drops) | Component |
+|---|---|---|---|
+| `brand-v2/r1_3d_money_button.mp4` | "the basic animation and motion effects" | Soft chunky 3D objects, a pulse running down a cable from a pressed button, the object swelling with each pulse, then splitting. Becomes the **cause → effect** move. Drops the purple and the grid floor (banned) | `Puck`, `Cable`, `swell`, `Card3D` slab |
+| `brand-v2/r2_card_wheel.mp4` | "the card idea and movement of it" | Tall rounded cards on a huge arc, densely overlapping, turning like a wheel; mixed card faces (type card, number card, light card). Becomes the **card wheel** for choices (companies, layers) | `CardWheel`, `wheelAngle` |
+| `brand-v2/r3_card_flip.mp4` | "the card flip" | Card arrives edge-on (a thin line), turns to face camera with real perspective and a sheen sweep, then flips to its back. Becomes **question on the front, proof on the back** | `Card3D`, `flipAngle` |
+
 ## Archive (pre-brand-v2)
 
 The user's saved motion-graphic references. **Use these for every new reel**, together with the prompt library in `../../insta-reel-avron-page/` (always bring it in, the user's standing rule). Videos are compressed 540p copies, silent except #11. Rebuild each look in code; never copy another creator's frames.

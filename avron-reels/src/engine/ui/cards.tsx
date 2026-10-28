@@ -21,15 +21,15 @@ export type Face = React.ReactNode;
  */
 export const Card3D: React.FC<{
   w: number; h: number; rotY?: number; rotX?: number; rotZ?: number; front: Face; back?: Face;
-  frontBg?: string; backBg?: string; thickness?: number; radius?: number; edge?: string; border?: string;
-}> = ({ w, h, rotY = 0, rotX = 0, rotZ = 0, front, back, frontBg = ui.surface, backBg = ui.surface2, thickness = 10, radius = shape.radius, edge = "#060607", border = ui.hairlineStrong }) => {
+  frontBg?: string; backBg?: string; thickness?: number; radius?: number; edge?: string; border?: string; dashed?: boolean;
+}> = ({ w, h, rotY = 0, rotX = 0, rotZ = 0, front, back, frontBg = ui.surface, backBg = ui.surface2, thickness = 10, radius = shape.radius, edge = "#060607", border = ui.hairlineStrong, dashed }) => {
   const n = Math.max(2, Math.round(thickness / 2));
   // light from upper-left: the face darkens as it turns away, the sheen band travels with the angle
   const yRad = (rotY * Math.PI) / 180;
   const shade = 0.42 * Math.abs(Math.sin(yRad));
   const sheenPos = 50 + 160 * Math.sin(yRad) + rotX * 2;
   const face = (bg: string, flip: boolean, content: Face): React.ReactNode => (
-    <div style={{ position: "absolute", inset: 0, borderRadius: radius, background: bg, border: `1.5px solid ${border}`, overflow: "hidden", boxSizing: "border-box",
+    <div style={{ position: "absolute", inset: 0, borderRadius: radius, background: bg, border: `${dashed ? "3px dashed" : "1.5px solid"} ${border}`, overflow: "hidden", boxSizing: "border-box",
       backfaceVisibility: "hidden", transform: `${flip ? "rotateY(180deg) " : ""}translateZ(${thickness / 2}px)` }}>
       {content}
       <div style={{ position: "absolute", inset: 0, background: `rgba(0,0,0,${shade})` }} />

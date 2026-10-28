@@ -32,13 +32,15 @@ const face = (label: string, title: string, chip: string, opts: { cream?: boolea
   const bg = opts.cream ? ui.ink : ui.surface;
   const fg = opts.cream ? ui.canvas : ui.ink;
   return (
-    <div style={{ width: "100%", height: "100%", borderRadius: 34, background: bg, border: `2px solid ${focus > 0.98 ? ui.gold : opts.cream ? "transparent" : ui.hairlineStrong}`,
+    <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: 34, background: bg, border: `2px solid ${focus > 0.98 ? ui.gold : opts.cream ? "transparent" : ui.hairlineStrong}`,
       boxSizing: "border-box", padding: 34, display: "flex", flexDirection: "column", justifyContent: "space-between", boxShadow: shape.shadow, overflow: "hidden" }}>
-      <div style={monoTxt(22, opts.cream ? "#5D5D67" : ui.ink2)}>{label}</div>
+      <div style={{ position: "absolute", inset: 34, display: "flex", flexDirection: "column", justifyContent: "space-between", opacity: 0.25 + 0.75 * focus ** 2 }}>
+      <div style={monoTxt(26, opts.cream ? "#5D5D67" : ui.ink2)}>{label}</div>
       {opts.big
-        ? <div style={{ ...txt(150, 900, fg, "-0.06em"), lineHeight: 0.86, whiteSpace: "normal" }}>{opts.big}</div>
-        : <div style={{ ...txt(64, 800, fg, type.tracking.hero), whiteSpace: "normal", lineHeight: 1.0 }}>{title}</div>}
-      <div><Chip style={{ fontSize: 20, padding: "8px 14px" }}>{chip}</Chip></div>
+        ? <div style={{ ...txt(190, 900, fg, "-0.06em"), lineHeight: 0.86, whiteSpace: "normal" }}>{opts.big}</div>
+        : <div style={{ ...txt(92, 800, fg, type.tracking.hero), whiteSpace: "normal", lineHeight: 1.0 }}>{title}</div>}
+      <div><Chip style={{ fontSize: 24, padding: "10px 16px" }}>{chip}</Chip></div>
+      </div>
     </div>
   );
 };
@@ -53,7 +55,7 @@ const WHEEL = [
 const Wheel: React.FC<{ t: number }> = ({ t }) => (
   <AbsoluteFill>
     <Head t={t} a={0.2} sub="Kamata kaun hai?">Data centre boom</Head>
-    <CardWheel cards={WHEEL} cx={540} cy={2370} R={1270} angle={wheelAngle(t, 0.1, 4.4, -70, 2)} enter={clamp01(t / 1.4)} lift={curve.out(clamp01((t - 4.55) / 0.5))} />
+    <CardWheel cards={WHEEL} cx={540} cy={2690} R={1400} step={15} cw={460} ch={700} angle={wheelAngle(t, 0.1, 4.4, -60, 2, 15)} enter={clamp01(t / 1.4)} lift={curve.out(clamp01((t - 4.55) / 0.5))} />
   </AbsoluteFill>
 );
 
@@ -99,7 +101,7 @@ const Flip: React.FC<{ t: number }> = ({ t }) => {
 /* ---------------------------------------------------------------- 3. cause → effect */
 const PULSES = [12.5, 13.4, 14.3];
 const RUN = 0.6;
-const SLAB = { x: 640, y: 1120, w: 470, h: 300 };
+const SLAB = { x: 660, y: 1060, w: 420, h: 280 };
 const T_SPLIT = 15.25;
 const Effect: React.FC<{ t: number }> = ({ t }) => {
   const a = T_PUSH + 0.25;
@@ -117,22 +119,25 @@ const Effect: React.FC<{ t: number }> = ({ t }) => {
     <AbsoluteFill>
       <Head t={t} a={a} out={T_SPLIT - 0.2} sub="Capacity ka kya?">AI demand badhi</Head>
       {t > T_SPLIT - 0.2 && <Head t={t} a={T_SPLIT + 0.1} sub="JLL ka anumaan">2029 tak ~6 GW</Head>}
-      <Puck x={230} y={760} press={press} label="AI" />
-      <Cable t={t} a={a + 0.4} p0={{ x: 300, y: 790 }} p1={{ x: 420, y: 1060 }} p2={{ x: 420, y: 1180 }} p3={{ x: SLAB.x - 90, y: SLAB.y - 20 }} pulses={PULSES} run={RUN} />
+      <Puck x={250} y={740} r={135} press={press} label="AI" />
+      <Cable t={t} a={a + 0.4} p0={{ x: 300, y: 790 }} p1={{ x: 420, y: 1060 }} p2={{ x: 420, y: 1180 }} p3={{ x: SLAB.x - 150, y: SLAB.y + 10 }} pulses={PULSES} run={RUN} />
       {/* the 1.6 GW slab: swells with each pulse (scale + rounder corners + lighter face), then splits */}
       <div style={{ position: "absolute", left: SLAB.x - SLAB.w / 2, top: SLAB.y - SLAB.h / 2, opacity: slabIn * (1 - gone), transform: `scale(${(0.9 + 0.1 * slabIn) * (1 + 0.14 * s + 0.1 * gone)})` }}>
-        <Card3D w={SLAB.w} h={SLAB.h} rotX={iso.rotX} rotZ={iso.rotZ} thickness={46} radius={40 + 60 * s} frontBg={`radial-gradient(120% 120% at 30% 25%, ${s > 0.05 ? "#2A2A31" : ui.surface} 0%, ${ui.surface} 70%)`} front={slabFace("1.6 GW", 120)} edge="#0B0B0D" />
+        <Card3D w={SLAB.w} h={SLAB.h} rotX={iso.rotX} rotZ={iso.rotZ} thickness={46} radius={40 + 60 * s} frontBg={`radial-gradient(120% 120% at 30% 25%, ${s > 0.05 ? "#2A2A31" : ui.surface} 0%, ${ui.surface} 70%)`} front={slabFace("1.6 GW", 96)} edge="#2B2B32" />
       </div>
       {t > T_SPLIT && GRID.map(([dx, dy], i) => {
         const k = curve.out(clamp01((t - T_SPLIT - i * 0.06) / 0.75));
         return (
           <div key={i} style={{ position: "absolute", left: SLAB.x - 115 - 100 + dx * k * 0.75, top: SLAB.y - 75 - 40 + dy * k * 0.75, opacity: clamp01(k * 3) }}>
-            <Card3D w={230} h={150} rotX={iso.rotX} rotZ={iso.rotZ} thickness={30} radius={28} border={ui.estimate} front={slabFace("", 10)} frontBg="rgba(27,27,32,0.96)" edge="#0B0B0D" />
+            <Card3D w={230} h={150} rotX={iso.rotX} rotZ={iso.rotZ} thickness={30} radius={28} border={ui.estimate} dashed front={slabFace("", 10)} frontBg={ui.surface} edge="#2B2B32" />
           </div>
         );
       })}
-      <div style={{ position: "absolute", left: G, top: 1340, opacity: split * (1 - p(t, T_END - 0.3, 0.3)) }}><Source t={t} a={T_SPLIT + 0.4} text="JLL via IANS · 2 Sep 2026" est /></div>
-      <div style={{ position: "absolute", left: G, top: 1260, opacity: p(t, a + 0.5) * (1 - gone) }}><Chip>Jun 2026 · India DC capacity</Chip></div>
+      <div style={{ position: "absolute", left: G, top: 1250, opacity: split * (1 - p(t, T_END - 0.3, 0.3)) }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 24 }}><span style={txt(type.h1, 900, ui.ink, type.tracking.hero)}>~6 GW</span><Chip tone="est">2029 · anumaan</Chip></div>
+        <div style={{ marginTop: 22 }}><Source t={t} a={T_SPLIT + 0.4} text="JLL via IANS · 2 Sep 2026" /></div>
+      </div>
+      <div style={{ position: "absolute", left: G, top: 1290, opacity: p(t, a + 0.5) * (1 - gone) }}><Chip>Jun 2026 · India DC capacity</Chip></div>
     </AbsoluteFill>
   );
 };
