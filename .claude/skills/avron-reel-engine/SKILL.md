@@ -17,6 +17,13 @@ The point of the engine is a better *story*, checked *facts* and a reel that can
 4. **No brief?** If the input still holds the `[PASTE THE COMPLETE AVRON REEL BRIEF HERE]` placeholder, there's nothing to engineer. In normal mode ask for the brief. In autonomous mode, don't invent a topic and don't start production (MEMORY: topic first, then approval). Instead finish whatever setup the request implies (save the prompt, prepare the folder) and say a brief is needed.
 5. Make the project folder `avron-reels/projects/<YYYY-MM>-<slug>/` and write everything there. Save the pasted brief verbatim as `BRIEF.md`.
 
+## Phase 0.5: Audience research and reel goal (user's script method, 2026-10-28)
+
+The user: "This is how we will start building script." Follow `avron-reels/insta-reel-avron-page/script-method/PROMPT.md` before Phase 1.
+1. **Fix ONE reel goal**: followers, comments, saves, shares or leads/sales. Ask the user; in autonomous mode use saves for explainers and comments for debates, and list it under "Calls I made for you".
+2. **Write `research/audience.md`** for this topic: 10 common problems, 10 frustrations, 10 desired outcomes, 10 repeated questions, 10 common mistakes, 10 objections or limiting beliefs, the emotional reasons behind them, and the phrases the audience actually uses. Source them from real threads and comments (Agent Reach, read-only) with links; never invent quotes, and say so when a list comes up short of 10.
+3. Phase 1 onward uses this file: hooks come from its problems, questions and phrases; Value targets one of its mistakes or misconceptions; Solution answers one of its repeated questions.
+
 ## Phase 1: Deconstruct the brief
 
 Write the extraction (core message, audience, emotional trigger, central conflict, main insight, strongest evidence, most surprising reveal, payoff, CTA, required companies/dates/stats, visual and audio constraints) as a compact table. Then answer the hard questions plainly: what's predictable, generic, overcomplicated; where viewers would leave; what deserves screen time; which claims need checking; what angle competitors would miss.
@@ -36,7 +43,7 @@ Build a claim registry before the script: `research/claims.md` with one row per 
 
 ## Phase 3–4: Ten hooks, scored
 
-Write ten hooks, one per angle (psychological callout, contrarian, unexpected reality, FOMO, surprising question, counterintuitive comparison, verified data point, hidden value chain, contradiction, provocative but defensible). Each gets: spoken Hinglish line, first-frame text (3–7 words, Roman script, no full stop), opening visual (from the motion references where it fits), the curiosity gap, and how the reel pays it off.
+Every hook must name a problem, question, mistake or phrase from `research/audience.md` (cite its number). Write ten hooks, one per angle (psychological callout, contrarian, unexpected reality, FOMO, surprising question, counterintuitive comparison, verified data point, hidden value chain, contradiction, provocative but defensible). Each gets: spoken Hinglish line, first-frame text (3–7 words, Roman script, no full stop), opening visual (from the motion references where it fits), the curiosity gap, and how the reel pays it off.
 
 Score each out of 100 (attention 20, curiosity 20, specificity 15, Indian-investor relevance 15, spoken delivery 10, payoff link 10, credibility 10) in one table. Cut the generic, confusing, exaggerated and disconnected. Take the top three, name each one's biggest weakness, rewrite it, re-score, pick the winner. A hook built on an `UNVERIFIED` claim can't win. The loudest hook isn't automatically the best one.
 
@@ -50,6 +57,8 @@ Each round runs every audit from the master prompt (hook, narrative, retention, 
 - These scores are editorial judgements. Never present them as predicted views or retention, and never say a hook was "tested".
 
 ## Phase 6–7: Retention architecture and the production table
+
+**Script structure (user's method): HOOK → VALUE → SOLUTION → CTA.** Value explains the problem, mistake, misconception or insight so the viewer feels understood, with useful information and no filler. Solution is clear and actionable (steps, a framework or an example) and is education, never a buy/sell call. The CTA gives ONE next action that matches the reel goal (see script-method/PROMPT.md for each goal). Label each production-table row with its section.
 
 Something meaningful happens every 3–5 s: a new fact, a reveal, a question answered, a contrast, a change in scale, a new piece of evidence. Change the picture because the story moved, not to hit a timer. Every open loop must close later in the reel. The CTA grows out of the payoff, as a poll the viewer can answer from what they just saw.
 

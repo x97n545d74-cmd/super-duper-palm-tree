@@ -16,7 +16,8 @@ The brand is written in `avron-reels/brand/BRAND.md`. Read it in full before you
 Write `projects/<id>/BRAND_CHECK.md` with:
 - **Shell crumbs** for each beat (`Markets / … / …`) and the `Data as of` date.
 - **Hook frame:** which number gets the crop-in pull-out, and the headline (≤ 6 words, Roman script).
-- **Signature moves:** where moves 1, 2, 3, 5 and 7 happen (timecodes). Move 5 (the receipt) needs a claim-registry ID and the exact line or figure it shows.
+- **Reel goal and script sections:** the ONE goal (followers / comments / saves / shares / leads) and where HOOK, VALUE, SOLUTION and CTA start (script method, prompt #9).
+- **Signature moves:** where moves 1, 2, 3, 5 and 7 happen (timecodes); move 7 is the end card for that goal. Move 5 (the receipt) needs a claim-registry ID and the exact line or figure it shows.
 - **Transitions:** list every cut. Only push, zoom-through, panel morph or bottom sheet are allowed.
 - **Sound cue sheet:** each SFX by its kit name (`ui_tap`, `panel_open`, `whoosh_push`, `number_land`, `sonic_logo`, …), its timecode, and the VO gap it sits in. Check the density caps in BRAND.md §5.
 - **Series** (Layer / Receipt / Screener or one the user named) and the cover title.

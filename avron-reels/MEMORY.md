@@ -15,6 +15,11 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Research: `research/brand-2026-10/UI_MOTION_TASTE.md`, `SOUND_DESIGN.md` (YouTube transcripts were blocked by rate limits; tutorial lists with URLs are in both files for a later pass).
 - **Open:** user to confirm series names (Layer / Receipt / Screener), approve the demo look, and provide ElevenLabs access to generate the kit.
 
+## Script method (user, 2026-10-28): "This is how we will start building script"
+- Every AVRON script starts with `insta-reel-avron-page/script-method/PROMPT.md` (prompt #9): audience research for the topic (10 problems, frustrations, desired outcomes, repeated questions, mistakes, objections/limiting beliefs; emotional reasons; the audience's own phrases) saved as `projects/<id>/research/audience.md`, from real sources, no invented quotes.
+- Then HOOK → VALUE → SOLUTION → CTA. One reel goal per reel (followers / comments / saves / shares / leads), asked up front; the CTA and end card follow it. Solution = education (a check, framework, steps), never buy/sell advice.
+- Wired into the `avron-reel-engine` skill as Phase 0.5, and into BRAND.md move 7 (end card by goal).
+
 ## Who and what
 - AVRON makes cinematic finance and explainer reels: 1080×1920, 30 fps, H.264/AAC, −14 LUFS.
 - The pipeline runs research → verification → script → storyboard → assets → animation → sound → render → QC → MP4.

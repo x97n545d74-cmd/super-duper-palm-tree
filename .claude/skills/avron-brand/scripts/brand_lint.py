@@ -36,7 +36,7 @@ REQUIRED = [
     ("<Shell", "signature move 1: Shell bar"),
     ("<Cursor", "signature move 3: AVRON cursor"),
     ("<Receipt", "signature move 5: at least one receipt"),
-    ("<Poll", "signature move 7: poll end card"),
+    ("<Poll|<Panel", "signature move 7: end card for the reel goal (Poll for comments, a checklist Panel for saves, etc.)"),
     ("<Saved", "signature move 7: Saved to AVRON Watchlist"),
     ("<Source", "source chips under numbers"),
     ("<Disclaimer", "disclaimer line on the end card"),
@@ -71,7 +71,7 @@ def main() -> None:
                 if re.search(pat, line):
                     warns.append(f"{f}:{i}  {why}")
     for needle, why in REQUIRED:
-        if needle not in corpus:
+        if not any(n in corpus for n in needle.split("|")):
             fails.append(f"missing: {why}")
     if a.audio:
         for i, line in enumerate(pathlib.Path(a.audio).read_text().splitlines(), 1):

@@ -46,7 +46,7 @@ Repetition builds recognition. Every reel uses moves 1, 2, 3, 5 and 7. 4 and 6 w
 4. **Panel morph.** A comparison or a "next layer" is one panel changing state, not a cut to a new screen. (`morph`)
 5. **The receipt.** AVRON's trust move. A filing or report card opens, the key line appears (quote it word for word if it's a quote; label it as a data line if it's a figure) and a gold highlighter sweeps it. The other lines are neutral bars, never fake text. Every reel has at least one. (`Receipt`)
 6. **Insight toast.** AVRON's reading, or a caution ("Strong theme bhi crash mein girta hai"), slides in as a toast. (`Toast`)
-7. **Poll + Saved end card.** The CTA is a poll card the viewer can answer from what they just saw, then the `Saved to AVRON Watchlist` toast and the disclaimer line. Identical every reel. (`Poll`, `Saved`, `Disclaimer`)
+7. **End card by reel goal.** Same frame every reel, content set by the one goal (script method, `insta-reel-avron-page/script-method/PROMPT.md`): comments → `Poll` with an easy, meaningful question; saves → a checklist panel worth coming back to; shares → who should receive it; followers → what the next reel in the series answers; leads → one natural next step. Always followed by the `Saved to AVRON Watchlist` toast and the disclaimer line. (`Poll`, `Saved`, `Disclaimer`)
 
 Plus on every number: a mono source chip under it (`Source`), and `ANUMAAN` with a dashed shape for estimates.
 
