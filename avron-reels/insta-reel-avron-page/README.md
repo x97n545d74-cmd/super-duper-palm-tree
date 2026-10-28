@@ -15,5 +15,8 @@ Saved reel prompts for the AVRON Instagram page. The user adds more over time.
 | 7 | [Motion Graphic Seven](motion-graphic-seven/PROMPT.md) | Launch video for MotionSites AI hitting 1M monthly visitors 8 months after launch. | Needs: source for the 1M number, product info, assets |
 | 8 | [Viral Reel Engine](viral-reel-engine/PROMPT.md) | AVRON Autonomous Viral Reel Engine, the master loop: deconstruct the brief, verify facts, 10 scored hooks, up to 8 improvement rounds, adversarial critique, then a 10-part 60 s pack (angle, hook, timed production table, motion and SFX direction, retention map, verification report, scores, clean VO, editor's checklist). Runs as the `avron-reel-engine` skill (`.claude/skills/avron-reel-engine/`). | Needs: a brief. Works with any of 1–7 for the look |
 
+## Brand v2 note (2026-10-28)
+For AVRON reels these prompts supply story structure and timing only. Their looks are translated into brand v2 (`../brand/BRAND.md`). #3, #5, #6 and #7 (Claude/AI products and client pitches) are not brought into AVRON reels by default; keep them for client work.
+
 ## Adding a prompt
 New folder `<name>/PROMPT.md` with the prompt verbatim, plus a row in the table above.

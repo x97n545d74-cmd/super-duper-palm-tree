@@ -153,9 +153,28 @@ Or set `overshootClamping: true` (Remotion docs) when a spring must not overshoo
 
 ## 3. YouTube tutorials: the tutors' actual rules
 
-(Filled from transcripts pulled with Agent Reach; see the status note below.)
+**Status: transcripts not retrieved.** I used Agent Reach's YouTube channel (yt-dlp backend). Search worked at 11:31 UTC, but every subtitle request returned **HTTP 429 Too Many Requests** from YouTube. Reach paused the channel for 3,600 s. I waited the full hour and retried once at 12:34 UTC with `--lang en,en-orig`, and YouTube returned 429 again. The skill's rule for `RATE_LIMITED` is to stop and not switch backends, so I stopped. A plain WebFetch of a watch page returned only YouTube's footer. **No rule in this report is attributed to any of these videos**, because I have not seen what the tutors actually say.
 
-TUTORIALS_PLACEHOLDER
+Tutorials Agent Reach's search turned up, ranked by relevance (titles and channels from the search results only):
+
+| # | Video | Channel | Why it's worth pulling |
+|---|---|---|---|
+| 1 | [How to Create High-End SaaS Product Videos: Linear Case Study](https://www.youtube.com/watch?v=_TFn_AQ2ahI) | M2 motion | The only Linear-specific breakdown found |
+| 2 | [How to Create Stunning SaaS Product Animations in After Effects (Step by Step)](https://www.youtube.com/watch?v=HdGfUCcU0Pg) | Mojtaba Sorbi | Full AE workflow |
+| 3 | [You NEED to Master These 3 SaaS Animations (in After Effects)](https://www.youtube.com/watch?v=1MGSwtkdDDk) | TomsProject | Named, repeatable moves |
+| 4 | [SaaS Demo Video Styles (Explained)](https://www.youtube.com/watch?v=eh5_2K1-baE) | Motion Swell | Style taxonomy |
+| 5 | [The Ultimate Apple Style Animation Guide](https://www.youtube.com/watch?v=5j4HmfgPCDI) | NaughtyyJuan | Apple pacing and type |
+| 6 | [How to Make SaaS Product Demos in Code (Claude Code + Remotion)](https://www.youtube.com/watch?v=gEtm-MJKJoA) | Parker Rogers | Same stack as AVRON |
+| 7 | [The Best Click Visual Effects Used in SaaS Videos](https://www.youtube.com/watch?v=XN6FcnIU07Y) | MahdiEdits | Click and cursor feedback |
+| 8 | [Create Premium SaaS Explainer Video: After Effects Tutorial](https://www.youtube.com/watch?v=59iVjZtLUdM) | Adam VFX | Premium vs generic |
+
+To finish this section later, from a session with a fresh IP or after the cool-down, one request at a time:
+```bash
+agent-reach youtube subtitle "https://www.youtube.com/watch?v=_TFn_AQ2ahI" --lang en,en-orig
+```
+(The default `--lang` tries `zh-Hans` first and wastes a request. Pass `en` explicitly.)
+
+**Written tutorial stand-ins I did read** (their rules are already in sections 1–2): the Demotion SaaS motion-graphics guide (AE workflow: cursor, click, zoom null, text stagger, match cuts, motion blur), Emil Kowalski's animate and apple-design skills, and the Remotion `spring` / `springTiming` docs.
 
 ---
 
@@ -269,7 +288,6 @@ export const blur = { shutterAngle: 180, samples: 8 }; // camera moves only
 - Apple product video breakdown (YouMind): https://youmind.com/landing/x-viral-articles/apple-product-video-design-secrets
 - Motion, Apple-style launch video guide: https://motion.so/learn/apple-style-product-launch-video
 - Netflix English timed-text guide: https://partnerhelp.netflixstudios.com/hc/en-us/articles/217350977-English-USA-Timed-Text-Style-Guide
-- YouTube tutorials: see section 3
 
 ### Seen only as search-result summaries (not opened; treat as secondary)
 - Motion Villee, SaaS videos for silent viewers: https://motionvillee.com/saas-videos-for-silent-viewers/ (WebFetch 403; Agent Reach web read returned only a bot-check page)
@@ -288,6 +306,7 @@ export const blur = { shutterAngle: 180, samples: 8 }; // camera moves only
 - Sonic logos: https://www.heardis.com/services/sound-logo/, https://www.audiobrain.com/sonic-logos, https://origin-brandworld.lenovo.com/sonic-identity/
 
 ### Failed or not found
+- YouTube transcripts for all 8 tutorials in section 3: HTTP 429 from YouTube via Agent Reach, at 11:31 and again at 12:34 UTC. Only the titles and channels from the search are used.
 - Material 3 easing tokens page: returned only a title, so no M3 values are quoted.
 - Apple HIG Motion page: returned only a title.
 - `stripe.com/blog/accept-a-payment-animations` and `raycast.com/blog/making-a-raycast-launch-video`: 404 (I guessed these URLs; they don't exist).

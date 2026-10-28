@@ -1,8 +1,19 @@
 # AVRON: project memory
 
-This file records long-lived facts and decisions for this repo. Read it at the start of every session. Last updated 2026-10-27.
+This file records long-lived facts and decisions for this repo. Read it at the start of every session. Last updated 2026-10-28.
 
 Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on every script, and `scripts/fix_timeline.py` after alignment.
+
+## Brand v2: "finance as product UI" (user decision, 2026-10-28) — overrides older look notes below
+- **Why:** an analyst reviewed the AVRON page: "pick a theme, most of the things on page is Claude and it looks low effort", content looks like every other Claude-made reel page, no brand identity will stop growth. Advice: feed in UI/SaaS motion and build taste; use ElevenLabs (via MCP) for SFX, not Claude-made sounds; learn from sound tutorials. The user asked to "train Claude more effectively so these concerns don't come afterwards".
+- **User's answers (2026-10-28):** the page is **AVRON**; the theme is **finance as product UI** (every reel is one premium finance app answering a question with sources, one locked look); library prompts #3 Ultracode, #5 AIsa, #6 chain.wtf, #7 MotionSites are **kept but not brought into AVRON reels by default**.
+- **The law:** `brand/BRAND.md`. Tokens `src/brand/ui.ts`, components `src/engine/ui/` (Canvas, Shell, Panel, Cursor, Receipt, Counter, LineChart, Bars, Chip, Row, Toast, Poll, Saved, Disclaimer, push/zoomThrough/morph). Gold is the only accent (chrome only); green/red for direction only; dashed grey for estimates.
+- **Enforcement:** the `avron-brand` skill (`.claude/skills/avron-brand/`): BRAND_CHECK.md before the storyboard, `scripts/brand_lint.py` (fails retired looks, bouncy easing, glow, terminals, other reels' kits, synthesised SFX, missing signature moves) before showing anything.
+- **Style demo:** `deliverables/2026-10-brand-v2/AVRON_brand-v2_style-demo_1080x1920.mp4` (16 s silent, `BrandDemo`; DcPharma facts retold in the new look) and cover template `BrandCover`.
+- **Sound:** one ElevenLabs kit made once and reused on every reel: `brand/sound/kit_v1.json` (16 sounds, D major, sonic logo = 3 notes), generator `scripts/sfx_kit.py` (needs `ELEVENLABS_API_KEY`; ~5,600 credits for 4 takes each, estimate). The ElevenLabs connector was **not attached** on 2026-10-28; the MCP SFX tool caps at 5 s and has no prompt_influence, so the API key route is preferred. Until the kit exists, reels ship VO + music only.
+- **Retired for AVRON:** reference looks 01–08 and 12 (collage, comic burst, blue grid, tunnel, orbits, sunburst, warp grid, hexagons) and phone-desk notifications; the "user favourites" list below is history, not direction. Kinetic type survives only as masked reveals inside the brand.
+- Research: `research/brand-2026-10/UI_MOTION_TASTE.md`, `SOUND_DESIGN.md` (YouTube transcripts were blocked by rate limits; tutorial lists with URLs are in both files for a later pass).
+- **Open:** user to confirm series names (Layer / Receipt / Screener), approve the demo look, and provide ElevenLabs access to generate the kit.
 
 ## Who and what
 - AVRON makes cinematic finance and explainer reels: 1080×1920, 30 fps, H.264/AAC, −14 LUFS.
@@ -18,8 +29,8 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Prompt library reminder (2026-10-26):** every time we start a new reel, ask the user whether to bring the prompts in `insta-reel-avron-page/` into the new project, and which one. Current list: 1. Motion Graphic One (AVRON Pro blueprint), 2. Two (product launch 20s, also the default motion direction), 3. Three (Ultracode × Opus 5.5), 4. Four (portfolio reel), 5. Five (AIsa 15s), 6. Six (chain.wtf pitch), 7. Seven (MotionSites launch). The thali V2 reel used all of them (`deliverables/2026-10-thali/AVRON_thali_V2_all-prompts_1080x1920.mp4`). The user will add more; keep the table in `insta-reel-avron-page/README.md` up to date.
 
 ## Defaults the user confirmed (2026-10-27)
-- **Prompt library: always bring it in** ("insta reel tools always work"); the user may add reference videos per reel.
-- **Motion references: `references/motion/README.md`.** All the user's reference videos/images (paper collage, comic burst, blue grid, green tunnel, orbit squares, red/cream sunburst, teal warp grid, kinetic type, phone notifications, motion board, plus the Musk reel as a structure reference), with which code already implements each look. Use them with the prompt library on every new reel.
+- **Prompt library: always bring it in** ("insta reel tools always work"); the user may add reference videos per reel. **Since brand v2 (2026-10-28):** prompts give structure/timing only, their looks are translated into brand v2, and #3/#5/#6/#7 are not brought into AVRON by default.
+- **Motion references (superseded for AVRON by brand v2, 2026-10-28): `references/motion/README.md`.** All the user's reference videos/images (paper collage, comic burst, blue grid, green tunnel, orbit squares, red/cream sunburst, teal warp grid, kinetic type, phone notifications, motion board, plus the Musk reel as a structure reference), with which code already implements each look. Use them with the prompt library on every new reel.
 - **Voice: ElevenLabs Tia Mirza** is the default for VO.
 - **Viral reel engine (2026-10-27):** the user's "AVRON Autonomous Viral Reel Engine" master loop prompt is saved as prompt #8 (`insta-reel-avron-page/viral-reel-engine/PROMPT.md`) and runs as the `avron-reel-engine` skill (`.claude/skills/avron-reel-engine/`): brief → claim registry → 10 scored hooks → up to 8 rounds → adversarial critique → 10-part pack in `projects/<id>/ENGINE_REPORT.md`, plus `scripts/vo_fit.py` (Tia pace 2.45 words/s, measured from past reads; 60 s ≈ 140 words). When the user says they're asleep or "don't ask", it runs on the confirmed defaults and lists its calls at the end. HyperFrames `compose`/`render_video` are refused from Claude Code, so Remotion stays the render path.
 - **Reels in progress:** Musk SpaceX-kids (done: `deliverables/2026-10-musk-spacex-kids/`, AI anchor, Tia VO fitted to the timeline, caption + SEO + cover). Footballer-stocks short (no anchor, Indian stocks): `projects/2026-10-footballer-stocks/SCRIPT.md`.
@@ -29,7 +40,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **@marketkibatt ("Market Ki Baat")**: character-based content, e.g. the ₹50-share pizza reel (25 Oct). This is the page connected to Metricool (brand id 7601365, "Avron" label).
 - Don't mix the two brands on screen. The user downloads finished reels and posts them by hand.
 
-## Motion and on-screen text (user feedback 2026-10-24: "itna ganda graphic")
+## Motion and on-screen text (user feedback 2026-10-24: "itna ganda graphic"; brand v2 in `brand/BRAND.md` now governs the look)
 - **Default motion direction for every reel:** the direction saved in `ideas/2026-10-product-launch-20s/PROMPT.md`.
   - High-end minimal, one idea per shot, lots of empty space, one accent colour.
   - Inter with tight tracking, masked type reveals, match moves, one camera language.

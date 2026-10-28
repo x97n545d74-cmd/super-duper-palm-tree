@@ -44,7 +44,7 @@ type Box = { x: number; y: number; w: number; h: number };
 /** Interpolates two boxes: the panel-morph transition (one panel becomes the next layout). */
 export const morph = (from: Box, to: Box, k: number): Box => ({ x: lerp(from.x, to.x, k), y: lerp(from.y, to.y, k), w: lerp(from.w, to.w, k), h: lerp(from.h, to.h, k) });
 
-/** The AVRON panel. Enters by rising 48 px and scaling .96 → 1; exits by the in-curve. Optional 2.5D tilt for hero shots. */
+/** The AVRON panel. Enters from motion.enterFrom (rise, scale .96, blur 6 px → sharp); exits on the in-curve. Optional 2.5D tilt for hero shots. */
 export const Panel: React.FC<{
   t: number; a: number; box: Box; out?: number; tilt?: { x: number; y: number }; pad?: number; children?: React.ReactNode; style?: React.CSSProperties;
 }> = ({ t, a, box, out, tilt, pad = shape.pad, children, style }) => {
@@ -55,7 +55,8 @@ export const Panel: React.FC<{
     <div style={{
       position: "absolute", left: box.x, top: box.y, width: box.w, height: box.h, boxSizing: "border-box", padding: pad,
       background: ui.surface, borderRadius: shape.radius, border: `1.5px solid ${ui.hairline}`, boxShadow: shape.shadow, overflow: "hidden",
-      opacity: k * (1 - o), transform: `${rot} translateY(${(1 - k) * 48 - o * 30}px) scale(${0.96 + 0.04 * k})`, ...style,
+      opacity: k * (1 - o), filter: k < 1 ? `blur(${(1 - k) * motion.enterFrom.blur}px)` : undefined,
+      transform: `${rot} translateY(${(1 - k) * motion.enterFrom.y - o * 30}px) scale(${motion.enterFrom.scale + (1 - motion.enterFrom.scale) * k})`, ...style,
     }}>{children}</div>
   );
 };
@@ -215,8 +216,11 @@ export const Cursor: React.FC<{ t: number; keys: CursorKey[]; out?: number }> = 
   for (let i = 0; i < keys.length - 1; i++) {
     const A = keys[i], B = keys[i + 1];
     if (t >= A.t && t < B.t) {
-      const k = curve.inOut(clamp01((t - A.t) / Math.min(B.t - A.t, 0.75)));
-      x = lerp(A.x, B.x, k); y = lerp(A.y, B.y, k);
+      // quadratic path, control point offset 20% of the travel perpendicular to it (a hand, not a robot); arrives early and settles
+      const k = curve.inOut(clamp01((t - A.t) / Math.min(B.t - A.t - 0.15, 0.75)));
+      const cx = (A.x + B.x) / 2 - (B.y - A.y) * 0.2, cy = (A.y + B.y) / 2 + (B.x - A.x) * 0.2;
+      x = (1 - k) ** 2 * A.x + 2 * (1 - k) * k * cx + k * k * B.x;
+      y = (1 - k) ** 2 * A.y + 2 * (1 - k) * k * cy + k * k * B.y;
     } else if (t >= B.t) { x = B.x; y = B.y; }
   }
   const clicks = keys.filter((k) => k.click && t >= k.t && t < k.t + 0.5);
@@ -257,6 +261,37 @@ export const zoomThrough = (t: number, at: number, side: "out" | "in", ox: numbe
 };
 
 /* ------------------------------------------------------------------ chrome */
+
+/**
+ * The AVRON shell bar: the same top bar on every shot of every reel. Breadcrumb of where we are in the "app"
+ * (Markets / Sectors / Data centres) and the data as-of date. It sits just under the IG top bar. Headlines start at y 340.
+ */
+export const Shell: React.FC<{ t: number; crumb: string[]; asOf: string; a?: number }> = ({ t, crumb, asOf, a = 0 }) => {
+  const k = p(t, a, motion.base);
+  return (
+    <div style={{ position: "absolute", left: shape.gutter, right: shape.gutter, top: 236, height: 64, display: "flex", alignItems: "center", justifyContent: "space-between",
+      borderBottom: `1.5px solid ${ui.hairline}`, opacity: k, transform: `translateY(${(1 - k) * -12}px)` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+        <div style={{ width: 14, height: 14, borderRadius: 7, background: ui.gold }} />
+        <span style={monoTxt(24, ui.ink2)}>{crumb.map((c, i) => <span key={c} style={{ color: i === crumb.length - 1 ? ui.ink : undefined }}>{i ? " / " : ""}{c}</span>)}</span>
+      </div>
+      <span style={monoTxt(24, ui.ink3)}>Data as of {asOf}</span>
+    </div>
+  );
+};
+
+/** End-of-reel toast, identical every reel: the story is "saved" like an item in the app. */
+export const Saved: React.FC<{ t: number; a: number }> = ({ t, a }) => {
+  const k = p(t, a, motion.base);
+  return (
+    <div style={{ position: "absolute", left: 0, right: 0, top: 1450, display: "flex", justifyContent: "center", opacity: k, transform: `translateY(${(1 - k) * 24}px)` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 20, padding: "22px 32px", borderRadius: 999, background: ui.surface2, border: `1.5px solid ${ui.hairlineStrong}` }}>
+        <svg width={30} height={30} viewBox="0 0 30 30"><path d="M7 15 L13 21 L23 9" fill="none" stroke={ui.gold} strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" /></svg>
+        <span style={txt(38, 600, ui.ink, type.tracking.body)}>Saved to AVRON Watchlist</span>
+      </div>
+    </div>
+  );
+};
 
 /** Wordmark: AVRON in Inter 800, wide tracking, gold dot. Small, bottom-left, never animated as an opener. */
 export const Wordmark: React.FC<{ size?: number; style?: React.CSSProperties }> = ({ size = 34, style }) => (

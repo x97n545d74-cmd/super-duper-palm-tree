@@ -77,7 +77,46 @@ There are two, and they differ:
 
 ## 2. What the tutorials teach (motion graphics / UI / product video)
 
-SECTION_2_PLACEHOLDER
+**Status: YouTube transcripts could not be pulled.** Agent Reach's YouTube channel was rate-limited for ~1 hour at the start of this session; after the wait, the first subtitle call returned text (only its first line was captured: "hey everybody in this tutorial i'm going to walk you through how i used motion sound to do the sound design for this sho[w]...", MoGraph Mentor) and the next calls hit "Sign in to confirm you're not a bot" (PLATFORM_BLOCKED). Per the Agent Reach rules I stopped rather than switching backends or using cookies. YouTube watch pages also redirect to Google's "sorry" page from this container. **So no rule below is quoted from a YouTube transcript I read**, except the Tim Runia video, read through a third-party transcript page.
+
+### 2a. Videos found (titles, channels and lengths from YouTube search results; transcripts NOT read)
+
+| Video | Why it fits | URL |
+|---|---|---|
+| MoGraph Mentor: "Sound Design 101 For Motion Graphics Artists: Part 1" (16:40) | Motion-graphics SFX workflow | https://www.youtube.com/watch?v=VsO9PjTa0b0 |
+| Davinci: "The EASIEST Way Possible to Sound Design Your Motion Graphics (Full Tutorial)" (10:29) | MoGraph SFX placement | https://www.youtube.com/watch?v=1j86fqqWth8 |
+| cactuzz sound: "What Makes UI SOUNDS Good?" (8:06) | UI sound principles | https://www.youtube.com/watch?v=NDZMn87jT90 |
+| Noah Sitrin: "Sound Design Breakdown - Generic UI Palette" (23:44) | Building a UI sound *palette* | https://www.youtube.com/watch?v=6oJUotZGz0k |
+| Epidemic Sound and Kyle Lexter: "Sound Effects Tutorial: How to Layer Whooshes, Risers & Hits" (3:47) | Whoosh/riser/hit layering | https://www.youtube.com/watch?v=ln1c3HkLTC0 |
+| Super Tight Beats: "What is a SONIC LOGO? (and how to make one)" (4:59) | Sonic logo | https://www.youtube.com/watch?v=jkO9_XJRxRk |
+| Austen Menges: "PRO Editor SOUND DESIGNS A Commercial (Tutorial)" (8:57) | Commercial/product SFX | https://www.youtube.com/watch?v=9HMLRfEDt04 |
+
+**To finish this section:** retry `agent-reach youtube subtitle <url> --lang en,en-orig` later from a network YouTube does not challenge (or after `agent-reach login`, done by you), and paste the rules into §2b.
+
+### 2b. Rules from the tutorials I could read (written tutorials + one transcript)
+
+**Timing / sync**
+- Put a marker on the exact frame of the action, a second marker on the loudest peak of the audio, and snap peak to frame (SFX Engine, After Effects tutorial). → *Sync peaks, not file starts.* A whoosh's file therefore starts before the cut by however long its build is.
+- "Align the strongest part of the sound with the exact keyframe where the motion ends"; offset secondary layers "by a few frames" for depth (Pixflow; no exact frame count given).
+- Impact lands as the new shot appears; a favourite move is the music cutting out and "that deep hit lands right as the new shot appears"; risers lead into a smash cut, "especially if it drops straight into silence" (Tim Runia transcript, via SozAI).
+- No source I read gave a numeric "start the whoosh N frames early" rule. **[AVRON call]** At 30 fps, start whoosh/slide files so their peak lands on the motion's end keyframe (typically 4–10 frames before, depending on the take's build); impacts on the frame; UI clicks 0–1 frame *before* the visual press (sound slightly early reads as tight, late reads as lag).
+
+**Layering**
+- Whoosh = movement, riser = tension, impact = full stop. Classic combos: riser → impact; whoosh → impact; low rumble under a bright cymbal riser (Tim Runia).
+- Whoosh layering: high (airy noise), mid (texture), low (hum for weight), style layer; layers "should be the same length, peak at the same time, and be roughly the same volume"; a whoosh "starts off quietly, then quickly builds to its loudest point" (Krotos).
+- Pick one primary sound, sit secondary layers well under it, remove any layer that adds nothing; "Less is almost always more" (SFX Engine).
+- Layers should "occupy different frequency ranges so that layered sounds remain clear" (Pixflow).
+- Use a small set of purposeful sounds rather than thousands of library files (Tim Runia).
+- Tie repeating motion of a graphic element to similar sound effects (LinkedIn Learning "Sound Design for Motion Graphics", from a search snippet only) [secondary].
+
+**UI sound specifics** (Violet Recording)
+- Taps/clicks 30–150 ms; notifications up to ~500 ms; most cues under 300 ms; short releases so rapid taps don't overlap.
+- HPF below ~120 Hz; tame 2–5 kHz harshness; avoid piercing highs on small speakers.
+- One tonal family: same synth source, reverb and tone; change only pitch and envelope.
+- Confirm = two rising notes; notification = a 2–3 note motif.
+- Trim every export to the first transient.
+
+**Density** — no source gave an "SFX per second" number. Closest: "Keep one primary audio element active at a time, usually voice" and "Give each layer its own role and frequency or time space" (cursa). Material Design (via search summary): frequent sounds should be shorter and quieter than rare hero sounds. The density cap in §5 is my recommendation.
 
 ---
 
@@ -204,7 +243,7 @@ ElevenLabs
 - https://raw.githubusercontent.com/elevenlabs/skills/main/sound-effects/SKILL.md
 
 Tutorials and sound-design guides
-SECTION_2_SOURCES
+- YouTube videos listed in §2a (found via YouTube search; transcripts not read, see §2)
 - https://sfxengine.com/blog/after-effects-sound-effects-tutorial
 - https://krotos.studio/guide/4-whoosh-sound-effects-tips
 - https://pixflow.net/blog/enhancing-motion-graphics-with-cinematic-transition-sounds/

@@ -50,10 +50,18 @@ export const motion = {
   base: 0.42, // panel enter, row stagger item, push cut
   large: 0.72, // camera moves, zoom-through, morph
   stagger: 0.06,
-  // cubic-bezier control points
-  out: [0.22, 1, 0.36, 1] as const, // every enter
-  inOut: [0.65, 0, 0.35, 1] as const, // camera and cursor travel
-  in: [0.55, 0, 1, 0.45] as const, // every exit
+  // cubic-bezier control points (sources: research/brand-2026-10/UI_MOTION_TASTE.md §2.2)
+  out: [0.23, 1, 0.32, 1] as const, // every enter (Emil Kowalski strong ease-out). Never ease-in on an entrance
+  inOut: [0.77, 0, 0.175, 1] as const, // camera, cursor travel, things already on screen
+  sheet: [0.32, 0.72, 0, 1] as const, // bottom-sheet chapter transition
+  standard: [0.2, 0, 0.38, 0.9] as const, // state morphs (IBM Carbon productive standard)
+  in: [0.2, 0, 1, 0.9] as const, // every exit, shorter than its entrance (Carbon productive exit)
+  // entrances start here, never from scale 0
+  enterFrom: { scale: 0.96, blur: 6, y: 24 },
+  // critically damped springs (no bounce). Remotion's default spring (damping 10) is bouncy: never use it
+  springs: { settle: { mass: 1, stiffness: 247, damping: 31.4 }, snap: { mass: 1, stiffness: 439, damping: 41.9 } },
+  // holds, seconds
+  hold: { heroNumberMin: 1.2, headline: (words: number) => Math.max(1.5, words * 0.3 + 1.0), body: (chars: number) => chars / 15 + 0.5 },
 } as const;
 
 /** Cubic-bezier easing (same maths as CSS). Returns a function t∈[0,1] → eased. */
@@ -80,5 +88,7 @@ export const bezier = (x1: number, y1: number, x2: number, y2: number) => {
 export const curve = {
   out: bezier(...motion.out),
   inOut: bezier(...motion.inOut),
+  sheet: bezier(...motion.sheet),
+  standard: bezier(...motion.standard),
   in: bezier(...motion.in),
 };

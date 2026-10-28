@@ -145,16 +145,6 @@
       "trim_note": "0.8 s"
     },
     {
-      "name": "glitch_cut",
-      "purpose": "Data corruption / \"this number is wrong\" / myth-bust beat",
-      "duration_seconds": 0.6,
-      "loop": false,
-      "prompt_influence": 0.5,
-      "prompt": "Short digital glitch transition, quick stuttering data-corruption crackle and bit-crushed blips, tight and controlled, modern UI malfunction sound, high-quality sound effect, no music",
-      "mix_vs_vo": "−10 dB",
-      "trim_note": "0.6 s"
-    },
-    {
       "name": "sonic_logo",
       "purpose": "AVRON signature on end card (and a 0.5 s hook sting cut from its first two notes)",
       "duration_seconds": 2.0,
@@ -174,5 +164,6 @@
       "mix_vs_vo": "−25 to −30 dB, continuous",
       "trim_note": "20 s, `loop: true`"
     }
-  ]
+  ],
+  "note": "glitch_cut from the research spec is dropped: glitch is banned in brand v2 (brand/BRAND.md §6)."
 }

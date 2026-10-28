@@ -11,8 +11,8 @@ The point of the engine is a better *story*, checked *facts* and a reel that can
 
 ## 0. Set up (before Phase 1)
 
-1. Read `avron-reels/MEMORY.md`, `avron-reels/references/motion/README.md` and `avron-reels/insta-reel-avron-page/README.md`. MEMORY may be newer than the house-rules file.
-2. **Prompt library and references: bring them in by default.** CLAUDE.md asks you to ask first, but the user answered on 2026-10-27: "always bring it in". Ask only if the brief names a different look. Note in the pack which prompts and reference looks you used.
+1. Read `avron-reels/MEMORY.md`, `avron-reels/brand/BRAND.md` and `avron-reels/insta-reel-avron-page/README.md`, and load the `avron-brand` skill. MEMORY may be newer than the house-rules file. **Brand v2 (2026-10-28) governs every visual and audio choice in this pack**; the old motion references are retired for AVRON.
+2. **Prompt library: bring it in by default for structure and timing** (user, 2026-10-27: "always bring it in"), but translate every look into brand v2, and leave #3/#5/#6/#7 out unless the user asks (user, 2026-10-28). Note in the pack which prompts you used and how their looks were translated.
 3. **Autonomous mode.** If the user says they're away, asleep, or "don't ask me", make every call yourself with the confirmed defaults below and list each assumption at the end of the pack under "Calls I made for you". Never stop to ask in that mode. Defaults: 60 s; Tia Mirza VO; AVRON page (not @marketkibatt); no AI anchor unless the brief asks; prompt library + motion references in.
 4. **No brief?** If the input still holds the `[PASTE THE COMPLETE AVRON REEL BRIEF HERE]` placeholder, there's nothing to engineer. In normal mode ask for the brief. In autonomous mode, don't invent a topic and don't start production (MEMORY: topic first, then approval). Instead finish whatever setup the request implies (save the prompt, prepare the folder) and say a brief is needed.
 5. Make the project folder `avron-reels/projects/<YYYY-MM>-<slug>/` and write everything there. Save the pasted brief verbatim as `BRIEF.md`.
@@ -51,11 +51,16 @@ Each round runs every audit from the master prompt (hook, narrative, retention, 
 
 ## Phase 6–7: Retention architecture and the production table
 
-Something meaningful happens every 3–5 s: a new fact, a reveal, a question answered, a contrast, a change in scale, a new piece of evidence. Change the picture because the story moved, not to hit a timer. Every open loop must close later in the reel. The CTA grows out of the payoff (a question the viewer can actually answer from what they just saw).
+Something meaningful happens every 3–5 s: a new fact, a reveal, a question answered, a contrast, a change in scale, a new piece of evidence. Change the picture because the story moved, not to hit a timer. Every open loop must close later in the reel. The CTA grows out of the payoff, as a poll the viewer can answer from what they just saw.
 
-The production table has seven columns: timecode, VO word for word, on-screen typography, visual composition and animation, transition out, music/SFX, narrative purpose. Specify the exact opening frame. No logo opener. Dark mode, white Inter type, red/green only for data direction, one accent. For each shot, name the reference look and, when one exists, the component that already implements it (see the motion README table). New looks are allowed when nothing fits; say so.
+The production table has seven columns: timecode, VO word for word, on-screen typography, UI state and animation, transition out, SFX (kit names only), narrative purpose. Everything follows `avron-reels/brand/BRAND.md`:
+- The opening frame is the crop-in pull-out on the hook number. No logo opener.
+- Name the `src/engine/ui` component for each shot (Panel, Row, LineChart, Bars, Receipt, Toast, Poll, Saved) and the Shell breadcrumb for each beat.
+- Transitions: push, zoom-through, panel morph or bottom sheet only.
+- At least one Receipt, tied to a claim-registry ID.
+- SFX by kit name and timecode, in VO gaps, inside the density caps.
 
-House bans apply on top of the brief: no shake, particles, glows, grid floors, flashes, bouncy easing, neon, fake tickers or full stops on screen.
+Then write `BRAND_CHECK.md` (the `avron-brand` design gate) before any code. Brand bans apply on top of the brief: no retired looks, terminals, chat UIs, glow, bounce, shake, flashes, fake tickers, synthesised SFX or full stops on screen.
 
 ## Phase 8: VO quality control
 

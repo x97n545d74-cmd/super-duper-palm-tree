@@ -1,5 +1,12 @@
 # AVRON motion references (from the user, 2026-10-27)
 
+> **Retired for AVRON on 2026-10-28.** AVRON now uses one locked look, brand v2 "finance as product UI" (`../../brand/BRAND.md`). The looks below stay on file for other projects and clients, and `brand_lint.py` fails an AVRON reel that uses them. Learn timing and staging from new references; never import their look.
+
+## Brand v2 taste references
+Add UI/SaaS motion references here (what to learn from each: timing, staging, a transition idea).
+
+## Archive (pre-brand-v2)
+
 The user's saved motion-graphic references. **Use these for every new reel**, together with the prompt library in `../../insta-reel-avron-page/` (always bring it in, the user's standing rule). Videos are compressed 540p copies, silent except #11. Rebuild each look in code; never copy another creator's frames.
 
 | File | Look | Where we've used it (code to reuse) |

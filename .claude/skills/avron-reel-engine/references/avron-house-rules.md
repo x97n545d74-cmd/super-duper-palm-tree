@@ -15,12 +15,12 @@ Condensed from `avron-reels/MEMORY.md` (2026-10-27). If MEMORY.md says something
 - Default voice: ElevenLabs "Tia Mirza – Crisp and Commanding" (`OUBnvvuqEKdDWtapoJFn`, eleven_v4). Never generate a long take without `estimate_only` and stating the credit cost (~577 credits per 600 characters per take).
 - Every script, caption, VO line and post text goes through the `no-ai-slop` skill (edit mode) before the user sees it.
 
-## Look (default motion direction)
-- High-end minimal: one idea per shot, lots of empty space, one accent colour (red/green only for down/up data), Inter with tight tracking, masked type reveals, match moves, one camera language, cuts on the beat, push cuts with real motion blur.
-- **Banned:** camera shake, particles, glows, grid floors, flashes, bouncy easing, full stops in on-screen text, logo animation as the opener, generic AI backgrounds, neon, meaningless tickers.
-- Bring in the prompt library (`avron-reels/insta-reel-avron-page/`) and the motion references (`avron-reels/references/motion/README.md`) on every reel. The user confirmed "always bring it in" on 2026-10-27. Pick looks from the references table and name the existing component that implements each (e.g. `musk/Reel.tsx BlueGrid`, `anchor/ReelV2.tsx Collage`, `footy/Reel.tsx Sunburst`, kinetic type `musk/Reel.tsx B8`).
-- User favourites: kinetic type (09), phone notifications (10), blue grid (03/04), Pisa paper collage (01), red/cream sunburst (07). The comic burst (02) is the "jhatka" hit: once per reel at most.
-- AI anchor (optional): she is secondary, motion graphics lead, always tagged "AI ANCHOR", never a talking-head shot. Speaking shots only with lip-synced clips the user supplies.
+## Look and sound: brand v2 (locked 2026-10-28)
+- Everything visual and audio follows `avron-reels/brand/BRAND.md` ("finance as product UI") and the `avron-brand` skill gate. That file replaces the old look rules and reference-look list here.
+- Short form: one premium finance app as the presenter; warm near-black canvas, one panel style, gold as the only accent (chrome only), green/red for direction only, dashed grey for estimates; Inter Display / Inter / JetBrains Mono; critically damped motion on the brand curves; push / zoom-through / morph / sheet transitions only; seven signature moves (Shell, crop-in hook, cursor, morph, receipt, toast, poll + Saved).
+- SFX only from the ElevenLabs kit (`public/sfx/avron_kit_v1/`); no synthesised SFX. Until the kit exists: VO + music only.
+- Retired for AVRON: paper collage, comic burst, blue grid, tunnels, orbits, sunburst, warp grid, hexagons, phone-desk notifications, terminals, chat UIs.
+- AI anchor (optional): secondary, always tagged "AI ANCHOR", never a talking head; she appears inside a Panel like any other UI element.
 
 ## Images
 - Allowed: Pexels, Unsplash, Pixabay, Wikimedia Commons, government sources. Never news-agency or Google Images photos, or paid-report chart graphics (use the numbers, draw our own chart). Logos only when reporting on that company.

@@ -4,8 +4,8 @@ import { CameraMotionBlur } from "@remotion/motion-blur";
 import { clamp01, lerp, useTime } from "../../engine/anim";
 import { curve, motion, shape, type, ui } from "../../brand/ui";
 import {
-  Bars, Canvas, Caption, Chip, Counter, Cursor, Delta, Disclaimer, Dolly, LineChart, morph, monoTxt, p, Panel, Poll, push, Receipt,
-  Reveal, Row, Source, Toast, txt, Wordmark, zoomThrough,
+  Bars, Canvas, Caption, Chip, Counter, Cursor, Delta, Disclaimer, Dolly, LineChart, morph, monoTxt, Panel, Poll, push, Receipt,
+  Reveal, Row, Saved, Shell, Source, Toast, txt, Wordmark, zoomThrough,
 } from "../../engine/ui";
 
 /*
@@ -24,7 +24,7 @@ const LIST = { x: G, y: 520, w: W, h: 760 };
 const T_CLICK_TAB = 3.35, T_ZOOM = 5.4, T_PUSH1 = 8.7, T_PUSH2 = 13.2;
 
 const Headline: React.FC<{ t: number; a: number; out?: number; children: React.ReactNode }> = ({ t, a, out, children }) => (
-  <div style={{ position: "absolute", left: G, right: G, top: 270 }}>
+  <div style={{ position: "absolute", left: G, right: G, top: 350 }}>
     <Reveal t={t} a={a} out={out}><div style={txt(type.h1, 800, ui.ink, type.tracking.hero)}>{children}</div></Reveal>
   </div>
 );
@@ -115,16 +115,17 @@ const End: React.FC<{ t: number }> = ({ t }) => {
   const a = T_PUSH2 + 0.25;
   return (
     <AbsoluteFill>
-      <Headline t={t} a={a}>Aapka bet?</Headline>
-      <Poll t={t} a={a + 0.1} q="Kaunsi layer?" options={["Zameen", "Servers", "Cooling"]} hover={t > 14.75 ? 1 : -1} />
+      <Headline t={t} a={a}>Kaunsi layer?</Headline>
+      <Poll t={t} a={a + 0.1} q="Aap kya track karoge?" options={["Zameen", "Servers", "Cooling"]} hover={t > 14.75 ? 1 : -1} />
       <Cursor t={t} keys={[{ t: 13.9, x: 960, y: 1500 }, { t: 14.6, x: 700, y: 1040 }]} />
       <Disclaimer t={t} a={a + 0.6} />
-      <div style={{ position: "absolute", left: 0, right: 0, top: 1450, display: "flex", justifyContent: "center", opacity: p(t, a + 0.8) }}><Wordmark /></div>
+      <Saved t={t} a={a + 1.0} />
     </AbsoluteFill>
   );
 };
 
-const Tag: React.FC = () => <div style={{ position: "absolute", right: G, top: 236, ...monoTxt(22, ui.ink3) }}>Brand v2 · style demo</div>;
+const Tag: React.FC = () => <div style={{ position: "absolute", right: G, top: 1880 - 60, ...monoTxt(22, ui.ink3) }}>Brand v2 · style demo</div>;
+const crumbAt = (t: number) => (t < T_CLICK_TAB ? ["Markets", "Nifty 50"] : t < T_PUSH1 ? ["Markets", "Data centres", "Layers"] : t < T_PUSH2 ? ["Markets", "Data centres", "Capacity"] : ["Markets", "Data centres"]);
 
 export const BrandDemo: React.FC = () => {
   const t = useTime();
@@ -142,6 +143,7 @@ export const BrandDemo: React.FC = () => {
           {s5 && <AbsoluteFill style={push(t, T_PUSH2, "in")}><End t={t} /></AbsoluteFill>}
         </AbsoluteFill>
       </CameraMotionBlur>
+      <Shell t={t} crumb={crumbAt(t)} asOf="8 Oct 2026" />
       <Tag />
     </Canvas>
   );
