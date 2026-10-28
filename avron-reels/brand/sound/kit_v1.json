@@ -1,0 +1,178 @@
+{
+  "version": "avron_kit_v1",
+  "model_id": "eleven_text_to_sound_v2",
+  "key": "D major / B minor",
+  "takes": 4,
+  "sounds": [
+    {
+      "name": "ui_tap",
+      "purpose": "Cursor click / button press on a UI panel",
+      "duration_seconds": 0.5,
+      "loop": false,
+      "prompt_influence": 0.7,
+      "prompt": "Single soft UI click one-shot, premium software interface button press, tight dry plastic-and-glass tick with a tiny rounded low body, very short and clean, high-quality professionally recorded sound effect, no reverb, no music",
+      "mix_vs_vo": "−10 to −12 dB; between words",
+      "trim_note": "0.5 s (trim to ~80 ms)"
+    },
+    {
+      "name": "ui_hover",
+      "purpose": "Cursor entering a card / highlight glow",
+      "duration_seconds": 0.5,
+      "loop": false,
+      "prompt_influence": 0.6,
+      "prompt": "Very subtle airy UI hover sound one-shot, soft breathy filtered noise blip, gentle and quiet, modern app interface, short and dry, high-quality sound effect, no music",
+      "mix_vs_vo": "−14 dB (barely there)",
+      "trim_note": "0.5 s (~120 ms)"
+    },
+    {
+      "name": "toggle_switch",
+      "purpose": "Switch / tab change / filter chip",
+      "duration_seconds": 0.5,
+      "loop": false,
+      "prompt_influence": 0.7,
+      "prompt": "Crisp mechanical toggle switch one-shot, small precise click-clack of a premium aluminium switch, two quick tight clicks, dry and close, high-quality foley sound effect, no music",
+      "mix_vs_vo": "−10 dB",
+      "trim_note": "0.5 s (~150 ms)"
+    },
+    {
+      "name": "panel_open",
+      "purpose": "Dashboard panel or modal expanding in",
+      "duration_seconds": 0.8,
+      "loop": false,
+      "prompt_influence": 0.5,
+      "prompt": "Smooth UI panel opening sound, soft upward airy swish with a gentle glassy shimmer at the end, sleek modern software interface, short and clean, high-quality sound effect, no music, no voice",
+      "mix_vs_vo": "−8 dB",
+      "trim_note": "0.8 s"
+    },
+    {
+      "name": "panel_close",
+      "purpose": "Panel collapsing / screen dismiss",
+      "duration_seconds": 0.6,
+      "loop": false,
+      "prompt_influence": 0.5,
+      "prompt": "Smooth UI panel closing sound, soft downward airy swish ending in a muted tight click, sleek modern software interface, short and dry, high-quality sound effect, no music",
+      "mix_vs_vo": "−9 dB",
+      "trim_note": "0.6 s"
+    },
+    {
+      "name": "card_slide",
+      "purpose": "A card sliding sideways into place",
+      "duration_seconds": 0.7,
+      "loop": false,
+      "prompt_influence": 0.5,
+      "prompt": "Short UI card slide whoosh, a smooth sheet of frosted glass sliding quickly across a surface and stopping with a soft tap, close and dry, modern interface sound, high-quality sound effect, no music",
+      "mix_vs_vo": "−8 dB",
+      "trim_note": "0.7 s"
+    },
+    {
+      "name": "counter_tick",
+      "purpose": "Digits rolling on a data counter (loop under the roll)",
+      "duration_seconds": 2.0,
+      "loop": true,
+      "prompt_influence": 0.6,
+      "prompt": "Rapid soft digital counter ticking, fast even mechanical number-roller clicks like a premium odometer, light and dry, steady rhythm, loopable texture, high-quality sound effect, no music, no beeps",
+      "mix_vs_vo": "−14 dB; fade out 2 frames before `number_land`",
+      "trim_note": "2.0 s, `loop: true`"
+    },
+    {
+      "name": "number_land",
+      "purpose": "The final number locks in (hero moment)",
+      "duration_seconds": 1.0,
+      "loop": false,
+      "prompt_influence": 0.6,
+      "prompt": "Satisfying UI confirmation impact one-shot, a tight punchy soft thump with a bright glassy click on top and a short warm tonal ring, premium fintech app, clean and short, high-quality sound effect, no music",
+      "mix_vs_vo": "−3 to 0 dB, VO gap only",
+      "trim_note": "1.0 s"
+    },
+    {
+      "name": "whoosh_push",
+      "purpose": "Camera push / screen-to-screen transition",
+      "duration_seconds": 0.8,
+      "loop": false,
+      "prompt_influence": 0.4,
+      "prompt": "Fast clean whoosh transition, smooth airy swoosh that builds quickly and stops, modern tech product video, slight low weight underneath, no rumble tail, high-quality sound effect, no music",
+      "mix_vs_vo": "−6 to −8 dB",
+      "trim_note": "0.8 s"
+    },
+    {
+      "name": "whoosh_soft",
+      "purpose": "Small element moves (chart line, label fly-in)",
+      "duration_seconds": 0.5,
+      "loop": false,
+      "prompt_influence": 0.5,
+      "prompt": "Very short soft whoosh one-shot, light breathy air swipe, subtle and fast, minimal UI motion sound, high-quality sound effect, no music",
+      "mix_vs_vo": "−12 dB",
+      "trim_note": "0.5 s"
+    },
+    {
+      "name": "riser_2s",
+      "purpose": "Tension build into a reveal or hook payoff",
+      "duration_seconds": 2.0,
+      "loop": false,
+      "prompt_influence": 0.5,
+      "prompt": "Clean modern riser, 2 seconds, filtered airy noise and a soft synthetic tone rising steadily in pitch and intensity, ends abruptly at the peak, sleek tech product reveal, high-quality sound effect, no drums, no melody",
+      "mix_vs_vo": "−10 dB rising to −4 dB; must end on the hit frame",
+      "trim_note": "2.0 s"
+    },
+    {
+      "name": "sub_drop",
+      "purpose": "Big reveal / chart crash / key stat",
+      "duration_seconds": 1.5,
+      "loop": false,
+      "prompt_influence": 0.5,
+      "prompt": "Deep cinematic sub drop impact, short low boom with a punchy transient and a fast downward pitch sweep, tight controlled tail, modern trailer hit, high-quality sound effect, no music",
+      "mix_vs_vo": "−3 dB, VO gap only; add saturated 150–600 Hz phone layer",
+      "trim_note": "1.5 s"
+    },
+    {
+      "name": "success_up",
+      "purpose": "Positive result (gain, green number, tick mark)",
+      "duration_seconds": 0.8,
+      "loop": false,
+      "prompt_influence": 0.7,
+      "prompt": "Short positive UI success chime, two soft rising bell-like synth notes a fifth apart in D major, warm rounded mallet tone, quick and elegant, fintech app confirmation, high-quality sound effect, no reverb tail",
+      "mix_vs_vo": "−8 dB",
+      "trim_note": "0.8 s"
+    },
+    {
+      "name": "error_down",
+      "purpose": "Negative result (loss, red number, warning)",
+      "duration_seconds": 0.8,
+      "loop": false,
+      "prompt_influence": 0.7,
+      "prompt": "Short negative UI alert, two soft descending synth notes a semitone apart, muted and low, gentle but serious, fintech app warning, not harsh, no buzzer, high-quality sound effect, no reverb tail",
+      "mix_vs_vo": "−8 dB",
+      "trim_note": "0.8 s"
+    },
+    {
+      "name": "glitch_cut",
+      "purpose": "Data corruption / \"this number is wrong\" / myth-bust beat",
+      "duration_seconds": 0.6,
+      "loop": false,
+      "prompt_influence": 0.5,
+      "prompt": "Short digital glitch transition, quick stuttering data-corruption crackle and bit-crushed blips, tight and controlled, modern UI malfunction sound, high-quality sound effect, no music",
+      "mix_vs_vo": "−10 dB",
+      "trim_note": "0.6 s"
+    },
+    {
+      "name": "sonic_logo",
+      "purpose": "AVRON signature on end card (and a 0.5 s hook sting cut from its first two notes)",
+      "duration_seconds": 2.0,
+      "loop": false,
+      "prompt_influence": 0.8,
+      "prompt": "Premium fintech sonic logo, three clean notes in D major: up, down, then a small leap up, warm rounded mallet-and-glass synth tone over a soft low thump, confident and calm, ends with a short shimmer, not a jingle, high-quality sound effect",
+      "mix_vs_vo": "0 dB on end card (no VO); sting −4 dB",
+      "trim_note": "2.0 s"
+    },
+    {
+      "name": "room_tone",
+      "purpose": "Quiet \"studio/product\" air bed so silences don't sound dead",
+      "duration_seconds": 20.0,
+      "loop": true,
+      "prompt_influence": 0.4,
+      "prompt": "Very quiet clean room tone of a modern minimal studio, soft constant air and faint electronic hum, no events, no voices, no music, seamless ambience loop",
+      "mix_vs_vo": "−25 to −30 dB, continuous",
+      "trim_note": "20 s, `loop: true`"
+    }
+  ]
+}
