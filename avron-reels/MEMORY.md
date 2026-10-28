@@ -20,6 +20,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Style test approved for colour and design: `deliverables/2026-10-brand-v2/AVRON_style-test_bright-clean_1080x1920.mp4` (`StyleLight`, kit `src/engine/light/`). The 2.5D isometric card stack (0:09–0:11) was "awful" and is cut and banned.
 - Next: finalise the Instagram reel template on this look (update BRAND.md fully + brand_lint), then kinetic-typography references from the user.
 - Kinetic type study in the user's typography reference style (heavy Montserrat poster type, stretch/keystone/bend, echo, black/light flips; `TypeStudy`, `src/engine/light/kinetic.tsx`): user verdict "NOT A GOOD ONE, maybe this typography didn't fit in". Don't use poster-style full-screen type as the reel's main language; it clashes with the clean product-UI look. Kit kept but parked.
+- **Typography decision (user, 2026-10-28): "Like the UI style test".** Reel type = clean Inter Display/Inter, per-character masked blur-to-sharp reveals (`Chars` in `src/engine/light/index.tsx`), one gradient hero word per beat, headlines that shrink into the UI title. No poster-style kinetic type.
 - Dark 3D kit (`src/engine/three/Studio.tsx`, `CardStudyV2`) is kept but parked; it renders slowly here (~1 h for 20 s on CPU).
 
 ## Script method (user, 2026-10-28): "This is how we will start building script"
