@@ -15,6 +15,12 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Research: `research/brand-2026-10/UI_MOTION_TASTE.md`, `SOUND_DESIGN.md` (YouTube transcripts were blocked by rate limits; tutorial lists with URLs are in both files for a later pass).
 - **Open:** user to confirm series names (Layer / Receipt / Screener), approve the demo look, and provide ElevenLabs access to generate the kit.
 
+## Look decision (user, 2026-10-28, later the same day) — supersedes the dark brand v2 look
+- The user rejected the dark CSS card study ("very low effort") and stopped the dark 3D render. Asked for "advance and high quality ui/ux motion graphics and saas graphics with kinetic typography", then chose **bright & clean (Stripe/Apple)**.
+- Style test approved for colour and design: `deliverables/2026-10-brand-v2/AVRON_style-test_bright-clean_1080x1920.mp4` (`StyleLight`, kit `src/engine/light/`). The 2.5D isometric card stack (0:09–0:11) was "awful" and is cut and banned.
+- Next: finalise the Instagram reel template on this look (update BRAND.md fully + brand_lint), then kinetic-typography references from the user.
+- Dark 3D kit (`src/engine/three/Studio.tsx`, `CardStudyV2`) is kept but parked; it renders slowly here (~1 h for 20 s on CPU).
+
 ## Script method (user, 2026-10-28): "This is how we will start building script"
 - Every AVRON script starts with `insta-reel-avron-page/script-method/PROMPT.md` (prompt #9): audience research for the topic (10 problems, frustrations, desired outcomes, repeated questions, mistakes, objections/limiting beliefs; emotional reasons; the audience's own phrases) saved as `projects/<id>/research/audience.md`, from real sources, no invented quotes.
 - Then HOOK → VALUE → SOLUTION → CTA. One reel goal per reel (followers / comments / saves / shares / leads), asked up front; the CTA and end card follow it. Solution = education (a check, framework, steps), never buy/sell advice.

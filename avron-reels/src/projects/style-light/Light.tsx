@@ -2,20 +2,20 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { clamp01, lerp, useTime } from "../../engine/anim";
 import { curve } from "../../brand/ui";
-import { Card, Chars, Count, k, L, LCursor, LightCanvas, Mono, Pill, Ring, RollWord, Tabs, Tile } from "../../engine/light";
+import { Card, Chars, Count, k, L, LCursor, LightCanvas, Mono, Pill, Ring, Tabs, Tile } from "../../engine/light";
 
 /*
  * Style test: "bright & clean" (12.8 s, silent). The user's pick after rejecting the dark and 3D studies (2026-10-28).
  * Kinetic hook → the headline shrinks into a product dashboard → cursor opens Netweb → row expands into a detail card
- * with a gradient ring → push to a 2.5D card stack (1.6 GW → ~6 GW) → end.
+ * with a gradient ring → end. (The 2.5D isometric card stack was cut: the user called it "awful".)
  * Figures: VERIFIED rows C4, C6, C10, C11, C12 of projects/2026-10-datacenter-pharma/research/claims.md.
  */
 
-export const STYLE_LIGHT_DURATION = 12.8;
+export const STYLE_LIGHT_DURATION = 10.2;
 const X = 84, W = 912;
 const CARD = { x: X, y: 540, w: W, h: 930 };
 const ROW_Y = (i: number) => CARD.y + 330 + i * 168;
-const T_SHRINK = 2.2, T_CARD = 2.5, T_TAB = 3.3, T_CLICK = 4.75, T_OPEN = 4.95, T_PUSH = 8.3, T_ROLL = 9.9, T_END = 11.2;
+const T_SHRINK = 2.2, T_CARD = 2.5, T_TAB = 3.3, T_CLICK = 4.75, T_OPEN = 4.95, T_END = 8.4;
 
 /* ---------------------------------------------------------------- hook → title */
 const Hook: React.FC<{ t: number }> = ({ t }) => {
@@ -122,34 +122,6 @@ const Dashboard: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-/* ---------------------------------------------------------------- 2.5D stack */
-const Stack: React.FC<{ t: number }> = ({ t }) => {
-  const a = T_PUSH + 0.25;
-  const rise = k(t, T_ROLL, 0.8, curve.inOut);
-  const layer = (i: number, z: number, child: React.ReactNode, style: React.CSSProperties = {}) => {
-    const e = k(t, a + 0.15 + i * 0.12, 0.8);
-    return (
-      <div style={{ position: "absolute", inset: 0, borderRadius: 40, background: "#fff", boxShadow: L.shadowLift, transform: `translateZ(${z + (1 - e) * 500}px)`, opacity: clamp01(e * 2), padding: 44, boxSizing: "border-box", ...style }}>{child}</div>
-    );
-  };
-  return (
-    <>
-      <div style={{ position: "absolute", left: X, top: 330 }}><Chars t={t} a={a} text="Capacity" size={130} /></div>
-      <div style={{ position: "absolute", left: X, top: 470 }}>
-        <RollWord t={t} size={210} gradient words={[{ w: "1.6 GW", at: a + 0.3 }, { w: "~6 GW", at: T_ROLL }]} />
-      </div>
-      <div style={{ position: "absolute", left: X, top: 760, opacity: k(t, a + 0.6) }}><Mono size={24}>India DC capacity · Jun 2026 → 2029 (JLL anumaan)</Mono></div>
-      <div style={{ position: "absolute", left: 540 - 380, top: 1060, width: 760, height: 470, transformStyle: "preserve-3d", transform: "rotateX(56deg) rotateZ(-36deg)" }}>
-        {layer(0, 0, <><Mono>Vacancy · H1 2026</Mono><div style={{ fontFamily: L.sans, fontWeight: 900, fontSize: 130, letterSpacing: "-0.06em", color: L.ink, marginTop: 20 }}>2.8%</div></>)}
-        {layer(1, 90, <><Mono>Capacity · Jun 2026</Mono><div style={{ fontFamily: L.sans, fontWeight: 900, fontSize: 130, letterSpacing: "-0.06em", color: L.ink, marginTop: 20 }}>1.6 GW</div></>)}
-        {layer(2, 180 + 90 * rise, <><Mono color={L.indigo}>2029 · JLL anumaan</Mono><div style={{ fontFamily: L.sans, fontWeight: 900, fontSize: 130, letterSpacing: "-0.06em", marginTop: 20, backgroundImage: L.grad, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>~6 GW</div></>,
-          { border: "3px dashed rgba(79,70,229,0.55)", background: "rgba(255,255,255,0.92)", opacity: clamp01(rise * 3) })}
-      </div>
-      <div style={{ position: "absolute", left: X, top: 1500, opacity: k(t, T_ROLL + 0.5) }}><Pill tone="est" size={24}>Estimate · JLL via IANS · 2 Sep 2026</Pill></div>
-    </>
-  );
-};
-
 /* ---------------------------------------------------------------- end */
 const End: React.FC<{ t: number }> = ({ t }) => (
   <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
@@ -161,19 +133,13 @@ const End: React.FC<{ t: number }> = ({ t }) => (
 
 export const StyleLight: React.FC = () => {
   const t = useTime();
-  const up = k(t, T_PUSH, 0.6, curve.inOut);
-  const endK = k(t, T_END, 0.6, curve.inOut);
+  const endK = k(t, T_END, 0.7, curve.inOut);
   return (
     <LightCanvas t={t}>
-      {t < T_PUSH + 0.65 && (
-        <AbsoluteFill style={{ transform: `translateY(${-up * 1920}px)` }}>
+      {t < T_END + 0.75 && (
+        <AbsoluteFill style={{ transformOrigin: "540px 1000px", transform: `scale(${1 - 0.1 * endK})`, opacity: 1 - endK, filter: endK > 0 ? `blur(${endK * 12}px)` : undefined }}>
           <Hook t={t} />
           {t > T_CARD - 0.1 && <Dashboard t={t} />}
-        </AbsoluteFill>
-      )}
-      {t >= T_PUSH && t < T_END + 0.65 && (
-        <AbsoluteFill style={{ transform: `translateY(${(1 - up) * 1920}px) scale(${1 - 0.08 * endK})`, opacity: 1 - endK }}>
-          <Stack t={t} />
         </AbsoluteFill>
       )}
       {t >= T_END && <End t={t} />}
