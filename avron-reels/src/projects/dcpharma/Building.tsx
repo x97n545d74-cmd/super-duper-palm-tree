@@ -4,7 +4,7 @@ import { clamp01, ease, lerp, prog } from "../../engine/anim";
 import { G, GRASS, GREY, INK_D, lbl, mono, PAPER, RED, Rack, Rise, sx } from "./kit";
 
 /*
- * 26.1–38.1: one data centre built as a paper collage on graph paper (ref 01, look from anchor/ReelV2.tsx Collage).
+ * layers → cooling: one data centre built as a paper collage on graph paper (ref 01, look from anchor/ReelV2.tsx Collage).
  * Ground (ZAMEEN) → server hall (SERVER) → roof chiller (COOLING). The camera tilts through the building:
  * the reel's one vertical move. World units are px at scale 1; the grass strip continues the Anant Raj line.
  */
@@ -47,7 +47,7 @@ export const Building: React.FC<{ t: number; S: (id: string) => number; E: (id: 
   cam = mix(cam, GROUND, prog(t, aZ - 0.25, 0.6, ease.inOutCubic));
   cam = mix(cam, HALL, prog(t, aS - 0.2, 0.6, ease.inOutCubic));
   cam = mix(cam, ROOF, prog(t, aC - 0.2, 0.6, ease.inOutCubic));
-  cam = mix(cam, OVER, prog(t, end - 0.85, 0.7, ease.inOutCubic));
+  cam = mix(cam, OVER, prog(t, end - 0.7, 0.6, ease.inOutCubic));
   const push = 1 + 0.02 * (t - aL);
   const tx = 540 - 540 * cam.s, ty = cam.fy - cam.cy * cam.s;
 
@@ -87,7 +87,7 @@ export const Building: React.FC<{ t: number; S: (id: string) => number; E: (id: 
               <Rack x={300} y={1600} w={240} h={510} n={24} stroke={PAPER} slotStroke={() => "rgba(239,230,210,0.35)"} />
               <rect x={324} y={1600 + 510 - 30 - 450 * 0.62 * bar} width={192} height={450 * 0.62 * bar} fill={PAPER} opacity={0.92} />
               <line x1={290} x2={560} y1={1600 + 510 - 30 - 450 * 0.62} y2={1600 + 510 - 30 - 450 * 0.62} stroke={RED} strokeWidth={4} strokeDasharray="10 8" opacity={clamp01(bar * 4 - 3)} />
-              <text x={590} y={1600 + 510 - 30 - 450 * 0.62 + 34} fontFamily="'Inter', sans-serif" fontWeight={900} fontSize={100} fill={INK_D} opacity={clamp01(bar * 3)}>{Math.round(62 * bar)}%</text>
+              <text x={590} y={1600 + 510 - 30 - 450 * 0.62 + 34} fontFamily="'Inter', sans-serif" fontWeight={900} fontSize={100} fill={INK_D} opacity={clamp01(bar * 3) * (1 - prog(t, aC - 0.1, 0.35))}>{Math.round(62 * bar)}%</text>
             </g>
           </svg>
           {/* COOLING: a paper chiller drops onto the roof, fans turn slowly */}
@@ -110,20 +110,22 @@ export const Building: React.FC<{ t: number; S: (id: string) => number; E: (id: 
 
       {/* type, screen space */}
       {t < aZ && (
-        <div style={{ position: "absolute", left: G, top: 262, opacity: 1 - prog(t, aZ - 0.25, 0.25) }}>
-          <Rise t={t} a={aL + 0.1}><div style={sx(96, 900, INK_D)}>1 DATA CENTRE</div></Rise>
-          <Rise t={t} a={aL + 0.22} style={{ marginTop: 8 }}><div style={sx(96, 900, INK_D)}>= 3 LAYERS</div></Rise>
-          <Rise t={t} a={aL + 0.5} style={{ marginTop: 26 }}><div style={lbl(54, INK_D, 800)}>INDIA 1.6 GW → ~6 GW</div></Rise>
-          <Rise t={t} a={aL + 0.62} style={{ marginTop: 8 }}><div style={{ ...lbl(44, RED, 800) }}>(2029, JLL ANUMAAN)</div></Rise>
+        <div style={{ position: "absolute", left: G, top: 262, opacity: 1 - prog(t, aZ - 0.2, 0.2) }}>
+          {/* the layers beat is 2.4 s, so all four lines are in by beat + 0.5 s and hold ~1.7 s */}
+          <Rise t={t} a={aL + 0.05}><div style={sx(96, 900, INK_D)}>1 DATA CENTRE</div></Rise>
+          <Rise t={t} a={aL + 0.15} style={{ marginTop: 8 }}><div style={sx(96, 900, INK_D)}>= 3 LAYERS</div></Rise>
+          <Rise t={t} a={aL + 0.35} style={{ marginTop: 26 }}><div style={lbl(54, INK_D, 800)}>INDIA 1.6 GW → ~6 GW</div></Rise>
+          <Rise t={t} a={aL + 0.45} style={{ marginTop: 8 }}><div style={{ ...lbl(44, RED, 800) }}>(2029, JLL ANUMAAN)</div></Rise>
         </div>
       )}
 
       {t >= aZ - 0.05 && t < aS && (
         <>
-          <div style={{ position: "absolute", left: G, top: 262 }}><Rise t={t} a={aZ + 0.05} out={aS - 0.25}><div style={sx(64, 900, INK_D)}>ZAMEEN</div></Rise></div>
-          <Card t={t} a={aZ + 0.3} out={aS - 0.25} top={370} rot={-1.5} name="ANANT RAJ" lines={["~28 MW LIVE, 63 MW TARGET", "(DEC 2026)"]} />
-          <Card t={t} a={aZ + 0.6} out={aS - 0.25} top={650} rot={1.2} name="LODHA" lines={["PALAVA ~400 ACRE, AWS + STT"]} />
-          <Tag t={t} a={aZ + 0.5} out={aS - 0.25} text="Anant Raj: company guidance · Lodha release + deck" />
+          {/* zameen is only 1.9 s: cards land on "Anant Raj" (beat + 0.7 s) and "Lodha" (+1.6 s) would leave no hold, so both are in by +0.4 s */}
+          <div style={{ position: "absolute", left: G, top: 262 }}><Rise t={t} a={aZ + 0.02} out={aS - 0.15}><div style={sx(64, 900, INK_D)}>ZAMEEN</div></Rise></div>
+          <Card t={t} a={aZ + 0.12} out={aS - 0.12} top={370} rot={-1.5} name="ANANT RAJ" lines={["~28 MW LIVE, 63 MW TARGET", "(DEC 2026)"]} />
+          <Card t={t} a={aZ + 0.3} out={aS - 0.12} top={650} rot={1.2} name="LODHA" lines={["PALAVA ~400 ACRE, AWS + STT"]} />
+          <Tag t={t} a={aZ + 0.3} out={aS - 0.12} text="Anant Raj: company guidance · Lodha release + deck" />
         </>
       )}
       {t >= aS - 0.05 && t < aC && (
@@ -135,9 +137,9 @@ export const Building: React.FC<{ t: number; S: (id: string) => number; E: (id: 
       )}
       {t >= aC - 0.05 && (
         <>
-          <div style={{ position: "absolute", left: G, top: 262 }}><Rise t={t} a={aC + 0.05} out={end - 0.9}><div style={sx(64, 900, INK_D)}>COOLING</div></Rise></div>
-          <Card t={t} a={aC + 0.3} out={end - 0.9} top={370} rot={1.2} name="BLUE STAR" lines={["Q1 FY27 ORDERS:", "ZYADA TAR DATA CENTRES"]} />
-          <Tag t={t} a={aC + 0.5} out={end - 0.9} text="Blue Star deck + release, Aug 2026" />
+          <div style={{ position: "absolute", left: G, top: 262 }}><Rise t={t} a={aC + 0.05} out={end - 0.6}><div style={sx(64, 900, INK_D)}>COOLING</div></Rise></div>
+          <Card t={t} a={aC + 0.3} out={end - 0.6} top={370} rot={1.2} name="BLUE STAR" lines={["Q1 FY27 ORDERS:", "ZYADA TAR DATA CENTRES"]} />
+          <Tag t={t} a={aC + 0.5} out={end - 0.6} text="Blue Star deck + release, Aug 2026" />
         </>
       )}
     </AbsoluteFill>

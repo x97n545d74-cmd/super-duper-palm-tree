@@ -3,19 +3,19 @@ import { AbsoluteFill, Audio, staticFile } from "remotion";
 import { CameraMotionBlur } from "@remotion/motion-blur";
 import { clamp01, ease, lerp, prog, useTime } from "../../engine/anim";
 import TL from "./timeline.json";
+import CAPS from "./captions.json";
 import { BG, BlueGrid, Burst, Capsule, DashedLine, Desk, G, GRASS, GREEN, GREY, INK, INK_D, lbl, mono, Notif, Phone, Rack, RED, Rise, sans, Source, slowPush, sx } from "./kit";
 import { Building } from "./Building";
 
 /*
- * "Crash ka wait? Theme nahi, layer dekho" (AVRON, 60 s, Hinglish). ANIMATIC: graphics + original score/SFX, no voice yet.
+ * "Crash ka wait? Theme nahi, layer dekho" (AVRON, 53 s, Hinglish). FINAL CUT on the user's Tia VO (public/dcpharma/vo_raw.mp3).
  * Timing, on-screen text, visuals and transitions follow projects/2026-10-datacenter-pharma/ENGINE_REPORT.md Section 3;
  * palette, type sizes and the dashed-chart rule follow Section 4. Every scene is a pure function of absolute time t.
  * Reused looks: kinetic pendulum + stacked type (musk B8), BlueGrid / Desk / Notif (musk), comic burst S2b and paper collage
- * (anchor V2), bead ring CTA (footy Cta). Beat times live in ./timeline.json (planned, re-time after the Tia VO is aligned).
+ * (anchor V2), bead ring CTA (footy Cta). Beat times live in ./timeline.json (real times from the aligned VO). Every in-scene
+ * time is an offset from its beat's start a = S(id) or end E(id), keyed to the spoken word (see the comments), so a re-time
+ * only needs a new timeline.json. Captions come from ./captions.json (scripts/captions_dcpharma.py).
  */
-
-/** Burned-in guide subtitle of the planned VO line. Turn off once the real VO is in. */
-export const SHOW_VO_GUIDE = true;
 
 type Beat = { id: string; start: number; end: number; vo: string };
 const BEATS = (TL as { beats: Beat[] }).beats;
@@ -24,15 +24,22 @@ const S = (id: string) => BEATS.find((b) => b.id === id)!.start;
 const E = (id: string) => BEATS.find((b) => b.id === id)!.end;
 const beatAt = (t: number) => BEATS.find((b) => t >= b.start && t < b.end) ?? BEATS[BEATS.length - 1];
 
-/* ================================================================== 0.0–3.8 hook: kinetic pendulum type */
+/* Cue offsets shared with scripts/score_dcpharma.py (keep the two in step). */
+/** Burst hit after the beat start: the music drops out from the beat start to here, then the low hit. */
+export const BURST_HIT = 0.45;
+/** Notification arrival times in the race beat: Natco on "Natco" (+1.05 s), Zydus on "Zydus" (+1.75 s), the rest every 0.4 s. */
+export const raceArrivals = (a: number) => [a + 1.0, a + 1.65, a + 2.05, a + 2.45, a + 2.85, a + 3.25];
+
+/* ================================================================== hook: kinetic pendulum type (both words set by ~0.9 s) */
 const LINE_Y = 1190;
 const AXIS_Y = 1260;
 /** Critically damped swing: no overshoot, so the pendulum settles without a bounce. */
 const settle = (t: number, a: number, k = 22) => { const x = Math.max(0, t - a); return (1 + k * x) * Math.exp(-k * x); };
 
 const Hook: React.FC<{ t: number }> = ({ t }) => {
-  const out = prog(t, 3.42, 0.32, ease.inCubic);
-  const lineY = lerp(LINE_Y, AXIS_Y, prog(t, 3.5, 0.3, ease.inOutCubic));
+  const end = E("hook");
+  const out = prog(t, end - 0.3, 0.28, ease.inCubic);
+  const lineY = lerp(LINE_Y, AXIS_Y, prog(t, end - 0.28, 0.28, ease.inOutCubic));
   const word = (text: React.ReactNode, a: number, bottom: number, size: number, key: string) => {
     const th = 72 * settle(t, a);
     const visible = t >= a;
@@ -46,18 +53,18 @@ const Hook: React.FC<{ t: number }> = ({ t }) => {
   };
   return (
     <AbsoluteFill style={{ background: BG, ...slowPush(t, 0, 540, LINE_Y) }}>
-      {word(<>KA <span style={{ color: RED }}>WAIT?</span></>, 0.15, LINE_Y - 14, 170, "w")}
+      {word(<>KA <span style={{ color: RED }}>WAIT?</span></>, 0.6, LINE_Y - 14, 170, "w") /* swings in before "wait" (1.18 s), set by ~0.9 s */}
       {word("CRASH", 0, 990, 200, "c")}
       <div style={{ position: "absolute", left: G, right: G, top: lineY - 1.5, height: 3, background: INK }} />
     </AbsoluteFill>
   );
 };
 
-/* ================================================================== 3.8–7.1 Nifty −16% on the blue grid */
+/* ================================================================== Nifty −16% on the blue grid */
 const NA = { x: 170, y: 720 }, NB = { x: 910, y: 1110 };
 const NiftyChart: React.FC<{ t: number; a: number }> = ({ t, a }) => {
   const draw = prog(t, a + 0.25, 1.5, ease.inOutCubic);
-  const pct = prog(t, 5.0, 1.0, ease.outCubic);
+  const pct = prog(t, a + 1.6, 0.8, ease.outCubic); // counts up on "solah pratishat" (beat + 1.9 s)
   return (
     <AbsoluteFill>
       <BlueGrid t={t} />
@@ -79,7 +86,7 @@ const NiftyChart: React.FC<{ t: number; a: number }> = ({ t, a }) => {
 };
 const Nifty: React.FC<{ t: number }> = ({ t }) => <AbsoluteFill style={slowPush(t, S("nifty"))}><NiftyChart t={t} a={S("nifty")} /></AbsoluteFill>;
 
-/* ================================================================== 7.1–8.9 question over the frozen chart */
+/* ================================================================== question over the frozen chart */
 const Ask: React.FC<{ t: number }> = ({ t }) => {
   const a = S("ask");
   const dim = prog(t, a, 0.3);
@@ -98,7 +105,7 @@ const Ask: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-/* ================================================================== 8.9–13.1 two themes, split screen */
+/* ================================================================== two themes, split screen */
 const RACK_HALF = { x: 120, y: 560, w: 300, h: 600 };
 const RACK_FULL = { x: 360, y: 640, w: 360, h: 690 };
 const Themes: React.FC<{ t: number }> = ({ t }) => {
@@ -120,7 +127,7 @@ const Themes: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-/* ================================================================== 13.1–16.4 vacancy 2.8%: rack fills to 35 of 36 */
+/* ================================================================== vacancy 2.8%: rack fills to 35 of 36 */
 const EMPTY = 29;
 const fillStep = (a: number) => [a + 0.55, a + 1.25, a + 1.95];
 const VacancyBody: React.FC<{ t: number; a: number }> = ({ t, a }) => {
@@ -132,7 +139,7 @@ const VacancyBody: React.FC<{ t: number; a: number }> = ({ t, a }) => {
     const group = Math.floor(i / 12);
     return prog(t, steps[group] + (i % 12) * 0.018, 0.12);
   };
-  const pulse = Math.sin(Math.PI * clamp01((t - (a + 2.45)) / 0.5));
+  const pulse = Math.sin(Math.PI * clamp01((t - (a + 2.4)) / 0.6)); // the empty slot pulses as "2.8%" is spoken
   return (
     <AbsoluteFill style={{ background: BG }}>
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
@@ -146,14 +153,14 @@ const VacancyBody: React.FC<{ t: number; a: number }> = ({ t, a }) => {
       </svg>
       <div style={{ position: "absolute", left: G, top: 262, opacity: m }}>
         <Rise t={t} a={a + 0.2}><div style={sx(64, 900)}>VACANCY</div></Rise>
-        <Rise t={t} a={a + 0.35} style={{ marginTop: 14 }}><div style={sx(210, 900)}>2.8%</div></Rise>
+        <Rise t={t} a={a + 2.3} style={{ marginTop: 14 }}><div style={sx(210, 900)}>2.8%</div></Rise>{/* on "2.8" (beat + 2.4 s) */}
       </div>
     </AbsoluteFill>
   );
 };
 const Vacancy: React.FC<{ t: number }> = ({ t }) => <AbsoluteFill style={slowPush(t, S("vacancy"))}><VacancyBody t={t} a={S("vacancy")} /></AbsoluteFill>;
 
-/* ================================================================== 16.4–19.8 pharma vs Nifty, direction only */
+/* ================================================================== pharma vs Nifty, direction only */
 const Pharma: React.FC<{ t: number }> = ({ t }) => {
   const a = S("pharma");
   const slide = ease.outExpo(clamp01((t - a) / 0.55));
@@ -175,8 +182,9 @@ const Pharma: React.FC<{ t: number }> = ({ t }) => {
           </svg>
           <div style={{ position: "absolute", left: G, top: 262 }}>
             <Rise t={t} a={a + 0.3}><div style={sx(60, 900)}>NIFTY PHARMA 1 SAAL:</div></Rise>
-            <Rise t={t} a={a + 0.45} style={{ marginTop: 18 }}><div style={sx(150, 900, GREEN)}>DOUBLE</div></Rise>
-            <Rise t={t} a={a + 0.55} style={{ marginTop: 8 }}><div style={sx(150, 900, GREEN)}>DIGIT ↑</div></Rise>
+            {/* on "ek saal mein", ahead of "double digit" (beat + 2.25 s) so it holds ~1.6 s */}
+            <Rise t={t} a={a + 1.25} style={{ marginTop: 18 }}><div style={sx(150, 900, GREEN)}>DOUBLE</div></Rise>
+            <Rise t={t} a={a + 1.35} style={{ marginTop: 8 }}><div style={sx(150, 900, GREEN)}>DIGIT ↑</div></Rise>
           </div>
         </AbsoluteFill>
       </AbsoluteFill>
@@ -184,12 +192,12 @@ const Pharma: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-/* ================================================================== 19.8–21.9 the one comic burst */
+/* ================================================================== the one comic burst */
 const PEAK = { x: 190, y: 760 }, LOW = { x: 900, y: 1150 };
 const BurstScene: React.FC<{ t: number }> = ({ t }) => {
-  const a = S("burst"), hit = a + 0.5, end = E("burst");
-  const pop = ease.outExpo(clamp01((t - hit) / 0.4));
-  const k = prog(t, end - 0.4, 0.4, ease.inCubic);
+  const a = S("burst"), hit = a + BURST_HIT, end = E("burst"); // hit on "stock"; the score's dropout runs a → hit
+  const pop = ease.outExpo(clamp01((t - hit) / 0.35));
+  const k = prog(t, end - 0.3, 0.3, ease.inCubic);
   const line = prog(t, end - 0.3, 0.3, ease.outCubic);
   return (
     <AbsoluteFill style={{ background: BG }}>
@@ -206,14 +214,14 @@ const BurstScene: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-/* ================================================================== 21.9–26.1 Anant Raj −40% from the ₹744 peak */
+/* ================================================================== Anant Raj −40% from the ₹744 peak */
 const GRASS_Y = 1340; // screen y of the collage grass strip in the building overview
 const AnantRaj: React.FC<{ t: number }> = ({ t }) => {
   const a = S("anantraj"), end = E("anantraj");
   const gather = prog(t, a, 0.35, ease.inOutCubic); // horizontal bar shrinks into the peak dot
-  const fall = prog(t, a + 0.35, 1.2, ease.inOutCubic);
-  const flat = prog(t, end - 0.55, 0.45, ease.inOutCubic); // line flattens into the grass strip
-  const fade = 1 - prog(t, end - 0.6, 0.3);
+  const fall = prog(t, a + 0.6, 1.2, ease.inOutCubic); // −40% reached at beat + 1.8 s, just before "chaalis" (+2.26 s)
+  const flat = prog(t, end - 0.45, 0.4, ease.inOutCubic); // line flattens into the grass strip
+  const fade = 1 - prog(t, end - 0.5, 0.3);
   const x2 = lerp(PEAK.x, LOW.x, fall), y2 = lerp(PEAK.y, LOW.y, fall);
   const fy1 = lerp(PEAK.y, GRASS_Y, flat), fy2 = lerp(y2, GRASS_Y, flat);
   return (
@@ -231,7 +239,7 @@ const AnantRaj: React.FC<{ t: number }> = ({ t }) => {
         </svg>
       </AbsoluteFill>
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
-        {t < a + 0.35 ? (
+        {t < a + 0.6 ? (
           <line x1={lerp(G, PEAK.x, gather)} y1={PEAK.y} x2={lerp(1080 - G, PEAK.x + 1, gather)} y2={PEAK.y} stroke={RED} strokeWidth={7} />
         ) : flat <= 0 ? (
           <DashedLine x1={PEAK.x} y1={PEAK.y} x2={x2} y2={y2} p={1} c={RED} w={7} />
@@ -246,7 +254,7 @@ const AnantRaj: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-/* ================================================================== 38.1–50.7 the desk: patent date, the race, Novo's cut */
+/* ================================================================== the desk: patent date, the race, Novo's cut */
 const NOTIFS = [
   { icon: "N", title: "NATCO", body: "SEMANAT VIAL ₹1,290/MAHINA" },
   { icon: "Z", title: "ZYDUS", body: "PEN ~₹2,200 · DIABETES + OBESITY" },
@@ -263,14 +271,14 @@ const DeskScenes: React.FC<{ t: number }> = ({ t }) => {
   // lock-screen header (38.1–42.3)
   const hdrOut = prog(t, a1 - 0.25, 0.25, ease.inCubic);
   // notification stack (42.3–47.3), newest on top
-  const arr = NOTIFS.map((_, k) => a1 + 0.5 * k);
+  const arr = raceArrivals(a1); // Natco and Zydus land on their spoken names
   const stackOut = prog(t, a2 - 0.35, 0.35, ease.inCubic);
   const ys = NOTIFS.map((_, k) => {
     let y = 470;
     for (let j = k + 1; j < NOTIFS.length; j++) y += (NH(NOTIFS[j]) + 16) * ease.outExpo(clamp01((t - arr[j]) / 0.35));
     return y - stackOut * 1500;
   });
-  const more = prog(t, a1 + 3.1, 0.4, ease.outExpo);
+  const more = prog(t, a1 + 2.55, 0.4, ease.outExpo); // "~10 COMPANIES" on "das companies" (beat + 2.5 s)
   // Novo price tag (47.3–50.7)
   const tagIn = ease.outExpo(clamp01((t - a2) / 0.5));
   const strike = prog(t, a2 + 0.25, 0.3, ease.outCubic);
@@ -316,12 +324,12 @@ const DeskScenes: React.FC<{ t: number }> = ({ t }) => {
           </div>
           {[0, 1, 2].map((k) => (
             <div key={k} style={{ position: "absolute", left: 90 + 24 * (k + 1), right: 90 + 24 * (k + 1), top: ys[0] + NH(NOTIFS[0]) - 8 + 14 * k, height: 26, borderRadius: "0 0 22px 22px",
-              background: `rgba(245,243,238,${0.6 - k * 0.15})`, opacity: prog(t, a1 + 3.1 + k * 0.5, 0.3) * (1 - stackOut) }} />
+              background: `rgba(245,243,238,${0.6 - k * 0.15})`, opacity: prog(t, a1 + 2.85 + k * 0.25, 0.3) * (1 - stackOut) }} />
           ))}
           {NOTIFS.map((n, k) => t >= arr[k] && (
             <Notif key={n.title} y={ys[k]} p={ease.outExpo(clamp01((t - arr[k]) / 0.4))} app="now" title={n.title} body={n.body} icon={n.icon} />
           )).reverse()}
-          <div style={{ position: "absolute", left: G, top: 1290, opacity: prog(t, a1 + 3.6, 0.3) * (1 - stackOut) }}>
+          <div style={{ position: "absolute", left: G, top: 1308, opacity: prog(t, a1 + 2.9, 0.3) * (1 - stackOut) }}>
             <span style={{ display: "inline-block", padding: "10px 20px", borderRadius: 999, border: "2px solid rgba(255,255,255,0.4)", background: "rgba(10,10,11,0.7)", fontFamily: mono, fontSize: 28, color: INK }}>
               NATCO <span style={{ color: GREEN }}>+12%</span> · 16 FEB (APPROVAL NEWS)
             </span>
@@ -345,12 +353,12 @@ const DeskScenes: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-/* ================================================================== 50.7–55.3 the lesson: stacked "RACE" (musk B8) */
+/* ================================================================== the lesson: stacked "RACE" (musk B8) */
 const CHIP_POS = [{ x: 400, y: 960 }, { x: 680, y: 960 }, { x: 400, y: 1060 }, { x: 680, y: 1060 }];
 const CHIPS = ["ZAMEEN", "SERVER", "COOLING", "PHARMA"];
 const Lesson: React.FC<{ t: number }> = ({ t }) => {
   const a = S("lesson"), end = E("lesson");
-  const col = prog(t, end - 0.45, 0.45, ease.inOutCubic);
+  const col = prog(t, end - 0.35, 0.35, ease.inOutCubic);
   const rows = 11;
   return (
     <AbsoluteFill style={{ background: BG }}>
@@ -358,15 +366,15 @@ const Lesson: React.FC<{ t: number }> = ({ t }) => {
         <div style={{ position: "absolute", left: 0, right: 0, top: -200, transform: `translateY(${((t - a) * 60) % 196}px)` }}>
           {Array.from({ length: rows }).map((_, i) => (
             <div key={i} style={{ ...sx(196, 900, "transparent"), WebkitTextStroke: "2px rgba(138,143,152,0.16)", textAlign: "center", lineHeight: 1,
-              opacity: prog(t, a + 0.9 + Math.abs(i - 5) * 0.06, 0.3) }}>RACE</div>
+              opacity: prog(t, a + 1.3 + Math.abs(i - 5) * 0.06, 0.3) }}>RACE</div>
           ))}
         </div>
         <div style={{ position: "absolute", left: 0, right: 0, top: 330, textAlign: "center" }}>
           <Rise t={t} a={a + 0.1}><div style={sx(104, 900)}>PATENT KHULA</div></Rise>
-          <div style={{ ...sx(80, 900, GREY), margin: "26px 0", opacity: prog(t, a + 0.7, 0.2) }}>↓</div>
-          <Rise t={t} a={a + 0.9}><div style={sx(150, 900)}>RACE SHURU</div></Rise>
+          <div style={{ ...sx(80, 900, GREY), margin: "26px 0", opacity: prog(t, a + 1.1, 0.2) }}>↓</div>
+          <Rise t={t} a={a + 1.3}><div style={sx(150, 900)}>RACE SHURU</div></Rise>{/* "race shuru" at beat + 1.4 s */}
           <div style={{ ...sx(80, 900, GREY), margin: "26px 0", opacity: prog(t, a + 2.1, 0.2) }}>↓</div>
-          <Rise t={t} a={a + 2.3}><div style={sx(124, 900, RED)}>DAAM NEECHE</div></Rise>
+          <Rise t={t} a={a + 2.3}><div style={sx(124, 900, RED)}>DAAM NEECHE</div></Rise>{/* "aur daam" at beat + 2.4 s */}
         </div>
       </AbsoluteFill>
       {/* words collapse into the four chips */}
@@ -382,12 +390,12 @@ const Chip: React.FC<{ text: string }> = ({ text }) => (
   <span style={{ display: "inline-block", padding: "16px 0", width: 250, textAlign: "center", borderRadius: 999, border: "2.5px solid rgba(255,255,255,0.85)", ...sx(40, 900) }}>{text}</span>
 );
 
-/* ================================================================== 55.3–58.7 CTA: bead ring (footy Cta) */
+/* ================================================================== CTA: bead ring (footy Cta) */
 const Cta: React.FC<{ t: number }> = ({ t }) => {
   const a = S("cta");
   const cols = [INK, GREY, RED, INK, GREY, GREEN];
   const N = 30;
-  const pill = ease.outExpo(clamp01((t - (a + 1.6)) / 0.4));
+  const pill = ease.outExpo(clamp01((t - (a + 1.8)) / 0.4)); // "comment karo" at beat + 1.94 s
   return (
     <AbsoluteFill style={{ background: BG }}>
       <AbsoluteFill style={slowPush(t, a, 540, 960)}>
@@ -416,7 +424,7 @@ const Cta: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-/* ================================================================== 58.7–60.0 end card, static */
+/* ================================================================== end card, static */
 const End: React.FC = () => (
   <AbsoluteFill style={{ background: BG }}>
     <div style={{ position: "absolute", left: 0, right: 0, top: 740, textAlign: "center", ...sx(120, 800), letterSpacing: "0.32em", paddingLeft: "0.32em" }}>AVRON</div>
@@ -432,9 +440,9 @@ const TAGS: { id: string; d: number; text: string; outAt?: number }[] = [
   { id: "nifty", d: 0.5, text: "Source: NSE levels via Business Standard / Outlook Business" },
   { id: "vacancy", d: 0.5, text: "JLL · H1 2026" },
   { id: "pharma", d: 0.6, text: "Tickertape, 27 Oct" },
-  { id: "anantraj", d: 0.6, text: "Equitymaster", outAt: E("anantraj") - 0.6 },
+  { id: "anantraj", d: 0.6, text: "Equitymaster", outAt: E("anantraj") - 0.5 },
   { id: "patent", d: 0.6, text: "Natco NSE filing, 20 Mar 2026", outAt: E("patent") - 0.25 },
-  { id: "race", d: 0.4, text: "Business Standard, ThePrint · NSE filings · Business Today", outAt: E("race") - 0.35 },
+  { id: "race", d: 0.4, text: "Business Standard, ThePrint · NSE · Business Today", outAt: E("race") - 0.35 },
   { id: "novo", d: 0.6, text: "Outlook Business" },
 ];
 const Tags: React.FC<{ t: number }> = ({ t }) => {
@@ -468,16 +476,19 @@ const Graphics: React.FC = () => {
   );
 };
 
-/** Planned VO line as a small guide subtitle (Roman script, 40 px, 70% white). No full stops on screen. */
-const VoGuide: React.FC<{ t: number }> = ({ t }) => {
-  const b = beatAt(t);
-  if (!b.vo) return null;
-  const text = b.vo.replace(/\.(\s|$)/g, "$1").trim();
-  const o = prog(t, b.start + 0.05, 0.15) * (1 - prog(t, b.end - 0.12, 0.12));
+/** Captions: Roman Hinglish chunks timed to the spoken words, in the old guide subtitle's slot and style. No full stops. */
+type Cap = { text: string; show: number; hide: number };
+const CAPTIONS = (CAPS as { captions: Cap[] }).captions;
+const Caption: React.FC<{ t: number }> = ({ t }) => {
+  const c = CAPTIONS.find((x) => t >= x.show && t < x.hide);
+  if (!c) return null;
+  // back-to-back chunks switch hard on the word boundary; a chunk after a pause fades in, one before a pause fades out
+  const after = CAPTIONS.some((x) => x.hide === c.show), before = CAPTIONS.some((x) => x.show === c.hide);
+  const o = (after ? 1 : prog(t, c.show, 0.08)) * (before ? 1 : 1 - prog(t, c.hide - 0.1, 0.1));
   return (
     <div style={{ position: "absolute", left: 60, right: 60, bottom: 1920 - 1540, textAlign: "center", opacity: o }}>
       <span style={{ display: "inline-block", padding: "8px 18px", borderRadius: 14, background: "rgba(10,10,11,0.55)", fontFamily: sans, fontWeight: 600, fontSize: 40, lineHeight: 1.25,
-        letterSpacing: "-0.01em", color: "rgba(255,255,255,0.7)" }}>{text}</span>
+        letterSpacing: "-0.01em", color: "rgba(255,255,255,0.7)" }}>{c.text}</span>
     </div>
   );
 };
@@ -489,7 +500,7 @@ export const DcPharmaReel: React.FC = () => {
       <CameraMotionBlur shutterAngle={180} samples={5}>
         <Graphics />
       </CameraMotionBlur>
-      {SHOW_VO_GUIDE && <VoGuide t={t} />}
+      <Caption t={t} />
       <Audio src={staticFile("dcpharma/mix.wav")} />
     </AbsoluteFill>
   );

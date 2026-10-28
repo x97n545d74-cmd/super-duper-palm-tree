@@ -53,3 +53,54 @@ Summary for the final render: 7 of 10 checks pass; the 3 flags are the expected 
 3. Write the real beat `start`/`end` times (and per-beat `words` arrays) into `src/projects/dcpharma/timeline.json`. Set `voEnd` to the end of "karo". Then run `python3 scripts/fix_timeline.py src/projects/dcpharma` to repair any bunched or out-of-order word timings.
 4. Re-time: the scenes and the score both read `timeline.json`, so re-run `python3 scripts/score_dcpharma.py`. Copy or convert the VO to `public/dcpharma/vo.wav` and mix with VO-keyed ducking: `python3 scripts/mix_stems.py public/dcpharma`. Its default stem gains apply; pass a gains JSON to keep music about 16 dB under the voice. A few in-scene cues are offsets from the beat start (for example the counters and the rack-fill steps). Check them in stills and nudge them to the spoken word if needed.
 5. Set `SHOW_VO_GUIDE = false` (or switch to word-synced captions from `engine/components/Captions`), then render stills, render, and run `python3 scripts/qc.py <mp4> src/projects/dcpharma <out> public/dcpharma/vo.wav` for the ASR check.
+
+---
+
+# Final cut (2026-10-28): the user's Tia VO
+
+**File:** `AVRON_dcpharma_FINAL_Tia-VO_1080x1920.mp4`, 53.01 s, 1080×1920, 30 fps, H.264 High / yuv420p / BT.709, AAC 48 kHz stereo, −14.1 LUFS integrated, −1.5 dBTP. Also in this folder: `cover_1080x1920.jpg` (hook frame at 1.4 s, both words set), `subtitles.srt` (43 captions, Roman Hinglish) and `qc_final/` (report and contact sheets). Not published.
+
+## What changed
+- **Timing.** `src/projects/dcpharma/timeline.json` holds the real beat times from the VO (the planned ones are in `timeline_planned.json`). The reel is now 53.0 s: VO 0–50.75 s, end card 50.8–53.0 s.
+- **Scenes.** No absolute times are left in `Reel.tsx` or `Building.tsx`. Each in-scene cue is an offset from its beat's `S(id)`/`E(id)`, keyed to the spoken word:
+  - Hook: CRASH at 0 s and KA WAIT? at 0.6 s, both set by ~0.9 s, out over the last 0.3 s of the beat.
+  - Nifty: −16% counts up on "solah pratishat".
+  - Vacancy: 2.8% and the empty-slot pulse land on "2.8".
+  - Pharma: DOUBLE DIGIT lands on "ek saal mein", so it holds ~1.6 s.
+  - Burst: hit at beat + 0.45 s on "stock", collapse 0.3 s.
+  - Anant Raj: −40% is reached just before "chaalis".
+  - Race: Natco and Zydus arrive on their spoken names, and "~10 COMPANIES" lands on "das companies".
+  - Lesson: RACE SHURU and DAAM NEECHE land on their words.
+  - CTA: the COMMENT KARO pill lands on "comment".
+  - Building: the zameen cards are in by +0.4 s, Netweb's 62% fades on the cut to cooling, and the cooling text holds until 0.6 s before the zoom-out.
+  - `BURST_HIT` and `raceArrivals` are exported from `Reel.tsx` and mirrored in the score.
+- **Captions.** The planned-VO guide (`SHOW_VO_GUIDE`) is removed. `scripts/captions_dcpharma.py` maps each Roman chunk from `VO.md` (2–5 words) onto the whisper word indices and writes `captions.json` plus `subtitles.srt`. Captions switch on real word boundaries and use the same slot and style as the old guide (40 px, 70% white, dark pill, bottom of the safe area). Full stops are removed but decimal points stay. "Pharma mein" was missing from `vo_words.json`. Its time (34.10–34.72) comes from a word-timestamp pass on the 33.3–35.3 s clip, checked against the energy envelope. "20" was moved to start at 34.85.
+- **Score.** In `scripts/score_dcpharma.py`, every cue is a beat start plus a word offset:
+  - The beat drops in on "Nifty" (2.9 s).
+  - The dropout runs 16.15–16.6 s, with the low hit on "stock".
+  - The beat comes back on Anant Raj (17.8 s). The hats drop at the desk (33.95 s).
+  - The low-pass filter-down is scaled to the lesson + CTA.
+  - Hard stop at 50.75 s (end of "karo"), with a 5 ms declick and silence under the end card.
+  - The phone buzz sits in the pause before "Pharma mein", at −20 instead of −12, so it doesn't mask those words.
+- **Mix.** `public/dcpharma/vo.wav` is the user's MP3 at 48 kHz/24-bit, untouched. The mix command is `python3 scripts/mix_stems.py public/dcpharma projects/2026-10-datacenter-pharma/mix_gains.json`, with gains music −15, impacts −8, risers −10, foley −8 and alerts −6. VO-keyed ducking, then a two-pass loudnorm to −14 LUFS / −1.5 dBTP. Measured: the ducked bed sits 16–17 dB under the VO in every section except the desk, where the notification pings and the Novo low hit sit about 10 dB under.
+
+## QC (`qc_final/qc_report.json`)
+- PASS (10 of 13):
+  - 1080×1920, 30 fps, H.264 + yuv420p, AAC.
+  - Duration 53.01 s vs 53.0 s.
+  - −14.1 LUFS, true peak −1.5 dBFS.
+  - **ASR read-back 0.902** (whisper medium on the mix vs the clean VO; it hears every line in order, "Pharma mein" included).
+- FLAG, expected (the same three flags as the animatic):
+  - `no_black_segments`: near-black opening frames of the themes, pharma, Anant Raj and lesson shots, and the CTA collapse. Every span was checked on the contact sheet and none is empty. Also the end card, 50.8–53.0 s.
+  - `no_frozen_segments_over_1.2s` at 50.8 s and `no_near_static_seconds` at 51–52 s: the static end card the spec asks for.
+
+## Calls I made
+1. KA WAIT? swings in at 0.6 s, ahead of the spoken "wait" (1.18 s), so both words are set by ~0.9 s. CRASH stays on frame 0 so the first frame isn't empty.
+2. Some holds are below 3 words/s because the beats are short:
+   - Zameen (1.9 s): both cards are on screen for ~1.6 s.
+   - Layers (2.4 s): the four lines hold ~1.7 s, and the GW line isn't spoken.
+   - I sped up the reveals instead of cutting on-screen facts. Freeze-frame readers still get everything.
+3. The race source tag is shortened to "Business Standard, ThePrint · NSE · Business Today" so it fits on one line under the NATCO +12% pill. That pill moved down 18 px off the stacked notification edges.
+4. Caption style is the old guide subtitle's, not the engine's karaoke captions. The brief asked for the same position and style.
+5. The cover is taken from the final frame at 1.4 s, so it includes the caption "wait kar rahe the na?".
+6. The animatic files (`AVRON_dcpharma_animatic_1080x1920.mp4`, `qc/`) are kept for reference.

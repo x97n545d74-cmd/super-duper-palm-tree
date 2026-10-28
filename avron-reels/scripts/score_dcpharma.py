@@ -1,15 +1,16 @@
 """Original score + SFX for the AVRON data centre + pharma reel (ENGINE_REPORT.md Section 5). Deterministic.
 
-  0.0-5.0   ticking synth, 120 BPM 8th-note ticks, low-pass opening 400 Hz -> 2 kHz, under a low drone
-  5.0       beat drops in: kick, sub bass, lo-fi hats (driving lo-fi techno, 120 BPM)
-  19.8-20.3 full dropout; 20.3 low impact hit; pad only until 21.9; 21.9 beat back in
-  38.1      hats drop, kick stays (desk scene)
-  50.7      full beat, then a 4 s low-pass filter-down
-  58.7      hard stop on "karo", no reverb tail; silence to 60.0
-  SFX       whooshes 7.1 / 8.9 / 26.1 / 33.9, digital ticks x3 on the rack fill, paper rustle 28.2, digital click 30.4,
-            phone buzz 38.1, notification pings every 0.5 s from 42.3, low hit 47.3
-
-Cue times come from src/projects/dcpharma/timeline.json (planned timing until the Tia VO is aligned).
+Every cue is a beat start from src/projects/dcpharma/timeline.json (real times from the user's Tia VO) plus an offset
+keyed to the spoken word. Final-cut times in brackets:
+  hook          ticking synth, 120 BPM 8th-note ticks, low-pass opening 400 Hz -> 2 kHz, under a low drone
+  nifty + 1.05  beat drops in on the word "Nifty" [2.9]: kick, sub bass, lo-fi hats (driving lo-fi techno, 120 BPM)
+  burst         full dropout to burst + 0.45 [16.15-16.6], low impact hit on "stock", pad only until anantraj [17.8], beat back in
+  patent        hats drop, kick stays (desk scene) [33.95]
+  lesson        full beat, then a low-pass filter-down over the lesson + CTA [44.62]
+  voEnd         hard stop on the end of "karo" [50.75], no reverb tail; silence under the end card to 53.0
+  SFX           whooshes on ask / themes / layers / cooling, digital ticks x3 on the rack fill, paper rustle on zameen,
+                digital click on server, phone buzz on patent, notification pings on the race arrivals, low hit on novo
+The burst hit and the race arrivals mirror BURST_HIT / raceArrivals in src/projects/dcpharma/Reel.tsx.
 Writes <out>/stems/{music,impacts,risers,foley,alerts}.wav (for scripts/mix_stems.py once vo.wav exists)
 and <out>/mix.wav: the animatic mix with no VO, music + SFX normalised to -14 LUFS, true peak under -1.5 dBTP.
 
@@ -26,7 +27,7 @@ OUT = sys.argv[2] if len(sys.argv) > 2 else "public/dcpharma"
 os.makedirs(f"{OUT}/stems", exist_ok=True)
 tl = json.load(open(TLP))
 DUR = tl["duration"]
-STOP = tl["voEnd"]  # 58.7: hard stop on "karo"
+STOP = tl["voEnd"]  # hard stop on the end of "karo"
 S = {b["id"]: b["start"] for b in tl["beats"]}
 N = int(round(DUR * SR))
 t = np.arange(N) / SR
@@ -35,13 +36,15 @@ BPM = 120
 BEAT = 60 / BPM
 E8 = BEAT / 2
 
+BURST_HIT = 0.45  # = BURST_HIT in Reel.tsx
+RACE = [1.0, 1.65, 2.05, 2.45, 2.85, 3.25, 3.65, 4.05]  # first six = raceArrivals in Reel.tsx, then two more pings
 C = {
-    "beat_in": 5.0, "drop_a": S["burst"], "hit": S["burst"] + 0.5, "beat_back": S["anantraj"], "desk": S["patent"],
+    "beat_in": S["nifty"] + 1.05, "drop_a": S["burst"], "hit": S["burst"] + BURST_HIT, "beat_back": S["anantraj"], "desk": S["patent"],
     "lesson": S["lesson"], "stop": STOP,
     "whoosh": [S["ask"], S["themes"], S["layers"], S["cooling"]],
     "ticks": [S["vacancy"] + 0.55, S["vacancy"] + 1.25, S["vacancy"] + 1.95],
     "rustle": S["zameen"], "click": S["server"], "buzz": S["patent"],
-    "pings": [S["race"] + 0.5 * k for k in range(10)], "low_hit": S["novo"],
+    "pings": [S["race"] + d for d in RACE if S["race"] + d < S["novo"] - 0.3], "low_hit": S["novo"],
 }
 
 
@@ -136,7 +139,7 @@ mus += st(drone * 0.18 * np.clip((C["beat_in"] + 0.5 - t) / 0.5, 0, 1))
 
 def section(a, b, kick_on=True, hats_on=True, bass_on=True, pad_on=True, ticks_on=False):
     out = np.zeros((2, N))
-    # pad, chord changes every 2 bars, aligned to the 5.0 s downbeat grid
+    # pad, chord changes every 2 bars, aligned to the beat_in downbeat grid
     if pad_on:
         k0 = int(np.floor((a - C["beat_in"]) / (2 * BAR)))
         tc = C["beat_in"] + k0 * 2 * BAR
@@ -164,16 +167,17 @@ def section(a, b, kick_on=True, hats_on=True, bass_on=True, pad_on=True, ticks_o
     return out
 
 
-mus += section(C["beat_in"], C["drop_a"], ticks_on=True)                   # 5.0-19.8 beat in
-mus += section(C["hit"], C["beat_back"], kick_on=False, hats_on=False, bass_on=False)  # 20.3-21.9 pad only
-mus += section(C["beat_back"], C["desk"])                                   # 21.9-38.1 beat back in
-mus += section(C["desk"], C["lesson"], hats_on=False)                       # 38.1-50.7 hats drop, kick stays
-lesson = section(C["lesson"], C["stop"] + 0.5, ticks_on=True)               # 50.7-58.7 full beat, then filter-down
-fd0, fd1 = C["lesson"] + 0.6, C["lesson"] + 4.6
+mus += section(C["beat_in"], C["drop_a"], ticks_on=True)                   # nifty "Nifty" -> burst: beat in
+mus += section(C["hit"], C["beat_back"], kick_on=False, hats_on=False, bass_on=False)  # burst hit -> anantraj: pad only
+mus += section(C["beat_back"], C["desk"])                                   # anantraj -> patent: beat back in
+mus += section(C["desk"], C["lesson"], hats_on=False)                       # patent -> lesson: hats drop, kick stays
+lesson = section(C["lesson"], C["stop"] + 0.5, ticks_on=True)               # lesson -> stop: full beat, then filter-down
+span = C["stop"] - C["lesson"]  # filter-down over the first ~half of lesson + CTA (planned: 0.6 s in, 4 s long, of 8 s)
+fd0, fd1 = C["lesson"] + 0.075 * span, C["lesson"] + 0.575 * span
 fcut = lambda s: 16000 if s < fd0 else (16000 * (350 / 16000) ** min(1, (s - fd0) / (fd1 - fd0)) if s < fd1 else 350 + (s - fd1) * 120)
 lesson = np.array([tvlp(lesson[0], fcut), tvlp(lesson[1], fcut)])
 mus += lesson
-# dropout 19.8-20.3: full silence in the music bus
+# dropout burst -> burst hit: full silence in the music bus
 mus[:, int(C["drop_a"] * SR):int(C["hit"] * SR)] = 0
 music = mus
 
@@ -232,12 +236,12 @@ for at in C["ticks"]:
 place(impacts, st(impact(34, 2.0)), C["hit"], db(-8))
 place(foley, st(rustle()), C["rustle"] - 0.05, db(-14))
 place(foley, st(click(), 0.2), C["click"] + 0.2, db(-14))
-place(foley, st(buzz()), C["buzz"], db(-12))
+place(foley, st(buzz()), C["buzz"] - 0.15, db(-20))  # starts in the pause before "Pharma mein"; -20 keeps it ~12 dB under the VO
 for k, at in enumerate(C["pings"]):
     place(alerts, st(ping(), 0.25 if k % 2 else -0.25), at, db(-18))
 place(impacts, st(impact(44, 1.4)), C["low_hit"], db(-10))
 
-# ------------------------------------------------------------------ hard stop at 58.7 s (5 ms declick), silence to 60
+# ------------------------------------------------------------------ hard stop at voEnd (5 ms declick), silence to the end
 i0 = int(C["stop"] * SR); fade = int(0.005 * SR)
 for buf in (music, risers, impacts, foley, alerts):
     buf[:, i0:i0 + fade] *= np.linspace(1, 0, fade)
