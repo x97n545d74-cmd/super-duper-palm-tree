@@ -32,3 +32,6 @@ projects/2026-10-silver-crash/mix/
 public/silver/
 public/thali/stems/
 public/dcpharma/stems/
+
+# regenerable by scripts/score_swisspro.py (deterministic)
+public/swisspro/score.wav

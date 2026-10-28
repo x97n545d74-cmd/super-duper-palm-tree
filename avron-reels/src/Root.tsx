@@ -35,9 +35,11 @@ import { CardStudyV2, CARD_STUDY_V2_DURATION } from "./projects/card-study/Study
 import { StyleLight, STYLE_LIGHT_DURATION } from "./projects/style-light/Light";
 import { TypeStudy, TYPE_STUDY_DURATION } from "./projects/style-light/TypeStudy";
 import { SwissLight, SWISS_LIGHT_DURATION } from "./projects/style-light/SwissLight";
+import { SwissPro, SWISS_PRO_DURATION } from "./projects/style-light/SwissPro";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="SwissPro" component={SwissPro} durationInFrames={Math.round(SWISS_PRO_DURATION * 60)} fps={60} width={layout.width} height={layout.height} />
     <Composition id="SwissLight" component={SwissLight} durationInFrames={Math.round(SWISS_LIGHT_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="TypeStudy" component={TypeStudy} durationInFrames={Math.round(TYPE_STUDY_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="StyleLight" component={StyleLight} durationInFrames={Math.round(STYLE_LIGHT_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
