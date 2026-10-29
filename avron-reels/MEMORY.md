@@ -33,6 +33,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 ## Palantir reel (2026-10-29, script draft)
 - The user pasted a "Reel Strategist 32s" master prompt, saved as library prompt #10 (`insta-reel-avron-page/reel-strategist-32s/`). Brought in: #10 + #1. Goal: saves.
 - **One-reel look override:** the user chose "whatever the prompt says" (black #0A0A0A, Anton, yellow #FFD60A, Adam VO at 1.08x) over brand v2 for this reel. brand_lint will flag it. Don't treat it as a brand change; ask again on the next reel.
+- **Language: English** for this reel (user corrected the Hinglish draft: "English mai bnani thi"). Prompt #10 says Hinglish; ask the language on the next reel.
 - Fact check: $480M Maven (May 2024) real, raised to ~$1.28B (May 2025). "$2,000/soldier/month" has no source and "86% margin" is wrong (FY2025: gross ~82%, GAAP op 32%, adj. op 50%); both dropped. Script, timeline, caption and claim registry: `projects/2026-10-palantir/SCRIPT.md`. Open: verify Chandrayaan-3 cost (~₹615 cr) and the day's ₹/$ rate; the user makes the Adam VO.
 
 ## Who and what
