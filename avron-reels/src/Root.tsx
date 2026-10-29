@@ -36,9 +36,11 @@ import { StyleLight, STYLE_LIGHT_DURATION } from "./projects/style-light/Light";
 import { TypeStudy, TYPE_STUDY_DURATION } from "./projects/style-light/TypeStudy";
 import { SwissLight, SWISS_LIGHT_DURATION } from "./projects/style-light/SwissLight";
 import { SwissPro, SWISS_PRO_DURATION } from "./projects/style-light/SwissPro";
+import { PalantirReel, PALANTIR_DURATION } from "./projects/palantir/Reel";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="Palantir" component={PalantirReel} durationInFrames={Math.round(PALANTIR_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="SwissPro" component={SwissPro} durationInFrames={Math.round(SWISS_PRO_DURATION * 60)} fps={60} width={layout.width} height={layout.height} />
     <Composition id="SwissLight" component={SwissLight} durationInFrames={Math.round(SWISS_LIGHT_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
     <Composition id="TypeStudy" component={TypeStudy} durationInFrames={Math.round(TYPE_STUDY_DURATION * layout.fps)} fps={layout.fps} width={layout.width} height={layout.height} />
