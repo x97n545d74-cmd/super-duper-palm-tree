@@ -1,0 +1,127 @@
+# Reel 1: Palantir ka Army deal (32 s, faceless)
+
+Prompt: library #10 (Reel Strategist 32s) + #1 Motion Graphic One (context bridge, colour code, compliance line).
+Goal: **saves**. Look: the prompt's own (black #0A0A0A, Anton, yellow #FFD60A), chosen by the user for this reel over brand v2. Voice: ElevenLabs Adam, the prompt's settings.
+Status: script draft, 2026-10-29. Not produced, not published.
+
+## 1. Topic
+How one US Army software deal for Palantir grew about 2.7x in a year, and why software makes more profit per rupee than missiles.
+
+## 2. Six-word hook (on-screen)
+**EK SOFTWARE DEAL, 2.7x KAISE?**
+
+## 3. Voiceover with timestamps (~91 words)
+
+| Time | Section | VO |
+|---|---|---|
+| 0–3 s | Hook | Ek software deal, ek saal mein paune teen guna kaise ho gaya? |
+| 3–7 s | Proof | 2024 mein US Army ka Maven contract: 480 million dollar. 2025 mein: 1.28 billion. |
+| 7–14 s | Simple explanation | Maven drone aur satellite ki photo AI se padhta hai, aur commander ki screen pe target dikhata hai. Palantir har user ka licence bechta hai. |
+| 14–21 s | Money shot | 1.28 billion dollar, yaani lagbhag gyaarah hazaar crore. Itne mein atharah Chandrayaan-3 ban jaate. |
+| 21–28 s | Shock | Ab munafa. Lockheed missile banata hai: sau rupaye ki bikri pe das bachte hain. Palantir ke bachte hain battees. |
+| 28–32 s | CTA + loop | Filing ka link caption mein hai, save kar lo. Ek deal, paune teen guna kaise? |
+
+91 words is tight for 32 s. At 1.08x Adam it will probably run 33–35 s, which is still under the prompt's 35 s limit. I'll fit the cut to the real read.
+
+### Paste-ready ElevenLabs block (v3 tags, numbers spelled out)
+```
+[whispers] Ek software deal, ek saal mein paune teen guna kaise ho gaya?
+[normal] Twenty twenty-four mein US Army ka Maven contract: four eighty million dollar. Twenty twenty-five mein: one point two eight billion.
+Maven drone aur satellite ki photo AI se padhta hai, aur commander ki screen pe target dikhata hai. Palantir har user ka licence bechta hai.
+One point two eight billion dollar, yaani lagbhag gyaarah hazaar crore. [angry] Itne mein atharah Chandrayaan teen ban jaate.
+[normal] Ab munafa. Lockheed missile banata hai: sau rupaye ki bikri pe das bachte hain. Palantir ke bachte hain battees.
+Filing ka link caption mein hai, save kar lo. [whispers] Ek deal, paune teen guna kaise?
+```
+Settings from the prompt: Adam, Stability 62, Similarity 85, Style 45, Speed 1.08. In v3 the tag is `[whispers]`, not `[whisper]`. Adam is an older voice, so check that the tags actually change the read. If they don't, tell me and we can pick a v3-ready voice. Make 2 takes and keep the one that says "paisaa"-style Hindi cleanly.
+
+## 4. Visual timeline (a cut every ~1.5 s, no shot over 2 s)
+
+Colour code (from #1): yellow #FFD60A = the key number, red = the Lockheed figure, green = the Palantir figure. Type: Anton, all caps, white on #0A0A0A.
+
+| Time | Shot | Graphic | SFX (ElevenLabs SFX, not synthesised) |
+|---|---|---|---|
+| 0.0–1.5 | 1 | Black. "EK SOFTWARE DEAL" slams in, Anton | low sub hit |
+| 1.5–3.0 | 2 | "2.7x KAISE?" in yellow, hard cut | short tape-stop |
+| 3.0–4.5 | 3 | DoD contract announcement (defense.gov, 30 May 2024) screenshot, yellow highlight on "$480,000,000" | paper slide |
+| 4.5–6.0 | 4 | Same page style, May 2025 modification, highlight "$795,000,000" | highlighter swipe |
+| 6.0–7.0 | 5 | Counter $480M → $1.28B on black, yellow | fast tick roll |
+| 7.0–8.5 | 6 | B-roll: drone in flight (DVIDS, public domain, check each clip) | wind whoosh |
+| 8.5–10.0 | 7 | 3 icons in a row: satellite → AI chip → screen, one at a time | three soft clicks |
+| 10.0–11.5 | 8 | Dark map, a dotted line from satellite to a red target box | radar ping |
+| 11.5–13.0 | 9 | Icon of a user card, "LICENCE x HAZAARON USERS" | click |
+| 13.0–14.0 | 10 | "MAVEN = SOFTWARE KA KIRAYA" | whoosh |
+| 14.0–15.5 | 11 | "$1.28B" → morphs to "≈ ₹11,000 CR" yellow | coin counter |
+| 15.5–17.0 | 12 | Chandrayaan-3 photo (ISRO image, check terms) | rocket rumble, short |
+| 17.0–18.0 | 13 | Grid of 18 small rocket icons filling in | rapid ticks |
+| 18.0–18.6 | 14 | **Flash: "WAIT FOR PROFIT MARGIN"** (retention trick) | hard stop, silence |
+| 18.6–21.0 | 15 | "18 CHANDRAYAAN-3" holds, yellow | low boom |
+| 21.0–22.5 | 16 | "AB MUNAFA" | riser starts |
+| 22.5–24.0 | 17 | Split screen left: missile B-roll (DVIDS) + "₹100 → ₹10" red | metal clank |
+| 24.0–25.5 | 18 | Split right: laptop/screen icon + "₹100 → ₹32" green | riser peaks |
+| 25.5–28.0 | 19 | Two bars side by side, 10% vs 32%, "3x ZYADA" | impact hit |
+| 28.0–30.0 | 20 | Bookmark icon + "SAVE KARO: FILING LINK CAPTION MEIN" | soft pop |
+| 30.0–32.0 | 21 | Hook card again: "EK SOFTWARE DEAL, 2.7x KAISE?" (loop) | same sub hit as shot 1 |
+
+Bottom strip on shots 3–5 and 17–19: "Source: US DoD contract notices 2024–25; company FY2025 results. Education only."
+
+B-roll search queries (free licence only; log each in `assets/LICENSES.md`):
+- `site:dvidshub.net MQ-9 Reaper flight` (drone)
+- `site:dvidshub.net missile launch test` (Lockheed shot; avoid a specific Lockheed product unless the clip says it is one)
+- `site:isro.gov.in Chandrayaan-3 launch` (check ISRO's reuse terms first)
+
+## 5. On-screen text (for Canva)
+1. EK SOFTWARE DEAL
+2. 2.7x KAISE?
+3. $480M · MAY 2024
+4. +$795M · MAY 2025
+5. $1.28B
+6. SATELLITE → AI → SCREEN
+7. LICENCE x HAZAARON USERS
+8. MAVEN = SOFTWARE KA KIRAYA
+9. ≈ ₹11,000 CR
+10. 18 CHANDRAYAAN-3
+11. WAIT FOR PROFIT MARGIN
+12. AB MUNAFA
+13. LOCKHEED: ₹100 → ₹10
+14. PALANTIR: ₹100 → ₹32
+15. 3x ZYADA
+16. SAVE KARO · FILING LINK CAPTION MEIN
+17. EK SOFTWARE DEAL, 2.7x KAISE?
+Footer: AVRON is not SEBI-registered. Education only, not investment advice.
+
+## 6. Caption + 3 hashtags
+```
+May 2024 mein US Army ne Palantir ko Maven software ka 480 million dollar ka contract diya. May 2025 mein isme 795 million aur jode, total lagbhag 1.28 billion dollar (≈ ₹11,000 crore).
+
+Maven drone aur satellite ki photo AI se padhta hai. Palantir iske user licence bechta hai.
+
+Munafa: 2025 mein Lockheed Martin ka operating margin ~10% tha, Palantir ka 32% (GAAP).
+
+Sources (save karo):
+US DoD contract notice, 30 May 2024
+US DoD contract modification, May 2025
+Palantir FY2025 results, 2 Feb 2026
+Lockheed Martin FY2025 results, 29 Jan 2026
+
+AVRON SEBI-registered nahi hai. Sirf education, investment advice nahi.
+
+#Palantir #DefenceBusiness #AIWarfare
+```
+
+## Claim registry
+
+| Claim | Number used | Source | Status |
+|---|---|---|---|
+| Maven contract May 2024 | $480M ceiling, 5 yr | DoD notice 30 May 2024; Breaking Defense 30 May 2024 | Verified |
+| Modification May 2025 | +$795M → ~$1.28B, ends May 2029 | DoD contract mod; Inside Defense; HigherGov ($1,275,000,000) | Verified |
+| "Paune teen guna" / 2.7x | 1,275 / 480 = 2.66x | Arithmetic on the ceilings | Ceiling, not money paid. Say "contract", never "kamaya" |
+| Licences sold per user | — | $99.8M "user licenses" award; $795M "software licenses" mod | Verified wording |
+| ≈ ₹11,000 crore | $1.275B × ₹85–90 | Exchange rate on the day | **Estimate**; update the rate on posting day |
+| 18 Chandrayaan-3 | ₹11,000 cr ÷ ~₹615 cr | Widely reported ~₹615 cr mission cost | **Check against an ISRO/PIB figure before render** |
+| Lockheed "₹100 pe ₹10" | 7,731 / 75,000 = 10.3% | Lockheed FY2025 release (SEC 8-K) | Verified, consolidated operating margin |
+| Palantir "₹100 pe ₹32" | 32% GAAP operating margin FY2025 | Palantir FY2025 release, 2 Feb 2026 | Verified. Adjusted is 50%; we compare GAAP to GAAP |
+| Dropped: $2,000/soldier/month | — | No filing or notice gives a per-user price | Not used |
+| Dropped: 86% margin | — | Gross ~82%, GAAP op 32%, adj. op 50% | Not used |
+| Dropped: "Jitni lambi war, utna paisa" | — | No source shows war length drives Palantir revenue | Not used |
+
+Before render: check whether Palantir's Q3 2026 results (usually early November) are out, and whether a newer Maven modification exists.
