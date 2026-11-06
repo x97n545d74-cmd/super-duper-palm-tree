@@ -86,7 +86,7 @@ Instagram has no loop toggle; reels autoplay in a loop, so a "seamless loop" is 
 1. Instagram's Recommendation Guidelines list "content that includes engagement bait" and "content that includes clickbait" under content users say they dislike. Instagram's reported clarification: "if content explicitly asks for engagement through shares, comments, tags, or other actions, then we won't recommend it", while "earnestly engaging with your audience" is fine. There is no official text naming "wait for it" specifically. The policy targets explicit asks for interaction; a suspense line is a grey area, not a stated violation.
 2. The practical penalty is the skip rate, not a rule. One creator on r/socialmedia reported that openings like "wait for it" lost about 71% of viewers within two seconds, while a specific hook kept 72% through second five. Single anecdote, no controls, but it matches the mechanism: a viewer who is told to wait has been given no reason to.
 
-Rule for AVRON: never say "wait for it". Build the reason to wait into the first two seconds (a number, a contradiction, a half-shown document) and let the ending pay it off.
+Rule for the page: never say "wait for it". Build the reason to wait into the first two seconds (a number, a contradiction, a half-shown document) and let the ending pay it off.
 
 ### B5. What Insights cannot tell you
 
@@ -141,7 +141,7 @@ Three versions, strongest last.
 
 ### D2. Hidden information
 
-A background clue: a prop, a date on a document, a figure in a table, a facial expression (anchor reels), a line of small text. Works by hyperresponsiveness: a second pass notices what the first missed. Risk one: fabricated clues. For AVRON every hidden detail must be a sourced fact in the claim registry. Risk two: illegibility; a clue below 24 px mono on a phone is not a clue, it is noise. Rule: one hidden detail per reel, legible, true, and connected to the payoff. Do not hide the main point; hide a second confirmation of it.
+A background clue: a prop, a date on a document, a figure in a table, a facial expression (anchor reels), a line of small text. Works by hyperresponsiveness: a second pass notices what the first missed. Risk one: fabricated clues. For this page every hidden detail must be a sourced fact in the claim registry. Risk two: illegibility; a clue below 24 px mono on a phone is not a clue, it is noise. Rule: one hidden detail per reel, legible, true, and connected to the payoff. Do not hide the main point; hide a second confirmation of it.
 
 ### D3. Double-layer storytelling
 
@@ -267,7 +267,7 @@ Concept F is a competent save-bait reel. It would be approved on a saves goal un
 
 ### F1. Export per reel
 
-AVRON is not connected to any analytics tool yet, so this is a manual export from Instagram Insights (or Meta Business Suite on desktop) at fixed intervals: 24 h, 72 h, 7 d, 28 d.
+The new page will have no analytics tool at launch, so this is a manual export from Instagram Insights (or Meta Business Suite on desktop) at fixed intervals: 24 h, 72 h, 7 d, 28 d.
 
 | Field | Source | Note |
 |---|---|---|
@@ -326,7 +326,7 @@ Limits of this: Trial Reels go to different non-follower audiences, so the two v
 - Whether a replay was deliberate or idle autoplay.
 - Which of the six viewing types a given replay was. Only comments and DMs give that, and they are a biased sample.
 - Whether rewatching raised distribution on a given reel. Ranking is a black box; watch time is a stated top signal, but no per-reel attribution exists.
-- Any benchmark for "good" watch ratio, skip rate or views per reach. Instagram publishes none; every number in vendor blogs is a rule of thumb from someone else's account. Compare AVRON reels against AVRON reels.
+- Any benchmark for "good" watch ratio, skip rate or views per reach. Instagram publishes none; every number in vendor blogs is a rule of thumb from someone else's account. Compare the page's reels against its own earlier reels.
 
 ---
 
