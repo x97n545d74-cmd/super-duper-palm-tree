@@ -36,6 +36,11 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Language: English** for this reel (user corrected the Hinglish draft: "English mai bnani thi"). Prompt #10 says Hinglish; ask the language on the next reel.
 - Fact check: $480M Maven (May 2024) real, raised to ~$1.28B (May 2025). "$2,000/soldier/month" has no source and "86% margin" is wrong (FY2025: gross ~82%, GAAP op 32%, adj. op 50%); both dropped. Script, timeline, caption and claim registry: `projects/2026-10-palantir/SCRIPT.md`. **Rendered 2026-10-29:** `deliverables/2026-10-palantir/AVRON_palantir_reel1_1080x1920.mp4` (38.6 s, −14.3 LUFS; Adam v3 VO generated via the connector, take B, 1.12x; 6 ElevenLabs SFX; graphics only). The ElevenLabs connector's SFX come out 1 s long, so no bed. Open: verify Chandrayaan-3 cost (~₹615 cr) and the day's ₹/$ rate before posting. Not published.
 
+## Wirecard reel (2026-11-06, pre-production)
+- The user pasted a 4-phase "Retention Director 60s" prompt, saved as library prompt #11 (`insta-reel-avron-page/retention-director-60s/`). Asked per CLAUDE.md: no other library prompt; **brand v2, graphics only** (no talking head, no stock B-roll); **English**; goal **saves** (the close keeps the prompt's comment-split question plus the saves checklist end card).
+- Topic: BaFin banned new Wirecard shorts (18 Feb 2019, first single-stock ban in Germany) and filed a criminal complaint that put the two FT reporters under investigation; 16 months later €1.9 bn was missing and Wirecard became the first DAX insolvency. Pack (4 phases, claim registry C1–C10): `projects/2026-11-wirecard/PREPRO.md`; brand gate `BRAND_CHECK.md`. VO 132 words written / 137 spoken (~56 s at Tia pace). "April 2019" for the BaFin complaint is unverified, so the reel says "2019".
+- Waiting on the user: topic/script approval, WDI daily price CSV, exact sentences from BaFin's 18 Feb 2019 act and the BDO/BPI statements, Wirecard wordmark source, VO. SFX kit still not generated, so VO + music only unless they approve the kit.
+
 ## Who and what
 - AVRON makes cinematic finance and explainer reels: 1080×1920, 30 fps, H.264/AAC, −14 LUFS.
 - The pipeline runs research → verification → script → storyboard → assets → animation → sound → render → QC → MP4.
