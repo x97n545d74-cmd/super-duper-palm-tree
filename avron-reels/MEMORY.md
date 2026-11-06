@@ -36,6 +36,14 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Language: English** for this reel (user corrected the Hinglish draft: "English mai bnani thi"). Prompt #10 says Hinglish; ask the language on the next reel.
 - Fact check: $480M Maven (May 2024) real, raised to ~$1.28B (May 2025). "$2,000/soldier/month" has no source and "86% margin" is wrong (FY2025: gross ~82%, GAAP op 32%, adj. op 50%); both dropped. Script, timeline, caption and claim registry: `projects/2026-10-palantir/SCRIPT.md`. **Rendered 2026-10-29:** `deliverables/2026-10-palantir/AVRON_palantir_reel1_1080x1920.mp4` (38.6 s, −14.3 LUFS; Adam v3 VO generated via the connector, take B, 1.12x; 6 ElevenLabs SFX; graphics only). The ElevenLabs connector's SFX come out 1 s long, so no bed. Open: verify Chandrayaan-3 cost (~₹615 cr) and the day's ₹/$ rate before posting. Not published.
 
+## Red Bull Media Flywheel (2026-11-06, graphics pack)
+- The user pasted a 3:00 English script plus a cue sheet and asked for HTML/SVG artifacts, colour codes, a frame-by-frame sheet and AI prompts. Library prompt: **#9 Script method**. Goal: followers.
+- **One-reel look override:** the user's palette (#0A0A0C matte, #FACC15 yellow, #EF4444 crimson, white, Inter) with AVRON pro motion rules (user: "use the most advance version"). Glitch, flashes and whip pans were translated into slice reveals, hard cuts and push cuts. brand_lint will flag it. Ask again on the next reel.
+- **The 4 photos** (boardroom, production room, neon chart, cliff jump) are the user's own; they asked for them to be animated "according to script" and for more visuals. Code camera moves are in the master; Runway prompts and stock queries are in `PROMPTS.md`.
+- Fact fixes: Red Bull does run TV ads (2025 Super Bowl), so "ignores traditional advertising" was cut; "$50M in ad buys" had no source and was cut; the 15¢ can cost and the 25–33% marketing share are labelled estimates; the 8 M figure is YouTube's peak concurrent streams. Registry: `projects/2026-11-redbull/research/FACTS.md`.
+- Files: `projects/2026-11-redbull/` (SCRIPT, FRAMES, DESIGN, PROMPTS, graphics/reel.html with `seek(t)`, graphics/render.mjs, a Playwright → ffmpeg renderer). Silent master: `deliverables/2026-11-redbull/AVRON_redbull_flywheel_graphics_silent_1080x1920.mp4`. Page: https://claude.ai/artifact/TKAFCsUCxmcJ5Vbd9zUJ8Y. No VO or music yet. Not published.
+- Lesson: per-frame film grain at 7% blew the H.264 file to ~7.5 MB/s. Use about 4.5% grain that changes 12 times a second, plus a maxrate cap.
+
 ## Who and what
 - AVRON makes cinematic finance and explainer reels: 1080×1920, 30 fps, H.264/AAC, −14 LUFS.
 - The pipeline runs research → verification → script → storyboard → assets → animation → sound → render → QC → MP4.

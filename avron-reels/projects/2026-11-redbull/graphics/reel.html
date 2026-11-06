@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Red Bull Flywheel Graphics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens (one-reel palette, see DESIGN.md) ---------- */
+:root{
+  --matte:#0A0A0C; --panel:#141418; --panel-2:#1C1C22; --line:#2A2A32;
+  --yellow:#FACC15; --crimson:#EF4444; --white:#FFFFFF; --dim:#9A9AA6; --dim-2:#5C5C68;
+  --ui-bg:#0A0A0C; --ui-fg:#FFFFFF; --ui-muted:#9A9AA6; --ui-card:#141418;
+  color-scheme:dark;
+  --sans:'Inter','Inter Display',system-ui,sans-serif;
+  --mono:'JetBrains Mono','DejaVu Sans Mono',ui-monospace,monospace;
+}
+/* The reel is dark by design. The page around the player follows the viewer's theme. */
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){ --ui-bg:#F4F4F6; --ui-fg:#0A0A0C; --ui-muted:#5C5C68; --ui-card:#FFFFFF; color-scheme:light; } }
+:root[data-theme="light"]{ --ui-bg:#F4F4F6; --ui-fg:#0A0A0C; --ui-muted:#5C5C68; --ui-card:#FFFFFF; }
+:root[data-theme="dark"]{ --ui-bg:#0A0A0C; --ui-fg:#FFFFFF; --ui-muted:#9A9AA6; --ui-card:#141418; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ui-bg);color:var(--ui-fg);font-family:var(--sans)}
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding-block:16px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));gap:12px}
+.render body, html.render body{padding:0;background:#0A0A0C}
+
+/* ---------- player chrome (hidden when rendering) ---------- */
+header.ui{width:100%;max-width:980px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+header.ui h1{font-size:18px;font-weight:700;letter-spacing:-.01em}
+header.ui p{font-size:13px;color:var(--ui-muted)}
+.wrap{width:100%;max-width:980px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+#viewport{position:relative;width:min(100%, calc((100vh - 200px) * 0.5625), 460px);aspect-ratio:9/16;overflow:hidden;border-radius:10px;background:#0A0A0C}
+.controls{flex:1 1 280px;max-width:460px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:8px;align-items:center}
+button{font:600 13px var(--sans);border:1px solid var(--ui-muted);background:var(--ui-card);color:var(--ui-fg);border-radius:8px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--ui-fg)}
+input[type=range]{flex:1;accent-color:#FACC15}
+#tc{font:600 13px var(--mono);min-width:96px;color:var(--ui-fg)}
+.scenes{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.scenes button{text-align:left;font-weight:500;padding:8px 10px}
+.scenes button b{font-family:var(--mono);font-size:11px;color:var(--ui-muted);display:block}
+.note{font-size:12px;color:var(--ui-muted);line-height:1.5}
+
+/* ---------- the 1080x1920 stage ---------- */
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;background:#0A0A0C;overflow:hidden;color:#fff;font-family:var(--sans)}
+html.render #stage{position:fixed}
+.scene{position:absolute;inset:0;display:none;will-change:transform}
+.abs{position:absolute}
+.mono{font-family:var(--mono);font-size:28px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.h{font-weight:900;letter-spacing:-.045em;line-height:.92;text-transform:uppercase}
+.mask{overflow:hidden;display:block}
+.mask > span{display:block;will-change:transform}
+.y{color:var(--yellow)} .r{color:var(--crimson)} .d{color:var(--dim)}
+.chip{display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border:1.5px solid var(--line);background:rgba(20,20,24,.86);border-radius:999px;font:600 26px var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.chip i{width:12px;height:12px;border-radius:50%;background:var(--yellow);display:block}
+.card{background:var(--panel);border:1.5px solid var(--line);border-radius:28px}
+.src{position:absolute;left:72px;right:72px;bottom:96px;font:500 22px var(--mono);letter-spacing:.04em;color:var(--dim-2);line-height:1.45}
+.photo{position:absolute;overflow:hidden;border-radius:24px;background:#000}
+.photo img{position:absolute;left:50%;top:50%;width:100%;height:100%;object-fit:cover;will-change:transform}
+.bleed{position:absolute;inset:-80px;background-size:cover;background-position:center;filter:blur(46px) brightness(.32) saturate(.8);transform:scale(1.1)}
+.shade{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 45%, rgba(10,10,12,0) 40%, rgba(10,10,12,.85) 100%)}
+#grain{position:absolute;inset:0;pointer-events:none;opacity:.045;mix-blend-mode:screen;background-size:256px 256px;z-index:50}
+#vig{position:absolute;inset:0;pointer-events:none;z-index:49;background:radial-gradient(130% 90% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%)}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+</style>
+</head>
+<body>
+<header class="ui">
+  <h1>Red Bull Media Flywheel: graphics pack</h1>
+  <p>1080×1920 · 3:00 · 10 scenes · scrub or jump to a scene</p>
+</header>
+
+<div class="wrap">
+<div id="viewport"><div id="stage">
+
+<!-- S1 HOOK 0:00–0:05 -->
+<section class="scene" id="s1">
+  <div class="abs mono" id="s1-kick" style="left:84px;top:300px">Case file 01 · The money behind the brands</div>
+  <div class="abs" id="s1-lines" style="left:80px;top:560px;width:940px"></div>
+  <svg class="abs" style="left:0;top:0" width="1080" height="1920"><line id="s1-strike" x1="84" y1="0" x2="84" y2="0" stroke="#EF4444" stroke-width="16" stroke-linecap="square"/></svg>
+</section>
+
+<!-- S2 PARADOX split 0:05–0:14 -->
+<section class="scene" id="s2">
+  <div class="photo" id="s2-photo" style="left:60px;top:150px;width:960px;height:760px"><div class="bleed" style="background-image:url(img/boardroom.jpg)"></div><img src="img/boardroom.jpg" alt=""><div class="shade"></div></div>
+  <div class="abs" style="left:100px;top:190px"><span class="chip" id="s2-chip"><i style="background:#EF4444"></i>The old way</span></div>
+  <div class="abs h" id="s2-head" style="left:100px;top:700px;font-size:86px;width:880px"></div>
+  <!-- ad card -->
+  <div class="card abs" id="s2-ad" style="left:60px;top:960px;width:960px;height:640px;overflow:hidden">
+    <div class="abs" style="left:0;top:0;right:0;height:470px;background:linear-gradient(135deg,#1C1C22,#26262E)">
+      <svg class="abs" style="left:0;top:0" width="960" height="470">
+        <rect x="380" y="150" width="200" height="170" rx="20" fill="none" stroke="#5C5C68" stroke-width="4"/>
+        <polygon points="455,195 455,275 520,235" fill="#5C5C68"/>
+      </svg>
+      <div class="abs" style="left:32px;top:32px;font:700 26px var(--mono);background:#FACC15;color:#0A0A0C;padding:6px 14px;border-radius:6px;letter-spacing:.08em">AD</div>
+      <div class="abs num" id="s2-cd" style="right:32px;top:30px;font:700 34px var(--mono);color:#fff">0:30</div>
+      <div class="abs" style="right:32px;bottom:28px;font:600 24px var(--mono);color:#5C5C68;border:1.5px solid #3A3A44;padding:10px 18px;border-radius:8px;letter-spacing:.06em">SKIP AD IN <span id="s2-skip" class="num">5</span></div>
+    </div>
+    <div class="abs" style="left:0;right:0;top:470px;height:8px;background:#2A2A32"><div id="s2-bar" style="height:100%;width:0;background:#EF4444"></div></div>
+    <div class="abs" style="left:36px;top:510px;font:800 44px var(--sans);letter-spacing:-.02em">30-second TV spot</div>
+    <div class="abs mono" style="left:36px;top:575px;font-size:24px">Pay again for every airing</div>
+  </div>
+</section>
+
+<!-- S2b AD-SPEND CHART 0:14–0:25 -->
+<section class="scene" id="s2b">
+  <div class="abs mono" style="left:72px;top:240px">Where the marketing money goes</div>
+  <div class="abs h" id="s2b-head" style="left:72px;top:300px;font-size:92px;width:940px"></div>
+  <svg class="abs" style="left:0;top:0" width="1080" height="1920" id="s2b-svg">
+    <!-- scale: $0..6B over 900px from x=90 -->
+    <g font-family="JetBrains Mono, monospace" font-size="22" fill="#5C5C68">
+      <line x1="90" y1="640" x2="90" y2="1240" stroke="#2A2A32" stroke-width="2"/>
+      <line x1="390" y1="640" x2="390" y2="1240" stroke="#2A2A32" stroke-width="1.5" stroke-dasharray="4 8"/>
+      <line x1="690" y1="640" x2="690" y2="1240" stroke="#2A2A32" stroke-width="1.5" stroke-dasharray="4 8"/>
+      <line x1="990" y1="640" x2="990" y2="1240" stroke="#2A2A32" stroke-width="1.5" stroke-dasharray="4 8"/>
+      <text x="90" y="1280">$0</text><text x="390" y="1280" text-anchor="middle">$2B</text><text x="690" y="1280" text-anchor="middle">$4B</text><text x="990" y="1280" text-anchor="end">$6B</text>
+    </g>
+    <text x="90" y="690" font-family="Inter, sans-serif" font-weight="700" font-size="36" fill="#fff">Coca-Cola · advertising, 2024</text>
+    <rect id="s2b-coke" x="90" y="715" height="120" width="0" rx="10" fill="#EF4444"/>
+    <text id="s2b-cokev" x="0" y="795" font-family="Inter, sans-serif" font-weight="900" font-size="56" fill="#fff" opacity="0">$5.1B</text>
+    <text id="s2b-cokel" x="90" y="880" font-family="JetBrains Mono, monospace" font-size="24" fill="#9A9AA6" letter-spacing="2" opacity="0">BUYS AIRTIME · REPORTED</text>
+
+    <text x="90" y="990" font-family="Inter, sans-serif" font-weight="700" font-size="36" fill="#fff">Red Bull · all marketing (est.)</text>
+    <rect id="s2b-rb" x="90" y="1015" height="120" width="0" rx="10" fill="#FACC15"/>
+    <rect id="s2b-rbx" x="540" y="1015" height="120" width="0" rx="10" fill="none" stroke="#FACC15" stroke-width="4" stroke-dasharray="14 10"/>
+    <text id="s2b-rbv" x="0" y="1095" font-family="Inter, sans-serif" font-weight="900" font-size="56" fill="#fff" opacity="0">$3–4B</text>
+    <text id="s2b-rbl" x="90" y="1180" font-family="JetBrains Mono, monospace" font-size="24" fill="#9A9AA6" letter-spacing="2" opacity="0">OWNS THE EVENT · 25–33% OF SALES</text>
+  </svg>
+  <div class="card abs" id="s2b-tot" style="left:72px;top:1340px;width:936px;height:250px;padding:36px 40px">
+    <div class="mono" style="font-size:24px">Red Bull · 2024 sales</div>
+    <div class="row" style="gap:28px;align-items:baseline;margin-top:14px">
+      <div class="h y num" id="s2b-sales" style="font-size:110px;letter-spacing:-.04em">€0.0B</div>
+      <div style="font:600 36px var(--sans);color:#9A9AA6">≈ $12B · <span class="num" id="s2b-cans">0.00</span>B cans</div>
+    </div>
+  </div>
+  <div class="src">Coca-Cola 10-K (2024 advertising costs). Red Bull company figures 2024. Red Bull marketing share is an estimate (SportsBusiness Daily, BusinessLive, Front Office Sports); dashed = estimate range, €1 ≈ $1.08.</div>
+</section>
+
+<!-- S3 THESIS 0:25–0:35 -->
+<section class="scene" id="s3">
+  <div class="bleed" style="background-image:url(img/production_room.jpg);inset:-120px"></div>
+  <div class="photo" id="s3-photo" style="left:0;top:520px;width:1080px;height:900px;border-radius:0"><img src="img/production_room.jpg" alt=""><div class="shade"></div></div>
+  <div class="abs" id="s3-chips" style="left:0;top:0;width:1080px;height:1920px">
+    <div class="abs" data-x="300" data-y="900" data-d="1.6" style="left:150px;top:1010px"><span class="chip"><i></i>Flight cases</span></div>
+    <div class="abs" data-d="2.0" style="left:560px;top:820px"><span class="chip"><i></i>Live ops desk</span></div>
+    <div class="abs" data-d="2.4" style="left:520px;top:1300px"><span class="chip"><i></i>Cable runs</span></div>
+  </div>
+  <div class="abs mono" style="left:72px;top:190px" id="s3-kick">Red Bull, filed correctly</div>
+  <div class="abs h" id="s3-head" style="left:72px;top:250px;font-size:100px;width:950px"></div>
+  <div class="abs h" id="s3-sub" style="left:72px;top:1500px;font-size:64px;width:950px;letter-spacing:-.03em"></div>
+</section>
+
+<!-- S4 MARGIN 0:35–0:50 -->
+<section class="scene" id="s4">
+  <div class="photo" id="s4-photo" style="left:60px;top:560px;width:960px;height:540px"><img src="img/neon_chart.jpg" alt=""></div>
+  <svg class="abs" style="left:0;top:0" width="1080" height="1920">
+    <defs><linearGradient id="alu" x1="0" x2="1"><stop offset="0" stop-color="#5C5C68"/><stop offset=".35" stop-color="#E6E6EC"/><stop offset=".55" stop-color="#9A9AA6"/><stop offset="1" stop-color="#3A3A44"/></linearGradient></defs>
+    <g id="s4-can" transform="translate(540 860)">
+      <path id="s4-can-o" d="M-120,-330 Q-120,-360 -95,-372 L95,-372 Q120,-360 120,-330 L120,330 Q120,360 95,372 L-95,372 Q-120,360 -120,330 Z" fill="none" stroke="#FFFFFF" stroke-width="6" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+      <path id="s4-can-f" d="M-120,-330 Q-120,-360 -95,-372 L95,-372 Q120,-360 120,-330 L120,330 Q120,360 95,372 L-95,372 Q-120,360 -120,330 Z" fill="url(#alu)" opacity="0"/>
+      <rect id="s4-band" x="-120" y="-60" width="240" height="120" fill="#FACC15" opacity="0"/>
+      <rect id="s4-band2" x="-120" y="70" width="240" height="18" fill="#EF4444" opacity="0"/>
+    </g>
+  </svg>
+  <div class="abs mono" style="left:72px;top:230px">Unit economics · one 250 ml can</div>
+  <div class="abs h" id="s4-head" style="left:72px;top:290px;font-size:96px;width:940px"></div>
+  <div class="card abs" id="s4-cost" style="left:60px;top:1300px;width:450px;height:300px;padding:32px">
+    <div class="mono" style="font-size:22px">Cost to make*</div>
+    <div class="h y num" id="s4-costv" style="font-size:132px;margin-top:20px">$0.00</div>
+    <div class="mono" style="font-size:20px;margin-top:14px;color:#5C5C68">Industry estimate</div>
+  </div>
+  <div class="card abs" id="s4-price" style="left:570px;top:1300px;width:450px;height:300px;padding:32px">
+    <div class="mono" style="font-size:22px">Shelf price</div>
+    <div class="h num" id="s4-pricev" style="font-size:132px;margin-top:20px">$0.00</div>
+    <div class="mono" style="font-size:20px;margin-top:14px;color:#5C5C68">Typical US single can</div>
+  </div>
+  <div class="abs" id="s4-x" style="left:60px;top:1640px;width:960px;display:flex;justify-content:space-between;align-items:center">
+    <div style="font:800 48px var(--sans);letter-spacing:-.02em">Shelf price ≈ <span class="y">23×</span> the can</div>
+    <span class="chip" style="font-size:22px">est.</span>
+  </div>
+  <div class="src" style="bottom:70px">*Red Bull doesn't publish unit costs. The shelf price also pays the retailer and the distributor.</div>
+</section>
+
+<!-- S5 FLYWHEEL 0:50–1:15 -->
+<section class="scene" id="s5">
+  <div class="abs mono" style="left:72px;top:200px">The Red Bull flywheel</div>
+  <div class="abs h" id="s5-head" style="left:72px;top:260px;font-size:96px;width:940px"></div>
+  <svg class="abs" style="left:0;top:0" width="1080" height="1920" id="s5-svg">
+    <defs>
+      <marker id="arr" viewBox="0 0 12 12" refX="8" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#FACC15"/></marker>
+    </defs>
+    <circle cx="540" cy="1010" r="330" fill="none" stroke="#1C1C22" stroke-width="2"/>
+    <!-- four quarter arcs, clockwise top→right→bottom→left -->
+    <path class="s5-arc" d="M 640 695 A 330 330 0 0 1 855 910" fill="none" stroke="#FACC15" stroke-width="6" marker-end="url(#arr)" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+    <path class="s5-arc" d="M 855 1110 A 330 330 0 0 1 640 1325" fill="none" stroke="#FACC15" stroke-width="6" marker-end="url(#arr)" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+    <path class="s5-arc" d="M 440 1325 A 330 330 0 0 1 225 1110" fill="none" stroke="#FACC15" stroke-width="6" marker-end="url(#arr)" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+    <path class="s5-arc" d="M 225 910 A 330 330 0 0 1 440 695" fill="none" stroke="#FACC15" stroke-width="6" marker-end="url(#arr)" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+    <circle id="s5-dot" cx="540" cy="680" r="14" fill="#FACC15" opacity="0"/>
+    <text x="540" y="990" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="24" fill="#5C5C68" letter-spacing="3" id="s5-c1" opacity="0">2024 SALES</text>
+    <text x="540" y="1060" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="72" fill="#fff" id="s5-c2" opacity="0" letter-spacing="-2">€11.2B</text>
+  </svg>
+  <div class="abs" id="s5-nodes" style="left:0;top:0;width:1080px;height:1920px">
+    <div class="card abs s5-node" style="left:370px;top:615px;width:340px;height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-color:#FACC15"><div class="mono" style="font-size:20px;color:#FACC15">01</div><div style="font:800 38px var(--sans);letter-spacing:-.02em">Can margins</div></div>
+    <div class="card abs s5-node" style="left:700px;top:935px;width:340px;height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center"><div class="mono" style="font-size:20px;color:#FACC15">02</div><div style="font:800 38px var(--sans);letter-spacing:-.02em">Event ownership</div></div>
+    <div class="card abs s5-node" style="left:370px;top:1255px;width:340px;height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center"><div class="mono" style="font-size:20px;color:#FACC15">03</div><div style="font:800 36px var(--sans);letter-spacing:-.02em;text-align:center;line-height:1.05">Free media<br>attention</div></div>
+    <div class="card abs s5-node" style="left:40px;top:935px;width:340px;height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center"><div class="mono" style="font-size:20px;color:#FACC15">04</div><div style="font:800 38px var(--sans);letter-spacing:-.02em">Can sales</div></div>
+  </div>
+  <div class="abs" id="s5-chips" style="left:72px;top:1480px;display:flex;flex-direction:column;gap:16px">
+    <span class="chip">Red Bull Racing · owned since 2004</span>
+    <span class="chip">RB Leipzig · Salzburg · NY Red Bulls</span>
+    <span class="chip"><i></i>~25–33% of sales to marketing · est.</span>
+  </div>
+</section>
+
+<!-- S6 STRATOS 1:15–1:35 -->
+<section class="scene" id="s6">
+  <div class="abs" id="s6-sky" style="inset:0;background:linear-gradient(180deg,#050507 0%,#0A0A0C 30%,#10141C 70%,#1A2230 100%)"></div>
+  <svg class="abs" style="left:0;top:0;overflow:visible" width="1080" height="1920">
+    <g id="s6-world">
+      <!-- earth curve -->
+      <path d="M -400 1820 Q 540 1600 1480 1820 L 1480 2400 L -400 2400 Z" fill="#141820"/>
+      <path d="M -400 1820 Q 540 1600 1480 1820" fill="none" stroke="#2A3444" stroke-width="3"/>
+      <!-- ruler: y = 1700 - ft/130000*1320 -->
+      <line x1="180" y1="380" x2="180" y2="1700" stroke="#2A2A32" stroke-width="3"/>
+      <g id="s6-ticks" font-family="JetBrains Mono, monospace" font-size="22" fill="#5C5C68"></g>
+      <g id="s6-marks" font-family="Inter, sans-serif"></g>
+      <!-- jump line -->
+      <line id="s6-jumpline" x1="180" y1="400" x2="980" y2="400" stroke="#FACC15" stroke-width="3" stroke-dasharray="10 10"/>
+      <!-- capsule glyph -->
+      <g id="s6-cap" transform="translate(720 400)">
+        <line x1="0" y1="-260" x2="0" y2="-70" stroke="#5C5C68" stroke-width="2"/>
+        <ellipse cx="0" cy="-300" rx="60" ry="46" fill="none" stroke="#5C5C68" stroke-width="2.5"/>
+        <path d="M -58 -62 Q -58 -96 0 -100 Q 58 -96 58 -62 L 66 40 Q 0 58 -66 40 Z" fill="#1C1C22" stroke="#FFFFFF" stroke-width="3"/>
+        <rect x="-22" y="-60" width="44" height="80" rx="6" fill="#0A0A0C" stroke="#FACC15" stroke-width="3"/>
+        <line x1="-66" y1="40" x2="-80" y2="62" stroke="#fff" stroke-width="3"/><line x1="66" y1="40" x2="80" y2="62" stroke="#fff" stroke-width="3"/>
+      </g>
+    </g>
+  </svg>
+  <div class="abs mono" style="left:520px;top:1625px;width:520px;font-size:22px" id="s6-date">14 Oct 2012 · New Mexico</div>
+  <div class="card abs" id="s6-live" style="left:520px;top:1340px;width:500px;height:250px;padding:30px">
+    <div class="row" style="gap:12px"><span id="s6-dot" style="width:16px;height:16px;border-radius:50%;background:#EF4444;display:block"></span><span style="font:700 24px var(--mono);letter-spacing:.1em;color:#EF4444">LIVE · YOUTUBE</span></div>
+    <div class="h num" id="s6-count" style="font-size:96px;margin-top:22px">0</div>
+    <div class="mono" style="font-size:20px;margin-top:10px">Peak concurrent streams</div>
+  </div>
+  <div class="src" style="bottom:70px">YouTube's own peak figure, reported 14 Oct 2012 (prior record ≈ 500,000). Exit altitude ≈ 128,100 ft / 39 km.</div>
+</section>
+
+<!-- S7 ROI 1:35–1:55 -->
+<section class="scene" id="s7">
+  <div class="abs" id="s7-a" style="inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 72px">
+    <div class="mono">Broadcast rights fee</div>
+    <div class="h y" style="font-size:420px;letter-spacing:-.06em;line-height:.85;margin:24px 0">$0</div>
+    <div style="font:600 44px var(--sans);color:#9A9AA6;letter-spacing:-.01em;line-height:1.2">It owned the event, the footage and the network</div>
+  </div>
+  <div class="abs" id="s7-b" style="inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 72px">
+    <div class="mono">Project cost · outside estimates</div>
+    <div class="h" style="font-size:300px;letter-spacing:-.06em;line-height:.85;margin:24px 0">$30–<br>50M</div>
+    <div style="font:600 44px var(--sans);color:#9A9AA6;line-height:1.2">Five years of balloons, suits and testing</div>
+  </div>
+  <div class="abs" id="s7-c" style="inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 72px">
+    <div class="mono">Exposure value · analyst estimates</div>
+    <div class="h y" style="font-size:250px;letter-spacing:-.06em;line-height:.86;margin:24px 0">$100s<br>of M</div>
+    <div style="font:600 44px var(--sans);color:#9A9AA6;line-height:1.2">Red Bull has never published a number</div>
+  </div>
+  <div class="abs" id="s7-d" style="inset:0;padding:220px 60px 0">
+    <div class="mono" style="padding-left:12px">ROI scorecard</div>
+    <div class="h" style="font-size:92px;margin:18px 0 50px 12px">Buy attention<br>vs <span class="y">own it</span></div>
+    <div class="row" style="gap:20px;align-items:stretch">
+      <div class="card" style="flex:1;padding:34px 30px" id="s7-l">
+        <div class="mono r" style="font-size:22px">Paid ads</div>
+        <div class="s7-row"><b>Rights</b><span>Pay per spot</span></div>
+        <div class="s7-row"><b>Footage</b><span>Ends in 30 s</span></div>
+        <div class="s7-row"><b>Replays</b><span>Pay again</span></div>
+        <div class="s7-row"><b>Cost</b><span>Every airing</span></div>
+      </div>
+      <div class="card" style="flex:1;padding:34px 30px;border-color:#FACC15" id="s7-r">
+        <div class="mono y" style="font-size:22px">Stratos</div>
+        <div class="s7-row"><b>Rights</b><span class="y">$0 fee</span></div>
+        <div class="s7-row"><b>Footage</b><span>Owned</span></div>
+        <div class="s7-row"><b>Replays</b><span>Free</span></div>
+        <div class="s7-row"><b>Cost</b><span>$30–50M est.</span></div>
+      </div>
+    </div>
+    <style>.s7-row{display:flex;flex-direction:column;gap:6px;margin-top:34px}.s7-row b{font:500 20px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#5C5C68}.s7-row span{font:800 40px var(--sans);letter-spacing:-.02em}</style>
+  </div>
+  <div class="src" id="s7-src" style="bottom:70px">Cost and exposure value are third-party estimates (RTR Sports, Irish Times, trade press). No official figures exist.</div>
+</section>
+
+<!-- S8 NARRATIVE 1:55–2:15 -->
+<section class="scene" id="s8">
+  <div id="s8-photoWrap" class="abs" style="inset:0">
+    <div class="bleed" style="background-image:url(img/cliff_jump.jpg);inset:-120px"></div>
+    <div class="photo" id="s8-photo" style="left:0;top:560px;width:1080px;height:800px;border-radius:0"><img src="img/cliff_jump.jpg" alt=""><div class="shade"></div></div>
+    <div class="abs h" id="s8-head" style="left:72px;top:230px;font-size:104px;width:940px"></div>
+    <div class="abs" id="s8-sub" style="left:72px;top:1440px;width:936px;font:700 50px var(--sans);letter-spacing:-.02em;line-height:1.15"></div>
+  </div>
+  <div id="s8-trackWrap" class="abs" style="inset:0">
+    <div class="abs mono" style="left:72px;top:200px">Owned asset · Red Bull Racing</div>
+    <svg class="abs" style="left:0;top:0" width="1080" height="1920">
+      <path id="s8-trackbg" d="M 260 520 C 260 380, 520 380, 560 520 S 760 700, 860 620 S 980 780, 900 900 L 760 1120 C 700 1210, 820 1300, 760 1420 S 520 1560, 380 1480 L 230 1380 C 120 1300, 180 1160, 260 1080 S 360 900, 280 820 S 200 620, 260 520 Z" fill="none" stroke="#1C1C22" stroke-width="44" stroke-linejoin="round"/>
+      <path id="s8-track" d="M 260 520 C 260 380, 520 380, 560 520 S 760 700, 860 620 S 980 780, 900 900 L 760 1120 C 700 1210, 820 1300, 760 1420 S 520 1560, 380 1480 L 230 1380 C 120 1300, 180 1160, 260 1080 S 360 900, 280 820 S 200 620, 260 520 Z" fill="none" stroke="#FACC15" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle id="s8-car" r="20" fill="#FFFFFF" stroke="#0A0A0C" stroke-width="6"/>
+      <g id="s8-finish" opacity="0"><rect x="226" y="500" width="68" height="12" fill="#fff"/><rect x="226" y="512" width="68" height="12" fill="#0A0A0C" stroke="#fff" stroke-width="2"/></g>
+    </svg>
+    <div class="abs row" style="left:72px;top:1640px;gap:14px" id="s8-sectors">
+      <span class="chip" style="font-size:22px">S1</span><span class="chip" style="font-size:22px">S2</span><span class="chip" style="font-size:22px">S3</span>
+    </div>
+    <div class="card abs" style="left:640px;top:1610px;width:380px;height:120px;padding:20px 26px;display:flex;align-items:center;justify-content:space-between">
+      <span class="mono" style="font-size:20px">Lap</span><span class="h num" id="s8-lap" style="font-size:60px">0%</span>
+    </div>
+  </div>
+</section>
+
+<!-- S9 PLAYBOOK 2:15–2:40 -->
+<section class="scene" id="s9">
+  <div class="abs mono" style="left:72px;top:200px">The playbook</div>
+  <div class="abs h" id="s9-head" style="left:72px;top:260px;font-size:100px;width:940px"></div>
+  <div class="abs" style="left:60px;top:600px;width:960px">
+    <div class="card s9-card abs" style="left:0;top:0;width:960px;height:330px;padding:40px 44px">
+      <div class="h y" style="font-size:120px;letter-spacing:-.05em">01</div>
+      <div style="font:800 56px var(--sans);letter-spacing:-.025em;margin-top:6px">Build a media engine</div>
+      <div style="font:500 34px var(--sans);color:#9A9AA6;margin-top:8px">Content people choose to watch</div>
+    </div>
+    <div class="card s9-card abs" style="left:0;top:370px;width:960px;height:330px;padding:40px 44px">
+      <div class="h y" style="font-size:120px;letter-spacing:-.05em">02</div>
+      <div style="font:800 56px var(--sans);letter-spacing:-.025em;margin-top:6px">Fund it with margin</div>
+      <div style="font:500 34px var(--sans);color:#9A9AA6;margin-top:8px">A cheap-to-make product pays the bills</div>
+    </div>
+    <div class="card s9-card abs" style="left:0;top:740px;width:960px;height:330px;padding:40px 44px;border-color:#FACC15">
+      <div class="h y" style="font-size:120px;letter-spacing:-.05em">03</div>
+      <div style="font:800 56px var(--sans);letter-spacing:-.025em;margin-top:6px">Buyers → believers</div>
+      <div style="font:500 34px var(--sans);color:#9A9AA6;margin-top:8px">The can becomes a piece of the lifestyle</div>
+    </div>
+  </div>
+</section>
+
+<!-- S10 CTA 2:40–3:00 -->
+<section class="scene" id="s10">
+  <div class="abs h" id="s10-a" style="left:72px;top:520px;font-size:118px;width:940px"></div>
+  <div class="abs" id="s10-end" style="inset:0">
+    <div class="abs mono" style="left:72px;top:640px">Follow for</div>
+    <div class="abs" style="left:72px;top:700px;font:900 86px var(--sans);letter-spacing:-.035em;line-height:1;width:940px;text-transform:uppercase">The money behind<br>the biggest brands</div>
+    <div class="abs" id="s10-btn" style="left:72px;top:1040px;width:480px;height:136px;border-radius:999px;background:#FACC15;color:#0A0A0C;display:flex;align-items:center;justify-content:center;font:800 48px var(--sans);letter-spacing:-.02em">Follow</div>
+    <svg class="abs" id="s10-cursor" style="left:0;top:0;overflow:visible" width="60" height="80"><path d="M4 4 L4 60 L18 46 L28 70 L38 66 L28 42 L48 42 Z" fill="#fff" stroke="#0A0A0C" stroke-width="3" stroke-linejoin="round"/></svg>
+    <div class="abs mono" style="left:72px;top:1600px;font-size:22px;color:#5C5C68;width:940px;line-height:1.5;letter-spacing:.04em">Sources: Red Bull company figures 2024 · Coca-Cola 10-K · YouTube via TubeFilter (2012). Estimates are labelled.</div>
+  </div>
+  <div class="abs" id="s10-black" style="inset:0;background:#0A0A0C"></div>
+</section>
+
+<div id="vig"></div>
+<div id="grain"></div>
+</div></div>
+
+<div class="controls" id="controls">
+  <div class="row"><button id="play">Play</button><input id="scrub" type="range" min="0" max="180" step="0.0333" value="0"><span id="tc">0:00.00</span></div>
+  <div class="scenes" id="scenelist"></div>
+  <p class="note">Silent graphics timeline. Every chart is live SVG/HTML: copy a scene's markup straight into the edit, or render the whole page to MP4 with <code>render.mjs</code>. Dashed shapes and "est." mark estimates.</p>
+</div>
+</div>
+
+<script>
+(() => {
+const DUR = 180;
+const render = /[?&]render=1/.test(location.search);
+if (render) document.documentElement.classList.add('render');
+
+/* ---------- easing + helpers ---------- */
+function bez(x1,y1,x2,y2){ // cubic-bezier solver
+  const cx=3*x1,bx=3*(x2-x1)-cx,ax=1-cx-bx,cy=3*y1,by=3*(y2-y1)-cy,ay=1-cy-by;
+  const sx=t=>((ax*t+bx)*t+cx)*t, sy=t=>((ay*t+by)*t+cy)*t, dx=t=>(3*ax*t+2*bx)*t+cx;
+  return x=>{ if(x<=0) return 0; if(x>=1) return 1; let t=x; for(let i=0;i<8;i++){const e=sx(t)-x; const d=dx(t); if(Math.abs(e)<1e-5||!d) break; t-=e/d;} return sy(Math.min(1,Math.max(0,t))); };
+}
+const E = bez(.7,0,.2,1);        // house snap
+const EO = bez(.16,1,.3,1);      // soft out for counters and slow moves
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const p=(t,a,b,e=E)=>e(clamp((t-a)/(b-a)));
+const lerp=(a,b,x)=>a+(b-a)*x;
+const $=id=>document.getElementById(id);
+
+/* masked line reveal: build once, animate per frame */
+function lines(el, arr){ el.innerHTML = arr.map(l=>`<span class="mask"><span class="${l.c||''}">${l.t}</span></span>`).join(''); return [...el.querySelectorAll('.mask > span')]; }
+function reveal(spans, t, start, gap=.09, dur=.5){ spans.forEach((s,i)=>{ const x=p(t,start+i*gap,start+i*gap+dur); s.style.transform=`translateY(${(1-x)*105}%)`; }); }
+function outUp(spans, t, start, dur=.35){ spans.forEach(s=>{ const x=p(t,start,start+dur); if(x>0) s.style.transform=`translateY(${-x*105}%)`; }); }
+const fade=(el,x,dy=0)=>{ el.style.opacity=x; el.style.transform=`translateY(${(1-x)*dy}px)`; };
+
+/* ---------- scene timing (seconds) ---------- */
+const S = [
+  {id:'s1', a:0,   b:5,   name:'Hook',          tc:'0:00'},
+  {id:'s2', a:5,   b:14,  name:'Paradox split', tc:'0:05', push:true},
+  {id:'s2b',a:14,  b:25,  name:'Ad-spend chart',tc:'0:14', push:true},
+  {id:'s3', a:25,  b:35,  name:'Thesis',        tc:'0:25'},
+  {id:'s4', a:35,  b:50,  name:'Unit economics',tc:'0:35', push:true},
+  {id:'s5', a:50,  b:75,  name:'Flywheel',      tc:'0:50', push:true},
+  {id:'s6', a:75,  b:95,  name:'Stratos',       tc:'1:15'},
+  {id:'s7', a:95,  b:115, name:'ROI scorecard', tc:'1:35'},
+  {id:'s8', a:115, b:135, name:'Narrative',     tc:'1:55'},
+  {id:'s9', a:135, b:160, name:'Playbook',      tc:'2:15', push:true},
+  {id:'s10',a:160, b:180, name:'CTA',           tc:'2:40', push:true},
+];
+const PUSH = .42;
+
+/* ---------- build dynamic bits ---------- */
+// S1: three-slice masked reveal per line
+const s1L = [{t:'Red Bull',c:''},{t:"isn't a",c:''},{t:'beverage',c:'y'},{t:'company',c:'y'}];
+$('s1-lines').innerHTML = s1L.map(l=>`<div class="s1-line" style="position:relative;height:172px">${[0,1,2].map(k=>`<div class="h ${l.c}" data-k="${k}" style="position:absolute;left:0;top:0;font-size:178px;clip-path:inset(${k*33.4}% 0 ${(2-k)*33.3}% 0)">${l.t}</div>`).join('')}</div>`).join('');
+const s1Slices=[...$('s1-lines').querySelectorAll('[data-k]')];
+const s2Head = lines($('s2-head'), [{t:'Buy 30 seconds'},{t:'at a time',c:'r'}]);
+const s2bHead = lines($('s2b-head'), [{t:'Rent attention'},{t:'or <span class="y">own it</span>'}]);
+const s3Head = lines($('s3-head'), [{t:'An extreme'},{t:'sports'},{t:'<span class="y">production</span>'},{t:'house'}]);
+const s3Sub = lines($('s3-sub'), [{t:'that sells cans'},{t:'to pay the budget',c:'d'}]);
+const s4Head = lines($('s4-head'), [{t:'15 cents in'},{t:'<span class="y">$3.50</span> out'}]);
+const s5Head = lines($('s5-head'), [{t:'Own the'},{t:'<span class="y">culture</span>'}]);
+const s8Head = lines($('s8-head'), [{t:'No product'},{t:'pitch',c:'y'}]);
+const s8Sub = lines($('s8-sub'), [{t:'For hours the logo sat on the capsule,'},{t:'the suit and the stream.',c:'d'}]);
+const s9Head = lines($('s9-head'), [{t:'Content'},{t:'<span class="y">first</span>'}]);
+const s10A = lines($('s10-a'), [{t:"Don't build"},{t:'ads.',c:'r'},{t:'Build a'},{t:'media brand.',c:'y'}]);
+
+// S6 ruler
+const altY = ft => 1700 - ft/130000*1320;
+(function(){
+  let g=''; for(let ft=0; ft<=130000; ft+=10000){ const y=altY(ft); g+=`<line x1="168" y1="${y}" x2="${ft%20000?180:196}" y2="${y}" stroke="#3A3A44" stroke-width="2"/>`; if(ft%20000===0) g+=`<text x="150" y="${y+8}" text-anchor="end">${ft/1000}k</text>`; }
+  $('s6-ticks').innerHTML = g;
+  const marks=[[29032,'Everest','29,032 ft','#9A9AA6',40],[35000,'Airliner cruise','~35,000 ft','#9A9AA6',-34],[62000,'Armstrong line','~62,000 ft · blood boils','#9A9AA6',0],[128100,'The jump','≈128,100 ft · 39 km','#FACC15',0]];
+  $('s6-marks').innerHTML = marks.map(([ft,n,v,c,dy],i)=>{const y=altY(ft), ty=y+dy; return `<g class="s6-m" opacity="0"><line x1="180" y1="${y}" x2="${i===3?250:240}" y2="${y}" stroke="${c}" stroke-width="3"/><text x="262" y="${ty-6}" font-weight="800" font-size="36" fill="${i===3?'#FACC15':'#fff'}" letter-spacing="-1">${n}</text><text x="262" y="${ty+30}" font-family="JetBrains Mono, monospace" font-size="22" fill="${c}">${v}</text></g>`;}).join('');
+  $('s6-jumpline').setAttribute('y1',altY(128100)); $('s6-jumpline').setAttribute('y2',altY(128100));
+})();
+
+// grain texture
+(function(){ const c=document.createElement('canvas'); c.width=c.height=256; const x=c.getContext('2d'); const d=x.createImageData(256,256); for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255; d.data[i]=d.data[i+1]=d.data[i+2]=v; d.data[i+3]=255;} x.putImageData(d,0,0); $('grain').style.backgroundImage=`url(${c.toDataURL()})`; })();
+
+const track=$('s8-track'), trackLen=track.getTotalLength(); track.style.strokeDasharray=`${trackLen} ${trackLen}`;
+
+/* ---------- per-scene drawing (lt = local seconds) ---------- */
+const draw = {
+  s1(lt){
+    fade($('s1-kick'), p(lt,.1,.5));
+    s1Slices.forEach((el,i)=>{ const line=Math.floor(i/3), k=i%3; const d=.25+line*.32+k*.133; const x=p(lt,d,d+.28); el.style.transform=`translateX(${(1-x)*(k===1?-90:90)}px)`; el.style.opacity=x>0?1:0; });
+    // crimson strike through "beverage" on the word "isn't"
+    const s=p(lt,2.2,2.6); const y=560+2*172+92; const l=$('s1-strike'); l.setAttribute('y1',y); l.setAttribute('y2',y); l.setAttribute('x2',84+s*880); l.style.opacity=s>0?1:0;
+    const out=p(lt,4.6,5); $('s1-lines').style.opacity=1-out;
+  },
+  s2(lt){
+    const ph=$('s2-photo').querySelector('img'); ph.style.transform=`translate(-50%,-50%) scale(${1.04+lt*.006}) translateX(${-lt*3}px)`;
+    fade($('s2-chip'), p(lt,.4,.8), 20);
+    reveal(s2Head, lt, .7);
+    fade($('s2-ad'), p(lt,1.4,2), 60);
+    const cd=clamp(30-(lt-2)*3.4,0,30); $('s2-cd').textContent='0:'+String(Math.ceil(cd)).padStart(2,'0');
+    $('s2-skip').textContent = Math.max(0,Math.ceil(5-(lt-2)));
+    $('s2-bar').style.width = (1-cd/30)*100+'%';
+  },
+  s2b(lt){
+    reveal(s2bHead, lt, .2);
+    const sc=900/6; // px per $1B
+    const c=p(lt,1.2,2.4,EO); $('s2b-coke').setAttribute('width', 5.1*sc*c);
+    const cv=$('s2b-cokev'); cv.setAttribute('x', 90+5.1*sc*c+18 > 870 ? 90+5.1*sc*c-200 : 90+5.1*sc*c+18); cv.setAttribute('opacity', p(lt,2.2,2.6)); $('s2b-cokel').setAttribute('opacity', p(lt,2.4,2.8));
+    const r=p(lt,3.4,4.6,EO); $('s2b-rb').setAttribute('width', 3.0*sc*r);
+    const rx=p(lt,4.6,5.4,EO); $('s2b-rbx').setAttribute('width', 1.0*sc*rx); $('s2b-rbx').setAttribute('x', 90+3.0*sc);
+    const rv=$('s2b-rbv'); rv.setAttribute('x', 90+4.0*sc+18); rv.setAttribute('opacity', p(lt,5.2,5.6)); rv.setAttribute('fill','#FACC15'); $('s2b-rbl').setAttribute('opacity', p(lt,5.4,5.8));
+    fade($('s2b-tot'), p(lt,6.4,7), 40);
+    const k=p(lt,6.6,8.4,EO); $('s2b-sales').textContent='€'+(11.227*k).toFixed(1)+'B'; $('s2b-cans').textContent=(12.67*k).toFixed(2);
+  },
+  s3(lt){
+    // quick 1.15x push on "production house" (≈ +2.6 s)
+    const z=lerp(1.02,1.0,p(lt,0,2.4,EO)) * lerp(1,1.15,p(lt,2.6,3.1));
+    $('s3-photo').querySelector('img').style.transform=`translate(-50%,-50%) scale(${z+lt*.004})`;
+    fade($('s3-kick'), p(lt,.1,.5));
+    reveal(s3Head, lt, .3, .1);
+    [...$('s3-chips').children].forEach((c,i)=>{ const x=p(lt,3.6+i*.35,4.0+i*.35); c.style.opacity=x; c.style.transform=`scale(${.9+.1*x})`; });
+    reveal(s3Sub, lt, 5.6);
+  },
+  s4(lt){
+    // 0–2.6 s: neon chart photo, then it shrinks into the can (morph)
+    const m=p(lt,2.2,3.2); const ph=$('s4-photo');
+    ph.style.opacity=1-m; ph.style.transform=`scale(${lerp(1,.32,m)})`; ph.style.filter=`blur(${m*14}px)`;
+    $('s4-photo').querySelector('img').style.transform=`translate(-50%,-50%) scale(${1.02+lt*.01})`;
+    $('s4-can-o').style.strokeDashoffset = 1-p(lt,2.6,3.8);
+    $('s4-can-f').setAttribute('opacity', p(lt,3.6,4.2)*.9);
+    $('s4-band').setAttribute('opacity', p(lt,4.0,4.4)); $('s4-band2').setAttribute('opacity', p(lt,4.2,4.6));
+    $('s4-can').setAttribute('transform', `translate(540 ${lerp(860,820,p(lt,4,6,EO))}) scale(${lerp(1,.78,p(lt,4.4,5.4))})`);
+    reveal(s4Head, lt, .2);
+    fade($('s4-cost'), p(lt,5.2,5.7), 40); $('s4-costv').textContent='$'+(0.15*p(lt,5.4,6.4,EO)).toFixed(2);
+    fade($('s4-price'), p(lt,7.4,7.9), 40); $('s4-pricev').textContent='$'+(3.5*p(lt,7.6,8.6,EO)).toFixed(2);
+    fade($('s4-x'), p(lt,10.2,10.8), 20);
+  },
+  s5(lt){
+    reveal(s5Head, lt, .2);
+    document.querySelectorAll('.s5-node').forEach((n,i)=>{ const x=p(lt,1+i*2,1.5+i*2); n.style.opacity=x; n.style.transform=`translateY(${(1-x)*70}px)`; });
+    document.querySelectorAll('.s5-arc').forEach((a,i)=>{ a.style.strokeDashoffset = 1-p(lt,1.8+i*2,2.8+i*2); a.style.opacity=p(lt,1.8+i*2,1.9+i*2); });
+    const on=p(lt,9,9.4); const dot=$('s5-dot'); dot.setAttribute('opacity',on);
+    const ang = -Math.PI/2 + Math.max(0,lt-9)/4*2*Math.PI; dot.setAttribute('cx',540+330*Math.cos(ang)); dot.setAttribute('cy',1010+330*Math.sin(ang));
+    $('s5-c1').setAttribute('opacity',p(lt,9.4,9.8)); $('s5-c2').setAttribute('opacity',p(lt,9.6,10));
+    [...$('s5-chips').children].forEach((c,i)=>{ const x=p(lt,11+i*1.6,11.5+i*1.6); c.style.opacity=x; c.style.transform=`translateX(${(1-x)*-60}px)`; });
+  },
+  s6(lt){
+    // slow zoom out: start tight on the capsule, end on the full ruler
+    const z=p(lt,0,10,bez(.4,0,.2,1)); const s=lerp(2.6,1,z);
+    const cx=720, cy=altY(128100)-60; const tx=lerp(540-cx*s, 0, z), ty=lerp(820-cy*s, 0, z);
+    $('s6-world').setAttribute('transform', `translate(${tx} ${ty}) scale(${s})`);
+    $('s6-cap').setAttribute('transform', `translate(720 ${altY(128100) + Math.sin(lt*1.3)*4})`);
+    document.querySelectorAll('.s6-m').forEach((m,i)=>m.setAttribute('opacity', p(lt,6+i*.9,6.5+i*.9)));
+    fade($('s6-date'), p(lt,.4,.9));
+    fade($('s6-live'), p(lt,9,9.6), 40);
+    $('s6-dot').style.opacity = .35+.65*(Math.sin(lt*5)*.5+.5);
+    const k=p(lt,9.4,15,EO); const n=Math.round(8000000*k); $('s6-count').textContent = n.toLocaleString('en-US') + (k>=1?'+':'');
+  },
+  s7(lt){
+    const cut=[0,3.3,6.6,10]; const ids=['s7-a','s7-b','s7-c','s7-d'];
+    ids.forEach((id,i)=>{ const on = lt>=cut[i] && (i===3 || lt<cut[i+1]); const el=$(id); el.style.display=on?'':'none';
+      if(on && i<3){ const x=p(lt,cut[i],cut[i]+.25); el.style.transform=`scale(${lerp(1.06,1,x)})`; el.style.opacity=lerp(.0,1,p(lt,cut[i],cut[i]+.08)); } });
+    if(lt>=10){ const x=p(lt,10.4,10.9); $('s7-l').style.opacity=x; $('s7-l').style.transform=`translateY(${(1-x)*50}px)`; const y=p(lt,11,11.5); $('s7-r').style.opacity=y; $('s7-r').style.transform=`translateY(${(1-y)*50}px)`; }
+    $('s7-src').style.opacity = lt>3.3? 1:0;
+  },
+  s8(lt){
+    const match=9; // 2:04 match cut: rope line becomes racing line
+    $('s8-photoWrap').style.display = lt<match ? '' : 'none'; $('s8-trackWrap').style.display = lt>=match ? '' : 'none';
+    if(lt<match){
+      $('s8-photo').querySelector('img').style.transform=`translate(-50%,-50%) scale(${1.05+lt*.012}) translate(${-lt*4}px, ${lt*1.5}px)`;
+      reveal(s8Head, lt, .5); reveal(s8Sub, lt, 4.2, .12);
+    } else {
+      const u=lt-match; const k=clamp(u/9.5); const len=trackLen*E(k)*.98 + trackLen*.02*k;
+      track.style.strokeDashoffset = trackLen-len;
+      const pt=track.getPointAtLength(len); $('s8-car').setAttribute('cx',pt.x); $('s8-car').setAttribute('cy',pt.y);
+      $('s8-lap').textContent = Math.round(k*100)+'%';
+      [...$('s8-sectors').children].forEach((c,i)=>{ const done=k>(i+1)/3-.001; c.style.borderColor=done?'#FACC15':'#2A2A32'; c.style.color=done?'#FACC15':'#fff'; });
+      $('s8-finish').setAttribute('opacity', p(u,9.4,9.8));
+    }
+  },
+  s9(lt){
+    reveal(s9Head, lt, .2);
+    document.querySelectorAll('.s9-card').forEach((c,i)=>{ const st=[1.6,8.2,15][i]; const x=p(lt,st,st+.55); c.style.opacity=x>0?1:0; c.style.transform=`translateX(${(1-x)*1100}px)`; });
+  },
+  s10(lt){
+    reveal(s10A, lt, .3, .12);
+    outUp(s10A, lt, 8.6);
+    const e=p(lt,9,9.6); $('s10-end').style.opacity=e; $('s10-end').style.transform=`translateY(${(1-e)*40}px)`;
+    // cursor glides to the button and taps
+    const c=p(lt,11.5,13,EO); const cx=lerp(900,360,c), cy=lerp(1700,1125,c); $('s10-cursor').style.transform=`translate(${cx}px,${cy}px)`; $('s10-cursor').style.opacity=p(lt,11.2,11.5);
+    const tap=p(lt,13.2,13.35)-p(lt,13.35,13.6); const btn=$('s10-btn'); btn.style.transform=`scale(${1-.05*tap})`;
+    const done=lt>13.35; btn.textContent=done?'Following':'Follow'; btn.style.background=done?'#141418':'#FACC15'; btn.style.color=done?'#FACC15':'#0A0A0C'; btn.style.border=done?'2px solid #FACC15':'none';
+    $('s10-black').style.opacity = 0; // hard cut at 3:00, no fade-out
+  },
+};
+
+/* ---------- seek: the one entry point (used by preview and renderer) ---------- */
+function seek(t){
+  t=clamp(t,0,DUR-1e-4);
+  S.forEach((s,i)=>{
+    const el=$(s.id); const next=S[i+1];
+    const pushingOut = next && next.push && t>=s.b && t<s.b+PUSH;
+    const vis = (t>=s.a && t<s.b) || pushingOut;
+    el.style.display = vis?'block':'none';
+    if(!vis) return;
+    let x=0, blur=0;
+    if(s.push && t<s.a+PUSH){ const k=p(t,s.a,s.a+PUSH); x=(1-k)*1080; blur=Math.sin(k*Math.PI)*28; }
+    if(pushingOut){ const k=p(t,s.b,s.b+PUSH); x=-k*1080; blur=Math.sin(k*Math.PI)*28; }
+    el.style.transform = x? `translateX(${x}px)`:'';
+    el.style.filter = blur>0.5? `url(#mb)`:'';
+    if(blur>0.5) $('mbx').setAttribute('stdDeviation', `${blur} 0`);
+    draw[s.id](Math.min(t, s.b-1e-4)-s.a);
+  });
+  $('grain').style.backgroundPosition = `${(Math.floor(t*12)*97)%256}px ${(Math.floor(t*12)*61)%256}px`;
+  if(!render){ $('scrub').value=t; const m=Math.floor(t/60), sec=(t%60); $('tc').textContent=`${m}:${sec.toFixed(2).padStart(5,'0')}`; }
+}
+// directional motion-blur filter for push cuts
+document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute"><filter id="mb" x="-10%" y="0" width="120%" height="100%"><feGaussianBlur id="mbx" stdDeviation="0 0"/></filter></svg>');
+window.seek = seek; window.DURATION = DUR;
+
+/* ---------- preview player ---------- */
+const vp=$('viewport'), stage=$('stage');
+function fit(){ if(render){ stage.style.transform=''; return; } const w=vp.clientWidth; stage.style.transform=`scale(${w/1080})`; }
+if(render){ document.querySelector('header.ui').remove(); $('controls').remove(); vp.style.cssText='width:1080px;height:1920px;border-radius:0;max-width:none'; document.body.style.padding='0'; }
+else {
+  window.addEventListener('resize',fit); fit();
+  const list=$('scenelist'); S.forEach(s=>{ const b=document.createElement('button'); b.innerHTML=`<b>${s.tc}</b>${s.name}`; b.onclick=()=>{ cur=s.a+.01; seek(cur); }; list.appendChild(b); });
+  let cur=0, playing=false, last=0;
+  $('scrub').oninput=e=>{ cur=+e.target.value; seek(cur); };
+  $('play').onclick=()=>{ playing=!playing; $('play').textContent=playing?'Pause':'Play'; last=performance.now(); if(playing) requestAnimationFrame(tick); };
+  function tick(now){ if(!playing) return; cur+= (now-last)/1000; last=now; if(cur>=DUR) cur=0; seek(cur); requestAnimationFrame(tick); }
+  const h=parseFloat((location.hash.match(/t=([\d.]+)/)||[])[1]); cur=isNaN(h)?0:h;
+  seek(cur);
+  document.fonts && document.fonts.ready.then(()=>seek(cur));
+}
+if(render) seek(0);
+})();
+</script>
+</body>
+</html>
