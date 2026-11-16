@@ -229,12 +229,10 @@ def main():
         print("Could not reach the Claude API: %s" % e)
         return 1
     total_in, total_out = total_in + tin, total_out + tout
-    if "FEED_ERROR" in text:
-        print("Claude could not fetch the NSE feed this time. Tokens in/out: %d / %d" % (total_in, total_out))
-        return 0
     candidates = parse_items(text)
     if candidates is None:
-        print("Feed reply was not a JSON array; nothing saved. Reply began: %r" % text[:200])
+        why = "Claude could not fetch the NSE feed this time." if "FEED_ERROR" in text else "Feed reply was not a JSON array."
+        print("%s Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (why, total_in, total_out, text[:300]))
         return 0
     written = []
     asked = 0
