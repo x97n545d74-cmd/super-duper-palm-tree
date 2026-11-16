@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Avron X merger writer.
 
-Run by GitHub Actions every 5 minutes. Stage 1 asks Claude to fetch NSE's
-official announcements feed and pick the new filings worth posting. Stage 2
-asks Claude, one filing at a time, to read the document and write a headline.
-Results are appended to queue.jsonl. Small separate calls keep the cost low.
-Standard library only.
+Run by GitHub Actions about every 5 minutes. Three lanes:
+  nse    every round: Claude fetches NSE's official announcements feed, picks
+         the new filings worth posting, reads each one and writes a headline.
+  news   every 20 minutes: Claude searches the web for Indian and global
+         news that can move the Indian market.
+  story  three times a day: Claude writes one business story as a short thread.
+Results are appended to queue.jsonl. Standard library only.
 
 Claude does the fetching through Anthropic's web fetch tool; this script
 never contacts NSE and never contacts X.
@@ -28,6 +30,12 @@ LOOKBACK_MINUTES = int(os.environ.get("AVRON_LOOKBACK_MINUTES", "30"))
 MAX_ITEMS = int(os.environ.get("AVRON_MAX_ITEMS", "4"))
 FETCH_TOOL = os.environ.get("AVRON_FETCH_TOOL", "web_fetch_20250910")   # plain fetch: fewer round trips, lower cost
 FETCH_BETA = os.environ.get("AVRON_FETCH_BETA", "web-fetch-2025-09-10")
+SEARCH_TOOL = os.environ.get("AVRON_SEARCH_TOOL", "web_search_20250305")
+NEWS_EVERY_MINUTES = int(os.environ.get("AVRON_NEWS_EVERY_MINUTES", "20"))   # how often the market-news lane runs
+NEWS_SEARCHES = int(os.environ.get("AVRON_NEWS_SEARCHES", "2"))
+NEWS_MAX_ITEMS = 3
+STORY_HOURS = (9, 13, 19)   # India time: one business story after each of these hours
+STATE = pathlib.Path(os.environ.get("AVRON_STATE", "/tmp/avron_x_merger_state.json"))
 FEED_TOKENS = 10000     # how much of the feed Claude reads (newest items come first)
 DOC_TOKENS = 6000       # how much of each filing Claude reads
 START_HOUR = 7          # 7 AM India time; the timer stops at midnight
@@ -113,24 +121,27 @@ def item_prompt(item):
     ])
 
 
-def call_claude(prompt, api_key, content_tokens, max_tokens):
-    """One Claude call with a single web fetch allowed. Returns (reply text, input tokens, output tokens)."""
+def fetch_tool(content_tokens):
+    return [{
+        "type": FETCH_TOOL,
+        "name": "web_fetch",
+        "max_uses": 3,   # room to retry: a first attempt sometimes fails
+        "allowed_domains": ["nsearchives.nseindia.com"],
+        "max_content_tokens": content_tokens,
+    }]
+
+
+def search_tool(max_uses):
+    return [{"type": SEARCH_TOOL, "name": "web_search", "max_uses": max_uses}]
+
+
+def call_claude(prompt, api_key, tools, max_tokens):
+    """One Claude call with the given tools. Returns (reply text, input tokens, output tokens)."""
     messages = [{"role": "user", "content": prompt}]
     tin = tout = 0
     res = {}
     for _ in range(3):
-        body = {
-            "model": MODEL,
-            "max_tokens": max_tokens,
-            "tools": [{
-                "type": FETCH_TOOL,
-                "name": "web_fetch",
-                "max_uses": 3,   # room to retry: a first attempt sometimes fails
-                "allowed_domains": ["nsearchives.nseindia.com"],
-                "max_content_tokens": content_tokens,
-            }],
-            "messages": messages,
-        }
+        body = {"model": MODEL, "max_tokens": max_tokens, "tools": tools, "messages": messages}
         req = urllib.request.Request(
             "https://api.anthropic.com/v1/messages",
             data=json.dumps(body).encode("utf-8"),
@@ -142,15 +153,18 @@ def call_claude(prompt, api_key, content_tokens, max_tokens):
             },
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=180) as resp:
+        with urllib.request.urlopen(req, timeout=240) as resp:
             res = json.loads(resp.read().decode("utf-8"))
         usage = res.get("usage") or {}
         tin += usage.get("input_tokens") or 0
         tout += usage.get("output_tokens") or 0
-        for b in res.get("content") or []:      # one line per fetch, to make failures easy to diagnose
+        for b in res.get("content") or []:      # one line per tool result, to make failures easy to diagnose
             if isinstance(b, dict) and b.get("type") == "web_fetch_tool_result":
                 c = b.get("content") or {}
                 print("  fetch: %s %s size=%d" % (c.get("type"), c.get("error_code") or c.get("url") or "", len(json.dumps(c))))
+            if isinstance(b, dict) and b.get("type") == "web_search_tool_result":
+                c = b.get("content")
+                print("  search: %s" % ("%d results" % len(c) if isinstance(c, list) else json.dumps(c)[:120]))
         if res.get("stop_reason") != "pause_turn":
             break
         # Claude paused mid-turn: hand its work back so it can finish.
@@ -182,8 +196,10 @@ def make_rows(items, known_links, now):
         if not isinstance(r, dict):
             continue
         link = str(r.get("link") or "").strip()
-        headline = " ".join(str(r.get("headline") or "").split())[:240]
+        headline = " ".join(str(r.get("headline") or "").split())
         detail = " ".join(str(r.get("detail") or "").split())[:200]
+        if len(headline) > 240:      # never cut a headline short; skip it instead
+            continue
         if not headline or not link.startswith(NSE_PREFIX) or link in seen:
             continue
         post = headline + ("\n" + detail if detail else "")
@@ -217,32 +233,31 @@ def parse_object(text):
     return obj if isinstance(obj, dict) else None
 
 
-def main():
-    now = datetime.datetime.now(IST)
-    if now.hour < START_HOUR and os.environ.get("AVRON_FORCE") != "1":
-        print("Outside working hours (%s IST). Nothing to do." % now.strftime("%H:%M"))
-        return 0
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
-    if not api_key:
-        print("ANTHROPIC_API_KEY is not set. Add it under Settings > Secrets and variables > Actions.")
-        return 1
+def append_rows(rows):
+    if rows:
+        with QUEUE.open("a", encoding="utf-8") as f:
+            for row in rows:
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
+def covered_headlines(limit=40):
+    return [r.get("headline") for r in read_queue() if r.get("headline")][-limit:]
+
+
+def clean(text, limit):
+    return " ".join(str(text or "").split())[:limit]
+
+
+# ---------------------------------------------------------------- lane 1: NSE filings
+def run_nse(now, api_key):
     known_links = [r.get("verify_link") for r in read_queue() if r.get("verify_link")][-25:]
     since = now - datetime.timedelta(minutes=LOOKBACK_MINUTES)
-    total_in = total_out = 0
-    try:
-        text, tin, tout = call_claude(feed_prompt(now, since, known_links), api_key, FEED_TOKENS, 8000)
-    except urllib.error.HTTPError as e:
-        print("Claude API error %s: %s" % (e.code, e.read().decode("utf-8", "replace")[:500]))
-        return 1
-    except Exception as e:  # network trouble: try again on the next run
-        print("Could not reach the Claude API: %s" % e)
-        return 1
-    total_in, total_out = total_in + tin, total_out + tout
+    text, total_in, total_out = call_claude(feed_prompt(now, since, known_links), api_key, fetch_tool(FEED_TOKENS), 8000)
     candidates = parse_items(text)
     if candidates is None:
         why = "Claude could not fetch the NSE feed this time." if "FEED_ERROR" in text else "Feed reply was not a JSON array."
-        print("%s Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (why, total_in, total_out, text[:300]))
-        return 0
+        print("[nse] %s Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (why, total_in, total_out, text[:300]))
+        return
     written = []
     asked = 0
     for c in candidates:
@@ -253,32 +268,201 @@ def main():
         item = {
             "company": str(c.get("company") or "").strip(),
             "link": str(c.get("link") or "").strip(),
-            "summary": " ".join(str(c.get("summary") or "").split())[:300],
+            "summary": clean(c.get("summary"), 300),
         }
         if not item["link"].startswith(NSE_PREFIX) or item["link"] in known_links:
             continue
         asked += 1
         try:
-            reply, tin, tout = call_claude(item_prompt(item), api_key, DOC_TOKENS, 5000)
+            reply, tin, tout = call_claude(item_prompt(item), api_key, fetch_tool(DOC_TOKENS), 5000)
         except Exception as e:  # one bad filing must not lose the others
-            print("Skipped %s: %s" % (item["company"], e))
+            print("[nse] Skipped %s: %s" % (item["company"], e))
             continue
         total_in, total_out = total_in + tin, total_out + tout
         obj = parse_object(reply)
         if obj is None or reply.strip().upper().startswith("SKIP"):
-            print("Skipped (no concrete fact): %s" % item["company"])
+            print("[nse] Skipped (no concrete fact): %s" % item["company"])
             continue
         obj["company"], obj["link"] = item["company"], item["link"]
         written.append(obj)
     rows = make_rows(written, known_links, now)
-    if rows:
-        with QUEUE.open("a", encoding="utf-8") as f:
-            for row in rows:
-                f.write(json.dumps(row, ensure_ascii=False) + "\n")
-    print("Candidates: %d. Appended %d item(s). Tokens in/out: %d / %d" % (len(candidates), len(rows), total_in, total_out))
+    append_rows(rows)
+    print("[nse] Candidates: %d. Appended %d. Tokens in/out: %d / %d" % (len(candidates), len(rows), total_in, total_out))
     for row in rows:
         print(" -", row["headline"])
-    return 0
+
+
+# ---------------------------------------------------------------- lane 2: market-moving news
+def news_prompt(now, covered):
+    done = "\n".join("- " + h for h in covered) if covered else "(nothing yet)"
+    return "\n".join([
+        "You are the editor of a real-time market news desk for Indian investors.",
+        "The current time in India is: " + now.strftime(FMT),
+        "",
+        "Search the web for news published in roughly the last 90 minutes that can move the Indian stock market:",
+        "1. India: RBI and SEBI decisions, government economic policy, macro data (inflation, IIP, GDP, trade, GST), "
+        "sharp Nifty or Sensex moves, FII and DII flows, the rupee, large corporate deals, results or regulatory actions.",
+        "2. Global: the US Federal Reserve and other major central banks, US inflation, jobs and GDP data, crude oil, "
+        "sharp moves in US, European or Asian markets, major geopolitical or trade events, and big global company news "
+        "that matters for Indian sectors.",
+        "Check more than one publication. Prefer wire services, exchanges, regulators and established business media.",
+        "",
+        "Already covered (do not repeat these or any story about the same event):",
+        done,
+        "",
+        "Pick at most %d stories that are genuinely important. If nothing important and new turned up, reply with exactly: []" % NEWS_MAX_ITEMS,
+        "",
+        "Writing rules: use ONLY facts you found in your search. Keep numbers and units exactly as reported; never guess a figure. "
+        "Write in your own words; never copy a publication's sentences. Neutral tone: no opinion, no advice, no hype, no hashtags. "
+        "Do not name the publication and put no link in the text.",
+        "",
+        "Reply with ONLY a JSON array and nothing else. One object per story:",
+        '"headline": UPPER CASE, at most 200 characters, in the form SUBJECT: FACT',
+        '"detail": one plain sentence in normal case, at most 160 characters, saying why it matters for markets or giving the next fact; or an empty string',
+        '"link": the URL of the article you relied on most',
+    ])
+
+
+def run_news(now, api_key):
+    covered = covered_headlines()
+    known_links = {r.get("verify_link") for r in read_queue()}
+    text, tin, tout = call_claude(news_prompt(now, covered), api_key, search_tool(NEWS_SEARCHES), 8000)
+    items = parse_items(text)
+    if items is None:
+        print("[news] Reply was not a JSON array. Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (tin, tout, text[:300]))
+        return
+    rows, stamp = [], now.strftime("%Y%m%d-%H%M")
+    for r in items[:NEWS_MAX_ITEMS]:
+        if not isinstance(r, dict):
+            continue
+        headline, detail, link = clean(r.get("headline"), 400), clean(r.get("detail"), 200), str(r.get("link") or "").strip()
+        if len(headline) > 220:      # never cut a headline short; skip it instead
+            continue
+        if not headline or not link.startswith("http") or link in known_links or headline in covered:
+            continue
+        post = headline + ("\n" + detail if detail else "")
+        if len(post) > 280:
+            post, detail = headline, ""
+        if len(post) > 280:
+            continue
+        known_links.add(link)
+        rows.append({
+            "id": "%s-N%02d" % (stamp, len(rows) + 1), "created_ist": now.strftime("%Y-%m-%d %H:%M"), "lane": "news",
+            "company": "", "headline": headline, "detail": detail, "post_text": post, "verify_link": link, "document_read": True,
+        })
+    append_rows(rows)
+    print("[news] Appended %d. Tokens in/out: %d / %d" % (len(rows), tin, tout))
+    for row in rows:
+        print(" -", row["headline"])
+
+
+# ---------------------------------------------------------------- lane 3: business stories
+def story_prompt(now, covered):
+    done = "\n".join("- " + h for h in covered) if covered else "(nothing yet)"
+    return "\n".join([
+        "You write short business stories for Indian readers who are curious about how companies win.",
+        "Today's date in India is: " + now.strftime("%d-%b-%Y"),
+        "",
+        "Search the web and pick ONE interesting business story: a company or founder, Indian or global, with a clear "
+        "reason for its success. Use at least two different publications to confirm the facts.",
+        "Do not pick any of these, which were already told:",
+        done,
+        "",
+        "Write it as a thread of exactly 4 posts, each at most 270 characters, in simple everyday English:",
+        "Post 1: the hook. The most surprising true fact, with a number.",
+        "Post 2: what the business is and how it makes money.",
+        "Post 3: what it did differently from everyone else.",
+        "Post 4: why that worked, with a result in numbers.",
+        "",
+        "Rules: use ONLY facts you found in your search, with numbers and units exactly as reported. Write in your own words; "
+        "never copy a publication's sentences. No advice to buy or sell anything, no hype words, no hashtags, no emojis, no links, "
+        "and do not name the publications.",
+        "",
+        "Reply with ONLY one JSON object and nothing else:",
+        '"company": the company or founder',
+        '"headline": UPPER CASE title of the story, at most 100 characters',
+        '"thread": a list of the 4 posts in order',
+        '"link": the URL of the article you relied on most',
+    ])
+
+
+def story_due(now):
+    """True when the latest story hour has passed and no story has been written since it."""
+    passed = [h for h in STORY_HOURS if now.hour >= h]
+    if not passed:
+        return False
+    slot, day = passed[-1], now.strftime("%Y-%m-%d")
+    for r in read_queue():
+        made = str(r.get("created_ist", ""))
+        if r.get("lane") == "story" and made.startswith(day) and int(made[11:13] or 0) >= slot:
+            return False
+    return True
+
+
+def run_story(now, api_key):
+    covered = [r.get("headline") for r in read_queue() if r.get("lane") == "story"][-60:]
+    text, tin, tout = call_claude(story_prompt(now, covered), api_key, search_tool(3), 8000)
+    obj = parse_object(text)
+    thread = [clean(t, 400) for t in (obj or {}).get("thread") or [] if clean(t, 400)]
+    link = str((obj or {}).get("link") or "").strip()
+    headline = clean((obj or {}).get("headline"), 120)
+    if not obj or len(thread) < 2 or any(len(t) > 280 for t in thread) or not headline or not link.startswith("http"):
+        print("[story] Reply was not usable. Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (tin, tout, text[:300]))
+        return
+    row = {
+        "id": "%s-S01" % now.strftime("%Y%m%d-%H%M"), "created_ist": now.strftime("%Y-%m-%d %H:%M"), "lane": "story",
+        "company": clean(obj.get("company"), 80), "headline": headline, "detail": "", "post_text": thread[0],
+        "thread": thread, "verify_link": link, "document_read": True,
+    }
+    append_rows([row])
+    print("[story] Appended 1 (%d posts). Tokens in/out: %d / %d" % (len(thread), tin, tout))
+    print(" -", headline)
+
+
+# ---------------------------------------------------------------- scheduling
+def load_state():
+    try:
+        return json.loads(STATE.read_text())
+    except Exception:
+        return {}
+
+
+def main():
+    now = datetime.datetime.now(IST)
+    only = os.environ.get("AVRON_ONLY", "").strip().lower()       # nse, news or story: run just that lane, now
+    if now.hour < START_HOUR and os.environ.get("AVRON_FORCE") != "1" and not only:
+        print("Outside working hours (%s IST). Nothing to do." % now.strftime("%H:%M"))
+        return 0
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if not api_key:
+        print("ANTHROPIC_API_KEY is not set. Add it under Settings > Secrets and variables > Actions.")
+        return 1
+    state = load_state()
+    last_news = state.get("last_news", 0)
+    plan = []
+    if only in ("", "nse"):
+        plan.append(("nse", run_nse))
+    if only == "news" or (not only and now.timestamp() - last_news >= NEWS_EVERY_MINUTES * 60):
+        plan.append(("news", run_news))
+    if only == "story" or (not only and story_due(now)):
+        plan.append(("story", run_story))
+    failed = 0
+    for name, fn in plan:
+        try:
+            fn(now, api_key)
+            if name == "news":
+                state["last_news"] = now.timestamp()
+        except urllib.error.HTTPError as e:
+            failed += 1
+            print("[%s] Claude API error %s: %s" % (name, e.code, e.read().decode("utf-8", "replace")[:400]))
+        except Exception as e:  # network trouble: this lane tries again next round
+            failed += 1
+            print("[%s] failed: %s" % (name, e))
+    try:
+        STATE.write_text(json.dumps(state))
+    except Exception:
+        pass
+    return 1 if failed == len(plan) and plan else 0
 
 
 if __name__ == "__main__":

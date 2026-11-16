@@ -2,7 +2,7 @@
 
 Handoff between two Claude sessions:
 
-- **Writer** (`writer.py`, run by GitHub Actions every 5 minutes from 7 AM to midnight IST): asks Claude to fetch NSE filings and write headlines, then appends them to `queue.jsonl`. The timer lives in `.github/workflows/avron-x-merger.yml` on the repo's default branch and needs the repo secret `ANTHROPIC_API_KEY`.
+- **Writer** (`writer.py`, kept running by GitHub Actions, about every 5 minutes from 7 AM to midnight IST): asks Claude for new NSE filings every round, market-moving Indian and global news every 20 minutes, and one business story three times a day. It appends them to `queue.jsonl`. The workflow is `.github/workflows/avron-x-merger.yml` on the repo's default branch and needs the repo secret `ANTHROPIC_API_KEY`.
 - **Poster** (Claude Code session, owned by Sahil): reads `queue.jsonl`, posts to X through the API, records what it posted in `posted.jsonl`.
 
 Branch: `avron-x-merger`. Both sides work on this branch only.
@@ -24,11 +24,12 @@ One JSON object per line:
 |---|---|
 | `id` | Unique id. Skip any id already in `posted.jsonl`. |
 | `created_ist` | When the writer added it, India time. |
-| `lane` | `nse` for an exchange filing, `news` for a market or business story. |
+| `lane` | `nse` for an exchange filing, `news` for Indian or global news that can move the market, `story` for a business story. |
 | `company` | Company name, or empty for a general story. |
 | `headline` | UPPER CASE, in the form `COMPANY: FACT`. |
 | `detail` | One plain sentence with the next most useful fact. May be empty. |
 | `post_text` | Ready to post: headline, a line break, then detail. 280 characters or fewer. No source, no link, no hashtags. |
+| `thread` | Only on `story` items: a list of posts. Post the first as a new post and each of the others as a reply to the one before it. |
 | `verify_link` | The filing or article the facts came from. **For Sahil's verification only. Never post it.** |
 | `document_read` | `true` if the writer read the filing document, `false` if it used the feed summary only. |
 
@@ -36,7 +37,7 @@ One JSON object per line:
 
 1. `git pull` this branch.
 2. Read `queue.jsonl`. Keep the items whose `id` is not in `posted.jsonl`.
-3. Post `post_text` exactly as written. Do not add the `verify_link`.
+3. Post `post_text` exactly as written. If the item has a `thread`, post every entry in order as one thread instead (the first entry equals `post_text`). Do not add the `verify_link`.
 4. Append `{"id": "...", "posted_ist": "...", "tweet_id": "..."}` to `posted.jsonl`, commit and push.
 
 ## Writing rules the writer follows
