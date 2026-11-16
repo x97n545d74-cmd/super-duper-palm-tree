@@ -1,0 +1,37 @@
+name: Avron X merger test (one round)
+
+# Runs the writer once, for one lane, so its output can be read right away.
+on:
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "Lane to run: nse, news or story"
+        required: true
+        default: "news"
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: avron-x-merger
+          sparse-checkout: avron-x-merger
+      - name: Run one lane
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AVRON_ONLY: ${{ inputs.lane }}
+        run: python3 avron-x-merger/writer.py
+      - name: Save
+        run: |
+          if git diff --quiet -- avron-x-merger/queue.jsonl; then echo "Nothing new."; exit 0; fi
+          git config user.name "avron-x-merger"
+          git config user.email "avron-x-merger@users.noreply.github.com"
+          git add avron-x-merger/queue.jsonl
+          git commit -q -m "Headlines $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST (test)"
+          git pull -q --rebase origin avron-x-merger
+          git push -q origin HEAD:avron-x-merger
