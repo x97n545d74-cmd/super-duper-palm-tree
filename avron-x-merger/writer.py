@@ -32,7 +32,7 @@ FETCH_TOOL = os.environ.get("AVRON_FETCH_TOOL", "web_fetch_20250910")   # plain 
 FETCH_BETA = os.environ.get("AVRON_FETCH_BETA", "web-fetch-2025-09-10")
 SEARCH_TOOL = os.environ.get("AVRON_SEARCH_TOOL", "web_search_20250305")
 NEWS_EVERY_MINUTES = int(os.environ.get("AVRON_NEWS_EVERY_MINUTES", "20"))   # how often the market-news lane runs
-NEWS_SEARCHES = int(os.environ.get("AVRON_NEWS_SEARCHES", "2"))
+NEWS_SEARCHES = int(os.environ.get("AVRON_NEWS_SEARCHES", "3"))
 NEWS_MAX_ITEMS = 3
 STORY_HOURS = (9, 13, 19)   # India time: one business story after each of these hours
 STATE = pathlib.Path(os.environ.get("AVRON_STATE", "/tmp/avron_x_merger_state.json"))
@@ -303,7 +303,8 @@ def news_prompt(now, covered):
         "You are the editor of a real-time market news desk for Indian investors.",
         "The current time in India is: " + now.strftime(FMT),
         "",
-        "Search the web for news published in roughly the last 90 minutes that can move the Indian stock market:",
+        "Search the web for news from the last 3 hours that can move the Indian stock market when it next trades. "
+        "Indian markets being closed is not a reason to return nothing: global events and after-hours Indian news still count.",
         "1. India: RBI and SEBI decisions, government economic policy, macro data (inflation, IIP, GDP, trade, GST), "
         "sharp Nifty or Sensex moves, FII and DII flows, the rupee, large corporate deals, results or regulatory actions.",
         "2. Global: the US Federal Reserve and other major central banks, US inflation, jobs and GDP data, crude oil, "
@@ -355,7 +356,9 @@ def run_news(now, api_key):
             "company": "", "headline": headline, "detail": detail, "post_text": post, "verify_link": link, "document_read": True,
         })
     append_rows(rows)
-    print("[news] Appended %d. Tokens in/out: %d / %d" % (len(rows), tin, tout))
+    print("[news] Offered %d, appended %d. Tokens in/out: %d / %d" % (len(items), len(rows), tin, tout))
+    if not rows:
+        print("[news] Reply began: %r" % text[:400])
     for row in rows:
         print(" -", row["headline"])
 
