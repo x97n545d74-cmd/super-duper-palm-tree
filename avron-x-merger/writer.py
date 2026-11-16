@@ -69,7 +69,10 @@ def feed_prompt(now, since, known_links):
         "You are the filter desk of a real-time market news service.",
         "The current time in India is: " + now.strftime(FMT),
         "",
-        "Use your web fetch tool to fetch this official NSE feed (pass only the url; retry once if the tool reports an error): " + FEED,
+        "Use your web fetch tool to fetch this official NSE feed (pass exactly this url; retry once if the tool reports an error): "
+        + FEED + "?t=" + now.strftime("%Y%m%d%H%M"),      # the time on the end makes sure a fresh copy is read, not a saved one
+        "The first lastBuildDate or pubDate you see tells you how fresh the copy is. If the newest pubDate is more than "
+        "3 hours older than the current time, reply with exactly: {\"error\":\"STALE_FEED\"}",
         "Each item has a title (the company name), a link to the filed document, a pubDate in India time "
         "such as 16-Nov-2026 09:14:05, and a description that ends with |SUBJECT: category. Items are newest first.",
         "",
@@ -255,7 +258,8 @@ def run_nse(now, api_key):
     text, total_in, total_out = call_claude(feed_prompt(now, since, known_links), api_key, fetch_tool(FEED_TOKENS), 8000)
     candidates = parse_items(text)
     if candidates is None:
-        why = "Claude could not fetch the NSE feed this time." if "FEED_ERROR" in text else "Feed reply was not a JSON array."
+        why = ("Claude could not fetch the NSE feed this time." if "FEED_ERROR" in text
+               else "The feed copy was stale." if "STALE_FEED" in text else "Feed reply was not a JSON array.")
         print("[nse] %s Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (why, total_in, total_out, text[:300]))
         return
     written = []
