@@ -101,6 +101,8 @@ def item_prompt(item):
         "press release, filing or exchange, and put no link in the text.",
         "The headline must state a concrete fact: who did what, with the amount, number, name or date. "
         "Every figure in the text must carry its unit or currency exactly as the document gives it; leave out any figure whose unit is not stated. "
+        "In XBRL files, do not confuse a total after an event (such as share capital after an allotment) with the size of the event itself. "
+        "Reply with exactly SKIP for routine matters: shares allotted under an ESOP or ESPS, or a change of company secretary or compliance officer. "
         "If you cannot state a concrete fact (for example the document could not be read and the summary only gives "
         "a category such as allotment of securities or submission of results), reply with exactly: SKIP",
         "",
@@ -146,8 +148,6 @@ def call_claude(prompt, api_key, content_tokens, max_tokens):
         tin += usage.get("input_tokens") or 0
         tout += usage.get("output_tokens") or 0
         for b in res.get("content") or []:      # one line per fetch, to make failures easy to diagnose
-            if isinstance(b, dict) and b.get("type") == "server_tool_use":
-                print("  fetch input: %s" % json.dumps(b.get("input"))[:300])
             if isinstance(b, dict) and b.get("type") == "web_fetch_tool_result":
                 c = b.get("content") or {}
                 print("  fetch: %s %s size=%d" % (c.get("type"), c.get("error_code") or c.get("url") or "", len(json.dumps(c))))
