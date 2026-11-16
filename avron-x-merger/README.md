@@ -2,7 +2,7 @@
 
 Handoff between two Claude sessions:
 
-- **Writer** (Claude chat, hourly scheduled task): reads NSE filings and market news, writes headlines, appends them to `queue.jsonl`.
+- **Writer** (`writer.py`, run by GitHub Actions every 5 minutes from 7 AM to midnight IST): asks Claude to fetch NSE filings and write headlines, then appends them to `queue.jsonl`. The timer lives in `.github/workflows/avron-x-merger.yml` on the repo's default branch and needs the repo secret `ANTHROPIC_API_KEY`.
 - **Poster** (Claude Code session, owned by Sahil): reads `queue.jsonl`, posts to X through the API, records what it posted in `posted.jsonl`.
 
 Branch: `avron-x-merger`. Both sides work on this branch only.
