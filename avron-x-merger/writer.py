@@ -34,6 +34,9 @@ SEARCH_TOOL = os.environ.get("AVRON_SEARCH_TOOL", "web_search_20250305")
 NEWS_EVERY_MINUTES = int(os.environ.get("AVRON_NEWS_EVERY_MINUTES", "20"))   # how often the market-news lane runs
 NEWS_SEARCHES = int(os.environ.get("AVRON_NEWS_SEARCHES", "3"))
 NEWS_MAX_ITEMS = 3
+OUTLETS = ("Economic Times, Times of India, Business Today, Moneycontrol, Mint, Business Standard, CNBC-TV18, "
+           "Financial Express, Hindu BusinessLine, NDTV Profit, Reuters, Bloomberg, PTI and the regulators' own sites")
+STORY_POSTS = 7
 STORY_HOURS = (9, 13, 19)   # India time: one business story after each of these hours
 STATE = pathlib.Path(os.environ.get("AVRON_STATE", "/tmp/avron_x_merger_state.json"))
 FEED_TOKENS = 10000     # how much of the feed Claude reads (newest items come first)
@@ -310,7 +313,9 @@ def news_prompt(now, covered):
         "2. Global: the US Federal Reserve and other major central banks, US inflation, jobs and GDP data, crude oil, "
         "sharp moves in US, European or Asian markets, major geopolitical or trade events, and big global company news "
         "that matters for Indian sectors.",
-        "Check more than one publication. Prefer wire services, exchanges, regulators and established business media.",
+        "3. Company news from Indian listed companies: results with figures, large orders, acquisitions, fund raising, "
+        "management changes and regulatory action, especially anything announced after market hours.",
+        "Check several publications, not one site. Look across: " + OUTLETS + ".",
         "",
         "Already covered (do not repeat these or any story about the same event):",
         done,
@@ -367,28 +372,34 @@ def run_news(now, api_key):
 def story_prompt(now, covered):
     done = "\n".join("- " + h for h in covered) if covered else "(nothing yet)"
     return "\n".join([
-        "You write short business stories for Indian readers who are curious about how companies win.",
+        "You tell business stories to Indian readers who want to understand how startups and companies are built.",
         "Today's date in India is: " + now.strftime("%d-%b-%Y"),
         "",
-        "Search the web and pick ONE interesting business story: a company or founder, Indian or global, with a clear "
-        "reason for its success. Use at least two different publications to confirm the facts.",
+        "Search the web and pick ONE interesting story of a startup or company, Indian or global, preferably a startup "
+        "or a founder-led business. Confirm the facts in at least two different publications. Look across: " + OUTLETS
+        + ", plus YourStory, Inc42 and Entrackr for startups.",
         "Do not pick any of these, which were already told:",
         done,
         "",
-        "Write it as a thread of exactly 4 posts, each at most 270 characters, in simple everyday English:",
-        "Post 1: the hook. The most surprising true fact, with a number.",
-        "Post 2: what the business is and how it makes money.",
-        "Post 3: what it did differently from everyone else.",
-        "Post 4: why that worked, with a result in numbers.",
+        "Tell the WHOLE story as a thread of exactly %d posts, each at most 262 characters, in simple everyday English. "
+        "Someone who reads only this thread should understand the business completely:" % STORY_POSTS,
+        "Post 1: start with the company's name and its founders' names, then the most surprising true fact with a number.",
+        "Post 2: how it began: who started it, when, where, and the problem they saw.",
+        "Post 3: what the business actually does and who its customers are.",
+        "Post 4: how it makes money.",
+        "Post 5: what it did differently from everyone else.",
+        "Post 6: the hardest moment or biggest risk it faced, and what it did about it.",
+        "Post 7: where it stands today in numbers, and the one lesson for anyone building a business.",
         "",
-        "Rules: use ONLY facts you found in your search, with numbers and units exactly as reported. Write in your own words; "
-        "never copy a publication's sentences. No advice to buy or sell anything, no hype words, no hashtags, no emojis, no links, "
-        "and do not name the publications.",
+        "Rules: use ONLY facts you found in your search, with numbers, years and units exactly as reported. Write in your own words; "
+        "never copy a publication's sentences. Name the company in the first post. No advice to buy or sell anything, no hype words, "
+        "no hashtags, no emojis, no links, no numbering, and do not name the publications.",
         "",
         "Reply with ONLY one JSON object and nothing else:",
-        '"company": the company or founder',
-        '"headline": UPPER CASE title of the story, at most 100 characters',
-        '"thread": a list of the 4 posts in order',
+        '"company": the company name',
+        '"founders": the founders\' names, or an empty string',
+        '"headline": UPPER CASE title that includes the company name, at most 100 characters',
+        '"thread": a list of the %d posts in order' % STORY_POSTS,
         '"link": the URL of the article you relied on most',
     ])
 
@@ -408,18 +419,21 @@ def story_due(now):
 
 def run_story(now, api_key):
     covered = [r.get("headline") for r in read_queue() if r.get("lane") == "story"][-60:]
-    text, tin, tout = call_claude(story_prompt(now, covered), api_key, search_tool(3), 8000)
+    text, tin, tout = call_claude(story_prompt(now, covered), api_key, search_tool(4), 10000)
     obj = parse_object(text)
     thread = [clean(t, 400) for t in (obj or {}).get("thread") or [] if clean(t, 400)]
     link = str((obj or {}).get("link") or "").strip()
     headline = clean((obj or {}).get("headline"), 120)
-    if not obj or len(thread) < 2 or any(len(t) > 280 for t in thread) or not headline or not link.startswith("http"):
+    total = len(thread)
+    thread = ["%s (%d/%d)" % (t, i + 1, total) for i, t in enumerate(thread)]     # numbered, so the story reads in order
+    if not obj or total < 4 or any(len(t) > 280 for t in thread) or not headline or not link.startswith("http"):
         print("[story] Reply was not usable. Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (tin, tout, text[:300]))
         return
     row = {
         "id": "%s-S01" % now.strftime("%Y%m%d-%H%M"), "created_ist": now.strftime("%Y-%m-%d %H:%M"), "lane": "story",
         "company": clean(obj.get("company"), 80), "headline": headline, "detail": "", "post_text": thread[0],
-        "thread": thread, "verify_link": link, "document_read": True,
+        "thread": thread, "story_text": "\n\n".join(t.rsplit(" (", 1)[0] for t in thread),
+        "founders": clean(obj.get("founders"), 120), "verify_link": link, "document_read": True,
     }
     append_rows([row])
     print("[story] Appended 1 (%d posts). Tokens in/out: %d / %d" % (len(thread), tin, tout))
