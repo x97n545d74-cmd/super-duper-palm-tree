@@ -1,17 +1,19 @@
 name: Avron X merger writer
 
-# Every 5 minutes, 7 AM to midnight India time (01:30 to 18:30 UTC).
-# The script skips runs before 7 AM IST. It asks Claude to read new NSE
-# filings and appends headlines to avron-x-merger/queue.jsonl on the
-# avron-x-merger branch. It never posts to X.
+# Keeps itself running: one run checks for new NSE filings every 5 minutes
+# for about 5.5 hours, then starts the next run. The hourly timer below is
+# only a backup that restarts the chain if it ever breaks.
+# The script calls Claude only between 7 AM and midnight India time and
+# never posts to X. Headlines go to avron-x-merger/queue.jsonl on the
+# avron-x-merger branch.
 on:
   schedule:
-    - cron: "*/5 1-17 * * *"
-    - cron: "0-25/5 18 * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: avron-x-merger-writer
@@ -20,27 +22,34 @@ concurrency:
 jobs:
   write:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 355
     steps:
       - uses: actions/checkout@v4
         with:
           ref: avron-x-merger
           sparse-checkout: avron-x-merger
 
-      - name: Ask Claude for new headlines
+      - name: Check for new headlines every 5 minutes
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python3 avron-x-merger/writer.py
-
-      - name: Save new headlines
         run: |
-          if git diff --quiet -- avron-x-merger/queue.jsonl; then
-            echo "Nothing new."
-            exit 0
-          fi
           git config user.name "avron-x-merger"
           git config user.email "avron-x-merger@users.noreply.github.com"
-          git add avron-x-merger/queue.jsonl
-          git commit -m "Headlines $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
-          git pull --rebase origin avron-x-merger
-          git push origin HEAD:avron-x-merger
+          end=$(( $(date +%s) + 19800 ))   # 5 hours 30 minutes
+          while [ "$(date +%s)" -lt "$end" ]; do
+            git pull -q --rebase origin avron-x-merger || echo "pull failed this round"
+            python3 avron-x-merger/writer.py || echo "writer failed this round"
+            if ! git diff --quiet -- avron-x-merger/queue.jsonl; then
+              git add avron-x-merger/queue.jsonl
+              git commit -q -m "Headlines $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
+              git pull -q --rebase origin avron-x-merger
+              git push -q origin HEAD:avron-x-merger || echo "push failed this round"
+            fi
+            sleep 300
+          done
+
+      - name: Start the next run
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run avron-x-merger.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME"
