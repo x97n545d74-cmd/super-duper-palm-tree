@@ -143,6 +143,8 @@ def call_claude(prompt, api_key, content_tokens, max_tokens):
         tin += usage.get("input_tokens") or 0
         tout += usage.get("output_tokens") or 0
         for b in res.get("content") or []:      # one line per fetch, to make failures easy to diagnose
+            if isinstance(b, dict) and b.get("type") == "server_tool_use":
+                print("  fetch input: %s" % json.dumps(b.get("input"))[:300])
             if isinstance(b, dict) and b.get("type") == "web_fetch_tool_result":
                 c = b.get("content") or {}
                 print("  fetch: %s %s size=%d" % (c.get("type"), c.get("error_code") or c.get("url") or "", len(json.dumps(c))))
@@ -221,11 +223,11 @@ def main():
     if not api_key:
         print("ANTHROPIC_API_KEY is not set. Add it under Settings > Secrets and variables > Actions.")
         return 1
-    known_links = [r.get("verify_link") for r in read_queue() if r.get("verify_link")][-60:]
+    known_links = [r.get("verify_link") for r in read_queue() if r.get("verify_link")][-25:]
     since = now - datetime.timedelta(minutes=LOOKBACK_MINUTES)
     total_in = total_out = 0
     try:
-        text, tin, tout = call_claude(feed_prompt(now, since, known_links), api_key, FEED_TOKENS, 3000)
+        text, tin, tout = call_claude(feed_prompt(now, since, known_links), api_key, FEED_TOKENS, 8000)
     except urllib.error.HTTPError as e:
         print("Claude API error %s: %s" % (e.code, e.read().decode("utf-8", "replace")[:500]))
         return 1
@@ -254,7 +256,7 @@ def main():
             continue
         asked += 1
         try:
-            reply, tin, tout = call_claude(item_prompt(item), api_key, DOC_TOKENS, 2500)
+            reply, tin, tout = call_claude(item_prompt(item), api_key, DOC_TOKENS, 5000)
         except Exception as e:  # one bad filing must not lose the others
             print("Skipped %s: %s" % (item["company"], e))
             continue
