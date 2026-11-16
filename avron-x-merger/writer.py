@@ -26,6 +26,8 @@ NSE_PREFIX = "https://nsearchives.nseindia.com/"
 MODEL = os.environ.get("AVRON_MODEL", "claude-haiku-5-5")
 LOOKBACK_MINUTES = int(os.environ.get("AVRON_LOOKBACK_MINUTES", "30"))
 MAX_ITEMS = int(os.environ.get("AVRON_MAX_ITEMS", "4"))
+FETCH_TOOL = os.environ.get("AVRON_FETCH_TOOL", "web_fetch_20250910")   # plain fetch: fewer round trips, lower cost
+FETCH_BETA = os.environ.get("AVRON_FETCH_BETA", "web-fetch-2025-09-10")
 FEED_TOKENS = 10000     # how much of the feed Claude reads (newest items come first)
 DOC_TOKENS = 6000       # how much of each filing Claude reads
 START_HOUR = 7          # 7 AM India time; the timer stops at midnight
@@ -98,8 +100,9 @@ def item_prompt(item):
         "Neutral tone: no opinion, no advice, no hype, no hashtags. Do not name the source, do not mention a letter, "
         "press release, filing or exchange, and put no link in the text.",
         "The headline must state a concrete fact: who did what, with the amount, number, name or date. "
+        "Every figure in the text must carry its unit or currency exactly as the document gives it; leave out any figure whose unit is not stated. "
         "If you cannot state a concrete fact (for example the document could not be read and the summary only gives "
-        "a category such as allotment of securities), reply with exactly: SKIP",
+        "a category such as allotment of securities or submission of results), reply with exactly: SKIP",
         "",
         "Otherwise reply with ONLY one JSON object and nothing else:",
         '"headline": UPPER CASE, at most 200 characters, in the form COMPANY: FACT',
@@ -118,11 +121,10 @@ def call_claude(prompt, api_key, content_tokens, max_tokens):
             "model": MODEL,
             "max_tokens": max_tokens,
             "tools": [{
-                "type": "web_fetch_20260318",
+                "type": FETCH_TOOL,
                 "name": "web_fetch",
                 "max_uses": 3,   # room to retry: a first attempt sometimes fails
                 "allowed_domains": ["nsearchives.nseindia.com"],
-                "use_cache": False,
                 "max_content_tokens": content_tokens,
             }],
             "messages": messages,
@@ -134,6 +136,7 @@ def call_claude(prompt, api_key, content_tokens, max_tokens):
                 "content-type": "application/json",
                 "x-api-key": api_key,
                 "anthropic-version": "2023-06-01",
+                **({"anthropic-beta": FETCH_BETA} if FETCH_BETA else {}),
             },
             method="POST",
         )
