@@ -59,7 +59,7 @@ def feed_prompt(now, since, known_links):
         "You are the filter desk of a real-time market news service.",
         "The current time in India is: " + now.strftime(FMT),
         "",
-        "Use your web fetch tool once to fetch this official NSE feed: " + FEED,
+        "Use your web fetch tool to fetch this official NSE feed (pass only the url; retry once if the tool reports an error): " + FEED,
         "Each item has a title (the company name), a link to the filed document, a pubDate in India time "
         "such as 16-Nov-2026 09:14:05, and a description that ends with |SUBJECT: category. Items are newest first.",
         "",
@@ -91,7 +91,7 @@ def item_prompt(item):
         "Feed summary: " + item["summary"],
         "Filed document: " + item["link"],
         "",
-        "Use your web fetch tool once to read the filed document, then write one headline.",
+        "Use your web fetch tool to read the filed document (pass only the url; retry once if the tool reports an error), then write one headline.",
         "",
         "Rules: use ONLY facts stated in the document or the feed summary. Keep every number, name and unit exactly "
         "as written. Never guess, round or convert a figure, and never mix up lakh, crore, million and billion. "
@@ -120,7 +120,7 @@ def call_claude(prompt, api_key, content_tokens, max_tokens):
             "tools": [{
                 "type": "web_fetch_20260318",
                 "name": "web_fetch",
-                "max_uses": 1,
+                "max_uses": 3,   # room to retry: a first attempt sometimes fails
                 "allowed_domains": ["nsearchives.nseindia.com"],
                 "use_cache": False,
                 "max_content_tokens": content_tokens,
