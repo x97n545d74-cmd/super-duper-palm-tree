@@ -142,6 +142,10 @@ def call_claude(prompt, api_key, content_tokens, max_tokens):
         usage = res.get("usage") or {}
         tin += usage.get("input_tokens") or 0
         tout += usage.get("output_tokens") or 0
+        for b in res.get("content") or []:      # one line per fetch, to make failures easy to diagnose
+            if isinstance(b, dict) and b.get("type") == "web_fetch_tool_result":
+                c = b.get("content") or {}
+                print("  fetch: %s %s size=%d" % (c.get("type"), c.get("error_code") or c.get("url") or "", len(json.dumps(c))))
         if res.get("stop_reason") != "pause_turn":
             break
         # Claude paused mid-turn: hand its work back so it can finish.
