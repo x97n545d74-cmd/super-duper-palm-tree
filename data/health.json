@@ -1,16 +1,16 @@
 [
  {
   "lane": "reddit",
-  "source": "r/DalalStreetTalks",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "source": "r/IndianStocks",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 50,
-  "new": 1
+  "new": 37
  },
  {
   "lane": "youtube",
   "source": "@CARachanaRanade",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -18,7 +18,7 @@
  {
   "lane": "youtube",
   "source": "@pranjalkamra",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -26,7 +26,7 @@
  {
   "lane": "youtube",
   "source": "@warikoo",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -34,7 +34,7 @@
  {
   "lane": "youtube",
   "source": "@AkshatZayn",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -42,23 +42,23 @@
  {
   "lane": "youtube",
   "source": "@ZerodhaOnline",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
-  "new": 0
+  "new": 1
  },
  {
   "lane": "youtube",
   "source": "@moneycontrol",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
-  "new": 7
+  "new": 8
  },
  {
   "lane": "youtube",
   "source": "@FinanceWithSharan",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -66,23 +66,23 @@
  {
   "lane": "youtube",
   "source": "@CNBC-TV18",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
-  "new": 8
+  "new": 3
  },
  {
   "lane": "youtube",
   "source": "@ETNOW",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
-  "new": 9
+  "new": 4
  },
  {
   "lane": "youtube",
   "source": "@ZeeBusiness",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 3
@@ -90,15 +90,15 @@
  {
   "lane": "youtube",
   "source": "@NDTVProfitIndia",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
-  "new": 4
+  "new": 3
  },
  {
   "lane": "youtube",
   "source": "@SOICfinance",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -106,7 +106,7 @@
  {
   "lane": "youtube",
   "source": "@marketfeed",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 2,
   "new": 0
@@ -114,7 +114,7 @@
  {
   "lane": "youtube",
   "source": "@ShankarNath",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -122,7 +122,7 @@
  {
   "lane": "youtube",
   "source": "@FinologyLegal",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 0,
   "new": 0
@@ -130,7 +130,7 @@
  {
   "lane": "youtube",
   "source": "@Groww",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -138,7 +138,7 @@
  {
   "lane": "youtube",
   "source": "@ParimalAde",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -146,7 +146,7 @@
  {
   "lane": "youtube",
   "source": "@StockEdgeOfficial",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 0,
   "new": 0
@@ -154,7 +154,7 @@
  {
   "lane": "youtube",
   "source": "@moneypurse",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -162,7 +162,7 @@
  {
   "lane": "youtube",
   "source": "@AssetYogi",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -170,7 +170,7 @@
  {
   "lane": "youtube",
   "source": "@InvestWithNeeraj",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 1,
   "new": 0
@@ -178,7 +178,7 @@
  {
   "lane": "youtube",
   "source": "@thinkschool",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -186,7 +186,7 @@
  {
   "lane": "youtube",
   "source": "@Thewealthmagnet",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -194,7 +194,7 @@
  {
   "lane": "youtube",
   "source": "@PRSundar64",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -202,7 +202,7 @@
  {
   "lane": "youtube",
   "source": "@sunilminglani",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -210,7 +210,7 @@
  {
   "lane": "youtube",
   "source": "@TradeBrains",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -218,7 +218,7 @@
  {
   "lane": "youtube",
   "source": "@elearnmarkets",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -226,15 +226,15 @@
  {
   "lane": "telegram",
   "source": "moneycontrolcom",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
-  "new": 0
+  "new": 1
  },
  {
   "lane": "telegram",
   "source": "CNBC_Awaaz",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 19,
   "new": 0
@@ -242,7 +242,7 @@
  {
   "lane": "telegram",
   "source": "ETMarkets",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 7,
   "new": 0
@@ -250,7 +250,7 @@
  {
   "lane": "telegram",
   "source": "stockedgeofficial",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
   "new": 0
@@ -258,7 +258,7 @@
  {
   "lane": "telegram",
   "source": "TradeBrainsOfficial",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
   "new": 0
@@ -266,15 +266,15 @@
  {
   "lane": "telegram",
   "source": "livemint",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
-  "new": 0
+  "new": 1
  },
  {
   "lane": "telegram",
   "source": "finshots",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
   "new": 0
@@ -282,7 +282,7 @@
  {
   "lane": "telegram",
   "source": "zerodhaonline",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 11,
   "new": 0
@@ -290,63 +290,63 @@
  {
   "lane": "news",
   "source": "NSE smallcap order win",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 1,
+  "found": 0,
   "new": 0
  },
  {
   "lane": "news",
   "source": "SEBI order listed company",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 26,
+  "found": 25,
   "new": 2
  },
  {
   "lane": "news",
   "source": "India data centre capacity announcement",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 27,
-  "new": 2
+  "found": 28,
+  "new": 0
  },
  {
   "lane": "news",
   "source": "India semiconductor plant listed company",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 23,
-  "new": 0
+  "found": 24,
+  "new": 2
  },
  {
   "lane": "news",
   "source": "promoter stake sale block deal",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 11,
-  "new": 1
+  "new": 0
  },
  {
   "lane": "news",
   "source": "SME IPO listing NSE Emerge",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 19,
-  "new": 0
+  "found": 23,
+  "new": 3
  },
  {
   "lane": "news",
   "source": "promoter pledge shares",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 9,
-  "new": 0
+  "found": 10,
+  "new": 1
  },
  {
   "lane": "news",
   "source": "QIP preferential issue smallcap",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 2,
   "new": 0
@@ -354,7 +354,7 @@
  {
   "lane": "news",
   "source": "order book defence railway smallcap",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 0,
   "new": 0
@@ -362,7 +362,7 @@
  {
   "lane": "news",
   "source": "FII DII net buying selling today",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 12,
   "new": 1
@@ -370,7 +370,7 @@
  {
   "lane": "news",
   "source": "GIFT Nifty today",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 14,
   "new": 0
@@ -378,7 +378,7 @@
  {
   "lane": "news",
   "source": "Brent crude oil price today",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 28,
   "new": 1
@@ -386,7 +386,7 @@
  {
   "lane": "news",
   "source": "rupee dollar RBI intervention",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 5,
   "new": 0
@@ -394,7 +394,7 @@
  {
   "lane": "news",
   "source": "US Federal Reserve rate decision markets",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 25,
   "new": 3
@@ -402,63 +402,63 @@
  {
   "lane": "news",
   "source": "Cabinet approves scheme crore",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 13,
-  "new": 13
+  "new": 2
  },
  {
   "lane": "news",
   "source": "Union Budget allocation sector",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 11,
-  "new": 10
+  "found": 12,
+  "new": 2
  },
  {
   "lane": "news",
   "source": "PLI scheme approved companies",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 7,
-  "new": 6
+  "new": 0
  },
  {
   "lane": "news",
   "source": "state election manifesto promises",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 11,
-  "new": 11
+  "found": 12,
+  "new": 1
  },
  {
   "lane": "news",
   "source": "assembly election 2027",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 34,
-  "new": 34
+  "found": 36,
+  "new": 2
  },
  {
   "lane": "news",
   "source": "government tender awarded crore",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 14,
-  "new": 14
+  "found": 13,
+  "new": 0
  },
  {
   "lane": "news",
   "source": "disinvestment privatisation government stake sale",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 4,
-  "new": 4
+  "new": 1
  },
  {
   "lane": "bluesky",
   "source": "nifty smallcap",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 46,
   "new": 0
@@ -466,7 +466,7 @@
  {
   "lane": "bluesky",
   "source": "NSE order win",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 4,
   "new": 0
@@ -474,15 +474,15 @@
  {
   "lane": "feeds",
   "source": "NSE announcements",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
-  "found": 1325,
+  "found": 1336,
   "new": 400
  },
  {
   "lane": "feeds",
   "source": "NSE financial results",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 3,
   "new": 0
@@ -490,7 +490,7 @@
  {
   "lane": "feeds",
   "source": "NSE insider trading",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
   "new": 0
@@ -498,7 +498,7 @@
  {
   "lane": "feeds",
   "source": "NSE takeover disclosures",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
   "new": 0
@@ -506,7 +506,7 @@
  {
   "lane": "feeds",
   "source": "NSE board meetings",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 8,
   "new": 0
@@ -514,7 +514,7 @@
  {
   "lane": "feeds",
   "source": "NSE corporate actions",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 25,
   "new": 0
@@ -522,7 +522,7 @@
  {
   "lane": "feeds",
   "source": "NSE shareholding patterns",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 8,
   "new": 0
@@ -530,47 +530,47 @@
  {
   "lane": "feeds",
   "source": "NSE voting results",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
-  "new": 11
+  "new": 0
  },
  {
   "lane": "feeds",
   "source": "NSE annual reports",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
-  "new": 20
+  "new": 0
  },
  {
   "lane": "feeds",
   "source": "NSE buybacks",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
-  "new": 10
+  "new": 0
  },
  {
   "lane": "feeds",
   "source": "NSE offer documents",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 17,
-  "new": 17
+  "new": 0
  },
  {
   "lane": "feeds",
   "source": "NSE pledge and encumbrance disclosures",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 20,
-  "new": 20
+  "new": 0
  },
  {
   "lane": "feeds",
   "source": "RBI press releases",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 10,
   "new": 0
@@ -578,7 +578,7 @@
  {
   "lane": "feeds",
   "source": "RBI notifications",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 10,
   "new": 0
@@ -586,7 +586,7 @@
  {
   "lane": "feeds",
   "source": "PIB",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 0,
   "new": 0
@@ -594,31 +594,31 @@
  {
   "lane": "feeds",
   "source": "Zerodha Pulse",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 25,
-  "new": 11
+  "new": 0
  },
  {
   "lane": "feeds",
   "source": "ET Markets",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
+  "ok": true,
+  "found": 50,
+  "new": 4
+ },
+ {
+  "lane": "feeds",
+  "source": "ET Stocks",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 50,
   "new": 0
  },
  {
   "lane": "feeds",
-  "source": "ET Stocks",
-  "checked_at": "2026-11-17T14:51:53Z",
-  "ok": true,
-  "found": 50,
-  "new": 2
- },
- {
-  "lane": "feeds",
   "source": "Moneycontrol business",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 15,
   "new": 0
@@ -626,7 +626,7 @@
  {
   "lane": "feeds",
   "source": "Moneycontrol market reports",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 4,
   "new": 0
@@ -634,7 +634,7 @@
  {
   "lane": "feeds",
   "source": "Mint markets",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 35,
   "new": 1
@@ -642,15 +642,15 @@
  {
   "lane": "feeds",
   "source": "Mint companies",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 35,
-  "new": 1
+  "new": 0
  },
  {
   "lane": "feeds",
   "source": "Business Standard markets",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 35,
   "new": 0
@@ -658,15 +658,15 @@
  {
   "lane": "feeds",
   "source": "BusinessLine markets",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 60,
-  "new": 1
+  "new": 0
  },
  {
   "lane": "feeds",
   "source": "CNBC-TV18 market",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 200,
   "new": 2
@@ -674,7 +674,7 @@
  {
   "lane": "feeds",
   "source": "ValuePickr forum",
-  "checked_at": "2026-11-17T14:51:53Z",
+  "checked_at": "2026-11-17T15:21:52Z",
   "ok": true,
   "found": 30,
   "new": 0
