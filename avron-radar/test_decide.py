@@ -114,6 +114,17 @@ class Scorecard(unittest.TestCase):
         self.assertTrue(any("death cross" in l for l in quiet["lines"]))
         self.assertIn("check the symbol", missing["lines"][0])
 
+    def test_theme_tracker(self):
+        mk = lambda when, platform, title, syms=(): {"platform": platform, "published_at": when, "title": title, "text": "", "symbols": list(syms), "url": "u"}
+        items = [mk("2026-11-17T0%d:00:00Z" % h, "news", "New data centre capacity in Navi Mumbai", ["ANANTRAJ"]) for h in range(4)]
+        items += [mk("2026-11-12T00:00:00Z", "nse", "Hyperscale campus order", ["ANANTRAJ", "NETWEB"]),
+                  mk("2026-11-17T00:00:00Z", "news", "Monsoon update"), mk("2026-11-01T00:00:00Z", "news", "data centre, too old"),
+                  mk("2026-11-17T00:00:00Z", "deals", "data centre deal row")]
+        dc, chips = decide.theme_tracker(items, {"semiconductors": ["semiconductor", "chip fab"], "data centres": ["data centre", "hyperscale"]}, now=NOW)
+        self.assertEqual((dc["theme"], dc["mentions_24h"], dc["mentions_7d"], dc["filings_7d"], dc["rising"]), ("data centres", 4, 5, 1, True))
+        self.assertEqual(dc["companies"], ["ANANTRAJ", "NETWEB"])
+        self.assertEqual((chips["theme"], chips["mentions_7d"], chips["latest"]), ("semiconductors", 0, []))
+
     def test_my_screen_needs_known_figures(self):
         self.assertFalse(decide.passes({"max_market_cap_cr": 10000}, {}))                 # unknown size is not a pass
         self.assertFalse(decide.passes({"no_flags": True}, {"flags": ["x"]}))

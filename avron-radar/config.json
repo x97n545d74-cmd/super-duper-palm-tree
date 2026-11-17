@@ -249,5 +249,83 @@
     "min_profit_growth_pct": 20
   },
   "daily_results_outside_indexes": 20,
-  "my_stocks": []
+  "my_stocks": [],
+  "themes": {
+    "data centres": [
+      "data centre",
+      "data center",
+      "hyperscale",
+      "colocation"
+    ],
+    "semiconductors": [
+      "semiconductor",
+      "chip fab",
+      "osat",
+      "wafer"
+    ],
+    "defence": [
+      "defence order",
+      "defense order",
+      "drdo",
+      "hal ",
+      "bharat electronics",
+      "ministry of defence",
+      "missile",
+      "shipbuilding"
+    ],
+    "renewables and power": [
+      "solar",
+      "wind energy",
+      "green hydrogen",
+      "transmission order",
+      "renewable",
+      "battery storage",
+      "bess"
+    ],
+    "electric vehicles": [
+      "electric vehicle",
+      " ev ",
+      "charging station",
+      "lithium",
+      "e-bus"
+    ],
+    "railways and infra": [
+      "railway order",
+      "rvnl",
+      "nhai",
+      "metro rail",
+      "vande bharat",
+      "highway project",
+      "epc order"
+    ],
+    "pharma and weight-loss drugs": [
+      "usfda",
+      "semaglutide",
+      "glp-1",
+      "anda approval",
+      "cdmo",
+      "biosimilar"
+    ],
+    "ai and it services": [
+      "artificial intelligence",
+      "generative ai",
+      "ai deal",
+      "gpu",
+      "it services deal"
+    ],
+    "sme ipos": [
+      "sme ipo",
+      "nse emerge",
+      "bse sme",
+      "grey market premium",
+      "gmp"
+    ],
+    "fund raising and dilution": [
+      "qip",
+      "preferential issue",
+      "warrants",
+      "rights issue",
+      "promoter pledge"
+    ]
+  }
 }

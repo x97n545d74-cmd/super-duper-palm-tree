@@ -670,6 +670,11 @@ def analyse(cfg):
         link_symbols(linked, names)
         extra["my_stocks"] = decide.my_stock_alerts(cfg["my_stocks"], signals, linked, brain.load_analyses(DATA), fund,
                                                     extra["calendar"], brain.buzz(items, names))
+    if cfg.get("themes"):
+        week = sorted(load_items(8).values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
+        link_symbols(week, names)
+        extra["themes"] = [{k: t[k] for k in ("theme", "mentions_24h", "mentions_7d", "filings_7d", "rising", "companies")}
+                           for t in decide.theme_tracker(week, cfg["themes"]) if t["mentions_7d"]]
     slim = lambda c: {k: c[k] for k in ("symbol", "industry", "score", "for", "against", "notes", "conflict", "close")}
     extra["scorecard"] = {k: [slim(c) for c in v[:8]] for k, v in decide.shortlists(cards).items()}
     STATS["brief"] = brain.write_brief(DATA, items, extra=extra)
@@ -829,7 +834,8 @@ def build():
                           "briefs": brain.load_briefs(DATA), "stocks": signals.get("snapshots") or {},
                           "buzz": brain.buzz(items, names), "runs": runs,
                           "fundamentals": fund, "holdings": holds, "calendar": cal, "growth": growth,
-                          "answers": asker.load_answers(DATA), "my_stocks": mine, "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
+                          "answers": asker.load_answers(DATA), "my_stocks": mine,
+                          "themes": decide.theme_tracker(items, (load_json(CONFIG, {}) or {}).get("themes")), "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
                                                         for s, c in cards.items()}},
                          ensure_ascii=False).replace("</", "<\\/")
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")

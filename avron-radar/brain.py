@@ -567,6 +567,8 @@ Three to five concrete things to look at.
 
 The data may also hold "results" (figures copied from results filings, with growth, margins and red flags computed by code), "calendar" (board meetings and ex-dates in the next two weeks) and "promoter_changes". Use results in "What changed in businesses", promoter changes in "Flows", and the calendar in "Tomorrow's checklist". "scorecard" lists stocks where several kinds of evidence agree (strongest), where evidence is against (weakest), where price and business disagree (conflicts), and those passing the reader's own screen (mine). Prefer scorecard stocks in "Setups on the screens" and always say when a setup is a conflict. The score is a tally of evidence, not a forecast.
 
+"themes" counts what was said about each theme the reader follows; mention a theme only when it is rising or a filing touched it, naming the companies.
+
 If the data holds "my_stocks" (the reader's own list), begin the brief with a section "## My stocks" before "Market regime": one line per stock that has something in its lines, most important first, and one closing line naming the quiet ones.
 
 Rules: use only the data below. Every number must come from it. No buy, sell or hold instructions and no price targets. If a section has nothing real, write "Nothing notable." """

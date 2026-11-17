@@ -250,3 +250,43 @@ def my_stock_alerts(symbols, signals, items, analyses, fund, calendar, buzz, now
         out.append({"symbol": sym, "name": s.get("name", ""), "close": s.get("close"), "change": chg,
                     "from_high": s.get("from_high"), "lines": unique[:12]})
     return out
+
+
+def theme_tracker(items, themes, now=None):
+    """For each theme in config.json (a name and its keywords): how much was said in the past day and
+    week, whether that is rising, which listed companies come up most, and the newest items.
+    Exchange filings count separately from news and chatter."""
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    day = (now - datetime.timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    week = (now - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    out = []
+    for name, words in (themes or {}).items():
+        words = [w.lower() for w in words]
+        hits = []
+        for i in items:
+            when = i.get("published_at") or i.get("collected_at", "")
+            if when < week or i["platform"] == "deals":
+                continue
+            t = i.get("tags") or {}
+            hay = (i.get("title", "") + " " + i.get("text", "") + " " + (t.get("summary") or "")).lower()
+            if any(w in hay for w in words):
+                hits.append((when, i))
+        if not hits:
+            out.append({"theme": name, "mentions_24h": 0, "mentions_7d": 0, "filings_7d": 0, "rising": False, "companies": [], "latest": []})
+            continue
+        hits.sort(key=lambda h: h[0], reverse=True)
+        d1 = sum(1 for w, _ in hits if w >= day)
+        companies = {}
+        for _, i in hits:
+            for sym in i.get("symbols") or []:
+                companies[sym] = companies.get(sym, 0) + 1
+        out.append({
+            "theme": name, "mentions_24h": d1, "mentions_7d": len(hits),
+            "filings_7d": sum(1 for _, i in hits if i["platform"] == "nse"),
+            "rising": bool(d1 >= 3 and d1 > 2 * (len(hits) - d1) / 6),          # today against the daily average before
+            "companies": [s for s, _ in sorted(companies.items(), key=lambda kv: -kv[1])[:8]],
+            "latest": [{"date": w[:10], "platform": i["platform"], "kind": (i.get("tags") or {}).get("kind"),
+                        "text": ((i.get("tags") or {}).get("summary") or i.get("title", ""))[:200], "url": i.get("url", "")}
+                       for w, i in hits[:6]],
+        })
+    return sorted(out, key=lambda r: (-r["mentions_24h"], -r["mentions_7d"]))

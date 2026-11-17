@@ -65,6 +65,7 @@ h3{font-size:15px;margin:18px 0 4px}
     <div class="filters"><input id="sq" placeholder="Type an NSE symbol or company name" autocomplete="off"></div>
     <div id="stock"></div>
   </section>
+  <section id="v-themes" hidden></section>
   <section id="v-ask" hidden></section>
   <section id="v-feed" hidden>
     <div class="filters">
@@ -81,7 +82,7 @@ h3{font-size:15px;margin:18px 0 4px}
   <p class="note">Private research file, not investment advice. Filings and prices come from NSE's official files. News, forum and social posts are unverified: check a primary source before relying on any of it. Screens describe what the price did; they do not predict what it will do.</p>
 </main>
 <script>
-const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}, answers:[], my_stocks:[]};
+const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}, answers:[], my_stocks:[], themes:[]};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
@@ -92,7 +93,7 @@ const M = D.market || {};
 $("built").textContent = D.items.length + " posts · " + (D.analyses || []).length + " filing reads · prices for " + (M.date || "no day yet") + " · updated " + (when(D.built_at) || "never");
 
 // tabs
-const TABS = [["brief","Brief"],["score","Scorecard"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["ask","Ask"],["feed","Feed"],["sources","System"]];
+const TABS = [["brief","Brief"],["score","Scorecard"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["themes","Themes"],["ask","Ask"],["feed","Feed"],["sources","System"]];
 let tab = "brief";
 $("tabs").innerHTML = TABS.map(t => "<button data-t='" + t[0] + "'>" + t[1] + "</button>").join("");
 $("tabs").onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; show(); } };
@@ -249,6 +250,12 @@ function stock() {
   $("stock").innerHTML = h;
 }
 $("sq").addEventListener("input", stock);
+
+// themes
+$("v-themes").innerHTML = "<p class='mean'>The themes you follow (the \"themes\" list in config.json): how much was said in the past day and week, which listed companies come up, and the newest items. Exchange filings are counted apart from news and chatter.</p>" +
+  ((D.themes || []).map(t => "<div class='card'><div class='meta'>" + (t.rising ? "<span class='chip w'>rising</span>" : "") + "<span>" + t.mentions_24h + " in the past day · " + t.mentions_7d + " in a week · " + t.filings_7d + " exchange filings</span></div><b>" + esc(t.theme) + "</b>" +
+    (t.companies.length ? "<div class='meta' style='margin-top:6px'>" + t.companies.map(c => "<span class='chip'>" + esc(c) + "</span>").join("") + "</div>" : "") +
+    (t.latest.length ? "<ul>" + t.latest.map(l => "<li>" + esc(l.date) + " · " + esc(l.platform) + (l.kind ? " (" + esc(l.kind) + ")" : "") + ": <a class='t' style='font-weight:400' href='" + esc(safeUrl(l.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(l.text) + "</a></li>").join("") + "</ul>" : "<div class='mean'>Nothing in the past week.</div>") + "</div>").join("") || "<p>No themes set.</p>");
 
 // ask
 $("v-ask").innerHTML = "<p class='mean'>Ask the radar a question and it answers from what it has collected, with its sources. On GitHub open Actions, choose Avron Radar, press Run workflow, type your question and run it. The answer appears here a few minutes later.</p>" +
