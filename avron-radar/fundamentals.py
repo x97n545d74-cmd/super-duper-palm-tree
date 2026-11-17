@@ -353,10 +353,15 @@ SHP_GROUPS = (      # our name -> the category in NSE's shareholding file (match
 
 SHP_NAME = re.compile(r"<in-bse-shp:NameOfTheShareholder contextRef=\"D_([A-Za-z]+_Context\d+)\"[^>]*>([^<]+)<")
 SHP_ROW = re.compile(r"<in-bse-shp:(ShareholdingAsAPercentageOfTotalNumberOfShares|NumberOfShares) contextRef=\"([A-Za-z]+_Context\d+)\"[^>]*>([^<]+)<")
-HOLDER_KIND = (("IndividualsOrHUF", "promoter"), ("BodiesCorporate", "company"), ("MutualFund", "mutual fund"),
-               ("ForeignPortfolio", "foreign investor"), ("Insurance", "insurer"), ("AlternativeInvestment", "fund"),
-               ("AlternateInvestment", "fund"), ("DetailsOfSharesHeldByResidentIndividual", "individual"),
-               ("NonResidentIndians", "non-resident"), ("Promoter", "promoter"))
+# The promoter-group sections of NSE's file, by the start of the category name. Everything else is public.
+PROMOTER_SECTIONS = ("IndividualsOrHUF", "IndividualsOrHinduUndividedFamily", "CentralGovernmentOrStateGovernment",
+                     "IndianFinancialInstitutionsOrBanks", "OtherIndianShareholders", "IndividualsNonResidentIndividuals",
+                     "Government", "ForeignInstitutions", "OtherForeignShareholders", "ForeignPortfolioInvestorPromoter",
+                     "Promoter")
+HOLDER_KIND = (("MutualFund", "mutual fund"), ("ForeignPortfolio", "foreign investor"), ("Insurance", "insurer"),
+               ("AlternativeInvestment", "fund"), ("AlternateInvestment", "fund"), ("ProvidentFund", "pension fund"),
+               ("ResidentIndividual", "individual"), ("NonResidentIndians", "non-resident"),
+               ("ForeignCompanies", "foreign company"), ("BodiesCorporate", "company"), ("Banks", "bank"))
 
 
 def named_holders(xml_text):
@@ -373,7 +378,8 @@ def named_holders(xml_text):
         if ctx not in pct:
             continue
         cat = ctx.rsplit("_Context", 1)[0]
-        kind = next((k for start, k in HOLDER_KIND if start in cat), "other")
+        kind = ("promoter" if cat.startswith(PROMOTER_SECTIONS)
+                else next((k for start, k in HOLDER_KIND if start in cat), "other"))
         out.append({"name": " ".join(html_unescape(name).split()), "kind": kind,
                     "pct": round(pct[ctx] * 100, 2), "shares": int(shares.get(ctx, 0))})
     return sorted(out, key=lambda h: -h["pct"])
@@ -406,7 +412,7 @@ def parse_shareholding(xml_text):
             out[name] = round(sum(vals) * 100, 2)
     if holders.get("ShareholdingPattern"):
         out["shareholders"] = int(holders["ShareholdingPattern"])
-    public = [h for h in named_holders(xml_text) if h["kind"] != "promoter"]
+    public = [h for h in named_holders(xml_text) if h["kind"] != "promoter" and h["pct"] >= 0.5]
     if public:
         out["named_public_holders"] = public[:25]
     return out or None

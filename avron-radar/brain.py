@@ -569,6 +569,8 @@ The data may also hold "results" (figures copied from results filings, with grow
 
 "themes" counts what was said about each theme the reader follows; mention a theme only when it is rising or a filing touched it, naming the companies.
 
+"positioning" holds the latest day's derivatives positioning (foreign investors' share of index futures held long, the change in their net position, the index put-call ratio), foreign investors' net buying or selling of shares in rupees crore, the F&O ban list and the rupee. Use it in "Market regime" and "Flows". Positioning describes how participants are placed; it is not a forecast.
+
 "government" holds policy notes filed in the past day (decisions, schemes, budget money, election promises and results), each marked official or from news. When one matters, give it a short "Government" paragraph inside "What changed in businesses": what was decided, the stage, the money, and the kind of company affected. Name a company only if the note names it. Never say a policy or an election result will make a share rise.
 
 "followed_investors" holds the day's bulk and block deals by investors and funds the reader follows, and names that entered, added to, cut or left a company's list of holders above 1%. Put these first in "Flows", naming the investor, the side and the size. A named investor buying is a lead, not a reason.

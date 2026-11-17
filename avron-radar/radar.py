@@ -54,6 +54,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import ask as asker   # noqa: E402
 import brain          # noqa: E402
 import decide         # noqa: E402
+import flows          # noqa: E402
 import fundamentals   # noqa: E402
 import market         # noqa: E402
 import policy         # noqa: E402
@@ -640,6 +641,10 @@ def deal_items(deals, stamp):
 
 def market_step():
     deals = market.update(DATA, browser_get)
+    try:      # positioning and flows for the latest trading day, once
+        STATS["flows_added"] = flows.update(DATA, browser_get, (market.load_signals(DATA) or {}).get("date"))
+    except Exception as e:
+        print("flows: %s" % str(e)[:150])
     known = set(load_items(7))
     fresh = [i for i in deal_items(deals, iso(now_utc())) if i["id"] not in known]
     append_items(fresh)
@@ -685,6 +690,7 @@ def analyse(cfg):
         "holder_moves": [dict(symbol=s, **m) for s, h in fundamentals.holding_view(fundamentals.load_holdings(DATA)).items()
                          for m in h.get("holder_moves") or []][:30],
     }
+    extra["positioning"] = flows.summary(flows.load_history(DATA))
     recent_notes = [n for n in policy.load_notes(DATA) if n.get("filed_at", "") >= day_ago]
     extra["government"] = [{k: n[k] for k in ("policy", "what", "level", "sectors", "money_cr", "stage", "companies_named", "official")}
                            for n in recent_notes][:20]
@@ -866,6 +872,7 @@ def build():
                           "activity_names": [n for n, _ in decide.ACTIVITY], "activity": activity,
                           "investors": {w: b for w, b in book.items() if b["holdings"] or b["deals"]},
                           "investors_followed": sorted(book), "held_by": held_by, "policy": gov,
+                          "flows": flows.summary(flows.load_history(DATA)),
                           "themes": decide.theme_tracker(items, (load_json(CONFIG, {}) or {}).get("themes")), "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
                                                         for s, c in cards.items()}},
                          ensure_ascii=False).replace("</", "<\\/")
