@@ -242,5 +242,6 @@
     "max_market_cap_cr": 10000,
     "min_revenue_growth_pct": 20,
     "min_profit_growth_pct": 20
-  }
+  },
+  "daily_results_outside_indexes": 20
 }

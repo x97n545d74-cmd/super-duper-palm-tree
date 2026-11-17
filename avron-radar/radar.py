@@ -72,7 +72,8 @@ FAILS_BEFORE_PAUSE = 6 # a source that fails this many runs in a row is rested
 PAUSE_HOURS = 6        # ...for this long, then tried again
 STATS = {}             # what this run did, written to the run log
 TAG_BATCH = 15         # posts per Claude call
-TAG_MAX_BATCHES = int(os.environ.get("RADAR_TAG_MAX_BATCHES", "6"))
+TAG_MAX_BATCHES = int(os.environ.get("RADAR_TAG_MAX_BATCHES", "8"))
+TAG_MAX_AGE_HOURS = 48 # a post older than this is no longer worth a label
 ATOM = "{http://www.w3.org/2005/Atom}"
 MEDIA = "{http://search.yahoo.com/mrss/}"
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
@@ -590,8 +591,10 @@ def tag(ask=None):
         return 0
     ask = ask or (lambda prompt: call_claude(prompt, api_key))
     items = load_items()
-    todo = sorted((r for r in items.values() if "tags" not in r and r["platform"] not in NO_TAG),
-                  key=lambda r: r["collected_at"], reverse=True)
+    fresh = iso(now_utc() - datetime.timedelta(hours=TAG_MAX_AGE_HOURS))
+    todo = sorted((r for r in items.values() if "tags" not in r and r["platform"] not in NO_TAG
+                   and (r.get("published_at") or r["collected_at"]) >= fresh),
+                  key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
     done = 0
     for n in range(0, min(len(todo), TAG_BATCH * TAG_MAX_BATCHES), TAG_BATCH):
         batch = todo[n:n + TAG_BATCH]

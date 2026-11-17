@@ -49,9 +49,11 @@ def period_key(company, period):
     return market.norm_name(company) + "|" + re.sub(r"[^a-z0-9]", "", period.lower())
 
 
-def pick_results(items, done_keys, universe, names, indexes, watch, limit):
-    """Results filings not yet copied, for companies we follow, newest first. One per company and period."""
-    out, seen = [], set(done_keys)
+def pick_results(items, done_keys, universe, names, indexes, watch, limit, others=0):
+    """Results filings not yet copied, newest first, one per company and period. Companies we follow
+    (in the chosen indexes or on the watch list) come first; up to `others` further NSE-listed companies
+    fill what is left, so small and SME companies outside the indexes are covered too."""
+    out, rest, seen = [], [], set(done_keys)
     for it in sorted(items, key=lambda i: i.get("published_at", ""), reverse=True):
         if it.get("platform") != "nse" or not it.get("url", "").lower().endswith(".pdf"):
             continue
@@ -61,16 +63,18 @@ def pick_results(items, done_keys, universe, names, indexes, watch, limit):
         if not m:
             continue
         sym = names.get(market.norm_name(it.get("title", "")), "")
-        if not sym or not (universe.get(sym, {}).get("index") in indexes or sym in watch):
+        if not sym:
             continue
         key = period_key(it["title"], m.group(1))
         if key in seen:
             continue
         seen.add(key)
-        out.append((it, sym, key))
-        if len(out) >= limit:
-            break
-    return out
+        if universe.get(sym, {}).get("index") in indexes or sym in watch:
+            out.append((it, sym, key))
+        else:
+            rest.append((it, sym, key))
+    out = out[:limit]
+    return out + rest[:max(0, min(others, limit - len(out)))]
 
 
 def _num(v):
@@ -257,7 +261,7 @@ def extract(data_dir, items, cfg, ask=None, log=print):
         st = {}
     today = datetime.datetime.now(brain.IST).date().isoformat()
     if st.get("date") != today:
-        st = {"date": today, "used": 0, "skipped": st.get("skipped", [])[-500:]}
+        st = {"date": today, "used": 0, "others": 0, "skipped": st.get("skipped", [])[-500:]}
     room = min(int(cfg.get("results_per_run", 5)), int(cfg.get("daily_results", 60)) - st["used"])
     if room <= 0:
         return 0
@@ -265,11 +269,14 @@ def extract(data_dir, items, cfg, ask=None, log=print):
     done = {r["key"] for r in rows} | set(st.get("skipped", []))
     universe = market.load_universe(data_dir)
     indexes = set(cfg.get("results_indexes") or ["nifty500", "smallcap250", "microcap250"])
+    others_left = int(cfg.get("daily_results_outside_indexes", 20)) - st.get("others", 0)
     picks = pick_results(items, done, universe, market.name_index(universe), indexes,
-                         set(cfg.get("results_watch") or []), room)
+                         set(cfg.get("results_watch") or []), room, others=max(0, others_left))
     saved = 0
     for it, sym, key in picks:
         st["used"] += 1
+        if universe.get(sym, {}).get("index") not in indexes:
+            st["others"] = st.get("others", 0) + 1
         try:
             rec = parse_results(ask("Company: %s\nDocument: %s" % (it["title"], it["url"])))
         except Exception as e:

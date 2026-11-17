@@ -93,6 +93,9 @@ class Results(unittest.TestCase):
         self.assertEqual(F.pick_results(items, {picks[0][2]}, uni, names, {"smallcap250"}, set(), 10), [])
         watched = F.pick_results(items, set(), uni, names, set(), {"SME"}, 10)
         self.assertEqual([s for _, s, _ in watched], ["SME"])
+        both = F.pick_results(items, set(), uni, names, {"smallcap250"}, set(), 10, others=5)
+        self.assertEqual([s for _, s, _ in both], ["ABC", "SME"])          # followed first, then the rest
+        self.assertEqual([s for _, s, _ in F.pick_results(items, set(), uni, names, {"smallcap250"}, set(), 1, others=5)], ["ABC"])
 
     def test_extract_saves_respects_budget_and_remembers_skips(self):
         with tempfile.TemporaryDirectory() as tmp:
