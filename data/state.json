@@ -1,5 +1,5 @@
 {
- "reddit_next": 2,
+ "reddit_next": 3,
  "youtube_ids": {
   "@CARachanaRanade": "UCe3qdG0A_gr-sEdat5y2twQ",
   "@pranjalkamra": "UCwAdQUuPT6laN-AQR17fe1g",
@@ -29,8 +29,6 @@
   "@TradeBrains": "UCzw35O6toJtjqEAAt4LTjKQ",
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
- "fails": {
-  "news|US Federal Reserve rate decision markets": 1
- },
+ "fails": {},
  "paused_until": {}
 }
