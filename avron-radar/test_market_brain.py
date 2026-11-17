@@ -105,6 +105,22 @@ class Brain(unittest.TestCase):
         late = now + datetime.timedelta(days=2)
         self.assertEqual(brain.pick_filings(self.items, set(), uni, {}, 5, late), [])
 
+    def test_one_read_per_event_prefers_the_document_over_its_xbrl_copy(self):
+        now = datetime.datetime(2026, 11, 16, 6, 0, tzinfo=datetime.timezone.utc)
+        order = self.items[0]
+        xbrl = dict(order, id="x", url="https://nsearchives.nseindia.com/corporate/xbrl/ABC_1.xml",
+                    subject="Bagging/Receiving of orders/contracts (SEBI LODR)-XBRL")
+        picked = brain.pick_filings([xbrl, order], set(), {}, {}, 5, now)
+        self.assertEqual([i["url"][-9:] for i, _ in picked], ["ABC_1.pdf"])
+        done = {brain.event_key("ABC Limited", order["subject"])}
+        self.assertEqual(brain.pick_filings([xbrl, order], set(), {}, {}, 5, now, done_events=done), [])
+        self.assertNotEqual(brain.event_key("ABC Limited", "Acquisition"), brain.event_key("ABC Limited", order["subject"]))
+
+    def test_indicator_periods_are_not_flagged_as_unsourced_numbers(self):
+        a = {"headline": "ABC: x", "read": "", "price_context": "Below its 200-day average and near its 52-week low.",
+             "facts": [], "document_read": True}
+        self.assertEqual(brain.check_read(a, {"title": "", "text": ""}, None)["unsupported_numbers"], [])
+
     def test_parse_read_cleans_and_rejects(self):
         self.assertIsNone(brain.parse_read("SKIP"))
         a = brain.parse_read('Here: {"headline":"ABC: order of Rs 120 crore","category":"weird","materiality":"9",'

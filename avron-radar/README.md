@@ -47,7 +47,7 @@ Not collected: Instagram, Facebook, LinkedIn (login walls), BSE and Yahoo Financ
 ```
 python3 avron-radar/radar.py run        # everything
 python3 avron-radar/radar.py collect    # or one step: collect, market, tag, analyse, build
-cd avron-radar && python3 -m unittest   # 48 tests, no network
+cd avron-radar && python3 -m unittest   # 50 tests, no network
 ```
 
 Starting the workflow by hand from a branch other than the default writes to `avron-radar-data-test` and `avron-radar-dashboard-test`, so live data is untouched.

@@ -57,8 +57,16 @@ def filing_score(item, universe_row):
     return score
 
 
-def pick_filings(items, done_ids, universe, names, limit, now=None):
-    """The unread filings from the past day most worth reading, best first."""
+def event_key(company, subject):
+    """Same company + same kind of disclosure = the same event (companies often file a PDF and an XBRL
+    copy, or a follow-up, for one event)."""
+    sub = re.sub(r"\(.*?\)|-?\s*xbrl|para [ab]\b", " ", (subject or "").lower())
+    return market.norm_name(company) + "|" + " ".join(re.sub(r"[^a-z ]", " ", sub).split())
+
+
+def pick_filings(items, done_ids, universe, names, limit, now=None, done_events=()):
+    """The unread filings from the past day most worth reading, best first. One filing per event:
+    events already read (done_events) and second copies of the same disclosure are left out."""
     now = now or datetime.datetime.now(datetime.timezone.utc)
     since = (now - datetime.timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ")
     cands = []
@@ -71,8 +79,16 @@ def pick_filings(items, done_ids, universe, names, limit, now=None):
         score = filing_score(it, universe.get(sym))
         if score:
             cands.append((score, it.get("published_at", ""), it, sym))
-    cands.sort(key=lambda c: (c[0], c[1]), reverse=True)
-    return [(it, sym) for _, _, it, sym in cands[:limit]]
+    # a readable document beats its XBRL copy; then the higher score; then the newer filing
+    cands.sort(key=lambda c: (not c[2]["url"].lower().endswith(".xml"), c[0], c[1]), reverse=True)
+    seen, unique = set(done_events), []
+    for c in cands:
+        key = event_key(c[2].get("title", ""), c[2].get("subject", ""))
+        if key not in seen:
+            seen.add(key)
+            unique.append(c)
+    unique.sort(key=lambda c: (c[0], c[1]), reverse=True)
+    return [(it, sym) for _, _, it, sym in unique[:limit]]
 
 
 TRIAGE_POOL = 30    # candidates shown to the triage desk each run
@@ -264,6 +280,7 @@ def check_read(a, item, snap):
     for v in (snap or {}).values():
         if isinstance(v, (int, float)) and not isinstance(v, bool):
             allowed.update({float(v), round(float(v), 1), float(round(v)), abs(float(v)), round(abs(float(v)), 1)})
+    allowed.update({20.0, 50.0, 52.0, 150.0, 200.0})     # indicator periods: 200-day average, 52-week high
     claimed = numbers_in(" ".join([a.get("headline", ""), a.get("read", ""), a.get("price_context", "")]))
     ok = lambda x: x <= 12 or any(abs(x - y) <= max(0.051, abs(y) * 0.0006) for y in allowed)
     bad = sorted(x for x in claimed if not ok(x))
@@ -355,8 +372,10 @@ def read_filings(data_dir, items, cfg, ask=None, log=print, ask_triage=None, ask
     universe = market.load_universe(data_dir)
     signals = market.load_signals(data_dir) or {}
     snaps, deals = signals.get("snapshots", {}), signals.get("deals", [])
+    day_ago = (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    events = {a["event"] for a in analyses if a.get("event") and a.get("read_at", "") >= day_ago}
     pool = [(it, sym, universe.get(sym)) for it, sym in
-            pick_filings(items, done, universe, market.name_index(universe), TRIAGE_POOL)]
+            pick_filings(items, done, universe, market.name_index(universe), TRIAGE_POOL, done_events=events)]
     if ask_triage and len(pool) > room:
         pool = triage(pool, ask_triage)
     wrote = 0
@@ -375,7 +394,8 @@ def read_filings(data_dir, items, cfg, ask=None, log=print, ask_triage=None, ask
             continue
         now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         a.update(id=item["id"], company=item.get("title", ""), symbol=sym, url=item["url"],
-                 published_at=item.get("published_at", ""), read_at=now)
+                 published_at=item.get("published_at", ""), read_at=now,
+                 event=event_key(item.get("title", ""), item.get("subject", "")))
         check_read(a, item, snap)
         if ask_verify and a["materiality"] >= VERIFY_FROM and a["document_read"]:
             verify_read(a, ask_verify)
