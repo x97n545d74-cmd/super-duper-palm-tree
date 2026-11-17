@@ -229,5 +229,13 @@
     }
   ],
   "filings_per_run": 4,
-  "daily_filing_reads": 40
+  "daily_filing_reads": 40,
+  "results_per_run": 5,
+  "daily_results": 60,
+  "results_indexes": [
+    "nifty500",
+    "smallcap250",
+    "microcap250"
+  ],
+  "results_watch": []
 }

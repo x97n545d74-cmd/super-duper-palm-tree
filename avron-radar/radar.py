@@ -50,8 +50,9 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import brain    # noqa: E402
-import market   # noqa: E402
+import brain          # noqa: E402
+import fundamentals   # noqa: E402
+import market         # noqa: E402
 
 HERE = pathlib.Path(__file__).resolve().parent
 DATA = pathlib.Path(os.environ.get("RADAR_DATA", HERE / "data"))
@@ -522,6 +523,10 @@ def collect(cfg):
             print("%-9s %-40s %s" % (entry["lane"], entry["source"][:40],
                   "ok  found %(found)d  new %(new)d" % entry if entry["ok"] else "FAILED  " + entry["error"]))
     append_items(new_rows)
+    try:      # promoter holdings are kept for good, not just for the dashboard's 45 days
+        STATS["holdings_added"] = fundamentals.save_holdings(DATA, new_rows, market.name_index(market.load_universe(DATA)))
+    except Exception as e:
+        print("holdings: %s" % str(e)[:150])
     (DATA / "state.json").write_text(json.dumps(state, indent=1), encoding="utf-8")
     (DATA / "health.json").write_text(json.dumps(health, indent=1), encoding="utf-8")
     ok = sum(1 for h in health if h["ok"])
@@ -634,8 +639,24 @@ def market_step():
 
 def analyse(cfg):
     items = list(load_items(3).values())
-    STATS["filing_reads"] = brain.read_filings(DATA, items, cfg)
-    STATS["brief"] = brain.write_brief(DATA, items)
+    STATS["results_copied"] = fundamentals.extract(DATA, items, cfg)
+    signals = market.load_signals(DATA) or {}
+    snaps = signals.get("snapshots") or {}
+    fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), snaps)
+    figures_for = lambda sym: ({"period_end": fund[sym]["period_end"], "period_type": fund[sym]["period_type"],
+                                "metrics": fund[sym]["metrics"]} if sym in fund else None)
+    STATS["filing_reads"] = brain.read_filings(DATA, items, cfg, figures_for=figures_for)
+    names = market.name_index_from_snapshots(signals)
+    day_ago = iso(now_utc() - datetime.timedelta(hours=30))
+    recent = [r for r in fundamentals.load_fundamentals(DATA) if r.get("copied_at", "") >= day_ago]
+    extra = {
+        "results": [{"symbol": r["symbol"], "period_end": r["period_end"], "period_type": r["period_type"],
+                     "metrics": fund[r["symbol"]]["metrics"]} for r in recent if r["symbol"] in fund][:25],
+        "calendar": fundamentals.calendar(load_items(7).values(), names)[:40],
+        "promoter_changes": [dict(symbol=s, **h) for s, h in fundamentals.holding_view(fundamentals.load_holdings(DATA)).items()
+                             if h["change_pts"] is not None and abs(h["change_pts"]) >= 0.5][:25],
+    }
+    STATS["brief"] = brain.write_brief(DATA, items, extra=extra)
 
 
 def token_totals(usage):
@@ -674,6 +695,18 @@ def build():
         if syms:
             r["symbols"] = syms
     runs = [row for f in data_files("runs", 7) for row in read_jsonl(f)][-60:]
+    snaps = signals.get("snapshots") or {}
+    fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), snaps)
+    holds = fundamentals.holding_view(fundamentals.load_holdings(DATA))
+    cal = fundamentals.calendar(items, names)
+    growth = sorted(({"symbol": s, "period_end": f["period_end"], "revenue_yoy_pct": f["metrics"].get("revenue_yoy_pct"),
+                      "pat_yoy_pct": f["metrics"].get("pat_yoy_pct"), "ebitda_margin_pct": f["metrics"].get("ebitda_margin_pct"),
+                      "pe_annualised": f["metrics"].get("pe_annualised"), "market_cap_cr": f["metrics"].get("market_cap_cr"),
+                      "flags": len(f["metrics"]["flags"]),
+                      "above_200dma": bool(snaps.get(s) and snaps[s].get("sma200") and snaps[s]["close"] > snaps[s]["sma200"]),
+                      "from_high": (snaps.get(s) or {}).get("from_high")}
+                     for s, f in fund.items() if f["metrics"].get("growth_20")),
+                    key=lambda r: -(r["pat_yoy_pct"] or 0))
     db_path = HERE / "radar.db"
     if db_path.exists():
         db_path.unlink()
@@ -719,6 +752,20 @@ def build():
             for r in items])
     except sqlite3.OperationalError:
         pass             # this SQLite build has no full-text module; the plain tables still work
+    db.execute("""CREATE TABLE fundamentals (symbol TEXT PRIMARY KEY, company TEXT, period_end TEXT, period_type TEXT,
+        basis TEXT, revenue_cr REAL, pat_cr REAL, revenue_yoy_pct REAL, pat_yoy_pct REAL, ebitda_margin_pct REAL,
+        net_margin_pct REAL, roe_annualised_pct REAL, debt_to_equity REAL, pe_annualised REAL, market_cap_cr REAL,
+        flags TEXT, url TEXT)""")
+    for sym, f in fund.items():
+        m = f["metrics"]
+        db.execute("INSERT INTO fundamentals VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
+            sym, f["company"], f["period_end"], f["period_type"], f["basis"], m.get("revenue_cr"), m.get("pat_cr"),
+            m.get("revenue_yoy_pct"), m.get("pat_yoy_pct"), m.get("ebitda_margin_pct"), m.get("net_margin_pct"),
+            m.get("roe_annualised_pct"), m.get("debt_to_equity"), m.get("pe_annualised"), m.get("market_cap_cr"),
+            "; ".join(m["flags"]), f["url"]))
+    db.execute("CREATE TABLE holdings (symbol TEXT PRIMARY KEY, as_on TEXT, promoter_pct REAL, previous_as_on TEXT, change_pts REAL)")
+    db.executemany("INSERT INTO holdings VALUES (?,?,?,?,?)", [
+        (s, h["as_on"], h["promoter_pct"], h["previous_as_on"], h["change_pts"]) for s, h in holds.items()])
     db.execute("CREATE INDEX items_time ON items (published_at)")
     db.execute("CREATE INDEX items_platform ON items (platform)")
     db.commit()
@@ -729,11 +776,12 @@ def build():
     payload = json.dumps({"built_at": iso(now_utc()), "items": items[:4000], "health": health,
                           "analyses": analyses[:300], "market": market_view,
                           "briefs": brain.load_briefs(DATA), "stocks": signals.get("snapshots") or {},
-                          "buzz": brain.buzz(items, names), "runs": runs},
+                          "buzz": brain.buzz(items, names), "runs": runs,
+                          "fundamentals": fund, "holdings": holds, "calendar": cal, "growth": growth},
                          ensure_ascii=False).replace("</", "<\\/")
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")
-    print("built radar.db and dashboard.html: %d posts, %d filing reads, market data for %s"
-          % (len(items), len(analyses), signals.get("date") or "no day yet"))
+    print("built radar.db and dashboard.html: %d posts, %d filing reads, results for %d companies, market data for %s"
+          % (len(items), len(analyses), len(fund), signals.get("date") or "no day yet"))
 
 
 def step(name, fn):
