@@ -1,8 +1,11 @@
 name: Avron Radar
 
-# Every 30 minutes: reads the public feeds listed in avron-radar/config.json,
-# adds new posts to the avron-radar-data branch, labels them with Claude and
-# rebuilds dashboard.html there. Read-only: it never posts, likes or logs in.
+# Every 30 minutes: reads the sources in avron-radar/config.json, keeps NSE's
+# daily price file for every stock, has Claude label posts, read the important
+# filings and write two briefs a day. Read-only: it never posts or logs in.
+#   avron-radar-data       every post, filing read, price day and brief (history kept)
+#   avron-radar-dashboard  only the latest dashboard.html and radar.db (no history)
+# Runs started by hand from another branch write to the same names ending in -test.
 on:
   schedule:
     - cron: "7,37 * * * *"
@@ -12,29 +15,35 @@ permissions:
   contents: write
 
 concurrency:
-  group: avron-radar
+  group: avron-radar-${{ github.ref }}
   cancel-in-progress: false
+
+env:
+  SUFFIX: ${{ github.ref_name == github.event.repository.default_branch && ' ' || '-test' }}
 
 jobs:
   radar:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
       - name: Open the data branch
         run: |
+          BRANCH="avron-radar-data$(echo "$SUFFIX" | tr -d ' ')"
+          echo "DATA_BRANCH=$BRANCH" >> "$GITHUB_ENV"
+          echo "DASH_BRANCH=avron-radar-dashboard$(echo "$SUFFIX" | tr -d ' ')" >> "$GITHUB_ENV"
           git config user.name "avron-radar"
           git config user.email "avron-radar@users.noreply.github.com"
-          if git ls-remote --exit-code origin avron-radar-data >/dev/null; then
-            git fetch -q --depth 1 origin avron-radar-data
+          if git ls-remote --exit-code origin "$BRANCH" >/dev/null; then
+            git fetch -q --depth 1 origin "$BRANCH"
             git worktree add -q ../radar-data FETCH_HEAD
-            git -C ../radar-data switch -q -c avron-radar-data
+            git -C ../radar-data switch -q -c "$BRANCH"
           else
-            git worktree add -q --orphan -b avron-radar-data ../radar-data
+            git worktree add -q --orphan -b "$BRANCH" ../radar-data
           fi
 
-      - name: Collect, label, build
+      - name: Collect, analyse, build
         env:
           RADAR_DATA: ${{ github.workspace }}/../radar-data/data
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -43,15 +52,23 @@ jobs:
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
-        run: |
-          python3 avron-radar/radar.py run
-          cp avron-radar/dashboard.html ../radar-data/dashboard.html
+        run: python3 avron-radar/radar.py run
 
-      - name: Save
+      - name: Save the data
         working-directory: ../radar-data
         run: |
+          git rm -q --cached --ignore-unmatch dashboard.html && rm -f dashboard.html
           git add -A
           if ! git diff --cached --quiet; then
             git commit -q -m "Radar $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
-            git push -q origin HEAD:avron-radar-data
+            git push -q origin "HEAD:$DATA_BRANCH"
           fi
+
+      - name: Publish the dashboard
+        run: |
+          git worktree add -q --orphan -b dashboard-build ../dash
+          cp avron-radar/dashboard.html avron-radar/radar.db ../dash/
+          cd ../dash
+          git add -A
+          git commit -q -m "Dashboard $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
+          git push -q --force origin "HEAD:$DASH_BRANCH"

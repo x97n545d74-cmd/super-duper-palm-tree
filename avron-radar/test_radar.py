@@ -98,11 +98,58 @@ class Parsers(unittest.TestCase):
         out = radar.parse_tags('[{"id":"a","relevance":3,"kind":"fact"},{"id":"b","relevance":2,"summ')
         self.assertEqual(list(out), ["a"])
 
-    def test_reddit_reads_two_subreddits_per_run_in_turn(self):
+    def test_reddit_reads_one_subreddit_per_run_in_turn(self):
         cfg, state = {"subreddits": ["a", "b", "c"]}, {}
-        first = [s for s, _ in radar.lane_reddit(cfg, state)]
-        second = [s for s, _ in radar.lane_reddit(cfg, state)]
-        self.assertEqual((first, second), (["r/a", "r/b"], ["r/c", "r/a"]))
+        seen = [[s for s, _ in radar.lane_reddit(cfg, state)] for _ in range(4)]
+        self.assertEqual(seen, [["r/a"], ["r/b"], ["r/c"], ["r/a"]])
+
+    def test_a_source_that_keeps_failing_is_rested_then_tried_again(self):
+        old = radar.PAUSE
+        radar.PAUSE = 0
+        try:
+            calls, state = [], {}
+            def boom():
+                calls.append(1)
+                raise ValueError("down")
+            for n in range(radar.FAILS_BEFORE_PAUSE + 2):
+                (entry, _), = radar.run_lane("news", [("dead", boom)], state, "t", now=1000.0 + n)
+            self.assertEqual(len(calls), radar.FAILS_BEFORE_PAUSE)          # the last two runs did not hit it
+            self.assertTrue(entry["paused"])
+            later = 1000.0 + radar.PAUSE_HOURS * 3600 + 60
+            (entry, found), = radar.run_lane("news", [("dead", lambda: ["x"])], state, "t", now=later)
+            self.assertEqual((entry["ok"], found, state["fails"], state["paused_until"]), (True, ["x"], {}, {}))
+        finally:
+            radar.PAUSE = old
+
+    def test_http_retries_a_server_error_once_but_not_a_refusal(self):
+        import urllib.error
+        old = (radar.urllib.request.urlopen, radar.RETRY_WAIT)
+        radar.RETRY_WAIT = 0
+        class Resp:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self): return b"ok"
+        try:
+            codes = [503]
+            def flaky(req, timeout=0):
+                if codes:
+                    raise urllib.error.HTTPError(req.full_url, codes.pop(), "x", {}, None)
+                return Resp()
+            radar.urllib.request.urlopen = flaky
+            self.assertEqual(radar.http_get_bytes("https://example.invalid/"), b"ok")
+            codes = [403, 403]
+            with self.assertRaises(urllib.error.HTTPError):
+                radar.http_get_bytes("https://example.invalid/")
+            self.assertEqual(len(codes), 1)                                   # asked once only
+        finally:
+            radar.urllib.request.urlopen, radar.RETRY_WAIT = old
+
+    def test_token_totals_per_model(self):
+        t = radar.token_totals([{"model": "a", "in": 10, "out": 2, "cache_read": 5, "cache_write": 0},
+                                {"model": "a", "in": 1, "out": 1, "cache_read": 0, "cache_write": 0},
+                                {"model": "b", "in": 7, "out": 3, "cache_read": 0, "cache_write": 0}])
+        self.assertEqual(t["a"], {"calls": 2, "in": 11, "out": 3, "cache_read": 5, "cache_write": 0})
+        self.assertEqual(t["b"]["calls"], 1)
 
 
 class Flow(unittest.TestCase):
@@ -136,6 +183,8 @@ class Flow(unittest.TestCase):
                 self.assertEqual(db.execute("SELECT kind, companies, watch FROM items").fetchall(),
                                  [("fact", "ABC Ltd", "order win")])
                 db.close()
+                self.assertTrue(list((tmp / "data").glob("items-????-??-??.jsonl")))   # one small file per day
+                self.assertTrue(list((tmp / "data").glob("tags-????-??-??.jsonl")))
                 page = (tmp / "dashboard.html").read_text(encoding="utf-8")
                 self.assertIn("ABC Ltd says it won an order.", page)
                 self.assertNotIn("/*DATA*/null", page)

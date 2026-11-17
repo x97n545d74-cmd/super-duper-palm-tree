@@ -1,18 +1,38 @@
 {
-  "_note": "Starting lists. Edit freely. A source that does not exist shows as FAILED in the dashboard's Sources tab; remove or fix it there.",
+  "_note": "Edit freely. A source that fails shows in the dashboard's Sources tab; remove or fix it there.",
   "max_age_days": 3,
-  "disabled_lanes": ["x"],
+  "disabled_lanes": [
+    "x"
+  ],
   "watchlist": [
-    "order win", "capex", "QIP", "preferential issue", "warrants", "buyback", "demerger", "merger",
-    "SEBI", "RBI", "promoter", "pledge", "guidance", "data centre", "data center", "semiconductor",
-    "defence", "smallcap", "SME IPO"
+    "order win",
+    "capex",
+    "QIP",
+    "preferential issue",
+    "warrants",
+    "buyback",
+    "demerger",
+    "merger",
+    "SEBI",
+    "RBI",
+    "promoter",
+    "pledge",
+    "guidance",
+    "data centre",
+    "data center",
+    "semiconductor",
+    "defence",
+    "smallcap",
+    "SME IPO"
   ],
   "subreddits": [
     "IndianStockMarket",
     "IndiaInvestments",
     "IndianStreetBets",
     "StockMarketIndia",
-    "DalalStreetTalks"
+    "DalalStreetTalks",
+    "IndianStocks",
+    "NSEbets"
   ],
   "youtube_channels": [
     "@CARachanaRanade",
@@ -21,17 +41,48 @@
     "@AkshatZayn",
     "@ZerodhaOnline",
     "@moneycontrol",
-    "@FinanceWithSharan"
+    "@FinanceWithSharan",
+    "@CNBC-TV18",
+    "@ETNOW",
+    "@ZeeBusiness",
+    "@NDTVProfitIndia",
+    "@SOICfinance",
+    "@marketfeed",
+    "@ShankarNath",
+    "@FinologyLegal",
+    "@Groww",
+    "@ParimalAde",
+    "@StockEdgeOfficial",
+    "@moneypurse",
+    "@AssetYogi",
+    "@InvestWithNeeraj",
+    "@thinkschool",
+    "@Thewealthmagnet",
+    "@PRSundar64",
+    "@sunilminglani",
+    "@TradeBrains",
+    "@elearnmarkets"
   ],
   "telegram_channels": [
-    "moneycontrolcom"
+    "moneycontrolcom",
+    "CNBC_Awaaz",
+    "ETMarkets",
+    "stockedgeofficial",
+    "TradeBrainsOfficial",
+    "livemint",
+    "finshots",
+    "zerodhaonline"
   ],
   "news_queries": [
     "NSE smallcap order win",
     "SEBI order listed company",
     "India data centre capacity announcement",
     "India semiconductor plant listed company",
-    "promoter stake sale block deal"
+    "promoter stake sale block deal",
+    "SME IPO listing NSE Emerge",
+    "promoter pledge shares",
+    "QIP preferential issue smallcap",
+    "order book defence railway smallcap"
   ],
   "bluesky_queries": [
     "nifty smallcap",
@@ -41,5 +92,142 @@
     "(smallcap OR \"order win\" OR QIP) (NSE OR BSE) lang:en"
   ],
   "x_every_hours": 6,
-  "x_max_results": 10
+  "x_max_results": 10,
+  "feeds": [
+    {
+      "name": "NSE announcements",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Online_announcements.xml"
+    },
+    {
+      "name": "NSE financial results",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Financial_Results.xml"
+    },
+    {
+      "name": "NSE insider trading",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Insider_Trading.xml"
+    },
+    {
+      "name": "NSE takeover disclosures",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Sast_Regulation29.xml"
+    },
+    {
+      "name": "NSE board meetings",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Board_Meetings.xml"
+    },
+    {
+      "name": "NSE corporate actions",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Corporate_action.xml"
+    },
+    {
+      "name": "NSE shareholding patterns",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Shareholding_Pattern.xml"
+    },
+    {
+      "name": "RBI press releases",
+      "platform": "regulator",
+      "url": "https://www.rbi.org.in/pressreleases_rss.xml"
+    },
+    {
+      "name": "RBI notifications",
+      "platform": "regulator",
+      "url": "https://www.rbi.org.in/notifications_rss.xml"
+    },
+    {
+      "name": "PIB",
+      "platform": "regulator",
+      "url": "https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
+      "only_with": [
+        "finance",
+        "rbi",
+        "sebi",
+        "gst",
+        "tax",
+        "inflation",
+        "gdp",
+        "export",
+        "import",
+        "industry",
+        "commerce",
+        "power",
+        "coal",
+        "steel",
+        "railway",
+        "defence",
+        "semiconductor",
+        "electronics",
+        "pli",
+        "cabinet",
+        "budget",
+        "disinvestment",
+        "bank",
+        "mines",
+        "petroleum",
+        "renewable"
+      ]
+    },
+    {
+      "name": "Zerodha Pulse",
+      "platform": "news",
+      "url": "https://pulse.zerodha.com/feed.php"
+    },
+    {
+      "name": "ET Markets",
+      "platform": "news",
+      "url": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms"
+    },
+    {
+      "name": "ET Stocks",
+      "platform": "news",
+      "url": "https://economictimes.indiatimes.com/markets/stocks/rssfeeds/2146842.cms"
+    },
+    {
+      "name": "Moneycontrol business",
+      "platform": "news",
+      "url": "https://www.moneycontrol.com/rss/business.xml"
+    },
+    {
+      "name": "Moneycontrol market reports",
+      "platform": "news",
+      "url": "https://www.moneycontrol.com/rss/marketreports.xml"
+    },
+    {
+      "name": "Mint markets",
+      "platform": "news",
+      "url": "https://www.livemint.com/rss/markets"
+    },
+    {
+      "name": "Mint companies",
+      "platform": "news",
+      "url": "https://www.livemint.com/rss/companies"
+    },
+    {
+      "name": "Business Standard markets",
+      "platform": "news",
+      "url": "https://www.business-standard.com/rss/markets-106.rss"
+    },
+    {
+      "name": "BusinessLine markets",
+      "platform": "news",
+      "url": "https://www.thehindubusinessline.com/markets/feeder/default.rss"
+    },
+    {
+      "name": "CNBC-TV18 market",
+      "platform": "news",
+      "url": "https://www.cnbctv18.com/commonfeeds/v1/cne/rss/market.xml"
+    },
+    {
+      "name": "ValuePickr forum",
+      "platform": "forum",
+      "url": "https://forum.valuepickr.com/latest.rss"
+    }
+  ],
+  "filings_per_run": 4,
+  "daily_filing_reads": 40
 }
