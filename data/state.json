@@ -29,10 +29,10 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 4,
+ "reddit_next": 5,
  "fails": {
   "reddit|r/StockMarketIndia": 2,
-  "reddit|r/DalalStreetTalks": 1,
+  "reddit|r/DalalStreetTalks": 2,
   "reddit|r/IndianStocks": 1,
   "feeds|Moneycontrol business": 6,
   "feeds|Moneycontrol market reports": 6,
