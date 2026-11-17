@@ -338,6 +338,86 @@ def extract(data_dir, items, cfg, ask=None, log=print):
 HOLDING = re.compile(r"AS ON DATE\s*:\s*(\d{1,2}-[A-Za-z]{3}-\d{4}).*?PR_AND_PRGRP:\s*([\d.]+)", re.S)
 
 
+SHP_FACT = re.compile(r"<in-bse-shp:(ShareholdingAsAPercentageOfTotalNumberOfShares|NumberOfShareholders) contextRef=\"([A-Za-z]+)_ContextI\"[^>]*>([^<]+)<")
+SHP_GROUPS = (      # our name -> the category in NSE's shareholding file (matched on the start of its name)
+    ("promoters", ("ShareholdingOfPromoterAndPromoterGroup",)),
+    ("mutual_funds", ("MutualFunds",)),
+    ("foreign_investors", ("ForeignPortfolioInvestors", "InstitutionsForeign")),
+    ("insurers", ("InsuranceCompanies",)),
+    ("other_domestic_institutions", ("AlternativeInvestmentFunds", "AlternateInvestmentFunds", "Banks", "ProvidentFundsOrPensionFunds", "NBFCsRegisteredWithRBI")),
+    ("small_shareholders", ("ResidentIndividualShareholdersHoldingNominalShareCapitalUpToRsTwoLakh",)),
+    ("large_individuals", ("ResidentIndividualShareholdersHoldingNominalShareCapitalInExcessOfRsTwoLakh",)),
+    ("bodies_corporate", ("BodiesCorporate",)),
+)
+
+
+SHP_NAME = re.compile(r"<in-bse-shp:NameOfTheShareholder contextRef=\"D_([A-Za-z]+_Context\d+)\"[^>]*>([^<]+)<")
+SHP_ROW = re.compile(r"<in-bse-shp:(ShareholdingAsAPercentageOfTotalNumberOfShares|NumberOfShares) contextRef=\"([A-Za-z]+_Context\d+)\"[^>]*>([^<]+)<")
+# The promoter-group sections of NSE's file, by the start of the category name. Everything else is public.
+PROMOTER_SECTIONS = ("IndividualsOrHUF", "IndividualsOrHinduUndividedFamily", "CentralGovernmentOrStateGovernment",
+                     "IndianFinancialInstitutionsOrBanks", "OtherIndianShareholders", "IndividualsNonResidentIndividuals",
+                     "Government", "ForeignInstitutions", "OtherForeignShareholders", "ForeignPortfolioInvestorPromoter",
+                     "Promoter")
+HOLDER_KIND = (("MutualFund", "mutual fund"), ("ForeignPortfolio", "foreign investor"), ("Insurance", "insurer"),
+               ("AlternativeInvestment", "fund"), ("AlternateInvestment", "fund"), ("ProvidentFund", "pension fund"),
+               ("ResidentIndividual", "individual"), ("NonResidentIndians", "non-resident"),
+               ("ForeignCompanies", "foreign company"), ("BodiesCorporate", "company"), ("Banks", "bank"))
+
+
+def named_holders(xml_text):
+    """Every shareholder the file names (promoters, and public holders above 1%): name, kind, percent, shares."""
+    names = dict(SHP_NAME.findall(xml_text))
+    pct, shares = {}, {}
+    for fact, ctx, val in SHP_ROW.findall(xml_text):
+        try:
+            (pct if fact.startswith("Shareholding") else shares)[ctx] = float(val)
+        except ValueError:
+            pass
+    out = []
+    for ctx, name in names.items():
+        if ctx not in pct:
+            continue
+        cat = ctx.rsplit("_Context", 1)[0]
+        kind = ("promoter" if cat.startswith(PROMOTER_SECTIONS)
+                else next((k for start, k in HOLDER_KIND if start in cat), "other"))
+        out.append({"name": " ".join(html_unescape(name).split()), "kind": kind,
+                    "pct": round(pct[ctx] * 100, 2), "shares": int(shares.get(ctx, 0))})
+    return sorted(out, key=lambda h: -h["pct"])
+
+
+def html_unescape(s):
+    import html
+    return html.unescape(s)
+
+
+def parse_shareholding(xml_text):
+    """NSE's shareholding XBRL -> percentages by kind of holder, and the number of shareholders.
+    Only the summary rows are read (context names ending _ContextI), not the list of individual holders."""
+    pct, holders = {}, {}
+    for fact, cat, val in SHP_FACT.findall(xml_text):
+        try:
+            v = float(val)
+        except ValueError:
+            continue
+        (pct if fact.startswith("Shareholding") else holders)[cat] = v
+    if "ShareholdingPattern" not in pct and "ShareholdingOfPromoterAndPromoterGroup" not in pct:
+        return None
+    out = {}
+    for name, starts in SHP_GROUPS:
+        if name == "foreign_investors" and "InstitutionsForeign" in pct:
+            out[name] = round(pct["InstitutionsForeign"] * 100, 2)        # the subtotal, when the file has one
+            continue
+        vals = [v for cat, v in pct.items() if cat.startswith(starts) and not (name == "foreign_investors" and cat == "InstitutionsForeign")]
+        if vals:
+            out[name] = round(sum(vals) * 100, 2)
+    if holders.get("ShareholdingPattern"):
+        out["shareholders"] = int(holders["ShareholdingPattern"])
+    public = [h for h in named_holders(xml_text) if h["kind"] != "promoter" and h["pct"] >= 0.5]
+    if public:
+        out["named_public_holders"] = public[:25]
+    return out or None
+
+
 def holding_rows(items, names, known):
     """New promoter-holding rows from the shareholding feed: one per company and as-on date."""
     out = []
@@ -360,11 +440,36 @@ def holding_rows(items, names, known):
     return out
 
 
-def save_holdings(data_dir, items, names):
+def save_holdings(data_dir, items, names, fetch=None, limit=40):
+    """Adds new holding rows. With `fetch` (url -> text), each new row also gets the breakdown by kind of
+    holder from NSE's shareholding file; a file that cannot be read leaves the promoter figure only."""
     path = data_dir / "holdings.jsonl"
     old = load_holdings(data_dir)
     new = holding_rows(items, names, {r["key"] for r in old})
-    if new:
+    for r in new[:limit] if fetch else []:
+        if r["url"].lower().endswith(".xml"):
+            try:
+                detail = parse_shareholding(fetch(r["url"]))
+                if detail:
+                    r["detail"] = detail
+            except Exception:
+                pass
+    filled = 0
+    for r in old if fetch else []:      # rows saved before the breakdown existed, or whose file failed that day
+        if filled >= 15:
+            break
+        if "detail" not in r and r.get("url", "").lower().endswith(".xml") and r.get("tries", 0) < 3:
+            r["tries"] = r.get("tries", 0) + 1
+            filled += 1
+            try:
+                detail = parse_shareholding(fetch(r["url"]))
+                if detail:
+                    r["detail"] = detail
+            except Exception:
+                pass
+    if filled:
+        path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in old + new), encoding="utf-8")
+    elif new:
         with open(path, "a", encoding="utf-8") as fh:
             for r in new:
                 fh.write(json.dumps(r, ensure_ascii=False) + "\n")
@@ -398,7 +503,58 @@ def holding_view(rows):
         out[sym] = {"as_on": last["as_on"], "promoter_pct": last["promoter_pct"],
                     "previous_as_on": prev["as_on"] if prev else None,
                     "change_pts": round(last["promoter_pct"] - prev["promoter_pct"], 2) if prev else None}
+        if last.get("detail"):
+            out[sym]["detail"] = last["detail"]
+            if prev and prev.get("detail"):
+                d, e = last["detail"], prev["detail"]
+                out[sym]["detail_change"] = {k: round(d[k] - e[k], 2) for k in d if k in e
+                                             and k not in ("shareholders", "named_public_holders")}
+                now_h = {norm_person(h["name"]): h for h in d.get("named_public_holders") or []}
+                old_h = {norm_person(h["name"]): h for h in e.get("named_public_holders") or []}
+                moves = []
+                for key, h in now_h.items():
+                    if key not in old_h:
+                        moves.append({"name": h["name"], "move": "new above 1%", "pct": h["pct"]})
+                    elif abs(h["pct"] - old_h[key]["pct"]) >= 0.25:
+                        moves.append({"name": h["name"], "move": "raised" if h["pct"] > old_h[key]["pct"] else "cut",
+                                      "pct": h["pct"], "was": old_h[key]["pct"]})
+                for key, h in old_h.items():
+                    if key not in now_h:
+                        moves.append({"name": h["name"], "move": "no longer above 1%", "was": h["pct"]})
+                out[sym]["holder_moves"] = moves
+                inst = lambda x: sum(x.get(k, 0) for k in ("mutual_funds", "foreign_investors", "insurers", "other_domestic_institutions"))
+                out[sym]["institutions_change_pts"] = round(inst(d) - inst(e), 2)
     return out
+
+
+def norm_person(name):
+    return " ".join(re.sub(r"[^a-z ]", " ", (name or "").lower()).split())
+
+
+def investor_book(holding_rows, deals, investors):
+    """What the investors and funds the reader follows (config.json "investors": display name -> the
+    spellings to look for) hold and trade. Holdings come from the newest shareholding file per company
+    (holders above 1% are named); trades come from bulk and block deals, which name the party.
+    Returns {investor: {"holdings": [...], "deals": [...]}}."""
+    latest = {}
+    for r in sorted(holding_rows, key=lambda r: r["as_on"]):
+        latest[r.get("symbol") or r["company"]] = r
+    book = {name: {"holdings": [], "deals": []} for name in investors or {}}
+    keys = {name: [norm_person(a) for a in [name] + list(aliases or [])] for name, aliases in (investors or {}).items()}
+    hit = lambda who, text: any(k and k in norm_person(text) for k in keys[who])
+    for sym, r in latest.items():
+        for h in (r.get("detail") or {}).get("named_public_holders") or []:
+            for who in book:
+                if hit(who, h["name"]):
+                    book[who]["holdings"].append({"symbol": r.get("symbol", ""), "company": r["company"], "as_on": r["as_on"],
+                                                  "pct": h["pct"], "shares": h["shares"], "held_as": h["name"]})
+    for d in deals or []:
+        for who in book:
+            if hit(who, d.get("client", "")):
+                book[who]["deals"].append({k: d.get(k) for k in ("date", "symbol", "side", "quantity", "price", "pct_of_day_volume", "client")})
+    for who in book:
+        book[who]["holdings"].sort(key=lambda h: -h["pct"])
+    return book
 
 
 # ---------- calendar ----------

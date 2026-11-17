@@ -54,8 +54,10 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import ask as asker   # noqa: E402
 import brain          # noqa: E402
 import decide         # noqa: E402
+import flows          # noqa: E402
 import fundamentals   # noqa: E402
 import market         # noqa: E402
+import policy         # noqa: E402
 
 HERE = pathlib.Path(__file__).resolve().parent
 DATA = pathlib.Path(os.environ.get("RADAR_DATA", HERE / "data"))
@@ -528,7 +530,8 @@ def collect(cfg):
                   "ok  found %(found)d  new %(new)d" % entry if entry["ok"] else "FAILED  " + entry["error"]))
     append_items(new_rows)
     try:      # promoter holdings are kept for good, not just for the dashboard's 45 days
-        STATS["holdings_added"] = fundamentals.save_holdings(DATA, new_rows, market.name_index(market.load_universe(DATA)))
+        STATS["holdings_added"] = fundamentals.save_holdings(DATA, new_rows, market.name_index(market.load_universe(DATA)),
+                                                             fetch=browser_get)
     except Exception as e:
         print("holdings: %s" % str(e)[:150])
     (DATA / "state.json").write_text(json.dumps(state, indent=1), encoding="utf-8")
@@ -638,6 +641,10 @@ def deal_items(deals, stamp):
 
 def market_step():
     deals = market.update(DATA, browser_get)
+    try:      # positioning and flows for the latest trading day, once
+        STATS["flows_added"] = flows.update(DATA, browser_get, (market.load_signals(DATA) or {}).get("date"))
+    except Exception as e:
+        print("flows: %s" % str(e)[:150])
     known = set(load_items(7))
     fresh = [i for i in deal_items(deals, iso(now_utc())) if i["id"] not in known]
     append_items(fresh)
@@ -646,6 +653,7 @@ def market_step():
 def analyse(cfg):
     items = list(load_items(3).values())
     STATS["results_copied"] = fundamentals.extract(DATA, items, cfg)
+    STATS["policy_notes"] = policy.file_notes(DATA, items, cfg)
     signals = market.load_signals(DATA) or {}
     snaps = signals.get("snapshots") or {}
     fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), snaps)
@@ -676,6 +684,16 @@ def analyse(cfg):
         extra["themes"] = [{k: t[k] for k in ("theme", "mentions_24h", "mentions_7d", "filings_7d", "rising", "companies")}
                            for t in decide.theme_tracker(week, cfg["themes"]) if t["mentions_7d"]]
     slim = lambda c: {k: c[k] for k in ("symbol", "industry", "score", "for", "against", "notes", "conflict", "close")}
+    book = fundamentals.investor_book(fundamentals.load_holdings(DATA), signals.get("deals"), cfg.get("investors"))
+    extra["followed_investors"] = {
+        "deals_today": [dict(investor=w, **d) for w, b in book.items() for d in b["deals"]][:30],
+        "holder_moves": [dict(symbol=s, **m) for s, h in fundamentals.holding_view(fundamentals.load_holdings(DATA)).items()
+                         for m in h.get("holder_moves") or []][:30],
+    }
+    extra["positioning"] = flows.summary(flows.load_history(DATA))
+    recent_notes = [n for n in policy.load_notes(DATA) if n.get("filed_at", "") >= day_ago]
+    extra["government"] = [{k: n[k] for k in ("policy", "what", "level", "sectors", "money_cr", "stage", "companies_named", "official")}
+                           for n in recent_notes][:20]
     extra["scorecard"] = {k: [slim(c) for c in v[:8]] for k, v in decide.shortlists(cards).items()}
     STATS["brief"] = brain.write_brief(DATA, items, extra=extra)
 
@@ -827,6 +845,22 @@ def build():
     page = (HERE / "dashboard.template.html").read_text(encoding="utf-8")
     market_view = {k: v for k, v in signals.items() if k != "snapshots"}
     market_view["screens"] = {k: {x: y for x, y in v.items() if x != "all"} for k, v in (signals.get("screens") or {}).items()}
+    cfg_now = load_json(CONFIG, {}) or {}
+    book = fundamentals.investor_book(fundamentals.load_holdings(DATA), signals.get("deals"), cfg_now.get("investors"))
+    held_by = {}       # symbol -> followed investors named in its latest shareholding file
+    for who, b in book.items():
+        for h in b["holdings"]:
+            if h["symbol"]:
+                held_by.setdefault(h["symbol"], []).append("%s %.2f%%" % (who, h["pct"]))
+    gov = policy.policy_view(policy.load_notes(DATA), [r for r in items if r["platform"] == "nse"], names,
+                             cfg_now.get("elections"))
+    by_stock = {}      # every filing, routine ones included, for each company's activity checklist
+    for r in items:
+        if r["platform"] == "nse":
+            for sym in r.get("symbols") or []:
+                by_stock.setdefault(sym, []).append(r)
+    activity = {sym: {row["what"]: [row["count"], row["latest"], row["text"], row["url"]]
+                      for row in decide.activity_checklist(fs) if row["count"]} for sym, fs in by_stock.items()}
     # The dashboard feed leaves out routine exchange paperwork (it stays in radar.db and on the Stock tab's source).
     feed = [r for r in items if not (r["platform"] == "nse" and brain.ROUTINE.search(r.get("title", "") + " " + r.get("text", "")))]
     payload = json.dumps({"built_at": iso(now_utc()), "items": feed[:4000], "health": health,
@@ -835,6 +869,10 @@ def build():
                           "buzz": brain.buzz(items, names), "runs": runs,
                           "fundamentals": fund, "holdings": holds, "calendar": cal, "growth": growth,
                           "answers": asker.load_answers(DATA), "my_stocks": mine,
+                          "activity_names": [n for n, _ in decide.ACTIVITY], "activity": activity,
+                          "investors": {w: b for w, b in book.items() if b["holdings"] or b["deals"]},
+                          "investors_followed": sorted(book), "held_by": held_by, "policy": gov,
+                          "flows": flows.summary(flows.load_history(DATA)),
                           "themes": decide.theme_tracker(items, (load_json(CONFIG, {}) or {}).get("themes")), "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
                                                         for s, c in cards.items()}},
                          ensure_ascii=False).replace("</", "<\\/")

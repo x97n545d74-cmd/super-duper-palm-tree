@@ -13,7 +13,9 @@ It keeps itself running: one GitHub run does a round every 30 minutes for about 
 5. **Reads filings** like an analyst: a triage step ranks the day's NSE announcements, then Claude reads the best ones with the stock's price data and its own earlier reads on that company. Each read is checked: every figure must trace to the filing or the price data, and important reads get an independent fact check.
 6. **Writes a brief** twice a day (about 7 am and after the close), checks it, and corrects it once if the check finds problems.
 7. **Scores the evidence**: one tally per stock across price, financials, filings, large deals and promoter holding, with the price side weighted by how each screen has actually performed lately. Also the market regime, a sector table, alerts for your own stocks and a tracker for the themes you follow.
-8. **Builds** `dashboard.html` and `radar.db`.
+8. **Tracks who owns and who is positioned**: each company's shareholding by kind of holder (promoters, mutual funds, foreign investors, insurers, small shareholders) and every named holder above 1%, with who entered, added, cut or left since the last file; the investors and funds you follow; daily foreign-investor flows, derivatives positioning, the F&O ban list and the rupee.
+9. **Follows the government**: decisions, schemes, budget money, election promises and results filed by sector, with companies linked only on evidence, and an election watch.
+10. **Builds** `dashboard.html` and `radar.db`.
 
 On Saturdays it writes a weekly review as well.
 
@@ -26,6 +28,8 @@ GitHub > Actions > Avron Radar > Run workflow > type a question (for example "Wh
 - `my_stocks`: NSE symbols you follow. They come first in the brief and the dashboard, with everything that happened to them in the past day.
 - `my_screen`: your own rules (largest market value, least revenue and profit growth). Stocks that pass are listed first on the Scorecard tab.
 - `themes`: names and keywords for the segments you follow.
+- `investors`: the investors and funds you follow, each with the spellings to look for in shareholding files and deals.
+- `elections`: the elections to watch.
 - `results_watch`: symbols whose results should always be copied.
 
 ## Sources
@@ -38,7 +42,7 @@ GitHub > Actions > Avron Radar > Run workflow > type a question (for example "Wh
 | Forum and social | ValuePickr, Reddit, YouTube channels, public Telegram channels, Bluesky | Reddit reads one subreddit per run unless `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` are set |
 | X | switched off (`"disabled_lanes": ["x"]`); the official API charges per post read | to switch on: remove `"x"` and add `X_BEARER_TOKEN` |
 
-Not collected: Instagram, Facebook, LinkedIn (login walls), BSE and Yahoo Finance (they refuse GitHub's servers). The agent never logs in and never gets round a block.
+Not collected: Instagram, Facebook, LinkedIn (login walls and terms that forbid automated reading), BSE, Yahoo Finance, Stooq and MCX (they refuse GitHub's servers). Domestic-institution cash flows and insider trades have no reachable official source; holdings are quarterly, so "who holds what" is as of each company's last file. The agent never logs in and never gets round a block.
 
 ## Files
 
@@ -51,6 +55,8 @@ Not collected: Instagram, Facebook, LinkedIn (login walls), BSE and Yahoo Financ
 | `fundamentals.py` | results figures and ratios, promoter holdings, the events calendar |
 | `decide.py` | the evidence scorecard, alerts for your stocks, the theme tracker |
 | `ask.py` | answers a question from what the radar holds |
+| `flows.py` | foreign-investor flows, derivatives positioning, the F&O ban list, the rupee |
+| `policy.py` | government policy notes by sector, companies linked on evidence, the election watch |
 | `ANALYST.md` | how the analyst thinks: edit this to change its judgement |
 | `config.json` | sources, watchlist, daily limits |
 | `REPORT.md` | the audit and upgrade report |
@@ -67,7 +73,7 @@ Not collected: Instagram, Facebook, LinkedIn (login walls), BSE and Yahoo Financ
 ```
 python3 avron-radar/radar.py run        # everything
 python3 avron-radar/radar.py collect    # or one step: collect, market, tag, analyse, build
-cd avron-radar && python3 -m unittest   # 80 tests, no network
+cd avron-radar && python3 -m unittest   # 95 tests, no network
 ```
 
 Starting the workflow by hand from a branch other than the default does one round, does not restart itself, and writes to `avron-radar-data-test` and `avron-radar-dashboard-test`, so live data is untouched.

@@ -65,6 +65,8 @@ h3{font-size:15px;margin:18px 0 4px}
     <div class="filters"><input id="sq" placeholder="Type an NSE symbol or company name" autocomplete="off"></div>
     <div id="stock"></div>
   </section>
+  <section id="v-policy" hidden></section>
+  <section id="v-investors" hidden></section>
   <section id="v-themes" hidden></section>
   <section id="v-ask" hidden></section>
   <section id="v-feed" hidden>
@@ -82,7 +84,7 @@ h3{font-size:15px;margin:18px 0 4px}
   <p class="note">Private research file, not investment advice. Filings and prices come from NSE's official files. News, forum and social posts are unverified: check a primary source before relying on any of it. Screens describe what the price did; they do not predict what it will do.</p>
 </main>
 <script>
-const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}, answers:[], my_stocks:[], themes:[]};
+const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}, answers:[], my_stocks:[], themes:[], activity:{}, activity_names:[], investors:{}, investors_followed:[], held_by:{}, policy:{sectors:[], elections:[]}, flows:null};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
@@ -93,7 +95,7 @@ const M = D.market || {};
 $("built").textContent = D.items.length + " posts · " + (D.analyses || []).length + " filing reads · prices for " + (M.date || "no day yet") + " · updated " + (when(D.built_at) || "never");
 
 // tabs
-const TABS = [["brief","Brief"],["score","Scorecard"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["themes","Themes"],["ask","Ask"],["feed","Feed"],["sources","System"]];
+const TABS = [["brief","Brief"],["score","Scorecard"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["policy","Policy"],["investors","Investors"],["themes","Themes"],["ask","Ask"],["feed","Feed"],["sources","System"]];
 let tab = "brief";
 $("tabs").innerHTML = TABS.map(t => "<button data-t='" + t[0] + "'>" + t[1] + "</button>").join("");
 $("tabs").onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; show(); } };
@@ -194,6 +196,19 @@ function stockTable(rows) {
     h += "<h3>How the screens have done</h3><div class='mean'>Sampled on " + esc(R.sample_days) + " days between " + esc(R.from) + " and " + esc(R.to) + ": the average move 5 and 20 trading days after a stock appeared on each screen, and the edge over every liquid stock on the same days. A small recent sample: it shows whether a screen is working in this market, not what will happen next.</div><div class='wrap'><table><tr><th>Screen</th><th class='n'>Cases</th><th class='n'>After 5 days</th><th class='n'>Rose</th><th class='n'>Edge, 5 days</th><th class='n'>After 20 days</th><th class='n'>Rose</th><th class='n'>Edge, 20 days</th></tr>" +
       Object.keys(R.screens).sort((x, y) => (R.screens[y].edge_20d || -99) - (R.screens[x].edge_20d || -99)).map(k => { const r = R.screens[k];
         return "<tr><td>" + (k === "all" ? "<b>every liquid stock</b>" : esc(k.replace(/_/g, " "))) + "</td><td class='n'>" + num(r.n_5d, 0) + "</td>" + cell(r.avg_5d, true) + "<td class='n'>" + (r.rose_5d_pct == null ? "–" : r.rose_5d_pct + "%") + "</td>" + cell(r.edge_5d, true) + cell(r.avg_20d, true) + "<td class='n'>" + (r.rose_20d_pct == null ? "–" : r.rose_20d_pct + "%") + "</td>" + cell(r.edge_20d, true) + "</tr>"; }).join("") + "</table></div>"; }
+  const FL = D.flows;
+  if (FL) { const P = FL.participants || {}, tl = (v, l) => "<div class='tile'><b>" + v + "</b><span>" + esc(l) + "</span></div>";
+    h += "<h3>Flows and positioning · " + esc(FL.date) + "</h3><div class='mean'>" + esc(FL.in_words || "") + ". This describes how participants are placed; it is not a forecast. " + esc(FL.days_on_file) + " day(s) on file.</div><div class='tiles'>" +
+      (FL.fpi_equity_net_cr != null ? tl((FL.fpi_equity_net_cr >= 0 ? "<span class='up'>+" : "<span class='down'>") + num(FL.fpi_equity_net_cr, 0) + "</span>", "foreign investors, shares, Rs crore, latest day") : "") +
+      (FL.fpi_equity_net_5d_cr != null ? tl(num(FL.fpi_equity_net_5d_cr, 0), "the same over " + Math.min(5, FL.fpi_days) + " reported days") : "") +
+      (FL.fii_index_futures_long_pct != null ? tl(num(FL.fii_index_futures_long_pct) + "%", "of foreign investors' index futures are long") : "") +
+      (FL.fii_index_futures_net_change != null ? tl(num(FL.fii_index_futures_net_change, 0), "change in their net index futures, contracts") : "") +
+      (FL.index_put_call_ratio ? tl(num(FL.index_put_call_ratio, 2), "index put-call ratio (open interest)") : "") +
+      (FL.usd_inr ? tl(num(FL.usd_inr, 2), "rupees per US dollar") : "") + "</div>" +
+      "<div class='wrap'><table><tr><th>Participant</th><th class='n'>Index futures net</th><th class='n'>Long share</th><th class='n'>Stock futures net</th><th class='n'>Index calls net</th><th class='n'>Index puts net</th></tr>" +
+      [["FII", "Foreign investors"], ["DII", "Domestic institutions"], ["Pro", "Proprietary desks"], ["Client", "Clients (incl. retail)"]].filter(x => P[x[0]]).map(x => { const r = P[x[0]];
+        return "<tr><td>" + x[1] + "</td><td class='n " + (r.index_futures_net > 0 ? "up" : "down") + "'>" + num(r.index_futures_net, 0) + "</td><td class='n'>" + num(r.index_futures_long_pct) + "%</td><td class='n'>" + num(r.stock_futures_net, 0) + "</td><td class='n'>" + num(r.index_calls_net, 0) + "</td><td class='n'>" + num(r.index_puts_net, 0) + "</td></tr>"; }).join("") + "</table></div>" +
+      ((FL.ban_list || []).length ? "<div class='mean'>Banned from new F&O positions: " + FL.ban_list.map(esc).join(", ") + "</div>" : ""); }
   if ((M.sectors || []).length) h += "<h3>Sectors</h3><div class='mean'>Index companies grouped by NSE's industry label, strongest month first. Money moves between sectors before it shows in single stocks.</div><div class='wrap'><table><tr><th>Industry</th><th class='n'>Stocks</th><th class='n'>Today</th><th class='n'>1 month</th><th class='n'>3 months</th><th class='n'>Above 200-day</th><th class='n'>In uptrend</th></tr>" +
     M.sectors.map(r => "<tr><td class='wraps'>" + esc(r.industry) + "</td><td class='n'>" + r.stocks + "</td><td class='n'>" + pct(r.avg_today) + "</td><td class='n'>" + pct(r.avg_1m) + "</td><td class='n'>" + pct(r.avg_3m) + "</td><td class='n'>" + (r.pct_above_200dma == null ? "–" : r.pct_above_200dma + "%") + "</td><td class='n'>" + r.in_uptrend + "</td></tr>").join("") + "</table></div>";
   Object.keys(M.screens).forEach(k => { const s = M.screens[k]; if (!s.count) return;
@@ -207,6 +222,12 @@ function stockTable(rows) {
     M.deals.map(d => "<tr><td><b>" + esc(d.symbol) + "</b></td><td class='wraps'>" + esc(d.client) + "</td><td class='" + (/buy/i.test(d.side) ? "up" : "down") + "'>" + esc(d.side) + "</td><td class='n'>" + num(d.quantity, 0) + "</td><td class='n'>" + num(d.price, 2) + "</td><td class='n'>" + num(d.pct_of_day_volume) + "</td><td>" + esc(d.kind) + "</td></tr>").join("") + "</table></div>";
   $("v-screens").innerHTML = h;
 })();
+
+// the activity checklist: every line is shown, ticked or blank
+function ACT(sym) {
+  const mine = (D.activity || {})[sym] || {};
+  return (D.activity_names || []).map(n => { const r = mine[n]; return {what: n, count: r ? r[0] : 0, latest: r ? r[1] : "", text: r ? r[2] : "", url: r ? r[3] : ""}; });
+}
 
 // one stock: price, screens, our reads, its filings, what is being said
 function postRow(i) {
@@ -243,13 +264,50 @@ function stock() {
       ((m.flags || []).length ? "<div class='card'><h4 style='margin-top:0'>Flags from the numbers</h4><ul>" + m.flags.map(x => "<li class='down'>" + esc(x) + "</li>").join("") + "</ul></div>" : "<div class='mean'>No flags from the numbers.</div>"); }
   const sc = D.cards[sym];
   if (sc) h += cardHtml(Object.assign({symbol: sym, name: "evidence tally", mine: false}, sc));
-  if (hd) h += "<div class='mean'>Promoter holding " + num(hd.promoter_pct, 2) + "% as on " + esc(hd.as_on) + (hd.change_pts != null ? " · " + pct(hd.change_pts).replace("%", " points") + " since " + esc(hd.previous_as_on) : "") + "</div>";
+  if (hd) { h += "<div class='mean'>Promoter holding " + num(hd.promoter_pct, 2) + "% as on " + esc(hd.as_on) + (hd.change_pts != null ? " · " + pct(hd.change_pts).replace("%", " points") + " since " + esc(hd.previous_as_on) : "") + "</div>";
+    if (hd.detail && (hd.detail.named_public_holders || []).length) {
+      h += "<h3>Named holders above 1% · " + esc(hd.as_on) + "</h3>" + ((D.held_by[sym] || []).length ? "<div class='meta'>" + D.held_by[sym].map(x => "<span class='chip w'>" + esc(x) + "</span>").join("") + "</div>" : "") +
+        "<div class='wrap'><table><tr><th>Holder</th><th>Kind</th><th class='n'>Holding</th><th class='n'>Shares</th></tr>" + hd.detail.named_public_holders.map(x => "<tr><td class='wraps'>" + esc(x.name) + "</td><td>" + esc(x.kind) + "</td><td class='n'>" + num(x.pct, 2) + "%</td><td class='n'>" + num(x.shares, 0) + "</td></tr>").join("") + "</table></div>";
+      if ((hd.holder_moves || []).length) h += "<div class='card'><h4 style='margin-top:0'>Changes since " + esc(hd.previous_as_on) + "</h4><ul>" + hd.holder_moves.map(m => "<li>" + esc(m.name) + ": " + esc(m.move) + (m.pct != null ? " (" + num(m.pct, 2) + "%" + (m.was != null ? ", was " + num(m.was, 2) + "%" : "") + ")" : m.was != null ? " (was " + num(m.was, 2) + "%)" : "") + "</li>").join("") + "</ul></div>"; }
+    if (hd.detail) { const LAB = {promoters: "promoters", mutual_funds: "mutual funds", foreign_investors: "foreign investors", insurers: "insurers", other_domestic_institutions: "other institutions", small_shareholders: "small shareholders", large_individuals: "large individuals", bodies_corporate: "companies"}, ch = hd.detail_change || {};
+      h += "<h3>Who owns it · " + esc(hd.as_on) + "</h3><div class='tiles'>" + Object.keys(LAB).filter(k => hd.detail[k] != null).map(k => "<div class='tile'><b>" + num(hd.detail[k], 2) + "%" + (ch[k] != null && ch[k] !== 0 ? " " + pct(ch[k]).replace("%", " pts") : "") + "</b><span>" + LAB[k] + "</span></div>").join("") +
+        (hd.detail.shareholders ? "<div class='tile'><b>" + num(hd.detail.shareholders, 0) + "</b><span>shareholders</span></div>" : "") + "</div>"; } }
+  const CHK = ACT(sym);
+  h += "<h3>Activity checklist · past 45 days</h3><div class='mean'>Every kind of event a company must report to the exchange. A blank line means nothing was filed.</div><div class='wrap'><table>" +
+    CHK.map(r => "<tr><td>" + (r.count ? "<span class='up'>&#10003;</span>" : "<span style='color:var(--mute)'>–</span>") + "</td><td>" + esc(r.what) + "</td><td class='n'>" + (r.count || "") + "</td><td>" + esc(r.latest) + "</td><td class='wraps'>" + (r.count ? "<a class='t' style='font-weight:400' href='" + esc(safeUrl(r.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(r.text) + "</a>" : "") + "</td></tr>").join("") + "</table></div>";
   h += "<h3>Analyst reads · " + reads.length + "</h3>" + (reads.map(readCard).join("") || "<p class='mean'>None yet.</p>");
   const tbl = rows => rows.length ? "<div class='wrap'><table>" + rows.slice(0, 40).map(postRow).join("") + "</table></div>" : "<p class='mean'>Nothing in the past 45 days.</p>";
   h += "<h3>Exchange filings · " + filings.length + "</h3>" + tbl(filings) + "<h3>News and chatter · " + talk.length + "</h3>" + tbl(talk);
   $("stock").innerHTML = h;
 }
 $("sq").addEventListener("input", stock);
+
+// policy and elections
+(function () {
+  const P = D.policy || {sectors: [], elections: []};
+  const noteLi = n => "<li>" + esc(n.date) + " · <span class='chip'>" + esc(n.stage) + "</span> " + (n.official ? "<span class='chip t-positive'>official</span> " : "<span class='chip'>news</span> ") +
+    "<a class='t' style='font-weight:400' href='" + esc(safeUrl(n.url)) + "' target='_blank' rel='noopener noreferrer'><b>" + esc(n.policy) + "</b></a>: " + esc(n.what) +
+    (n.money_cr ? " <b>Rs " + num(n.money_cr, 0) + " crore.</b>" : "") + (n.who_benefits ? " <span class='txt'>Affects: " + esc(n.who_benefits) + ".</span>" : "") + "</li>";
+  let h = "<p class='mean'>Government decisions, schemes, budget money and election promises as they are reported, filed by sector. A company is listed only on evidence: the announcement names it, or its own exchange filing mentions the programme. This shows where government money and attention are going. It does not predict which share will rise. " + esc(P.notes_on_file || 0) + " notes in the past 45 days.</p>";
+  if ((P.elections || []).length) h += "<h3>Election watch</h3>" + P.elections.map(e => "<div class='card'><div class='meta'><span class='chip w'>" + esc(e.type) + "</span><span>" + esc(e.expected) + "</span></div><b>" + esc(e.where) + "</b>" + (e.note ? "<div class='mean'>" + esc(e.note) + "</div>" : "") +
+    (e.results.length ? "<h4>Result</h4><ul>" + e.results.map(noteLi).join("") + "</ul>" : "") +
+    (e.promises.length ? "<h4>Promises on record</h4><ul>" + e.promises.map(noteLi).join("") + "</ul>" : "") +
+    (e.other_news.length ? "<h4>Other government news</h4><ul>" + e.other_news.map(noteLi).join("") + "</ul>" : "") +
+    (!e.results.length && !e.promises.length && !e.other_news.length ? "<div class='mean'>Nothing collected yet.</div>" : "") + "</div>").join("");
+  h += "<h3>By sector</h3>" + ((P.sectors || []).map(g => "<div class='card'><div class='meta'><span>" + g.count + " notes · " + g.official + " official" + (g.money_approved_cr ? " · Rs " + num(g.money_approved_cr, 0) + " crore approved or budgeted" : "") + "</span></div><b>" + esc(g.sector) + "</b>" +
+    (g.companies_named.length ? "<div class='meta' style='margin-top:6px'><span>named in announcements:</span>" + g.companies_named.map(c => "<span class='chip w'>" + esc(c) + "</span>").join("") + "</div>" : "") +
+    (g.companies_filing_about_it.length ? "<div class='meta'><span>mention it in their own filings:</span>" + g.companies_filing_about_it.map(c => "<span class='chip'>" + esc(c) + "</span>").join("") + "</div>" : "") +
+    "<ul>" + g.notes.map(noteLi).join("") + "</ul></div>").join("") || "<p>No policy notes filed yet.</p>");
+  $("v-policy").innerHTML = h;
+})();
+
+// investors
+$("v-investors").innerHTML = "<p class='mean'>The investors and funds you follow (the \"investors\" list in config.json). Holdings come from each company's shareholding file, which names every holder above 1%, so smaller positions do not show and the picture fills in as companies file each quarter. Trades come from the day's bulk and block deals. Following " + (D.investors_followed || []).length + " names.</p>" +
+  (Object.keys(D.investors || {}).map(w => { const b = D.investors[w];
+    return "<div class='card'><b>" + esc(w) + "</b>" +
+      (b.deals.length ? "<h4>Deals on the latest day</h4><ul>" + b.deals.map(d => "<li><b>" + esc(d.symbol) + "</b>: " + esc((d.side || "").toLowerCase()) + " " + num(d.quantity, 0) + " shares at " + num(d.price, 2) + (d.pct_of_day_volume != null ? " (" + num(d.pct_of_day_volume) + "% of the day's volume)" : "") + " as " + esc(d.client) + "</li>").join("") + "</ul>" : "") +
+      (b.holdings.length ? "<h4>Named in shareholding files</h4><div class='wrap'><table><tr><th>Stock</th><th class='n'>Holding</th><th class='n'>Shares</th><th>As on</th><th>Held as</th></tr>" + b.holdings.map(h => "<tr><td><b>" + esc(h.symbol || h.company) + "</b></td><td class='n'>" + num(h.pct, 2) + "%</td><td class='n'>" + num(h.shares, 0) + "</td><td>" + esc(h.as_on) + "</td><td class='wraps'>" + esc(h.held_as) + "</td></tr>").join("") + "</table></div>" : "") + "</div>"; }).join("")
+   || "<p>None of the names you follow appear yet in the shareholding files or deals collected so far.</p>");
 
 // themes
 $("v-themes").innerHTML = "<p class='mean'>The themes you follow (the \"themes\" list in config.json): how much was said in the past day and week, which listed companies come up, and the newest items. Exchange filings are counted apart from news and chatter.</p>" +

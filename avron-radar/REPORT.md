@@ -164,3 +164,25 @@ Each round: run the agent on GitHub against the real sources (test branches, liv
 2. Add your stocks to `my_stocks`.
 3. Decide where the data lives (see above).
 4. After two weeks: check the scorecard's lists against what the stocks did, and adjust the weights from evidence.
+
+---
+
+# Ownership, flows and government (17 November 2026, late evening)
+
+Added after the ten rounds, each checked on a live run (84 of 85 sources read; 95 unit tests pass).
+
+| Added | Source | Confirmed live |
+|---|---|---|
+| Shareholding by kind of holder, and every named holder above 1%, with entries, additions, cuts and exits between files | NSE shareholding files | Aegis Logistics: mutual funds 6.35%, foreign investors 21.94%; Smallcap World Fund 4.87%, Quant Mutual Fund 4.77%. Supreme Engineering: Ashish Kacholia 6.17%. |
+| The investors and funds the reader follows (28 to start) | the same files, plus bulk and block deals | Morgan Stanley's purchase of 3,000,000 Groww shares (5.4% of the day's volume) appeared in the brief. |
+| Foreign-investor flows, derivatives positioning, the F&O ban list, the rupee | NSDL, NSE, frankfurter.app | 17 Nov: foreign investors bought a net Rs 5,107.61 crore of shares, held 33.4% of their index futures long, index put-call ratio 1.15, Kaynes in the ban list. |
+| Company activity checklist (13 kinds of event) | every exchange filing for the company | Rendered on the Stock tab. |
+| Government policy notes by sector, companies linked on evidence, an election watch | PIB, RBI, news | Notes filed for the IDBI Bank disinvestment, a specialty-steel PLI approval naming two companies, a Rs 3,175.08 crore highway approval and a Rs 37,500 crore coal gasification scheme. |
+
+Limits:
+- **Holdings are quarterly.** A named holder is known as of the company's last file, and only above 1%. Smaller positions and anything since then show only if a bulk or block deal names the party.
+- **Coverage starts now.** Only companies whose shareholding file has passed through NSE's feed since this was added are covered: two so far. It fills in as companies file, mostly in January, April, July and October.
+- **Domestic institutions' daily cash flows and insider trades have no reachable official source.**
+- **Election dates in `config.json` are expected windows, not announced schedules.**
+- **Policy notes come from headlines and short excerpts,** not full documents, and most are from news, not official releases.
+- The agent does not predict which share will rise after a policy or an election. It shows where government money and attention are going and which companies are tied to it on evidence.
