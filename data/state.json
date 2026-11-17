@@ -29,15 +29,16 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 1,
+ "reddit_next": 2,
  "fails": {
   "reddit|r/StockMarketIndia": 1,
   "reddit|r/DalalStreetTalks": 1,
   "reddit|r/IndianStocks": 1,
-  "feeds|Moneycontrol business": 3,
-  "feeds|Moneycontrol market reports": 3,
+  "feeds|Moneycontrol business": 4,
+  "feeds|Moneycontrol market reports": 4,
   "reddit|r/NSEbets": 1,
-  "reddit|r/IndianStockMarket": 1
+  "reddit|r/IndianStockMarket": 1,
+  "reddit|r/IndiaInvestments": 1
  },
  "paused_until": {}
 }
