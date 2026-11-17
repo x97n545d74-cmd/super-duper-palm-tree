@@ -418,16 +418,23 @@ def story_prompt(now, covered):
         "",
         "Tell the WHOLE story as a thread of exactly %d posts, each at most 262 characters, in simple everyday English. "
         "Someone who reads only this thread should understand the business completely:" % STORY_POSTS,
-        "Post 1: start with the company's name and its founders' names, then the most surprising true fact with a number.",
-        "Post 2: how it began: who started it, when, where, and the problem they saw.",
-        "Post 3: what the business actually does and who its customers are.",
-        "Post 4: how it makes money.",
-        "Post 5: what it did differently from everyone else.",
-        "Post 6: the hardest moment or biggest risk it faced, and what it did about it.",
-        "Post 7: where it stands today in numbers, and the one lesson for anyone building a business.",
+        "Write it so a reader cannot stop after the first post. The formula is hook, body, payoff.",
+        "Post 1 (the hook): open with the single most surprising true fact of the story: a number, a rejection, a near-collapse "
+        "or a sharp before-and-after contrast. Name the company in this post, but never open with 'X, founded by ...' or 'X is a ...'. "
+        "Two short sentences at most, then one line that promises the story, such as 'Here is how it happened.'",
+        "Posts 2 to %d (the body): tell it in time order as a chain of cause and effect, not a list of facts. Between them these posts "
+        "must cover: who started it, when, where and the problem they saw (name the founders here); what the business does and who pays; "
+        "how it makes money; the one thing it did differently from everyone else; the hardest moment or biggest risk and what it did about it. "
+        "One idea per post, in short sentences. End each of these posts on a line that makes the reader want the next one: a problem, "
+        "a turn, or a question that the next post answers." % (STORY_POSTS - 1),
+        "Post %d (the payoff): where it stands today in numbers, tied back to the fact in post 1, and the one lesson for anyone "
+        "building a business." % STORY_POSTS,
+        "Proof: every post must carry at least one checkable fact (a number, a year, a name or an amount). The hook and every surprising "
+        "claim must be confirmed in at least two publications. Never exaggerate, round up or invent a detail to make a line more exciting, "
+        "and never ask a question the thread does not answer. If the true facts are not interesting enough, pick a different company.",
         "",
         "Rules: use ONLY facts you found in your search, with numbers, years and units exactly as reported. Write in your own words; "
-        "never copy a publication's sentences. Name the company in the first post. No advice to buy or sell anything, no hype words, "
+        "never copy a publication's sentences. No advice to buy or sell anything, no hype words, "
         "no hashtags, no emojis, no links, no numbering, and do not name the publications.",
         "",
         "Reply with ONLY one JSON object and nothing else:",
