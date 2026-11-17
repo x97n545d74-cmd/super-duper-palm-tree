@@ -1,0 +1,168 @@
+[
+ {
+  "lane": "reddit",
+  "source": "r/IndianStockMarket",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 50,
+  "new": 50
+ },
+ {
+  "lane": "reddit",
+  "source": "r/IndiaInvestments",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "HTTP 429"
+ },
+ {
+  "lane": "reddit",
+  "source": "r/IndianStreetBets",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "HTTP 429"
+ },
+ {
+  "lane": "reddit",
+  "source": "r/StockMarketIndia",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "HTTP 429"
+ },
+ {
+  "lane": "reddit",
+  "source": "r/DalalStreetTalks",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "HTTP 429"
+ },
+ {
+  "lane": "youtube",
+  "source": "@CARachanaRanade",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 15,
+  "new": 0
+ },
+ {
+  "lane": "youtube",
+  "source": "@pranjalkamra",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 15,
+  "new": 1
+ },
+ {
+  "lane": "youtube",
+  "source": "@warikoo",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 15,
+  "new": 4
+ },
+ {
+  "lane": "youtube",
+  "source": "@AkshatZayn",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 15,
+  "new": 0
+ },
+ {
+  "lane": "youtube",
+  "source": "@ZerodhaOnline",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 15,
+  "new": 3
+ },
+ {
+  "lane": "youtube",
+  "source": "@moneycontrol",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 15,
+  "new": 15
+ },
+ {
+  "lane": "youtube",
+  "source": "@cnbctv18",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "HTTP 404"
+ },
+ {
+  "lane": "youtube",
+  "source": "@FinanceWithSharan",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 15,
+  "new": 1
+ },
+ {
+  "lane": "telegram",
+  "source": "moneycontrolcom",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 20,
+  "new": 19
+ },
+ {
+  "lane": "news",
+  "source": "NSE smallcap order win",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 1,
+  "new": 1
+ },
+ {
+  "lane": "news",
+  "source": "SEBI order listed company",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 27,
+  "new": 27
+ },
+ {
+  "lane": "news",
+  "source": "India data centre capacity announcement",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "HTTP 429"
+ },
+ {
+  "lane": "news",
+  "source": "India semiconductor plant listed company",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "HTTP 429"
+ },
+ {
+  "lane": "news",
+  "source": "promoter stake sale block deal",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": true,
+  "found": 5,
+  "new": 5
+ },
+ {
+  "lane": "bluesky",
+  "source": "nifty smallcap",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "HTTP 403"
+ },
+ {
+  "lane": "bluesky",
+  "source": "NSE order win",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "HTTP 403"
+ },
+ {
+  "lane": "x",
+  "source": "(smallcap OR \"order win\" OR QIP) (NSE OR BSE) lang:en",
+  "checked_at": "2026-11-17T11:52:37Z",
+  "ok": false,
+  "error": "ValueError: no X API key set (X_BEARER_TOKEN, or X_API_KEY and X_API_SECRET)"
+ }
+]
