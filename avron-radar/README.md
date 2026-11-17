@@ -1,44 +1,65 @@
 # Avron Radar
 
-A read-only agent that watches the public side of social platforms for Indian-market chatter and files every post into one searchable database.
+A read-only research agent for Indian listed companies. Every 30 minutes it collects filings, prices, news and chatter, has Claude read what matters, and rebuilds one dashboard.
 
-## What it reads
+## What it does each run
 
-| Platform | How | Needs |
+1. **Collects** new posts from every source in `config.json` (lanes run side by side; a source that fails six runs in a row is rested for six hours).
+2. **Updates market data**: NSE's end-of-day file for every stock, adjusted for splits and bonuses, about a year of history. Runs the technical screens, market breadth, index valuations, and bulk and block deals.
+3. **Labels** news and chatter with Claude: relevance, kind (fact, opinion, rumour, tip, promo), companies named, one-line summary.
+4. **Reads filings** like an analyst: a triage step ranks the day's NSE announcements, then Claude reads the best ones with the stock's price data and its own earlier reads on that company. Each read is checked: every figure must trace to the filing or the price data, and important reads get an independent fact check.
+5. **Writes a brief** twice a day (about 7 am and after the close), checks it, and corrects it once if the check finds problems.
+6. **Builds** `dashboard.html` and `radar.db`.
+
+## Sources
+
+| Kind | Sources | Needs |
 |---|---|---|
-| Reddit | subreddit feeds | nothing; add `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` if Reddit blocks the runner |
-| YouTube | each channel's public feed of new videos | nothing |
-| Telegram | public channels via `t.me/s/<channel>` | nothing |
-| News | Google News searches | nothing |
-| Bluesky | public search | nothing |
-| X | switched off (`"disabled_lanes": ["x"]` in `config.json`); the official X API charges per post read | to switch on: remove `"x"` from `disabled_lanes` and add `X_BEARER_TOKEN` |
+| Exchange | NSE announcements, results, insider trading, takeover disclosures, board meetings, corporate actions, shareholding; daily prices; bulk and block deals; index lists | nothing |
+| Regulators | RBI press releases and notifications, PIB | nothing |
+| News | Zerodha Pulse, ET, Moneycontrol, Mint, Business Standard, BusinessLine, CNBC-TV18, Google News searches | nothing |
+| Forum and social | ValuePickr, Reddit, YouTube channels, public Telegram channels, Bluesky | Reddit reads one subreddit per run unless `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` are set |
+| X | switched off (`"disabled_lanes": ["x"]`); the official API charges per post read | to switch on: remove `"x"` and add `X_BEARER_TOKEN` |
 
-Instagram, Facebook and LinkedIn are not collected. They show nothing useful without a login, and this agent never logs in or gets round a block.
+Not collected: Instagram, Facebook, LinkedIn (login walls), BSE and Yahoo Finance (they refuse GitHub's servers). The agent never logs in and never gets round a block.
 
-## What it produces
+## Files
 
-- `data/items-YYYY-MM.jsonl`: every post once, with a 600-character excerpt and a link to the original.
-- `radar.db`: the same posts as a SQLite table called `items`.
-- `dashboard.html`: open it in a browser to search and filter by platform, kind, relevance and watchlist. The Sources tab shows which sources worked on the last run.
+| File | What it holds |
+|---|---|
+| `radar.py` | sources, storage, labelling, dashboard and database build, the run log |
+| `market.py` | NSE price files, adjustment for corporate actions, screens, deals |
+| `analyst.py` | indicators, the nine screens, and the fundamental formulas (Graham, Lynch, Greenblatt, Piotroski, Altman, Beneish, DCF, position sizing) |
+| `brain.py` | triage, filing reads, company memory, checks, fact check, briefs |
+| `ANALYST.md` | how the analyst thinks: edit this to change its judgement |
+| `config.json` | sources, watchlist, daily limits |
+| `REPORT.md` | the audit and upgrade report |
 
-With `ANTHROPIC_API_KEY` set, Claude labels each post with a relevance score (0 to 5), a kind (fact, opinion, rumour, tip, question, promo), the companies named, and a one-line summary.
+## Where the output goes
+
+- Branch `avron-radar-data`: every post (`items-DATE.jsonl`), label (`tags-DATE.jsonl`), filing read (`analyses-MONTH.jsonl`), brief, price day and run log. Append-only daily files.
+- Branch `avron-radar-dashboard`: only the latest `dashboard.html` and `radar.db`, with no history. Download `dashboard.html` and open it in a browser.
+
+`radar.db` tables: `items`, `analyses`, `prices`, and `search` (full text: `SELECT * FROM search WHERE search MATCH 'qip'`).
 
 ## Run it
 
 ```
-python3 avron-radar/radar.py run        # collect, label, build
-python3 avron-radar/radar.py collect    # only fetch
-python3 -m unittest avron-radar/test_radar.py
+python3 avron-radar/radar.py run        # everything
+python3 avron-radar/radar.py collect    # or one step: collect, market, tag, analyse, build
+cd avron-radar && python3 -m unittest   # 48 tests, no network
 ```
 
-On GitHub, `.github/workflows/avron-radar.yml` runs it every 30 minutes and saves the results to the `avron-radar-data` branch. Scheduled workflows only run from the repository's default branch, so it starts once this folder and the workflow are merged there.
+Starting the workflow by hand from a branch other than the default writes to `avron-radar-data-test` and `avron-radar-dashboard-test`, so live data is untouched.
 
-## Change what it watches
+## Spending controls (`config.json`)
 
-Edit `config.json`: subreddits, YouTube handles, Telegram channels, search queries and the watchlist words that get a gold chip in the dashboard.
+- `filings_per_run` (4) and `daily_filing_reads` (40) cap the analyst.
+- Labelling is capped at 90 posts per run.
+- Every run logs its Claude tokens per model; the dashboard's System tab shows them. Add `"price_per_million_tokens": {"model-id": {"in": 0, "out": 0}}` with your own prices to log cost in dollars.
 
 ## Ground rules
 
-- Posts are unverified chatter. Check a primary source before any of it goes into a reel.
+- Filings and prices come from NSE's official files. News, forum and social posts are unverified.
+- The analyst gives no buy, sell or hold instructions and no price targets. It describes evidence, setups and what would break them.
 - This is a private research file. Don't republish the collected posts.
-- X reads are metered by X. Raise `x_every_hours` or empty `x_queries` to spend less.
