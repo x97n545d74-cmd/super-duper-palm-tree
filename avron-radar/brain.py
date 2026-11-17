@@ -529,7 +529,7 @@ BRIEF_TASK = {
     "morning": "Write the morning brief: what came in since yesterday's close and what to watch when the market opens. "
                "The market data is from the last close.",
 }
-BRIEF_FORMAT = """Use this structure, in Markdown. All six headings must appear, in this order. At most 600 words in total, so keep each section tight:
+BRIEF_FORMAT = """Use this structure, in Markdown. All six headings must appear, in this order. At most 750 words in total, so keep each section tight:
 ## Market regime
 Open with the regime label and what it means. Then three or four sentences from breadth, the indices, VIX and the sectors table (strongest and weakest industries over a month): is this a market that rewards breakouts or punishes them, and where is the money going?
 ## What changed in businesses

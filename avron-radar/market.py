@@ -21,9 +21,10 @@ import analyst
 ARCHIVE = "https://nsearchives.nseindia.com/"
 SERIES = {"EQ", "BE", "BZ", "SM", "ST"}       # main board and SME shares
 HISTORY_DAYS = 400       # calendar days to keep and backfill (about 270 trading days)
-SIGNALS_VERSION = 7      # raise when the screens or their columns change, so saved signals are recomputed
+SIGNALS_VERSION = 8      # raise when the screens or their columns change, so saved signals are recomputed
 MIN_TURNOVER_LAKH = 100  # screens ignore stocks that traded under Rs 1 crore on the day
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
+SME_LIST = "emerge/corporates/content/SME_EQUITY_L.csv"
 INDEX_LISTS = {
     "nifty500": "content/indices/ind_nifty500list.csv",
     "smallcap250": "content/indices/ind_niftysmallcap250list.csv",
@@ -392,7 +393,14 @@ def update(data_dir, http_get, today=None, log=print):
             or not (mdir / "universe.json").exists()):
         try:
             lists = {name: http_get(ARCHIVE + path) for name, path in INDEX_LISTS.items()}
-            universe = parse_universe(http_get(ARCHIVE + "content/equities/EQUITY_L.csv"), lists)
+            listed = http_get(ARCHIVE + "content/equities/EQUITY_L.csv")
+            try:      # NSE Emerge (SME) companies are listed separately; without them their filings have no symbol
+                sme = http_get(ARCHIVE + SME_LIST)
+                listed += "\n" + "\n".join(sme.splitlines()[1:])
+                log("market: SME list added (%d rows)" % (len(sme.splitlines()) - 1))
+            except Exception as e:
+                log("market: SME list not available: %s" % str(e)[:100])
+            universe = parse_universe(listed, lists)
             (mdir / "universe.json").write_text(json.dumps(universe), encoding="utf-8")
         except Exception as e:
             log("market: universe lists failed: %s" % str(e)[:120])
