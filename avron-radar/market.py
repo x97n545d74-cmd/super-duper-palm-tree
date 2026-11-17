@@ -21,7 +21,7 @@ import analyst
 ARCHIVE = "https://nsearchives.nseindia.com/"
 SERIES = {"EQ", "BE", "BZ", "SM", "ST"}       # main board and SME shares
 HISTORY_DAYS = 400       # calendar days to keep and backfill (about 270 trading days)
-SIGNALS_VERSION = 4      # raise when the screens or their columns change, so saved signals are recomputed
+SIGNALS_VERSION = 5      # raise when the screens or their columns change, so saved signals are recomputed
 MIN_TURNOVER_LAKH = 100  # screens ignore stocks that traded under Rs 1 crore on the day
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
 INDEX_LISTS = {
@@ -149,8 +149,36 @@ def compute_signals(days, universe):
         "top_losers": [row(x) for x in movers[:15]],
         "screens": out_screens,
         "screen_record": screen_record(series, [d for d, _ in days]),
+        "sectors": sector_table(snaps, universe, set(screens.get("trend_template", []))),
+        "volumes": {sym: series[sym][-1]["volume"] for sym in snaps},
         "snapshots": {sym: row(sym) for sym in snaps},     # every stock, for looking one up
     }
+
+
+def sector_table(snaps, universe, on_trend):
+    """Per industry (index companies only, where NSE gives the industry): how many stocks, the share above
+    their 200-day average, the average 1-month and 3-month move, today's average move, and how many are in
+    a steady uptrend. Sorted by the 1-month move, strongest first."""
+    groups = {}
+    for sym, s in snaps.items():
+        ind = (universe.get(sym) or {}).get("industry")
+        if ind:
+            groups.setdefault(ind, []).append((sym, s))
+    avg = lambda xs: round(sum(xs) / len(xs), 1) if xs else None
+    rows = []
+    for ind, members in groups.items():
+        if len(members) < 4:
+            continue
+        with200 = [s for _, s in members if s["sma200"]]
+        rows.append({
+            "industry": ind, "stocks": len(members),
+            "pct_above_200dma": round(100 * sum(1 for s in with200 if s["close"] > s["sma200"]) / len(with200)) if with200 else None,
+            "avg_1m": avg([s["ret_1m"] for _, s in members if s["ret_1m"] is not None]),
+            "avg_3m": avg([s["ret_3m"] for _, s in members if s["ret_3m"] is not None]),
+            "avg_today": avg([s["change"] for _, s in members if s["change"] is not None]),
+            "in_uptrend": sum(1 for sym, _ in members if sym in on_trend),
+        })
+    return sorted(rows, key=lambda r: -(r["avg_1m"] if r["avg_1m"] is not None else -999))
 
 
 def screen_record(series, dates, lookback=60, step=5, horizons=(5, 20)):
@@ -325,6 +353,10 @@ def update(data_dir, http_get, today=None, log=print):
                     deals += parse_deals(http_get(ARCHIVE + "content/equities/%s.csv" % kind), kind)
                 except Exception as e:
                     log("market: %s deals failed: %s" % (kind, str(e)[:120]))
+            vols = signals.pop("volumes", {})
+            for d in deals:      # how big the deal was against the day's trading in that stock
+                if d.get("quantity") and vols.get(d["symbol"]):
+                    d["pct_of_day_volume"] = round(100 * d["quantity"] / vols[d["symbol"]], 1)
             signals["deals"] = deals
             (mdir / "signals.json").write_text(json.dumps(signals), encoding="utf-8")
             state["signals_for"] = latest

@@ -27,6 +27,7 @@ Commands:
   tag       ask Claude to label untagged posts (needs ANTHROPIC_API_KEY)
   analyse   Claude reads the top unread filings and writes a brief if one is due
   build     rebuild radar.db (SQLite) and dashboard.html from the data files
+  ask       answer a question from what the radar holds: radar.py ask "What do we know about X?"
   run       all of the above, in that order
 
 Standard library only. For personal research: posts are stored as a short
@@ -50,6 +51,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import ask as asker   # noqa: E402
 import brain          # noqa: E402
 import decide         # noqa: E402
 import fundamentals   # noqa: E402
@@ -692,17 +694,39 @@ def log_run(started, cfg):
     return row
 
 
-def build():
-    items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
-    analyses = sorted(brain.load_analyses(DATA), key=lambda a: a.get("read_at", ""), reverse=True)
-    signals = market.load_signals(DATA) or {}
-    names = market.name_index_from_snapshots(signals)
-    for r in items:      # link each labelled post to the stocks it names
+def link_symbols(items, names):
+    """Link each labelled post, and each filing, to the stocks it names."""
+    for r in items:
         syms = brain.resolve_symbols((r.get("tags") or {}).get("companies"), names)
         if r["platform"] == "nse" and not syms:
             syms = [names[market.norm_name(r["title"])]] if market.norm_name(r["title"]) in names else []
         if syms:
             r["symbols"] = syms
+
+
+def ask_question(question, cfg):
+    """Answer one question from what the radar holds; saved for the dashboard's Ask tab."""
+    signals = market.load_signals(DATA) or {}
+    names = market.name_index_from_snapshots(signals)
+    items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
+    link_symbols(items, names)
+    fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), signals.get("snapshots") or {})
+    holds = fundamentals.holding_view(fundamentals.load_holdings(DATA))
+    analyses = brain.load_analyses(DATA)
+    cards = decide.scorecard(signals, fund, holds, analyses, brain.buzz(items, names),
+                             fundamentals.calendar(items, names), my_screen=cfg.get("my_screen"))
+    row = asker.answer(DATA, question, items, signals, fund, holds, cards, analyses)
+    if row:
+        print("\nQ: %s\n\n%s\n" % (row["question"], row["answer"]))
+    return row
+
+
+def build():
+    items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
+    analyses = sorted(brain.load_analyses(DATA), key=lambda a: a.get("read_at", ""), reverse=True)
+    signals = market.load_signals(DATA) or {}
+    names = market.name_index_from_snapshots(signals)
+    link_symbols(items, names)
     runs = [row for f in data_files("runs", 7) for row in read_jsonl(f)][-60:]
     snaps = signals.get("snapshots") or {}
     fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), snaps)
@@ -796,7 +820,7 @@ def build():
                           "briefs": brain.load_briefs(DATA), "stocks": signals.get("snapshots") or {},
                           "buzz": brain.buzz(items, names), "runs": runs,
                           "fundamentals": fund, "holdings": holds, "calendar": cal, "growth": growth,
-                          "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
+                          "answers": asker.load_answers(DATA), "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
                                                         for s, c in cards.items()}},
                          ensure_ascii=False).replace("</", "<\\/")
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")
@@ -819,8 +843,13 @@ def main(argv):
     cfg = load_json(CONFIG, None)
     if cfg is None:
         sys.exit("cannot read " + str(CONFIG))
-    if cmd not in ("collect", "market", "tag", "analyse", "build", "run"):
+    if cmd not in ("collect", "market", "tag", "analyse", "build", "run", "ask"):
         sys.exit(__doc__)
+    if cmd == "ask":
+        step("ask", lambda: ask_question(" ".join(argv[2:]), cfg))
+        step("run log", lambda: log_run(started, cfg))
+        build()
+        return
     if cmd in ("collect", "run"):
         step("collect", lambda: collect(cfg))
     if cmd in ("market", "run") and "market" not in (cfg.get("disabled_lanes") or []):

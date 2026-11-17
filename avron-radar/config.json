@@ -82,7 +82,12 @@
     "SME IPO listing NSE Emerge",
     "promoter pledge shares",
     "QIP preferential issue smallcap",
-    "order book defence railway smallcap"
+    "order book defence railway smallcap",
+    "FII DII net buying selling today",
+    "GIFT Nifty today",
+    "Brent crude oil price today",
+    "rupee dollar RBI intervention",
+    "US Federal Reserve rate decision markets"
   ],
   "bluesky_queries": [
     "nifty smallcap",

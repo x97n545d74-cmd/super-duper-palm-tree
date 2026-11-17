@@ -22,13 +22,16 @@ on:
       interval:
         description: "Seconds between rounds (default 1800)"
         required: false
+      question:
+        description: "Ask the radar a question (answers appear in the dashboard's Ask tab)"
+        required: false
 
 permissions:
   contents: write
   actions: write
 
 concurrency:
-  group: avron-radar-${{ github.ref }}
+  group: avron-radar-${{ github.ref }}-${{ inputs.question != '' && 'ask' || 'chain' }}
   cancel-in-progress: false
 
 env:
@@ -68,8 +71,10 @@ jobs:
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           ROUNDS: ${{ inputs.rounds }}
           INTERVAL: ${{ inputs.interval }}
+          QUESTION: ${{ inputs.question }}
         run: |
           INTERVAL="${INTERVAL:-1800}"
+          if [ -n "$QUESTION" ]; then ROUNDS=1; fi      # a question is answered once, without collecting
           if [ -z "$ROUNDS" ]; then
             if [ "$LIVE" = "true" ]; then ROUNDS=11; else ROUNDS=1; fi     # 11 rounds x 30 minutes = 5.5 hours
           fi
@@ -83,7 +88,11 @@ jobs:
               git fetch -q origin "$GITHUB_REF_NAME" && git checkout -q FETCH_HEAD || echo "code update failed this round"
             fi
 
-            python3 avron-radar/radar.py run || echo "radar failed this round"
+            if [ -n "$QUESTION" ]; then
+              python3 avron-radar/radar.py ask "$QUESTION" || echo "the question failed"
+            else
+              python3 avron-radar/radar.py run || echo "radar failed this round"
+            fi
 
             (
               cd ../radar-data
@@ -91,6 +100,8 @@ jobs:
               git add -A
               if ! git diff --cached --quiet; then
                 git commit -q -m "Radar $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
+                # a question answered meanwhile may have pushed first: take its commit, then push
+                git pull -q --rebase origin "$DATA_BRANCH" 2>/dev/null || git rebase --abort 2>/dev/null || true
                 git push -q origin "HEAD:$DATA_BRANCH" || echo "data push failed this round"
               fi
             )
@@ -116,7 +127,7 @@ jobs:
           done
 
       - name: Start the next run
-        if: always() && github.ref_name == github.event.repository.default_branch && inputs.rounds == ''
+        if: always() && github.ref_name == github.event.repository.default_branch && inputs.rounds == '' && inputs.question == ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run avron-radar.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME"

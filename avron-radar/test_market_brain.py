@@ -80,6 +80,16 @@ class Market(unittest.TestCase):
         self.assertLess(base["avg_20d"], tt["avg_20d"])
         self.assertNotIn("edge_5d", base)
 
+    def test_sector_table_ranks_industries(self):
+        mk = lambda close, sma, m1: {"close": close, "sma200": sma, "ret_1m": m1, "ret_3m": m1 * 2, "change": 1.0}
+        snaps = {("A%d" % i): mk(110, 100, 8.0) for i in range(4)}
+        snaps.update({("B%d" % i): mk(90, 100, -5.0) for i in range(4)})
+        snaps["LONE"] = mk(1, 1, 50.0)
+        uni = {k: {"industry": "Power" if k.startswith("A") else "IT" if k.startswith("B") else "Odd"} for k in snaps}
+        rows = market.sector_table(snaps, uni, {"A0", "A1"})
+        self.assertEqual([(r["industry"], r["pct_above_200dma"], r["avg_1m"], r["in_uptrend"]) for r in rows],
+                         [("Power", 100, 8.0, 2), ("IT", 0, -5.0, 0)])            # a one-stock industry is left out
+
     def test_illiquid_stocks_are_not_screened(self):
         d = days(260)
         for _, rows in d:

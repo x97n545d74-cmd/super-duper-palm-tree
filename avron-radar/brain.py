@@ -465,6 +465,7 @@ def brief_inputs(kind, signals, analyses, items, hours):
                         for name, s in signals.get("screens", {}).items() if s["count"]},
             "deals": signals.get("deals", [])[:40],
             "screen_record": signals.get("screen_record"),
+            "sectors": (signals.get("sectors") or [])[:6] + (signals.get("sectors") or [])[-4:],
         }
         data["chatter_spikes"] = buzz(items, market.name_index_from_snapshots(signals))[:10]
     return data
@@ -529,7 +530,7 @@ BRIEF_TASK = {
 }
 BRIEF_FORMAT = """Use this structure, in Markdown. All six headings must appear, in this order. At most 600 words in total, so keep each section tight:
 ## Market regime
-Two or three sentences from breadth, the indices and VIX: is this a market that rewards breakouts or punishes them?
+Three or four sentences from breadth, the indices, VIX and the sectors table (strongest and weakest industries over a month): is this a market that rewards breakouts or punishes them, and where is the money going?
 ## What changed in businesses
 The filings that matter, most important first. One short paragraph each: the fact, your read, the main risk. Skip noise.
 ## Setups on the screens
