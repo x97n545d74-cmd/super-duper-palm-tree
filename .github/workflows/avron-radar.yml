@@ -52,9 +52,7 @@ jobs:
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
-        run: |
-          python3 avron-radar/tools/samples.py "$RADAR_DATA/samples"; exit 0   # TEMP on the work branch only
-          python3 avron-radar/radar.py run
+        run: python3 avron-radar/radar.py run
 
       - name: Save the data
         working-directory: ../radar-data
