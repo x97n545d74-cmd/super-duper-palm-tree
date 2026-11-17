@@ -2,8 +2,15 @@
 // Claude only copies what is printed. All matching and arithmetic happens in public/match.js.
 import Anthropic from '@anthropic-ai/sdk';
 
-const MODEL = process.env.LEDGER_MODEL || 'claude-opus-5-5';
+import { selfCheck } from '../public/match.js';
+
+// Cost: the small model reads first. The bigger one is called only when the paper's own
+// arithmetic does not close (opening + rows != printed closing) or rows were hard to read.
+const MODEL = process.env.LEDGER_MODEL || 'claude-haiku-5-5';
+const BACKUP_MODEL = process.env.LEDGER_BACKUP_MODEL ?? 'claude-opus-5-5'; // set empty to never escalate
 const EFFORT = process.env.LEDGER_EFFORT || 'medium';
+// Server-side refusal fallback exists for these model families only.
+const hasFallback = (model) => /^claude-(opus|sonnet|fable|mythos)-/.test(model);
 
 let client;
 const getClient = () => (client ??= new Anthropic());
@@ -89,6 +96,22 @@ export function hasCredentials() {
  * @param {Array<{kind:'file'|'text', name:string, mime?:string, data?:string, text?:string}>} files
  */
 export async function extractLedger(side, files) {
+  const first = await readWith(MODEL, side, files);
+  const check = selfCheck(first);
+  const doubtful = !check.ok || check.unclear > 0;
+  if (!doubtful || !BACKUP_MODEL || BACKUP_MODEL === MODEL) return first;
+
+  let second;
+  try { second = await readWith(BACKUP_MODEL, side, files); } catch { return first; }
+  const check2 = selfCheck(second);
+  second.usage.first_try = first.usage;
+  // Keep the reading whose arithmetic closes; if neither does, the one that is less far off.
+  if (check2.ok || !check.ok && Math.abs(check2.off) <= Math.abs(check.off)) return second;
+  if (check.ok && check2.unclear < check.unclear) return second;
+  return first;
+}
+
+async function readWith(model, side, files) {
   const what = side === 'ours'
     ? "This is from Shankar Medicos' own books: the account of one party as kept in Tally or Busy."
     : "This is the statement the other party sent: Shankar Medicos' account as kept in that party's books.";
@@ -96,11 +119,10 @@ export async function extractLedger(side, files) {
   let message;
   try {
     const stream = getClient().beta.messages.stream({
-      model: MODEL,
+      model,
       max_tokens: 64000,
       // If the model declines a request, the API retries it on a fallback model in the same call.
-      betas: ['server-side-fallback-2026-07-01'],
-      fallbacks: 'default',
+      ...(hasFallback(model) ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' } : {}),
       system: SYSTEM,
       output_config: { effort: EFFORT, format: { type: 'json_schema', schema: SCHEMA } },
       messages: [{

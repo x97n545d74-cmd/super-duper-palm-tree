@@ -55,9 +55,16 @@ Eight wrong PIN tries from one address (40 overall) lock PIN checks for an hour.
 |---|---|
 | `ANTHROPIC_API_KEY` | Claude API key from console.anthropic.com |
 | `APP_PIN` | PIN typed once on each device |
-| `LEDGER_MODEL` | Model that reads the papers. Default `claude-opus-5-5` |
+| `LEDGER_MODEL` | Model that reads the papers first. Default `claude-haiku-5-5` (cheapest) |
+| `LEDGER_BACKUP_MODEL` | Second reader, used only when the first reading's totals do not add up or rows were unclear. Default `claude-opus-5-5`. Set it empty to never use it |
 | `LEDGER_EFFORT` | `low`, `medium` (default) or `high` |
 | `READS_PER_HOUR` | Limit per device address. Default 40 |
+
+## Cost
+
+Measured on the one-page sample papers (2026-11-17), at list prices: the small model used about 4,100 tokens in and
+1,500 out per paper, roughly ₹0.20 for a full check of two papers. The same check on the large model was roughly ₹6.
+The large model is paid for only when a paper fails its own arithmetic check. Longer or photographed papers cost more.
 
 ## Privacy
 
