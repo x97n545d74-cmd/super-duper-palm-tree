@@ -186,13 +186,15 @@ class Brain(unittest.TestCase):
             for i in self.items:
                 i["published_at"] = radar.iso(radar.now_utc())
             more = dict(self.items[0], id="second", url="https://nsearchives.nseindia.com/corporate/ABC_9.pdf",
-                        text="ABC Limited has informed the Exchange regarding acquisition|SUBJECT: Acquisition")
+                        text="ABC Limited has informed the Exchange regarding acquisition|SUBJECT: Acquisition",
+                        subject="Acquisition")
             reply = json.dumps({"headline": "ABC: acquisition", "category": "acquisition", "facts": ["f 1"], "read": "r",
                                 "materiality": 5, "tone": "mixed", "document_read": True})
             seen = {"triage": 0, "verify": 0, "read": []}
-            def tri(p):
+            def tri(p):      # score the acquisition 5 and everything else 2, wherever it is in the list
                 seen["triage"] += 1
-                return '[{"n":1,"score":2},{"n":2,"score":5}]' if "ABC_9" not in p and p.index("acquisition") > p.index("order") else '[{"n":1,"score":5},{"n":2,"score":2}]'
+                lines = [l for l in p.splitlines() if l.strip()]
+                return json.dumps([{"n": n + 1, "score": 5 if "Acquisition" in l else 2} for n, l in enumerate(lines)])
             n = brain.read_filings(tmp, self.items + [more], {"filings_per_run": 1},
                                    ask=lambda p: (seen["read"].append(p), reply)[1], log=lambda *_: None, ask_triage=tri,
                                    ask_verify=lambda p: (seen.__setitem__("verify", seen["verify"] + 1), '[{"n":1,"verdict":"supported","note":""}]')[1])
