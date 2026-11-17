@@ -44,6 +44,7 @@ jobs:
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
         run: |
+          python3 avron-radar/tools/probe.py; exit 0   # TEMP probe on the work branch only
           python3 avron-radar/radar.py run
           cp avron-radar/dashboard.html ../radar-data/dashboard.html
 
