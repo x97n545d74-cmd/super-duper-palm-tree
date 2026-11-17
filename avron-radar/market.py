@@ -119,7 +119,8 @@ def compute_signals(days, universe):
                 "index": u.get("index", ""), "close": r(s["close"], 2), "change": r(s["change"]),
                 "vol_ratio": r(s["vol_ratio"]), "deliv": r(s["deliv"]), "rsi": r(s["rsi"]),
                 "from_high": r(s["from_high"]), "ret_3m": r(s["ret_3m"]), "atr_pct": r(s["atr_pct"]),
-                "momentum_rank": ranks.get(sym), "turnover_cr": r(s["turnover_lakh"] / 100)}
+                "momentum_rank": ranks.get(sym), "turnover_cr": r(s["turnover_lakh"] / 100),
+                "sma50": r(s["sma50"], 2), "sma200": r(s["sma200"], 2), "prior_high20": r(s["prior_high20"], 2)}
 
     screens = {}
     for sym, s in liquid.items():
@@ -201,6 +202,11 @@ def norm_name(s):
 def name_index(universe):
     """Company name -> symbol, for matching a filing's company to its price data."""
     return {norm_name(u["name"]): sym for sym, u in universe.items() if u.get("name")}
+
+
+def name_index_from_snapshots(signals):
+    """Company name -> symbol from the saved signals (no extra file read)."""
+    return {norm_name(r.get("name", "")): sym for sym, r in (signals or {}).get("snapshots", {}).items() if r.get("name")}
 
 
 # ---------- network ----------

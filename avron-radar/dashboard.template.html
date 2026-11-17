@@ -60,6 +60,10 @@ h3{font-size:15px;margin:18px 0 4px}
   <section id="v-brief"></section>
   <section id="v-filings" hidden></section>
   <section id="v-screens" hidden></section>
+  <section id="v-stock" hidden>
+    <div class="filters"><input id="sq" placeholder="Type an NSE symbol or company name" autocomplete="off"></div>
+    <div id="stock"></div>
+  </section>
   <section id="v-feed" hidden>
     <div class="filters">
       <input id="q" placeholder="Search company, topic, word" autocomplete="off">
@@ -75,7 +79,7 @@ h3{font-size:15px;margin:18px 0 4px}
   <p class="note">Private research file, not investment advice. Filings and prices come from NSE's official files. News, forum and social posts are unverified: check a primary source before relying on any of it. Screens describe what the price did; they do not predict what it will do.</p>
 </main>
 <script>
-const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[]};
+const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[]};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
@@ -86,7 +90,7 @@ const M = D.market || {};
 $("built").textContent = D.items.length + " posts · " + (D.analyses || []).length + " filing reads · prices for " + (M.date || "no day yet") + " · updated " + (when(D.built_at) || "never");
 
 // tabs
-const TABS = [["brief","Brief"],["filings","Filings"],["screens","Screens"],["feed","Feed"],["sources","Sources"]];
+const TABS = [["brief","Brief"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["feed","Feed"],["sources","System"]];
 let tab = "brief";
 $("tabs").innerHTML = TABS.map(t => "<button data-t='" + t[0] + "'>" + t[1] + "</button>").join("");
 $("tabs").onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; show(); } };
@@ -122,20 +126,29 @@ function tiles() {
   h += t(num(b.new_52w_highs, 0) + " / " + num(b.new_52w_lows, 0), "new 52-week highs / lows");
   return h + "</div>";
 }
-$("v-brief").innerHTML = tiles() + ((D.briefs || []).length
+const buzzHtml = (D.buzz || []).length ? "<h3>Talked about far more than usual in the past day</h3><div class='mean'>A jump in talk is a reason to look, not evidence. Tap a symbol in the Stock tab to see what is being said.</div><div class='wrap'><table><tr><th>Stock</th><th class='n'>Mentions, 24 h</th><th class='n'>Daily average before</th><th>Where</th></tr>" +
+  D.buzz.slice(0, 12).map(b => "<tr><td><b>" + esc(b.symbol) + "</b></td><td class='n'>" + num(b.mentions_24h, 0) + "</td><td class='n'>" + num(b.daily_average_before) + "</td><td>" + esc((b.platforms || []).join(", ")) + "</td></tr>").join("") + "</table></div>" : "";
+$("v-brief").innerHTML = tiles() + buzzHtml + ((D.briefs || []).length
   ? D.briefs.map(b => "<div class='card brief'><div class='meta'><span class='chip w'>" + esc(b.name) + "</span></div>" + md(b.text) + "</div>").join("")
   : "<p>No brief yet. The first one is written after the day's price file arrives (about 7 pm India time) or at 7 am.</p>");
 
 // filings
 const lst = (title, xs) => (xs || []).length ? "<h4>" + title + "</h4><ul>" + xs.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "";
-$("v-filings").innerHTML = (D.analyses || []).length ? D.analyses.map(a =>
-  "<div class='card'><div class='meta'><span class='chip w'>materiality " + esc(a.materiality) + "</span><span class='chip t-" + esc(a.tone) + "'>" + esc(a.tone) + "</span>" +
+const CONF = {high: "t-positive", medium: "w", low: "bad"};
+function readCard(a) {
+  const v = a.verified;
+  return "<div class='card'><div class='meta'><span class='chip w'>materiality " + esc(a.materiality) + "</span><span class='chip t-" + esc(a.tone) + "'>" + esc(a.tone) + "</span>" +
   "<span class='chip'>" + esc(a.category) + "</span>" + (a.symbol ? "<span class='chip'>" + esc(a.symbol) + "</span>" : "") +
+  (a.confidence ? "<span class='chip " + (CONF[a.confidence] || "") + "'>" + esc(a.confidence) + " confidence</span>" : "") +
+  (v ? "<span class='chip " + (v.problems.length ? "bad" : "t-positive") + "'>fact check " + esc(v.supported) + "/" + esc(v.checked) + "</span>" : "") +
   "<span>· filed " + esc(when(a.published_at)) + "</span>" + (a.document_read ? "" : "<span class='chip bad'>summary only, document not read</span>") + "</div>" +
   "<a class='t' href='" + esc(safeUrl(a.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(a.headline) + "</a>" +
   "<p>" + esc(a.read) + "</p>" + (a.price_context ? "<p class='txt'>" + esc(a.price_context) + "</p>" : "") +
-  lst("Facts from the filing", a.facts) + lst("Positives", a.positives) + lst("Risks", a.risks) + lst("Check next", a.check_next) + "</div>").join("")
-  : "<p>No filings read yet.</p>";
+  ((a.unsupported_numbers || []).length ? "<p class='txt down'>Figures in this read with no source in the filing or price data: " + esc(a.unsupported_numbers.join(", ")) + "</p>" : "") +
+  (v && v.problems.length ? lst("Fact check problems", v.problems) : "") +
+  lst("Facts from the filing", a.facts) + lst("Positives", a.positives) + lst("Risks", a.risks) + lst("Check next", a.check_next) + "</div>";
+}
+$("v-filings").innerHTML = (D.analyses || []).length ? D.analyses.map(readCard).join("") : "<p>No filings read yet.</p>";
 
 // screens
 function stockTable(rows) {
@@ -153,6 +166,36 @@ function stockTable(rows) {
     M.deals.map(d => "<tr><td><b>" + esc(d.symbol) + "</b></td><td class='wraps'>" + esc(d.client) + "</td><td class='" + (/buy/i.test(d.side) ? "up" : "down") + "'>" + esc(d.side) + "</td><td class='n'>" + num(d.quantity, 0) + "</td><td class='n'>" + num(d.price, 2) + "</td><td>" + esc(d.kind) + "</td></tr>").join("") + "</table></div>";
   $("v-screens").innerHTML = h;
 })();
+
+// one stock: price, screens, our reads, its filings, what is being said
+function postRow(i) {
+  const t = i.tags || {};
+  return "<tr><td>" + esc(when(i.published_at || i.collected_at)) + "</td><td>" + esc(i.platform) + (t.kind ? " · " + esc(t.kind) : "") + "</td><td class='wraps'><a class='t' href='" + esc(safeUrl(i.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(t.summary || i.title) + "</a>" + (i.subject ? " <span class='chip'>" + esc(i.subject) + "</span>" : "") + "</td></tr>";
+}
+function stock() {
+  const q = $("sq").value.trim().toLowerCase();
+  if (q.length < 2) { $("stock").innerHTML = "<p class='mean'>Everything the radar holds on one company: price and trend, the screens it is on, the analyst's reads, its exchange filings and what is being said about it.</p>"; return; }
+  const keys = Object.keys(D.stocks);
+  const hits = keys.filter(k => k.toLowerCase() === q).concat(keys.filter(k => k.toLowerCase() !== q && (k.toLowerCase().startsWith(q) || (D.stocks[k].name || "").toLowerCase().includes(q)))).slice(0, 8);
+  if (!hits.length) { $("stock").innerHTML = "<p>No NSE stock matches.</p>"; return; }
+  const sym = hits[0], r = D.stocks[sym];
+  const on = Object.keys(M.screens || {}).filter(k => M.screens[k].stocks.some(x => x.symbol === sym));
+  const reads = (D.analyses || []).filter(a => a.symbol === sym);
+  const mine = D.items.filter(i => (i.symbols || []).includes(sym));
+  const filings = mine.filter(i => i.platform === "nse"), talk = mine.filter(i => i.platform !== "nse");
+  let h = (hits.length > 1 ? "<div class='mean'>Also matches: " + hits.slice(1).map(esc).join(", ") + "</div>" : "") +
+    "<h3>" + esc(sym) + " · " + esc(r.name) + "</h3><div class='mean'>" + esc(r.industry || "") + (r.index ? " · " + esc(r.index) : "") + "</div><div class='tiles'>" +
+    [[num(r.close, 2) + " " + pct(r.change), "close on " + (M.date || "")], [pct(r.from_high), "from 52-week high"], [num(r.rsi, 0), "RSI"],
+     [num(r.sma50, 2), "50-day average"], [num(r.sma200, 2), "200-day average"], [num(r.vol_ratio) + "×", "volume against normal"],
+     [num(r.deliv) + "%", "delivery"], [num(r.momentum_rank, 0), "momentum rank (0-100)"], [num(r.atr_pct) + "%", "normal daily range (ATR)"]]
+      .map(t => "<div class='tile'><b>" + t[0] + "</b><span>" + esc(t[1]) + "</span></div>").join("") + "</div>" +
+    "<div class='mean'>On screens: " + (on.length ? on.map(k => esc(k.replace(/_/g, " "))).join(", ") : "none today") + "</div>";
+  h += "<h3>Analyst reads · " + reads.length + "</h3>" + (reads.map(readCard).join("") || "<p class='mean'>None yet.</p>");
+  const tbl = rows => rows.length ? "<div class='wrap'><table>" + rows.slice(0, 40).map(postRow).join("") + "</table></div>" : "<p class='mean'>Nothing in the past 45 days.</p>";
+  h += "<h3>Exchange filings · " + filings.length + "</h3>" + tbl(filings) + "<h3>News and chatter · " + talk.length + "</h3>" + tbl(talk);
+  $("stock").innerHTML = h;
+}
+$("sq").addEventListener("input", stock);
 
 // feed
 let watchOnly = false;
@@ -190,11 +233,14 @@ function feed() {
 $("watch").onclick = () => { watchOnly = !watchOnly; feed(); };
 
 // sources
-$("v-sources").innerHTML = "<div class='wrap'><table><tr><th>Lane</th><th>Source</th><th>Status</th><th>Checked</th></tr>" +
+const runsHtml = (D.runs || []).length ? "<h3>Recent runs</h3><div class='mean'>Tokens are what Claude read and wrote in that run, across all models.</div><div class='wrap'><table><tr><th>Run</th><th class='n'>Seconds</th><th class='n'>Sources ok</th><th class='n'>New posts</th><th class='n'>Labelled</th><th class='n'>Filing reads</th><th>Brief</th><th class='n'>Tokens in</th><th class='n'>Tokens out</th><th class='n'>From cache</th><th>Problems</th></tr>" +
+  D.runs.slice().reverse().slice(0, 30).map(r => { const t = Object.values(r.tokens || {}); const sum = k => t.reduce((a, x) => a + (x[k] || 0), 0);
+    return "<tr><td>" + esc(when(r.at)) + "</td><td class='n'>" + num(r.seconds, 0) + "</td><td class='n'>" + esc(r.sources_ok) + "/" + esc(r.sources_total) + "</td><td class='n'>" + num(r.new_posts, 0) + "</td><td class='n'>" + num(r.labelled, 0) + "</td><td class='n'>" + num(r.filing_reads, 0) + "</td><td>" + esc(r.brief || "") + "</td><td class='n'>" + num(sum("in"), 0) + "</td><td class='n'>" + num(sum("out"), 0) + "</td><td class='n'>" + num(sum("cache_read"), 0) + "</td><td class='wraps down'>" + esc((r.failed_steps || []).join(", ")) + "</td></tr>"; }).join("") + "</table></div><h3>Sources</h3>" : "";
+$("v-sources").innerHTML = runsHtml + "<div class='wrap'><table><tr><th>Lane</th><th>Source</th><th>Status</th><th>Checked</th></tr>" +
   D.health.map(h => "<tr><td>" + esc(h.lane) + "</td><td class='wraps'>" + esc(h.source) + "</td><td class='wraps " + (h.ok ? "" : "down") + "'>" +
     (h.ok ? "ok · " + h.found + " read, " + h.new + " new" : "failed · " + esc(h.error)) + "</td><td>" + esc(when(h.checked_at)) + "</td></tr>").join("") + "</table></div>";
 
-feed(); show();
+feed(); stock(); show();
 </script>
 </body>
 </html>

@@ -130,6 +130,107 @@ class Brain(unittest.TestCase):
             none = brain.read_filings(tmp, self.items, {"daily_filing_reads": 1}, ask=lambda p: reply, log=lambda *_: None)
             self.assertEqual(none, 0)                                  # budget used up
 
+    def test_triage_reorders_drops_noise_and_survives_a_bad_reply(self):
+        c = [({"title": "A"}, "A", None), ({"title": "B"}, "B", None), ({"title": "C"}, "C", None)]
+        best = brain.triage(c, lambda p: '[{"n":1,"score":1},{"n":2,"score":5},{"n":3,"score":3}]')
+        self.assertEqual([x[1] for x in best], ["B", "C"])                    # A scored 1: not worth a read
+        self.assertEqual(brain.triage(c, lambda p: "sorry, no"), c)
+        self.assertEqual(brain.triage(c, lambda p: (_ for _ in ()).throw(OSError("net"))), c)
+
+    def test_company_memory_is_newest_first_and_matched_by_symbol_or_name(self):
+        an = [{"symbol": "ABC", "company": "ABC Limited", "published_at": "2026-11-01", "headline": "old", "numbers": {}},
+              {"symbol": "", "company": "ABC Ltd", "published_at": "2026-11-10", "headline": "new", "numbers": {"order_value_cr": 5}},
+              {"symbol": "XYZ", "company": "XYZ Limited", "published_at": "2026-11-12", "headline": "other"}]
+        h = brain.company_history(an, "ABC", "ABC Limited")
+        self.assertEqual([x["headline"] for x in h], ["new", "old"])
+        self.assertIn("earlier reads", brain.filing_prompt(self.items[0], "ABC", None, [], h))
+        self.assertNotIn("earlier reads", brain.filing_prompt(self.items[0], "ABC", None, [], []))
+
+    def test_check_read_flags_numbers_with_no_source(self):
+        item = {"title": "ABC Limited", "text": "order", "published_at": "2026-11-16T03:44:05Z"}
+        good = {"headline": "ABC: order of Rs 120 crore", "read": "Stock is 4.2% below its high.", "price_context": "",
+                "facts": ["Order value Rs 120 crore over 18 months"], "document_read": True}
+        self.assertEqual(brain.check_read(dict(good), item, {"from_high": -4.2})["confidence"], "high")
+        bad = dict(good, read="That is 35% of last year's revenue of Rs 340 crore.")
+        out = brain.check_read(bad, item, None)
+        self.assertEqual((out["unsupported_numbers"], out["confidence"]), (["35", "340"], "low"))
+        self.assertEqual(brain.check_read(dict(good, document_read=False), item, None)["confidence"], "low")
+
+    def test_fact_check_lowers_confidence_on_a_contradiction(self):
+        a = {"url": "u", "facts": ["Order Rs 120 crore", "18 months"], "confidence": "high"}
+        brain.verify_read(a, lambda p: '[{"n":1,"verdict":"supported","note":""},{"n":2,"verdict":"contradicted","note":"says 24 months"}]')
+        self.assertEqual((a["verified"]["supported"], a["verified"]["checked"], a["confidence"]), (1, 2, "low"))
+        b = {"url": "u", "facts": ["x"], "confidence": "high"}
+        brain.verify_read(b, lambda p: "garbage")
+        self.assertEqual((b["confidence"], "verified" in b), ("high", False))  # no check is not a failed check
+
+    def test_read_filings_runs_triage_and_fact_check(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = pathlib.Path(tmp)
+            for i in self.items:
+                i["published_at"] = radar.iso(radar.now_utc())
+            more = dict(self.items[0], id="second", url="https://nsearchives.nseindia.com/corporate/ABC_9.pdf",
+                        text="ABC Limited has informed the Exchange regarding acquisition|SUBJECT: Acquisition")
+            reply = json.dumps({"headline": "ABC: acquisition", "category": "acquisition", "facts": ["f 1"], "read": "r",
+                                "materiality": 5, "tone": "mixed", "document_read": True})
+            seen = {"triage": 0, "verify": 0, "read": []}
+            def tri(p):
+                seen["triage"] += 1
+                return '[{"n":1,"score":2},{"n":2,"score":5}]' if "ABC_9" not in p and p.index("acquisition") > p.index("order") else '[{"n":1,"score":5},{"n":2,"score":2}]'
+            n = brain.read_filings(tmp, self.items + [more], {"filings_per_run": 1},
+                                   ask=lambda p: (seen["read"].append(p), reply)[1], log=lambda *_: None, ask_triage=tri,
+                                   ask_verify=lambda p: (seen.__setitem__("verify", seen["verify"] + 1), '[{"n":1,"verdict":"supported","note":""}]')[1])
+            self.assertEqual((n, seen["triage"], seen["verify"], len(seen["read"])), (1, 1, 1, 1))
+            self.assertIn("ABC_9.pdf", seen["read"][0])                       # triage put the acquisition first
+            saved = brain.load_analyses(tmp)[0]
+            self.assertEqual((saved["confidence"], saved["verified"]["supported"]), ("high", 1))
+
+    def test_brief_check_and_self_correction(self):
+        data = {"market": {"screens": {"x": {"stocks": [{"symbol": "ABC"}]}}}}
+        good = "## Market regime\nx\n## What changed in businesses\nx\n## Setups on the screens\nABC broke out\n## Tomorrow's checklist\nx"
+        self.assertEqual(brain.check_brief(good, data, {"ABC", "XYZ"}), [])
+        bad = good.replace("ABC broke out", "XYZ is a strong buy with a target price")
+        probs = brain.check_brief(bad, data, {"ABC", "XYZ"})
+        self.assertEqual(len(probs), 3)
+        self.assertIn("stock not in the data: XYZ", probs)
+
+    def test_chatter_spike_and_name_resolution(self):
+        idx = {market.norm_name("ABC Limited"): "ABC"}
+        self.assertEqual(brain.resolve_symbols(["ABC Ltd", "abc", "Unknown Co"], idx), ["ABC"])
+        now = datetime.datetime(2026, 11, 17, 12, tzinfo=datetime.timezone.utc)
+        post = lambda when: {"platform": "reddit", "published_at": when, "tags": {"companies": ["ABC Ltd"]}}
+        items = [post("2026-11-17T0%d:00:00Z" % h) for h in range(4)] + [post("2026-11-13T00:00:00Z")]
+        (row,) = brain.buzz(items, idx, now)
+        self.assertEqual((row["symbol"], row["mentions_24h"], row["platforms"]), ("ABC", 4, ["reddit"]))
+        self.assertEqual(brain.buzz(items[:2], idx, now), [])                 # two mentions is not a spike
+
+    def test_claude_call_retries_when_busy_and_counts_tokens(self):
+        import io, urllib.error
+        old = brain.urllib.request.urlopen
+        class Resp:
+            def __init__(self, body): self.body = body
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self): return json.dumps(self.body).encode()
+        calls = []
+        def fake(req, timeout=0):
+            calls.append(json.loads(req.data))
+            if len(calls) == 1:
+                raise urllib.error.HTTPError("u", 529, "busy", {}, io.BytesIO(b""))
+            return Resp({"stop_reason": "end_turn", "content": [{"type": "text", "text": "hi"}],
+                         "usage": {"input_tokens": 9, "output_tokens": 2, "cache_read_input_tokens": 100}})
+        brain.urllib.request.urlopen = fake
+        try:
+            del brain.USAGE[:]
+            body = {"model": "m", "messages": []}
+            self.assertEqual(brain._post(body, {}, sleep=lambda s: None)["stop_reason"], "end_turn")
+            self.assertEqual(brain.call_claude("q", "k", "sys", model="m", purpose="t"), "hi")
+            self.assertEqual(calls[-1]["system"][0]["cache_control"], {"type": "ephemeral"})
+            self.assertEqual(brain.USAGE[-1], {"model": "m", "purpose": "t", "in": 9, "out": 2, "cache_read": 100, "cache_write": 0})
+        finally:
+            brain.urllib.request.urlopen = old
+            del brain.USAGE[:]
+
     def test_brief_schedule(self):
         ist = brain.IST
         evening = datetime.datetime(2026, 11, 16, 19, 30, tzinfo=ist)

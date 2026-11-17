@@ -33,6 +33,7 @@ Standard library only. For personal research: posts are stored as a short
 excerpt plus a link to the original, and nothing is republished.
 """
 import base64
+import concurrent.futures
 import datetime
 import hashlib
 import html
@@ -64,7 +65,10 @@ LANE_PAUSE = {"reddit": 6, "news": 6, "feeds": 0.5}   # Reddit and Google News r
 NO_TAG = {"nse", "deals"}   # official records: nothing for the chatter labeller to judge
 KEEP_DAYS = 45              # days of posts loaded for the dashboard and the database
 PER_SOURCE_CAP = 400        # most new posts taken from one source in one run
-REDDIT_PER_RUN = 2     # without a Reddit API key, read this many subreddits per run, in turn
+REDDIT_PER_RUN = 1     # without a Reddit API key, Reddit allows one feed per visit: read one subreddit per run, in turn
+FAILS_BEFORE_PAUSE = 6 # a source that fails this many runs in a row is rested
+PAUSE_HOURS = 6        # ...for this long, then tried again
+STATS = {}             # what this run did, written to the run log
 TAG_BATCH = 15         # posts per Claude call
 TAG_MAX_BATCHES = int(os.environ.get("RADAR_TAG_MAX_BATCHES", "6"))
 ATOM = "{http://www.w3.org/2005/Atom}"
@@ -118,9 +122,21 @@ def clip(s, n=EXCERPT):
 def http_get_bytes(url, headers=None, timeout=30, data=None):
     h = {"User-Agent": UA, "Accept-Language": "en-IN,en;q=0.8"}
     h.update(headers or {})
-    req = urllib.request.Request(url, headers=h, data=data)
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read()
+    for attempt in (1, 2):
+        try:
+            req = urllib.request.Request(url, headers=h, data=data)
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as e:
+            if e.code < 500 or attempt == 2:        # a refusal is final; a server hiccup gets one more try
+                raise
+        except (urllib.error.URLError, TimeoutError, ConnectionError):
+            if attempt == 2:
+                raise
+        time.sleep(RETRY_WAIT)
+
+
+RETRY_WAIT = 2
 
 
 def http_get(url, headers=None, timeout=30, data=None):
@@ -444,6 +460,40 @@ def watch_hits(item, watchlist):
 
 # ---------- commands ----------
 
+def run_lane(lane, sources, state, stamp, now=None):
+    """Fetch one lane's sources in turn. Returns [(health entry, items found)].
+    A source that keeps failing is rested for a few hours instead of being hit every run."""
+    now = now or time.time()
+    fails, paused = state.setdefault("fails", {}), state.setdefault("paused_until", {})
+    out = []
+    for source, fetch in sources:
+        key = lane + "|" + source
+        entry = {"lane": lane, "source": source, "checked_at": stamp}
+        if paused.get(key, 0) > now:
+            entry.update(ok=False, paused=True, error="resting after %d failures in a row; next try %s"
+                         % (fails.get(key, 0), datetime.datetime.fromtimestamp(paused[key], IST).strftime("%d %b %H:%M")))
+            out.append((entry, []))
+            continue
+        found = []
+        try:
+            found = fetch()
+            entry.update(ok=True, found=len(found))
+            fails.pop(key, None)
+            paused.pop(key, None)
+        except urllib.error.HTTPError as e:
+            entry.update(ok=False, error="HTTP %d" % e.code)
+        except Exception as e:      # one dead source must not stop the others
+            entry.update(ok=False, error=(type(e).__name__ + ": " + str(e))[:200])
+        if not entry["ok"]:
+            fails[key] = fails.get(key, 0) + 1
+            entry["fails_in_a_row"] = fails[key]
+            if fails[key] >= FAILS_BEFORE_PAUSE:
+                paused[key] = now + PAUSE_HOURS * 3600
+        out.append((entry, found))
+        time.sleep(LANE_PAUSE.get(lane, PAUSE) if PAUSE else 0)
+    return out
+
+
 def collect(cfg):
     DATA.mkdir(parents=True, exist_ok=True)
     state = load_json(DATA / "state.json", {})
@@ -451,14 +501,15 @@ def collect(cfg):
     watchlist = cfg.get("watchlist") or []
     stamp = iso(now_utc())
     cutoff = iso(now_utc() - datetime.timedelta(days=int(cfg.get("max_age_days", 3))))
+    lanes = [(lane, list(make(cfg, state))) for lane, make in LANES
+             if lane not in (cfg.get("disabled_lanes") or [])]
+    # Lanes run side by side (different sites); inside a lane the sources go one at a time, politely.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, len(lanes))) as pool:
+        results = list(pool.map(lambda l: run_lane(l[0], l[1], state, stamp), lanes))
     health, new_rows = [], []
-    for lane, make in LANES:
-        if lane in (cfg.get("disabled_lanes") or []):
-            continue
-        for source, fetch in make(cfg, state):
-            entry = {"lane": lane, "source": source, "checked_at": stamp}
-            try:
-                found = fetch()
+    for lane_result in results:
+        for entry, found in lane_result:
+            if entry["ok"]:
                 fresh = [i for i in found if i["id"] not in known
                          and (not i["published_at"] or i["published_at"] >= cutoff)][:PER_SOURCE_CAP]
                 for i in fresh:
@@ -466,20 +517,17 @@ def collect(cfg):
                     i["watch"] = watch_hits(i, watchlist)
                     known.add(i["id"])
                 new_rows.extend(fresh)
-                entry.update(ok=True, found=len(found), new=len(fresh))
-            except urllib.error.HTTPError as e:
-                entry.update(ok=False, error="HTTP %d" % e.code)
-            except Exception as e:      # one dead source must not stop the others
-                entry.update(ok=False, error=(type(e).__name__ + ": " + str(e))[:200])
+                entry["new"] = len(fresh)
             health.append(entry)
-            print("%-9s %-40s %s" % (lane, source[:40],
+            print("%-9s %-40s %s" % (entry["lane"], entry["source"][:40],
                   "ok  found %(found)d  new %(new)d" % entry if entry["ok"] else "FAILED  " + entry["error"]))
-            time.sleep(LANE_PAUSE.get(lane, PAUSE) if PAUSE else 0)
     append_items(new_rows)
     (DATA / "state.json").write_text(json.dumps(state, indent=1), encoding="utf-8")
     (DATA / "health.json").write_text(json.dumps(health, indent=1), encoding="utf-8")
-    print("collected %d new posts from %d of %d sources"
-          % (len(new_rows), sum(1 for h in health if h["ok"]), len(health)))
+    ok = sum(1 for h in health if h["ok"])
+    STATS.update(sources_ok=ok, sources_total=len(health), new_posts=len(new_rows),
+                 sources_failing=[h["source"] for h in health if not h["ok"]][:20])
+    print("collected %d new posts from %d of %d sources" % (len(new_rows), ok, len(health)))
     return new_rows
 
 
@@ -496,17 +544,8 @@ Reply with ONLY a JSON array, one object per post, and nothing else."""
 
 
 def call_claude(prompt, api_key, max_tokens=6000):
-    body = {"model": MODEL, "max_tokens": max_tokens, "system": TAG_RULES,
-            "messages": [{"role": "user", "content": prompt}]}
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages", data=json.dumps(body).encode("utf-8"),
-        headers={"content-type": "application/json", "x-api-key": api_key, "anthropic-version": "2023-06-01"},
-        method="POST")
-    with urllib.request.urlopen(req, timeout=240) as resp:
-        res = json.loads(resp.read().decode("utf-8"))
-    if res.get("stop_reason") != "end_turn":
-        print("tag: reply ended with %s" % res.get("stop_reason"))
-    return "".join(b.get("text", "") for b in res.get("content") or [] if b.get("type") == "text")
+    """The labeller's call: the fast model, with retries and token accounting from brain.call_claude."""
+    return brain.call_claude(prompt, api_key, TAG_RULES, max_tokens, model=MODEL, purpose="labels")
 
 
 def parse_tags(reply):
@@ -564,6 +603,7 @@ def tag(ask=None):
         done += got
         if got < len(batch):
             print("tag: a batch came back with %d of %d labels" % (got, len(batch)))
+    STATS.update(labelled=done, unlabelled=len(todo) - done)
     print("tagged %d posts (%d still untagged)" % (done, len(todo) - done))
     return done
 
@@ -594,14 +634,46 @@ def market_step():
 
 def analyse(cfg):
     items = list(load_items(3).values())
-    brain.read_filings(DATA, items, cfg)
-    brain.write_brief(DATA, items)
+    STATS["filing_reads"] = brain.read_filings(DATA, items, cfg)
+    STATS["brief"] = brain.write_brief(DATA, items)
+
+
+def token_totals(usage):
+    """Claude calls of this run, summed per model."""
+    out = {}
+    for u in usage:
+        t = out.setdefault(u["model"], {"calls": 0, "in": 0, "out": 0, "cache_read": 0, "cache_write": 0})
+        t["calls"] += 1
+        for k in ("in", "out", "cache_read", "cache_write"):
+            t[k] += u.get(k, 0)
+    return out
+
+
+def log_run(started, cfg):
+    """One line per run in runs-YYYY-MM-DD.jsonl: what happened, how long, what it cost in tokens."""
+    row = {"at": iso(started), "seconds": round((now_utc() - started).total_seconds())}
+    row.update(STATS)
+    row["tokens"] = token_totals(brain.USAGE)
+    prices = cfg.get("price_per_million_tokens") or {}      # optional: {"model": {"in": 1.0, "out": 5.0}}
+    if prices:
+        row["cost_usd"] = round(sum((t["in"] * prices[m].get("in", 0) + t["out"] * prices[m].get("out", 0)) / 1e6
+                                    for m, t in row["tokens"].items() if m in prices), 4)
+    append_rows("runs", [row], "at")
+    return row
 
 
 def build():
     items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
     analyses = sorted(brain.load_analyses(DATA), key=lambda a: a.get("read_at", ""), reverse=True)
     signals = market.load_signals(DATA) or {}
+    names = market.name_index_from_snapshots(signals)
+    for r in items:      # link each labelled post to the stocks it names
+        syms = brain.resolve_symbols((r.get("tags") or {}).get("companies"), names)
+        if r["platform"] == "nse" and not syms:
+            syms = [names[market.norm_name(r["title"])]] if market.norm_name(r["title"]) in names else []
+        if syms:
+            r["symbols"] = syms
+    runs = [row for f in data_files("runs", 7) for row in read_jsonl(f)][-60:]
     db_path = HERE / "radar.db"
     if db_path.exists():
         db_path.unlink()
@@ -639,6 +711,14 @@ def build():
             sym, r["name"], r["industry"], r["index"], signals.get("date"), r["close"], r["change"],
             r["vol_ratio"], r["deliv"], r["rsi"], r["from_high"], r["ret_3m"], r["atr_pct"],
             r["momentum_rank"], r["turnover_cr"], ", ".join(hits.get(sym, []))))
+    try:                 # full-text search over everything collected: SELECT * FROM search WHERE search MATCH 'qip'
+        db.execute("CREATE VIRTUAL TABLE search USING fts5(id UNINDEXED, title, text, summary, companies)")
+        db.executemany("INSERT INTO search VALUES (?,?,?,?,?)", [
+            (r["id"], r["title"], r["text"], (r.get("tags") or {}).get("summary") or "",
+             " ".join((r.get("tags") or {}).get("companies") or []) + " " + " ".join(r.get("symbols") or []))
+            for r in items])
+    except sqlite3.OperationalError:
+        pass             # this SQLite build has no full-text module; the plain tables still work
     db.execute("CREATE INDEX items_time ON items (published_at)")
     db.execute("CREATE INDEX items_platform ON items (platform)")
     db.commit()
@@ -648,7 +728,8 @@ def build():
     market_view = {k: v for k, v in signals.items() if k != "snapshots"}
     payload = json.dumps({"built_at": iso(now_utc()), "items": items[:4000], "health": health,
                           "analyses": analyses[:300], "market": market_view,
-                          "briefs": brain.load_briefs(DATA)},
+                          "briefs": brain.load_briefs(DATA), "stocks": signals.get("snapshots") or {},
+                          "buzz": brain.buzz(items, names), "runs": runs},
                          ensure_ascii=False).replace("</", "<\\/")
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")
     print("built radar.db and dashboard.html: %d posts, %d filing reads, market data for %s"
@@ -660,11 +741,13 @@ def step(name, fn):
     try:
         fn()
     except Exception as e:
+        STATS.setdefault("failed_steps", []).append(name)
         print("%s step failed: %s: %s" % (name, type(e).__name__, str(e)[:300]))
 
 
 def main(argv):
     cmd = argv[1] if len(argv) > 1 else "run"
+    started = now_utc()
     cfg = load_json(CONFIG, None)
     if cfg is None:
         sys.exit("cannot read " + str(CONFIG))
@@ -678,6 +761,8 @@ def main(argv):
         step("tag", tag)
     if cmd in ("analyse", "run"):
         step("analyse", lambda: analyse(cfg))
+    if cmd == "run":
+        step("run log", lambda: log_run(started, cfg))
     if cmd in ("build", "run"):
         build()
 
