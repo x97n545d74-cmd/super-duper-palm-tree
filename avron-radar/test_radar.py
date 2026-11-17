@@ -94,6 +94,16 @@ class Parsers(unittest.TestCase):
         self.assertEqual(out["a"]["kind"], "other")
         self.assertEqual(out["a"]["companies"], [])
 
+    def test_parse_tags_keeps_complete_objects_from_a_cut_off_reply(self):
+        out = radar.parse_tags('[{"id":"a","relevance":3,"kind":"fact"},{"id":"b","relevance":2,"summ')
+        self.assertEqual(list(out), ["a"])
+
+    def test_reddit_reads_two_subreddits_per_run_in_turn(self):
+        cfg, state = {"subreddits": ["a", "b", "c"]}, {}
+        first = [s for s, _ in radar.lane_reddit(cfg, state)]
+        second = [s for s, _ in radar.lane_reddit(cfg, state)]
+        self.assertEqual((first, second), (["r/a", "r/b"], ["r/c", "r/a"]))
+
 
 class Flow(unittest.TestCase):
     def test_collect_dedupes_survives_a_dead_source_then_tags_and_builds(self):

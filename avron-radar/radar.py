@@ -46,8 +46,10 @@ UA = "avron-radar/1.0 (personal research reader)"
 BROWSER_UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 MODEL = os.environ.get("RADAR_MODEL", "claude-haiku-5-5")
 EXCERPT = 600          # characters of each post kept
-PAUSE = 1.5            # seconds between requests to the same lane
-TAG_BATCH = 25         # posts per Claude call
+PAUSE = 1.5            # seconds between requests
+LANE_PAUSE = {"reddit": 6, "news": 6}   # these two rate-limit quick readers
+REDDIT_PER_RUN = 2     # without a Reddit API key, read this many subreddits per run, in turn
+TAG_BATCH = 15         # posts per Claude call
 TAG_MAX_BATCHES = int(os.environ.get("RADAR_TAG_MAX_BATCHES", "8"))
 ATOM = "{http://www.w3.org/2005/Atom}"
 MEDIA = "{http://search.yahoo.com/mrss/}"
@@ -232,6 +234,10 @@ def lane_reddit(cfg, state):
                                   {"Authorization": "Basic " + auth},
                                   data=b"grant_type=client_credentials"))
         token = res.get("access_token") or ""
+    if not token and len(subs) > REDDIT_PER_RUN:
+        start = int(state.get("reddit_next", 0)) % len(subs)
+        state["reddit_next"] = (start + REDDIT_PER_RUN) % len(subs)
+        subs = [subs[(start + n) % len(subs)] for n in range(REDDIT_PER_RUN)]
     for sub in subs:
         def fetch(sub=sub):
             if token:
@@ -271,9 +277,15 @@ def lane_news(cfg, state):
 
 def lane_bluesky(cfg, state):
     for q in cfg.get("bluesky_queries") or []:
-        url = ("https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?sort=latest&limit=50&q="
-               + urllib.parse.quote(q))
-        yield q, (lambda url=url, q=q: parse_bluesky(json.loads(http_get(url)), q))
+        path = "/xrpc/app.bsky.feed.searchPosts?sort=latest&limit=50&q=" + urllib.parse.quote(q)
+
+        def fetch(path=path, q=q):
+            try:
+                raw = http_get("https://public.api.bsky.app" + path)
+            except urllib.error.HTTPError:
+                raw = http_get("https://api.bsky.app" + path)      # the second public host
+            return parse_bluesky(json.loads(raw), q)
+        yield q, fetch
 
 
 def x_bearer():
@@ -401,7 +413,7 @@ def collect(cfg):
             health.append(entry)
             print("%-9s %-40s %s" % (lane, source[:40],
                   "ok  found %(found)d  new %(new)d" % entry if entry["ok"] else "FAILED  " + entry["error"]))
-            time.sleep(PAUSE)
+            time.sleep(LANE_PAUSE.get(lane, PAUSE) if PAUSE else 0)
     append_items(new_rows)
     (DATA / "state.json").write_text(json.dumps(state, indent=1), encoding="utf-8")
     (DATA / "health.json").write_text(json.dumps(health, indent=1), encoding="utf-8")
@@ -422,7 +434,7 @@ For each post return one JSON object with:
 Reply with ONLY a JSON array, one object per post, and nothing else."""
 
 
-def call_claude(prompt, api_key, max_tokens=4000):
+def call_claude(prompt, api_key, max_tokens=6000):
     body = {"model": MODEL, "max_tokens": max_tokens, "system": TAG_RULES,
             "messages": [{"role": "user", "content": prompt}]}
     req = urllib.request.Request(
@@ -431,17 +443,21 @@ def call_claude(prompt, api_key, max_tokens=4000):
         method="POST")
     with urllib.request.urlopen(req, timeout=240) as resp:
         res = json.loads(resp.read().decode("utf-8"))
+    if res.get("stop_reason") != "end_turn":
+        print("tag: reply ended with %s" % res.get("stop_reason"))
     return "".join(b.get("text", "") for b in res.get("content") or [] if b.get("type") == "text")
 
 
 def parse_tags(reply):
-    m = re.search(r"\[.*\]", reply, re.S)
-    if not m:
-        return {}
-    try:
-        rows = json.loads(m.group(0))
-    except json.JSONDecodeError:
-        return {}
+    # Read the objects one by one, so a reply cut off part-way still gives the complete ones.
+    rows, dec, pos = [], json.JSONDecoder(), reply.find("{")
+    while pos != -1:
+        try:
+            obj, end = dec.raw_decode(reply, pos)
+            rows.append(obj)
+            pos = reply.find("{", end)
+        except json.JSONDecodeError:
+            pos = reply.find("{", pos + 1)
     kinds = {"fact", "opinion", "rumour", "tip", "question", "promo", "other"}
     out = {}
     for r in rows:
@@ -479,10 +495,14 @@ def tag(ask=None):
         except Exception as e:
             print("tag: batch failed: %s" % e)
             break
+        got = 0
         for r in batch:
             if r["id"] in tags:
                 items[r["id"]]["tags"] = tags[r["id"]]
-                done += 1
+                got += 1
+        done += got
+        if got < len(batch):
+            print("tag: a batch came back with %d of %d labels" % (got, len(batch)))
     if done:
         rewrite_items(items)
     print("tagged %d posts (%d still untagged)" % (done, len(todo) - done))
