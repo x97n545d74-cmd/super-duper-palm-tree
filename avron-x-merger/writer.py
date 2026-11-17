@@ -345,10 +345,16 @@ def news_prompt(now, covered):
         "Writing rules: use ONLY facts you found in your search. Keep numbers and units exactly as reported; never guess a figure. "
         "Write in your own words; never copy a publication's sentences. Neutral tone: no opinion, no advice, no hype, no hashtags. "
         "Do not name the publication and put no link in the text.",
+        "Every sentence must state something that happened or an official figure. Never write what markets 'will watch', what "
+        "'may' or 'could' happen, what a reader should check or do, or what a report did not say. If you have no second fact, "
+        "leave the detail empty.",
+        "A price level alone is not news unless it is a closing level, a record, or a move of 1% or more. "
+        "Leave out strategists' index forecasts and previews of routine scheduled events. "
+        "If a claim is surprising or appears in only one publication, leave it out.",
         "",
         "Reply with ONLY a JSON array and nothing else. One object per story:",
         '"headline": UPPER CASE, at most 200 characters, in the form SUBJECT: FACT',
-        '"detail": one plain sentence in normal case, at most 160 characters, saying why it matters for markets or giving the next fact; or an empty string',
+        '"detail": one plain sentence in normal case, at most 160 characters, giving a second reported fact; or an empty string',
         '"link": the URL of the article you relied on most',
     ])
 
