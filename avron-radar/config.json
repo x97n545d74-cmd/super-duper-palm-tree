@@ -1,7 +1,7 @@
 {
   "_note": "Starting lists. Edit freely. A source that does not exist shows as FAILED in the dashboard's Sources tab; remove or fix it there.",
   "max_age_days": 3,
-  "disabled_lanes": [],
+  "disabled_lanes": ["x"],
   "watchlist": [
     "order win", "capex", "QIP", "preferential issue", "warrants", "buyback", "demerger", "merger",
     "SEBI", "RBI", "promoter", "pledge", "guidance", "data centre", "data center", "semiconductor",
