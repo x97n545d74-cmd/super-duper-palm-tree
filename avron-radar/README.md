@@ -11,7 +11,7 @@ A read-only agent that watches the public side of social platforms for Indian-ma
 | Telegram | public channels via `t.me/s/<channel>` | nothing |
 | News | Google News searches | nothing |
 | Bluesky | public search | nothing |
-| X | the official X API, every 6 hours | `X_BEARER_TOKEN`, or `X_API_KEY` and `X_API_SECRET` |
+| X | switched off (`"disabled_lanes": ["x"]` in `config.json`); the official X API charges per post read | to switch on: remove `"x"` from `disabled_lanes` and add `X_BEARER_TOKEN` |
 
 Instagram, Facebook and LinkedIn are not collected. They show nothing useful without a login, and this agent never logs in or gets round a block.
 

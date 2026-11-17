@@ -39,6 +39,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 ## Avron Radar (2026-11-17, user asked for "an agent that keeps an eye on every social media platform")
 - Started from the user asking what Redbox (news squawk + chat + analysts + API) is and wanting the same on a website. There is **no website yet**. The user chose: agent as **code in this repo**, for **personal use**.
 - `avron-radar/` (repo root): `radar.py` (stdlib) reads public Reddit RSS, YouTube channel RSS, Telegram `t.me/s`, Google News RSS, Bluesky search and the official X API (every 6 h, metered); dedupes into `data/items-YYYY-MM.jsonl`; Claude labels each post (relevance, kind incl. rumour/tip, companies, summary); builds `radar.db` (SQLite) and `dashboard.html`. Sources and watchlist: `config.json`. Workflow `.github/workflows/avron-radar.yml` runs every 30 min and saves to the `avron-radar-data` branch (only once it is on the default branch).
+- **X is switched off (user, 2026-11-17: "Leave x then")**: the X project is Pay Per Use, so reads cost money. `disabled_lanes: ["x"]` in config.json. Do not turn it back on without asking.
 - Rules: read-only, no logins, no getting round blocks; Instagram/Facebook/LinkedIn are not collected. Posts are unverified chatter, never a source for a reel fact.
 - This cloud container blocks the social sites (only api.x.com is open; a request to open more was rejected), so only the X lane was tested live. The seed YouTube handles and Telegram channel are unverified until the first Actions run.
 
