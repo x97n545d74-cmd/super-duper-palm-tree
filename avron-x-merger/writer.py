@@ -300,13 +300,30 @@ def run_nse(now, api_key):
 
 
 # ---------------------------------------------------------------- lane 2: market-moving news
+def news_window_hours(now):
+    """Look back to the last news item we wrote: at least 3 hours, at most 10 (covers the overnight gap)."""
+    last = None
+    for r in read_queue():
+        if r.get("lane") == "news":
+            last = r.get("created_ist")
+    try:
+        gap = (now - datetime.datetime.strptime(last, "%Y-%m-%d %H:%M").replace(tzinfo=IST)).total_seconds() / 3600
+    except Exception:
+        gap = 3
+    return int(min(10, max(3, round(gap + 0.5))))
+
+
 def news_prompt(now, covered):
+    hours = news_window_hours(now)
     done = "\n".join("- " + h for h in covered) if covered else "(nothing yet)"
     return "\n".join([
         "You are the editor of a real-time market news desk for Indian investors.",
         "The current time in India is: " + now.strftime(FMT),
         "",
-        "Search the web for news from the last 3 hours that can move the Indian stock market when it next trades. "
+        "Search the web for news from the last %d hours that can move the Indian stock market when it next trades. " % hours
+        + "A market's closing level is news even if its fall or rise during the day was covered earlier. "
+        "Before 9:15 AM India time, look first for: how US markets closed overnight (Dow, S&P 500, Nasdaq), how Asian markets "
+        "are trading, the GIFT Nifty indication, crude oil, the dollar and rupee, and the key events due today. "
         "Indian markets being closed is not a reason to return nothing: global events and after-hours Indian news still count.",
         "1. India: RBI and SEBI decisions, government economic policy, macro data (inflation, IIP, GDP, trade, GST), "
         "sharp Nifty or Sensex moves, FII and DII flows, the rupee, large corporate deals, results or regulatory actions.",
