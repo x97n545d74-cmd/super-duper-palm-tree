@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b6b53">
+<meta name="robots" content="noindex">
+<title>Shankar Medicos · खाता मिलान</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#fff"/><path d="M17 8h6v9h9v6h-9v9h-6v-9H8v-6h9z" fill="#0b6b53"/></svg>
+    <div>
+      <div class="shop" data-t="shop"></div>
+      <div class="app" data-t="title"></div>
+    </div>
+  </div>
+  <div class="langs" id="langs" role="group" aria-label="Language"></div>
+</header>
+
+<main id="main">
+  <section id="setup">
+    <div class="lead">
+      <p data-t="intro"></p>
+      <button class="link" id="helpBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+        <span data-t="help"></span>
+      </button>
+    </div>
+
+    <div class="boxes">
+      <article class="box" data-side="ours">
+        <div class="num">1</div>
+        <h2 data-t="oursTitle"></h2>
+        <p class="sub" data-t="oursSub"></p>
+        <div class="pickers">
+          <label class="btn pickbtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 7.2 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.2L15 4H9zm3 4.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z"/></svg>
+            <span data-t="camera"></span>
+            <input type="file" accept="image/*" capture="environment" hidden data-input="camera">
+          </label>
+          <label class="btn pickbtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V9h5.5L13 3.5z"/></svg>
+            <span data-t="pick"></span>
+            <input type="file" multiple hidden data-input="file"
+              accept="application/pdf,image/*,.xlsx,.xls,.csv,.txt">
+          </label>
+        </div>
+        <p class="hint" data-t="hint"></p>
+        <ul class="files" data-files></ul>
+        <div class="status" data-status hidden></div>
+      </article>
+
+      <article class="box" data-side="theirs">
+        <div class="num">2</div>
+        <h2 data-t="theirsTitle"></h2>
+        <p class="sub" data-t="theirsSub"></p>
+        <div class="pickers">
+          <label class="btn pickbtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 7.2 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.2L15 4H9zm3 4.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z"/></svg>
+            <span data-t="camera"></span>
+            <input type="file" accept="image/*" capture="environment" hidden data-input="camera">
+          </label>
+          <label class="btn pickbtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V9h5.5L13 3.5z"/></svg>
+            <span data-t="pick"></span>
+            <input type="file" multiple hidden data-input="file"
+              accept="application/pdf,image/*,.xlsx,.xls,.csv,.txt">
+          </label>
+        </div>
+        <p class="hint" data-t="hint"></p>
+        <ul class="files" data-files></ul>
+        <div class="status" data-status hidden></div>
+      </article>
+    </div>
+
+    <div class="alert" id="error" role="alert" hidden></div>
+
+    <div class="gobar">
+      <button class="btn go" id="goBtn" type="button" disabled>
+        <span data-t="go"></span>
+      </button>
+      <p class="wait" id="wait" hidden data-t="wait"></p>
+      <p class="needboth" id="needBoth" data-t="needBoth"></p>
+    </div>
+
+    <div class="foot">
+      <button class="link" id="sampleBtn" type="button" data-t="sample"></button>
+      <span class="privacy" data-t="privacy"></span>
+    </div>
+  </section>
+
+  <section id="result" hidden></section>
+</main>
+
+<dialog id="pinDialog">
+  <form method="dialog" id="pinForm">
+    <label for="pinInput" data-t="pinAsk"></label>
+    <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" required>
+    <div class="row">
+      <button class="btn ghost" type="button" id="pinCancel" data-t="cancel"></button>
+      <button class="btn go small" type="submit" data-t="pinOk"></button>
+    </div>
+  </form>
+</dialog>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

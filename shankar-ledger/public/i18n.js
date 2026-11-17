@@ -1,0 +1,142 @@
+// Screen and voice text in Hindi, Punjabi and English.
+export const LANGS = [
+  { code: 'hi', label: 'हिंदी', speech: 'hi-IN' },
+  { code: 'pa', label: 'ਪੰਜਾਬੀ', speech: 'pa-IN' },
+  { code: 'en', label: 'English', speech: 'en-IN' },
+];
+
+const S = {
+  shop: { hi: 'शंकर मेडिकोज़', pa: 'ਸ਼ੰਕਰ ਮੈਡੀਕੋਜ਼', en: 'Shankar Medicos' },
+  title: { hi: 'खाता मिलान', pa: 'ਖਾਤਾ ਮਿਲਾਨ', en: 'Ledger check' },
+  intro: {
+    hi: 'अपना खाता और पार्टी का स्टेटमेंट डालें। फर्क हम ढूँढ देंगे।',
+    pa: 'ਆਪਣਾ ਖਾਤਾ ਅਤੇ ਪਾਰਟੀ ਦੀ ਸਟੇਟਮੈਂਟ ਪਾਓ। ਫ਼ਰਕ ਅਸੀਂ ਲੱਭ ਦੇਵਾਂਗੇ।',
+    en: "Add your ledger and the party's statement. We find the differences.",
+  },
+  help: { hi: 'कैसे करें, सुनें', pa: 'ਕਿਵੇਂ ਕਰੀਏ, ਸੁਣੋ', en: 'Hear how it works' },
+  helpSpeech: {
+    hi: 'पहले डिब्बे में टैली या बिज़ी से निकला अपना खाता डालें। दूसरे डिब्बे में पार्टी का भेजा हुआ स्टेटमेंट डालें। फोटो खींच सकते हैं या फाइल चुन सकते हैं। फिर नीचे का हरा बटन दबाएँ।',
+    pa: 'ਪਹਿਲੇ ਡੱਬੇ ਵਿੱਚ ਟੈਲੀ ਜਾਂ ਬਿਜ਼ੀ ਵਿੱਚੋਂ ਕੱਢਿਆ ਆਪਣਾ ਖਾਤਾ ਪਾਓ। ਦੂਜੇ ਡੱਬੇ ਵਿੱਚ ਪਾਰਟੀ ਦੀ ਭੇਜੀ ਸਟੇਟਮੈਂਟ ਪਾਓ। ਫੋਟੋ ਖਿੱਚ ਸਕਦੇ ਹੋ ਜਾਂ ਫਾਈਲ ਚੁਣ ਸਕਦੇ ਹੋ। ਫਿਰ ਹੇਠਾਂ ਵਾਲਾ ਹਰਾ ਬਟਨ ਦਬਾਓ।',
+    en: "In the first box, add your own ledger from Tally or Busy. In the second box, add the statement the party sent. You can take a photo or choose a file. Then press the green button below.",
+  },
+  oursTitle: { hi: 'हमारा खाता', pa: 'ਸਾਡਾ ਖਾਤਾ', en: 'Our ledger' },
+  oursSub: { hi: 'Tally या Busy से निकला इस पार्टी का खाता', pa: 'Tally ਜਾਂ Busy ਵਿੱਚੋਂ ਕੱਢਿਆ ਇਸ ਪਾਰਟੀ ਦਾ ਖਾਤਾ', en: "This party's account from Tally or Busy" },
+  theirsTitle: { hi: 'पार्टी का स्टेटमेंट', pa: 'ਪਾਰਟੀ ਦੀ ਸਟੇਟਮੈਂਟ', en: "Party's statement" },
+  theirsSub: { hi: 'जो पार्टी ने मेल या WhatsApp पर भेजा', pa: 'ਜੋ ਪਾਰਟੀ ਨੇ ਮੇਲ ਜਾਂ WhatsApp ਤੇ ਭੇਜੀ', en: 'What the party sent by mail or WhatsApp' },
+  camera: { hi: 'फोटो खींचें', pa: 'ਫੋਟੋ ਖਿੱਚੋ', en: 'Take photo' },
+  pick: { hi: 'फाइल चुनें', pa: 'ਫਾਈਲ ਚੁਣੋ', en: 'Choose file' },
+  hint: { hi: 'PDF, फोटो या Excel। कई पन्ने हों तो सब डालें।', pa: 'PDF, ਫੋਟੋ ਜਾਂ Excel। ਕਈ ਪੰਨੇ ਹੋਣ ਤਾਂ ਸਾਰੇ ਪਾਓ।', en: 'PDF, photo or Excel. Add every page.' },
+  remove: { hi: 'हटाएँ', pa: 'ਹਟਾਓ', en: 'Remove' },
+  go: { hi: 'मिलान करें', pa: 'ਮਿਲਾਨ ਕਰੋ', en: 'Check now' },
+  needBoth: { hi: 'दोनों डिब्बों में कागज़ डालें', pa: 'ਦੋਵੇਂ ਡੱਬਿਆਂ ਵਿੱਚ ਕਾਗਜ਼ ਪਾਓ', en: 'Add papers in both boxes' },
+  sample: { hi: 'नमूना देखें', pa: 'ਨਮੂਨਾ ਵੇਖੋ', en: 'See a sample' },
+  sampleTag: { hi: 'यह नमूना है, असली हिसाब नहीं', pa: 'ਇਹ ਨਮੂਨਾ ਹੈ, ਅਸਲੀ ਹਿਸਾਬ ਨਹੀਂ', en: 'This is a sample, not a real account' },
+  readingOurs: { hi: 'हमारा खाता पढ़ रहे हैं', pa: 'ਸਾਡਾ ਖਾਤਾ ਪੜ੍ਹ ਰਹੇ ਹਾਂ', en: 'Reading our ledger' },
+  readingTheirs: { hi: 'पार्टी का स्टेटमेंट पढ़ रहे हैं', pa: 'ਪਾਰਟੀ ਦੀ ਸਟੇਟਮੈਂਟ ਪੜ੍ਹ ਰਹੇ ਹਾਂ', en: "Reading the party's statement" },
+  readDone: { hi: 'पढ़ लिया', pa: 'ਪੜ੍ਹ ਲਿਆ', en: 'Done' },
+  wait: { hi: 'एक-दो मिनट लग सकते हैं। पेज बंद न करें।', pa: 'ਇੱਕ-ਦੋ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ। ਪੇਜ ਬੰਦ ਨਾ ਕਰੋ।', en: 'This can take a minute or two. Keep this page open.' },
+  privacy: { hi: 'आपके कागज़ कहीं सेव नहीं होते।', pa: 'ਤੁਹਾਡੇ ਕਾਗਜ਼ ਕਿਤੇ ਸੇਵ ਨਹੀਂ ਹੁੰਦੇ।', en: 'Your papers are not saved anywhere.' },
+
+  resMatch: { hi: 'हिसाब मिल गया', pa: 'ਹਿਸਾਬ ਮਿਲ ਗਿਆ', en: 'Accounts match' },
+  resDiff: { hi: 'हिसाब में फर्क है', pa: 'ਹਿਸਾਬ ਵਿੱਚ ਫ਼ਰਕ ਹੈ', en: 'Accounts do not match' },
+  diffAmount: { hi: 'बाकी में ₹{x} का फर्क', pa: 'ਬਕਾਏ ਵਿੱਚ ₹{x} ਦਾ ਫ਼ਰਕ', en: 'Balances differ by ₹{x}' },
+  party: { hi: 'पार्टी', pa: 'ਪਾਰਟੀ', en: 'Party' },
+  ourBook: { hi: 'हमारे खाते के हिसाब से', pa: 'ਸਾਡੇ ਖਾਤੇ ਮੁਤਾਬਕ', en: 'By our ledger' },
+  theirBook: { hi: 'पार्टी के हिसाब से', pa: 'ਪਾਰਟੀ ਮੁਤਾਬਕ', en: "By the party's statement" },
+  pay: { hi: 'हमें ₹{x} देना है', pa: 'ਅਸੀਂ ₹{x} ਦੇਣਾ ਹੈ', en: 'We have to pay ₹{x}' },
+  receive: { hi: 'हमें ₹{x} लेना है', pa: 'ਅਸੀਂ ₹{x} ਲੈਣਾ ਹੈ', en: 'We have to receive ₹{x}' },
+  nil: { hi: 'कुछ बाकी नहीं', pa: 'ਕੁਝ ਬਕਾਇਆ ਨਹੀਂ', en: 'Nothing due' },
+  unknown: { hi: 'बाकी रकम कागज़ में नहीं दिखी', pa: 'ਬਕਾਇਆ ਰਕਮ ਕਾਗਜ਼ ਵਿੱਚ ਨਹੀਂ ਦਿਸੀ', en: 'Balance not shown on the paper' },
+
+  secMismatch: { hi: 'रकम अलग लिखी है', pa: 'ਰਕਮ ਵੱਖਰੀ ਲਿਖੀ ਹੈ', en: 'Amount is different' },
+  secMismatchSub: { hi: 'बिल दोनों जगह है, पर रकम अलग है।', pa: 'ਬਿੱਲ ਦੋਵੇਂ ਥਾਂ ਹੈ, ਪਰ ਰਕਮ ਵੱਖਰੀ ਹੈ।', en: 'The bill is on both papers with different amounts.' },
+  secOnlyOurs: { hi: 'हमारे खाते में है, पार्टी के स्टेटमेंट में नहीं', pa: 'ਸਾਡੇ ਖਾਤੇ ਵਿੱਚ ਹੈ, ਪਾਰਟੀ ਦੀ ਸਟੇਟਮੈਂਟ ਵਿੱਚ ਨਹੀਂ', en: "In our ledger, missing from the party's statement" },
+  secOnlyTheirs: { hi: 'पार्टी के स्टेटमेंट में है, हमारे खाते में नहीं', pa: 'ਪਾਰਟੀ ਦੀ ਸਟੇਟਮੈਂਟ ਵਿੱਚ ਹੈ, ਸਾਡੇ ਖਾਤੇ ਵਿੱਚ ਨਹੀਂ', en: "In the party's statement, missing from our ledger" },
+  secOut: { hi: 'दूसरे कागज़ की तारीखों से बाहर', pa: 'ਦੂਜੇ ਕਾਗਜ਼ ਦੀਆਂ ਤਾਰੀਖਾਂ ਤੋਂ ਬਾਹਰ', en: "Outside the other paper's dates" },
+  secOutSub: { hi: 'यह गलती नहीं है। दूसरा कागज़ इन तारीखों का नहीं है।', pa: 'ਇਹ ਗਲਤੀ ਨਹੀਂ ਹੈ। ਦੂਜਾ ਕਾਗਜ਼ ਇਨ੍ਹਾਂ ਤਾਰੀਖਾਂ ਦਾ ਨਹੀਂ ਹੈ।', en: 'Not a mistake. The other paper does not cover these dates.' },
+  secMatched: { hi: 'जो एंट्री मिल गईं ({n})', pa: 'ਜੋ ਐਂਟਰੀਆਂ ਮਿਲ ਗਈਆਂ ({n})', en: 'Entries that matched ({n})' },
+  inOurs: { hi: 'हमारे खाते में', pa: 'ਸਾਡੇ ਖਾਤੇ ਵਿੱਚ', en: 'In our ledger' },
+  inTheirs: { hi: 'पार्टी के स्टेटमेंट में', pa: 'ਪਾਰਟੀ ਦੀ ਸਟੇਟਮੈਂਟ ਵਿੱਚ', en: "In party's statement" },
+  oursAmt: { hi: 'हमारे यहाँ', pa: 'ਸਾਡੇ ਕੋਲ', en: 'Ours' },
+  theirsAmt: { hi: 'पार्टी के यहाँ', pa: 'ਪਾਰਟੀ ਕੋਲ', en: 'Theirs' },
+  gapOf: { hi: 'फर्क ₹{x}', pa: 'ਫ਼ਰਕ ₹{x}', en: 'Difference ₹{x}' },
+  openingDiff: {
+    hi: 'शुरुआती बाकी (ओपनिंग) में ₹{x} का फर्क है। इससे पहले का हिसाब भी देखें।',
+    pa: 'ਸ਼ੁਰੂਆਤੀ ਬਕਾਏ (ਓਪਨਿੰਗ) ਵਿੱਚ ₹{x} ਦਾ ਫ਼ਰਕ ਹੈ। ਇਸ ਤੋਂ ਪਹਿਲਾਂ ਦਾ ਹਿਸਾਬ ਵੀ ਵੇਖੋ।',
+    en: 'Opening balances differ by ₹{x}. Check the account before this period too.',
+  },
+  unexplained: {
+    hi: '₹{x} का फर्क ऊपर की एंट्री से नहीं समझ आया। कागज़ साफ़ करके दोबारा डालें या खाता खुद देख लें।',
+    pa: '₹{x} ਦਾ ਫ਼ਰਕ ਉੱਪਰ ਦੀਆਂ ਐਂਟਰੀਆਂ ਤੋਂ ਸਮਝ ਨਹੀਂ ਆਇਆ। ਕਾਗਜ਼ ਸਾਫ਼ ਕਰਕੇ ਦੁਬਾਰਾ ਪਾਓ ਜਾਂ ਖਾਤਾ ਆਪ ਵੇਖ ਲਓ।',
+    en: '₹{x} of the difference is not explained by the entries above. Add clearer papers or check the ledger by hand.',
+  },
+  readWarn: {
+    hi: '{side} पूरा ठीक नहीं पढ़ा गया: जोड़ में ₹{x} का फर्क आया। साफ़ PDF या फोटो दोबारा डालें। नीचे का नतीजा गलत हो सकता है।',
+    pa: '{side} ਪੂਰਾ ਠੀਕ ਨਹੀਂ ਪੜ੍ਹਿਆ ਗਿਆ: ਜੋੜ ਵਿੱਚ ₹{x} ਦਾ ਫ਼ਰਕ ਆਇਆ। ਸਾਫ਼ PDF ਜਾਂ ਫੋਟੋ ਦੁਬਾਰਾ ਪਾਓ। ਹੇਠਲਾ ਨਤੀਜਾ ਗਲਤ ਹੋ ਸਕਦਾ ਹੈ।',
+    en: '{side} was not read fully: its total is off by ₹{x}. Add a clearer PDF or photo. The result below may be wrong.',
+  },
+  readNoCheck: {
+    hi: '{side} में बाकी रकम नहीं दिखी, इसलिए पढ़ाई की जाँच नहीं हो सकी।',
+    pa: '{side} ਵਿੱਚ ਬਕਾਇਆ ਰਕਮ ਨਹੀਂ ਦਿਸੀ, ਇਸ ਲਈ ਪੜ੍ਹਾਈ ਦੀ ਜਾਂਚ ਨਹੀਂ ਹੋ ਸਕੀ।',
+    en: '{side} shows no closing balance, so the reading could not be checked.',
+  },
+  unclear: {
+    hi: '{side}: {n} एंट्री धुंधली थीं। नीचे पीले निशान वाली एंट्री एक बार खुद देख लें।',
+    pa: '{side}: {n} ਐਂਟਰੀਆਂ ਧੁੰਦਲੀਆਂ ਸਨ। ਹੇਠਾਂ ਪੀਲੇ ਨਿਸ਼ਾਨ ਵਾਲੀਆਂ ਐਂਟਰੀਆਂ ਇੱਕ ਵਾਰ ਆਪ ਵੇਖ ਲਓ।',
+    en: '{side}: {n} entries were hard to read. Check the entries marked yellow below.',
+  },
+  unclearTag: { hi: 'धुंधला', pa: 'ਧੁੰਦਲਾ', en: 'unclear' },
+  noteRound: { hi: '₹{x} राउंड-ऑफ', pa: '₹{x} ਰਾਊਂਡ-ਆਫ਼', en: '₹{x} round-off' },
+  noteDate: { hi: 'तारीख में {n} दिन का फर्क', pa: 'ਤਾਰੀਖ ਵਿੱਚ {n} ਦਿਨ ਦਾ ਫ਼ਰਕ', en: 'dates {n} days apart' },
+  noteGroup: { hi: '{n} एंट्री जोड़कर मिली', pa: '{n} ਐਂਟਰੀਆਂ ਜੋੜ ਕੇ ਮਿਲੀ', en: 'matched against {n} entries together' },
+
+  t_invoice: { hi: 'बिल', pa: 'ਬਿੱਲ', en: 'Bill' },
+  t_payment: { hi: 'भुगतान', pa: 'ਭੁਗਤਾਨ', en: 'Payment' },
+  t_credit_note: { hi: 'क्रेडिट नोट', pa: 'ਕ੍ਰੈਡਿਟ ਨੋਟ', en: 'Credit note' },
+  t_debit_note: { hi: 'डेबिट नोट', pa: 'ਡੈਬਿਟ ਨੋਟ', en: 'Debit note' },
+  t_return: { hi: 'माल वापसी', pa: 'ਮਾਲ ਵਾਪਸੀ', en: 'Goods return' },
+  t_other: { hi: 'अन्य', pa: 'ਹੋਰ', en: 'Other' },
+
+  listen: { hi: 'नतीजा सुनें', pa: 'ਨਤੀਜਾ ਸੁਣੋ', en: 'Hear the result' },
+  stop: { hi: 'रोकें', pa: 'ਰੋਕੋ', en: 'Stop' },
+  whatsapp: { hi: 'WhatsApp पर भेजें', pa: 'WhatsApp ਤੇ ਭੇਜੋ', en: 'Send on WhatsApp' },
+  print: { hi: 'प्रिंट', pa: 'ਪ੍ਰਿੰਟ', en: 'Print' },
+  again: { hi: 'नया मिलान', pa: 'ਨਵਾਂ ਮਿਲਾਨ', en: 'New check' },
+  noVoice: { hi: 'इस फोन में आवाज़ नहीं चल रही', pa: 'ਇਸ ਫੋਨ ਵਿੱਚ ਆਵਾਜ਼ ਨਹੀਂ ਚੱਲ ਰਹੀ', en: 'Voice is not available on this device' },
+
+  pinAsk: { hi: 'दुकान का PIN डालें', pa: 'ਦੁਕਾਨ ਦਾ PIN ਪਾਓ', en: 'Enter the shop PIN' },
+  pinOk: { hi: 'ठीक है', pa: 'ਠੀਕ ਹੈ', en: 'OK' },
+  cancel: { hi: 'रहने दें', pa: 'ਰਹਿਣ ਦਿਓ', en: 'Cancel' },
+
+  e_pin: { hi: 'PIN गलत है। दोबारा डालें।', pa: 'PIN ਗਲਤ ਹੈ। ਦੁਬਾਰਾ ਪਾਓ।', en: 'Wrong PIN. Try again.' },
+  e_no_key: { hi: 'कागज़ पढ़ने की सेवा अभी चालू नहीं है। जिसने यह लगाया है उन्हें बताएँ।', pa: 'ਕਾਗਜ਼ ਪੜ੍ਹਨ ਦੀ ਸੇਵਾ ਹਾਲੇ ਚਾਲੂ ਨਹੀਂ ਹੈ। ਜਿਸ ਨੇ ਇਹ ਲਗਾਇਆ ਹੈ ਉਨ੍ਹਾਂ ਨੂੰ ਦੱਸੋ।', en: 'The reader is not switched on yet. Tell the person who set this up.' },
+  e_key: { hi: 'कागज़ पढ़ने की सेवा की चाबी काम नहीं कर रही। जिसने यह लगाया है उन्हें बताएँ।', pa: 'ਕਾਗਜ਼ ਪੜ੍ਹਨ ਦੀ ਸੇਵਾ ਦੀ ਚਾਬੀ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੀ। ਜਿਸ ਨੇ ਇਹ ਲਗਾਇਆ ਹੈ ਉਨ੍ਹਾਂ ਨੂੰ ਦੱਸੋ।', en: 'The reader key is not working. Tell the person who set this up.' },
+  e_busy: { hi: 'अभी बहुत काम चल रहा है। थोड़ी देर बाद दोबारा करें।', pa: 'ਹੁਣੇ ਬਹੁਤ ਕੰਮ ਚੱਲ ਰਿਹਾ ਹੈ। ਥੋੜ੍ਹੀ ਦੇਰ ਬਾਅਦ ਦੁਬਾਰਾ ਕਰੋ।', en: 'Too busy right now. Try again in a little while.' },
+  e_too_long: { hi: 'कागज़ बहुत लंबा है। दो-तीन महीने का हिसाब एक बार में डालें।', pa: 'ਕਾਗਜ਼ ਬਹੁਤ ਲੰਮਾ ਹੈ। ਦੋ-ਤਿੰਨ ਮਹੀਨਿਆਂ ਦਾ ਹਿਸਾਬ ਇੱਕ ਵਾਰ ਵਿੱਚ ਪਾਓ।', en: 'The paper is too long. Add two or three months at a time.' },
+  e_too_big: { hi: 'फाइलें बहुत बड़ी हैं। कम पन्ने डालें।', pa: 'ਫਾਈਲਾਂ ਬਹੁਤ ਵੱਡੀਆਂ ਹਨ। ਘੱਟ ਪੰਨੇ ਪਾਓ।', en: 'The files are too big. Add fewer pages.' },
+  e_not_ledger: { hi: '{side}: यह खाता या स्टेटमेंट नहीं लग रहा। सही कागज़ डालें।', pa: '{side}: ਇਹ ਖਾਤਾ ਜਾਂ ਸਟੇਟਮੈਂਟ ਨਹੀਂ ਲੱਗ ਰਹੀ। ਸਹੀ ਕਾਗਜ਼ ਪਾਓ।', en: '{side}: this does not look like a ledger or statement. Add the right paper.' },
+  e_bad_file: { hi: '{side}: यह फाइल नहीं खुली। PDF या साफ़ फोटो डालें।', pa: '{side}: ਇਹ ਫਾਈਲ ਨਹੀਂ ਖੁੱਲ੍ਹੀ। PDF ਜਾਂ ਸਾਫ਼ ਫੋਟੋ ਪਾਓ।', en: '{side}: this file could not be opened. Add a PDF or a clear photo.' },
+  e_refused: { hi: '{side}: यह कागज़ नहीं पढ़ा जा सका।', pa: '{side}: ਇਹ ਕਾਗਜ਼ ਨਹੀਂ ਪੜ੍ਹਿਆ ਜਾ ਸਕਿਆ।', en: '{side}: this paper could not be read.' },
+  e_service: { hi: 'कागज़ पढ़ने में दिक्कत आई। दोबारा कोशिश करें।', pa: 'ਕਾਗਜ਼ ਪੜ੍ਹਨ ਵਿੱਚ ਦਿੱਕਤ ਆਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।', en: 'Something went wrong while reading. Try again.' },
+  e_network: { hi: 'इंटरनेट नहीं चल रहा। नेट देखकर दोबारा करें।', pa: 'ਇੰਟਰਨੈੱਟ ਨਹੀਂ ਚੱਲ ਰਿਹਾ। ਨੈੱਟ ਵੇਖ ਕੇ ਦੁਬਾਰਾ ਕਰੋ।', en: 'No internet. Check the connection and try again.' },
+  e_excel: { hi: 'Excel फाइल नहीं खुली। इसे PDF बनाकर डालें।', pa: 'Excel ਫਾਈਲ ਨਹੀਂ ਖੁੱਲ੍ਹੀ। ਇਸ ਨੂੰ PDF ਬਣਾ ਕੇ ਪਾਓ।', en: 'The Excel file could not be opened. Save it as PDF and add that.' },
+
+  // Spoken summary pieces
+  sp_match: { hi: 'हिसाब मिल गया।', pa: 'ਹਿਸਾਬ ਮਿਲ ਗਿਆ।', en: 'The accounts match.' },
+  sp_diff: { hi: 'हिसाब में फर्क है।', pa: 'ਹਿਸਾਬ ਵਿੱਚ ਫ਼ਰਕ ਹੈ।', en: 'The accounts do not match.' },
+  sp_pay: { hi: 'हमें {x} रुपये देने हैं', pa: 'ਅਸੀਂ {x} ਰੁਪਏ ਦੇਣੇ ਹਨ', en: 'we have to pay {x} rupees' },
+  sp_receive: { hi: 'हमें {x} रुपये लेने हैं', pa: 'ਅਸੀਂ {x} ਰੁਪਏ ਲੈਣੇ ਹਨ', en: 'we have to receive {x} rupees' },
+  sp_nil: { hi: 'कुछ बाकी नहीं है', pa: 'ਕੁਝ ਬਕਾਇਆ ਨਹੀਂ ਹੈ', en: 'nothing is due' },
+  sp_unknown: { hi: 'बाकी रकम नहीं दिखी', pa: 'ਬਕਾਇਆ ਰਕਮ ਨਹੀਂ ਦਿਸੀ', en: 'the balance is not shown' },
+  sp_nMismatch: { hi: '{n} एंट्री में रकम अलग है।', pa: '{n} ਐਂਟਰੀਆਂ ਵਿੱਚ ਰਕਮ ਵੱਖਰੀ ਹੈ।', en: '{n} entries have a different amount.' },
+  sp_nOurs: { hi: '{n} एंट्री हमारे खाते में हैं, पर पार्टी के स्टेटमेंट में नहीं।', pa: '{n} ਐਂਟਰੀਆਂ ਸਾਡੇ ਖਾਤੇ ਵਿੱਚ ਹਨ, ਪਰ ਪਾਰਟੀ ਦੀ ਸਟੇਟਮੈਂਟ ਵਿੱਚ ਨਹੀਂ।', en: "{n} entries are in our ledger but not in the party's statement." },
+  sp_nTheirs: { hi: '{n} एंट्री पार्टी के स्टेटमेंट में हैं, पर हमारे खाते में नहीं।', pa: '{n} ਐਂਟਰੀਆਂ ਪਾਰਟੀ ਦੀ ਸਟੇਟਮੈਂਟ ਵਿੱਚ ਹਨ, ਪਰ ਸਾਡੇ ਖਾਤੇ ਵਿੱਚ ਨਹੀਂ।', en: "{n} entries are in the party's statement but not in our ledger." },
+  sp_warn: { hi: 'ध्यान दें, एक कागज़ पूरा ठीक नहीं पढ़ा गया। साफ़ कागज़ दोबारा डालें।', pa: 'ਧਿਆਨ ਦਿਓ, ਇੱਕ ਕਾਗਜ਼ ਪੂਰਾ ਠੀਕ ਨਹੀਂ ਪੜ੍ਹਿਆ ਗਿਆ। ਸਾਫ਼ ਕਾਗਜ਼ ਦੁਬਾਰਾ ਪਾਓ।', en: 'Note: one paper was not read fully. Add a clearer copy.' },
+};
+
+export function t(lang, key, vars = {}) {
+  const row = S[key];
+  let s = row ? (row[lang] ?? row.en) : key;
+  for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, String(v));
+  return s;
+}

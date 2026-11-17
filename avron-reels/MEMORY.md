@@ -1,6 +1,6 @@
 # AVRON: project memory
 
-This file records long-lived facts and decisions for this repo. Read it at the start of every session. Last updated 2026-10-28.
+This file records long-lived facts and decisions for this repo. Read it at the start of every session. Last updated 2026-11-17.
 
 Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on every script, and `scripts/fix_timeline.py` after alignment.
 
@@ -52,6 +52,13 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - The analyst gives no buy/sell/hold instructions or price targets (same standing rule as the reels). Next biggest gap: fundamentals from NSE's XBRL results files.
 - Rules: read-only, no logins, no getting round blocks; Instagram/Facebook/LinkedIn are not collected. Posts are unverified chatter, never a source for a reel fact.
 - This cloud container blocks the social sites (only api.x.com is open; a request to open more was rejected), so only the X lane was tested live. The seed YouTube handles and Telegram channel are unverified until the first Actions run.
+
+## Shankar Medicos ledger checker (2026-11-17, separate from AVRON)
+- The user's father runs a chemist shop, Shankar Medicos, and has no AI exposure. The user asked for a system where he uploads PDFs, mail attachments or photos to tally his ledger with the other party's statement.
+- User's answers: his ledger is in **Tally or Busy**; he uses **both phone and shop PC**; screen in **Hindi, Punjabi and English, with voice**; reading paid by a **Claude API key**.
+- Built in `shankar-ledger/` (repo root): Node server (`server.js`, `lib/extract.js`, Claude copies rows only) + one page (`public/`), matching in plain code (`public/match.js`, 12 tests via `npm test`). README has run steps.
+- Not yet done: the Claude reading path has never run against the live API (no key in the cloud container); no hosting chosen; no key or PIN set. Not built: hand-fixing a misread row, Gmail inbox pull, history per party.
+- **Never commit a real ledger or statement: the repo is public.** `samples/` holds made-up papers only. AVRON brand rules do not apply to this app.
 
 ## Who and what
 - AVRON makes cinematic finance and explainer reels: 1080×1920, 30 fps, H.264/AAC, −14 LUFS.

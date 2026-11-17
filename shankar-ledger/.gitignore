@@ -1,0 +1,6 @@
+node_modules/
+.env
+# Real ledgers and statements must never be committed: this repo is public.
+private/
+uploads/
+*.local.*
