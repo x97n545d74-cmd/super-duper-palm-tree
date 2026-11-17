@@ -67,6 +67,19 @@ class Market(unittest.TestCase):
         self.assertEqual(sig["breadth"]["pct_above_200dma"], 100.0)
         json.dumps(sig)                                           # must be saveable
 
+    def test_screen_record_measures_what_followed(self):
+        up, down = days(280, "UP", step=1.004), days(280, "DOWN", step=0.997)
+        merged = [(d, dict(a, **b)) for (d, a), (_, b) in zip(up, down)]
+        series = market.build_series(merged)
+        rec = market.screen_record(series, [d for d, _ in merged])
+        tt, base = rec["screens"]["trend_template"], rec["screens"]["all"]
+        self.assertGreater(rec["sample_days"], 5)
+        self.assertAlmostEqual(tt["avg_5d"], (1.004 ** 5 - 1) * 100, places=1)     # the rising stock, 5 days on
+        self.assertEqual(tt["rose_5d_pct"], 100)
+        self.assertGreater(tt["edge_5d"], 0)                                       # beat the average of both stocks
+        self.assertLess(base["avg_20d"], tt["avg_20d"])
+        self.assertNotIn("edge_5d", base)
+
     def test_illiquid_stocks_are_not_screened(self):
         d = days(260)
         for _, rows in d:

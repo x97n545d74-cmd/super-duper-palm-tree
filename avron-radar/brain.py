@@ -464,6 +464,7 @@ def brief_inputs(kind, signals, analyses, items, hours):
             "screens": {name: {"meaning": s["meaning"], "count": s["count"], "stocks": slim(s["stocks"], 12)}
                         for name, s in signals.get("screens", {}).items() if s["count"]},
             "deals": signals.get("deals", [])[:40],
+            "screen_record": signals.get("screen_record"),
         }
         data["chatter_spikes"] = buzz(items, market.name_index_from_snapshots(signals))[:10]
     return data
@@ -532,7 +533,7 @@ Two or three sentences from breadth, the indices and VIX: is this a market that 
 ## What changed in businesses
 The filings that matter, most important first. One short paragraph each: the fact, your read, the main risk. Skip noise.
 ## Setups on the screens
-Up to six stocks where the screens show something worth a look. For each: which screen, the volume and delivery evidence, the level that would invalidate the setup (use prior_high20 for a breakout, sma50 or sma200 for a trend, with atr_pct as the measure of normal movement), and whether any filing, news or chatter spike explains the move. Say when there is no reason behind a move.
+Start with one sentence from screen_record: which screens have had an edge over the average stock lately and which have not. Then up to six stocks where the screens show something worth a look. For each: which screen, the volume and delivery evidence, the level that would invalidate the setup (use prior_high20 for a breakout, sma50 or sma200 for a trend, with atr_pct as the measure of normal movement), and whether any filing, news or chatter spike explains the move. Say when there is no reason behind a move.
 ## Flows
 Bulk and block deals worth noting: who, which side.
 ## Chatter to verify
@@ -540,7 +541,7 @@ Up to four claims from news or social posts that would matter if true, each with
 ## Tomorrow's checklist
 Three to five concrete things to look at.
 
-The data may also hold "results" (figures copied from results filings, with growth, margins and red flags computed by code), "calendar" (board meetings and ex-dates in the next two weeks) and "promoter_changes". Use results in "What changed in businesses", promoter changes in "Flows", and the calendar in "Tomorrow's checklist".
+The data may also hold "results" (figures copied from results filings, with growth, margins and red flags computed by code), "calendar" (board meetings and ex-dates in the next two weeks) and "promoter_changes". Use results in "What changed in businesses", promoter changes in "Flows", and the calendar in "Tomorrow's checklist". "scorecard" lists stocks where several kinds of evidence agree (strongest), where evidence is against (weakest), where price and business disagree (conflicts), and those passing the reader's own screen (mine). Prefer scorecard stocks in "Setups on the screens" and always say when a setup is a conflict. The score is a tally of evidence, not a forecast.
 
 Rules: use only the data below. Every number must come from it. No buy, sell or hold instructions and no price targets. If a section has nothing real, write "Nothing notable." """
 

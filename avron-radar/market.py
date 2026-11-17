@@ -21,7 +21,7 @@ import analyst
 ARCHIVE = "https://nsearchives.nseindia.com/"
 SERIES = {"EQ", "BE", "BZ", "SM", "ST"}       # main board and SME shares
 HISTORY_DAYS = 400       # calendar days to keep and backfill (about 270 trading days)
-SIGNALS_VERSION = 2      # raise when the screens or their columns change, so saved signals are recomputed
+SIGNALS_VERSION = 4      # raise when the screens or their columns change, so saved signals are recomputed
 MIN_TURNOVER_LAKH = 100  # screens ignore stocks that traded under Rs 1 crore on the day
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
 INDEX_LISTS = {
@@ -130,7 +130,7 @@ def compute_signals(days, universe):
     out_screens = {}
     for name, (meaning, _) in analyst.SCREENS.items():
         syms = sorted(screens.get(name, []), key=lambda x: -(ranks.get(x) or 0))
-        out_screens[name] = {"meaning": meaning, "count": len(syms), "stocks": [row(x) for x in syms[:60]]}
+        out_screens[name] = {"meaning": meaning, "count": len(syms), "stocks": [row(x) for x in syms[:60]], "all": syms}
     with200 = [s for s in liquid.values() if s["sma200"]]
     changes = [s["change"] for s in liquid.values() if s["change"] is not None]
     movers = sorted(liquid, key=lambda x: liquid[x]["change"] or 0)
@@ -148,8 +148,53 @@ def compute_signals(days, universe):
         "top_gainers": [row(x) for x in movers[::-1][:15]],
         "top_losers": [row(x) for x in movers[:15]],
         "screens": out_screens,
+        "screen_record": screen_record(series, [d for d, _ in days]),
         "snapshots": {sym: row(sym) for sym in snaps},     # every stock, for looking one up
     }
+
+
+def screen_record(series, dates, lookback=60, step=5, horizons=(5, 20)):
+    """How each screen has actually done lately: for sample days in the past `lookback` trading days,
+    the average return 5 and 20 trading days after a stock appeared on the screen, the share that rose,
+    and the same for every liquid stock on those days (the baseline). A check on the screens, not a promise."""
+    last = len(dates) - 1
+    sample = [t for t in range(last - min(horizons), max(last - lookback, 60), -step)]
+    index = {sym: {b["date"]: i for i, b in enumerate(bars)} for sym, bars in series.items()}
+    got = {}      # screen -> horizon -> list of returns; "all" is the baseline
+
+    def add(name, h, r):
+        got.setdefault(name, {}).setdefault(h, []).append(r)
+
+    for t in sample:
+        date = dates[t]
+        for sym, bars in series.items():
+            i = index[sym].get(date)
+            if i is None or i < 60 or bars[i]["turnover"] < MIN_TURNOVER_LAKH:
+                continue
+            fwd = {h: (bars[i + h]["close"] / bars[i]["close"] - 1) * 100 for h in horizons if i + h < len(bars)}
+            if not fwd:
+                continue
+            snap = analyst.snapshot(bars[max(0, i - 259):i + 1])
+            hits = analyst.run_screens(snap) if snap else []
+            for h, r in fwd.items():
+                add("all", h, r)
+                for name in hits:
+                    add(name, h, r)
+    out = {"sample_days": len(sample), "from": dates[sample[-1]] if sample else "", "to": dates[sample[0]] if sample else "", "screens": {}}
+    base = got.get("all", {})
+    for name, by_h in got.items():
+        row = {}
+        for h in horizons:
+            rs = by_h.get(h) or []
+            if len(rs) >= 5:
+                row["n_%dd" % h] = len(rs)
+                row["avg_%dd" % h] = round(sum(rs) / len(rs), 2)
+                row["rose_%dd_pct" % h] = round(100 * sum(1 for r in rs if r > 0) / len(rs))
+                if name != "all" and base.get(h):
+                    row["edge_%dd" % h] = round(row["avg_%dd" % h] - sum(base[h]) / len(base[h]), 2)
+        if row:
+            out["screens"][name] = row
+    return out
 
 
 def parse_universe(equity_list_text, index_texts):

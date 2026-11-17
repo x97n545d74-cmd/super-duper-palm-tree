@@ -1,0 +1,149 @@
+"""Decision support: pulls every kind of evidence the radar holds on a stock into one
+scorecard, so agreement and conflict between price, business and flows are visible at a glance.
+
+The points are a transparent tally of evidence, not a forecast and not advice. The weights are
+in WEIGHTS below; the screens' own track record (market.screen_record) says how far to trust the
+price side in the current market.
+"""
+import datetime
+
+WEIGHTS = {
+    # price
+    "trend_template": 2, "breakout_52w": 2, "breakout_20d": 1, "delivery_spike": 1, "golden_cross": 1,
+    "strong_momentum": 1, "death_cross": -2, "below_200dma": -1, "stretched": -1, "heavy_selling": -1,
+    # business
+    "growth_20": 2, "high_roe": 1, "low_debt": 1, "cheap_for_growth": 1, "flag": -1, "qualified_audit": -3,
+    # flows
+    "deal_buying": 1, "deal_selling": -1, "promoter_up": 1, "promoter_down": -1,
+}
+
+
+def _add(card, group, key, text, points=None):
+    pts = WEIGHTS[key] if points is None else points
+    card["score"] += pts
+    card["groups"][group] = card["groups"].get(group, 0) + pts
+    card["for" if pts > 0 else "against"].append(text)
+
+
+def scorecard(signals, fund=None, holds=None, analyses=None, buzz=None, calendar=None, now=None, my_screen=None):
+    """Returns {symbol: card}. A card has score, for, against, notes, groups (points per kind of evidence),
+    conflict (price and business disagree) and mine (passes the user's own screen)."""
+    signals, fund, holds = signals or {}, fund or {}, holds or {}
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    week_ago = (now - datetime.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    snaps = signals.get("snapshots") or {}
+    on = {}
+    for name, sc in (signals.get("screens") or {}).items():
+        for st in sc.get("all") or [x["symbol"] for x in sc["stocks"]]:
+            on.setdefault(st, set()).add(name)
+    cards = {}
+
+    def card(sym):
+        return cards.setdefault(sym, {"symbol": sym, "score": 0, "for": [], "against": [], "notes": [], "groups": {}})
+
+    for sym, hits in on.items():
+        s = snaps.get(sym) or {}
+        c = card(sym)
+        if "trend_template" in hits:
+            _add(c, "price", "trend_template", "steady uptrend (trend template)")
+        if "breakout_52w" in hits:
+            _add(c, "price", "breakout_52w", "new 52-week high on %sx volume" % s.get("vol_ratio"))
+        elif "breakout_20d" in hits:
+            _add(c, "price", "breakout_20d", "20-day breakout on %sx volume" % s.get("vol_ratio"))
+        if "delivery_spike" in hits:
+            _add(c, "price", "delivery_spike", "delivery %s%%, well above its average" % s.get("deliv"))
+        if "golden_cross" in hits:
+            _add(c, "price", "golden_cross", "50-day average crossed above the 200-day")
+        if "death_cross" in hits:
+            _add(c, "price", "death_cross", "50-day average crossed below the 200-day")
+        if "overbought" in hits:
+            _add(c, "price", "stretched", "RSI %s: stretched" % s.get("rsi"))
+        if "volume_shock" in hits and (s.get("change") or 0) < 0:
+            _add(c, "price", "heavy_selling", "fell %s%% on %sx volume" % (s.get("change"), s.get("vol_ratio")))
+
+    for sym, f in fund.items():
+        m, c, s = f["metrics"], card(sym), snaps.get(sym) or {}
+        if m.get("growth_20"):
+            _add(c, "business", "growth_20", "revenue %+.0f%% and profit %+.0f%% on a year ago" % (m["revenue_yoy_pct"], m["pat_yoy_pct"]))
+        if (m.get("roe_annualised_pct") or 0) >= 15:
+            _add(c, "business", "high_roe", "ROE %s%% (annualised)" % m["roe_annualised_pct"])
+        if m.get("debt_to_equity") is not None and m["debt_to_equity"] < 0.5:
+            _add(c, "business", "low_debt", "debt to equity %s" % m["debt_to_equity"])
+        if m.get("peg") is not None and m["peg"] < 1:
+            _add(c, "business", "cheap_for_growth", "PEG %s" % m["peg"])
+        for flag in m.get("flags") or []:
+            _add(c, "business", "qualified_audit" if "qualified" in flag else "flag", flag)
+
+    for sym, c in list(cards.items()):
+        s = snaps.get(sym) or {}
+        if (s.get("momentum_rank") or 0) >= 80 and c["groups"].get("price", 0) > 0:
+            _add(c, "price", "strong_momentum", "momentum rank %s of 100" % s["momentum_rank"])
+        if s.get("sma200") and s.get("close") and s["close"] < s["sma200"] and "business" in c["groups"]:
+            _add(c, "price", "below_200dma", "price is below its 200-day average")
+
+    for a in analyses or []:
+        sym = a.get("symbol")
+        if not sym or a.get("read_at", "") < week_ago or a.get("materiality", 0) < 3 or a.get("confidence") == "low":
+            continue
+        pts = a["materiality"] - 2
+        if a.get("tone") == "positive":
+            _add(card(sym), "filings", None, "filing: " + a["headline"][:110], pts)
+        elif a.get("tone") == "negative":
+            _add(card(sym), "filings", None, "filing: " + a["headline"][:110], -pts)
+        else:
+            card(sym)["notes"].append("filing (%s): %s" % (a.get("tone"), a["headline"][:110]))
+
+    net = {}
+    for d in signals.get("deals") or []:
+        if d.get("quantity"):
+            net[d["symbol"]] = net.get(d["symbol"], 0) + (d["quantity"] if "BUY" in (d.get("side") or "").upper() else -d["quantity"])
+    for sym, qty in net.items():
+        if qty > 0:
+            _add(card(sym), "flows", "deal_buying", "bulk or block deals: net buying of {:,.0f} shares".format(qty))
+        elif qty < 0:
+            _add(card(sym), "flows", "deal_selling", "bulk or block deals: net selling of {:,.0f} shares".format(-qty))
+    for sym, h in holds.items():
+        if h.get("change_pts") is not None and abs(h["change_pts"]) >= 0.5:
+            _add(card(sym), "flows", "promoter_up" if h["change_pts"] > 0 else "promoter_down",
+                 "promoter holding %+.2f points to %s%%" % (h["change_pts"], h["promoter_pct"]))
+
+    for b in buzz or []:
+        if b["symbol"] in cards:
+            cards[b["symbol"]]["notes"].append("talked about %d times in a day (usual %s): verify why" % (b["mentions_24h"], b["daily_average_before"]))
+    for ev in calendar or []:
+        if ev.get("symbol") in cards:
+            cards[ev["symbol"]]["notes"].append("%s on %s: %s" % (ev["kind"], ev["date"], ev["what"]))
+
+    for sym, c in cards.items():
+        s, f = snaps.get(sym) or {}, (fund.get(sym) or {}).get("metrics") or {}
+        g = c["groups"]
+        c["kinds_in_favour"] = sum(1 for v in g.values() if v > 0)
+        c["conflict"] = bool(g.get("price", 0) * g.get("business", 0) < 0 or (g.get("price", 0) > 0 and g.get("filings", 0) < 0))
+        c.update(name=s.get("name", ""), industry=s.get("industry", ""), close=s.get("close"), change=s.get("change"),
+                 market_cap_cr=f.get("market_cap_cr"))
+        c["mine"] = bool(my_screen and passes(my_screen, f))
+    return cards
+
+
+def passes(screen, metrics):
+    """The user's own screen, from config.json: every rule given must be met by known figures."""
+    cap = metrics.get("market_cap_cr")
+    if screen.get("max_market_cap_cr") is not None and not (cap is not None and cap <= screen["max_market_cap_cr"]):
+        return False
+    for key, rule in (("revenue_yoy_pct", "min_revenue_growth_pct"), ("pat_yoy_pct", "min_profit_growth_pct")):
+        if screen.get(rule) is not None and not ((metrics.get(key) or -1e9) >= screen[rule]):
+            return False
+    if screen.get("no_flags") and metrics.get("flags"):
+        return False
+    return True
+
+
+def shortlists(cards, n=25):
+    """strongest: most evidence in favour from at least two kinds of evidence.
+    weakest: most evidence against. conflicts: price and business disagree. mine: passes the user's screen."""
+    rows = list(cards.values())
+    strongest = sorted((c for c in rows if c["score"] >= 3 and c["kinds_in_favour"] >= 2), key=lambda c: -c["score"])[:n]
+    weakest = sorted((c for c in rows if c["score"] <= -2), key=lambda c: c["score"])[:n]
+    conflicts = sorted((c for c in rows if c["conflict"]), key=lambda c: -abs(c["score"]))[:n]
+    mine = sorted((c for c in rows if c["mine"]), key=lambda c: -c["score"])[:n]
+    return {"strongest": strongest, "weakest": weakest, "conflicts": conflicts, "mine": mine}

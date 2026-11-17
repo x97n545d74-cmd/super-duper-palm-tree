@@ -51,6 +51,7 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import brain          # noqa: E402
+import decide         # noqa: E402
 import fundamentals   # noqa: E402
 import market         # noqa: E402
 
@@ -656,6 +657,11 @@ def analyse(cfg):
         "promoter_changes": [dict(symbol=s, **h) for s, h in fundamentals.holding_view(fundamentals.load_holdings(DATA)).items()
                              if h["change_pts"] is not None and abs(h["change_pts"]) >= 0.5][:25],
     }
+    cards = decide.scorecard(signals, fund, fundamentals.holding_view(fundamentals.load_holdings(DATA)),
+                             brain.load_analyses(DATA), brain.buzz(items, names), extra["calendar"],
+                             my_screen=cfg.get("my_screen"))
+    slim = lambda c: {k: c[k] for k in ("symbol", "industry", "score", "for", "against", "notes", "conflict", "close")}
+    extra["scorecard"] = {k: [slim(c) for c in v[:8]] for k, v in decide.shortlists(cards).items()}
     STATS["brief"] = brain.write_brief(DATA, items, extra=extra)
 
 
@@ -752,6 +758,14 @@ def build():
             for r in items])
     except sqlite3.OperationalError:
         pass             # this SQLite build has no full-text module; the plain tables still work
+    analysed = brain.load_analyses(DATA)
+    cards = decide.scorecard(signals, fund, holds, analysed, brain.buzz(items, names), cal,
+                             my_screen=(load_json(CONFIG, {}) or {}).get("my_screen"))
+    lists = decide.shortlists(cards)
+    db.execute("CREATE TABLE scorecard (symbol TEXT PRIMARY KEY, score INTEGER, conflict INTEGER, mine INTEGER, in_favour TEXT, against TEXT, notes TEXT)")
+    db.executemany("INSERT INTO scorecard VALUES (?,?,?,?,?,?,?)", [
+        (c["symbol"], c["score"], int(c["conflict"]), int(c["mine"]), "; ".join(c["for"]), "; ".join(c["against"]),
+         "; ".join(c["notes"])) for c in cards.values()])
     db.execute("""CREATE TABLE fundamentals (symbol TEXT PRIMARY KEY, company TEXT, period_end TEXT, period_type TEXT,
         basis TEXT, revenue_cr REAL, pat_cr REAL, revenue_yoy_pct REAL, pat_yoy_pct REAL, ebitda_margin_pct REAL,
         net_margin_pct REAL, roe_annualised_pct REAL, debt_to_equity REAL, pe_annualised REAL, market_cap_cr REAL,
@@ -773,11 +787,14 @@ def build():
     health = load_json(DATA / "health.json", [])
     page = (HERE / "dashboard.template.html").read_text(encoding="utf-8")
     market_view = {k: v for k, v in signals.items() if k != "snapshots"}
+    market_view["screens"] = {k: {x: y for x, y in v.items() if x != "all"} for k, v in (signals.get("screens") or {}).items()}
     payload = json.dumps({"built_at": iso(now_utc()), "items": items[:4000], "health": health,
                           "analyses": analyses[:300], "market": market_view,
                           "briefs": brain.load_briefs(DATA), "stocks": signals.get("snapshots") or {},
                           "buzz": brain.buzz(items, names), "runs": runs,
-                          "fundamentals": fund, "holdings": holds, "calendar": cal, "growth": growth},
+                          "fundamentals": fund, "holdings": holds, "calendar": cal, "growth": growth,
+                          "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
+                                                        for s, c in cards.items()}},
                          ensure_ascii=False).replace("</", "<\\/")
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")
     print("built radar.db and dashboard.html: %d posts, %d filing reads, results for %d companies, market data for %s"

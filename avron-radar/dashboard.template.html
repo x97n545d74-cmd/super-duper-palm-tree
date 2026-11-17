@@ -58,6 +58,7 @@ h3{font-size:15px;margin:18px 0 4px}
 <nav><div id="tabs"></div></nav>
 <main>
   <section id="v-brief"></section>
+  <section id="v-score" hidden></section>
   <section id="v-filings" hidden></section>
   <section id="v-screens" hidden></section>
   <section id="v-stock" hidden>
@@ -79,7 +80,7 @@ h3{font-size:15px;margin:18px 0 4px}
   <p class="note">Private research file, not investment advice. Filings and prices come from NSE's official files. News, forum and social posts are unverified: check a primary source before relying on any of it. Screens describe what the price did; they do not predict what it will do.</p>
 </main>
 <script>
-const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[]};
+const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
@@ -90,7 +91,7 @@ const M = D.market || {};
 $("built").textContent = D.items.length + " posts · " + (D.analyses || []).length + " filing reads · prices for " + (M.date || "no day yet") + " · updated " + (when(D.built_at) || "never");
 
 // tabs
-const TABS = [["brief","Brief"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["feed","Feed"],["sources","System"]];
+const TABS = [["brief","Brief"],["score","Scorecard"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["feed","Feed"],["sources","System"]];
 let tab = "brief";
 $("tabs").innerHTML = TABS.map(t => "<button data-t='" + t[0] + "'>" + t[1] + "</button>").join("");
 $("tabs").onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; show(); } };
@@ -135,8 +136,25 @@ $("v-brief").innerHTML = tiles() + buzzHtml + calHtml + ((D.briefs || []).length
   ? D.briefs.map(b => "<div class='card brief'><div class='meta'><span class='chip w'>" + esc(b.name) + "</span></div>" + md(b.text) + "</div>").join("")
   : "<p>No brief yet. The first one is written after the day's price file arrives (about 7 pm India time) or at 7 am.</p>");
 
+// scorecard
+function cardHtml(c) {
+  return "<div class='card'><div class='meta'><span class='chip " + (c.score > 0 ? "t-positive" : c.score < 0 ? "bad" : "") + "'>score " + (c.score > 0 ? "+" : "") + esc(c.score) + "</span>" +
+    (c.conflict ? "<span class='chip bad'>price and business disagree</span>" : "") + (c.mine ? "<span class='chip w'>passes my screen</span>" : "") +
+    (c.industry ? "<span>" + esc(c.industry) + "</span>" : "") + (c.market_cap_cr ? "<span>· Rs " + num(c.market_cap_cr, 0) + " cr</span>" : "") + "</div>" +
+    "<b>" + esc(c.symbol) + "</b> " + esc(c.name || "") + (c.close != null ? " · " + num(c.close, 2) + " " + pct(c.change) : "") +
+    lst("In favour", c["for"]) + lst("Against", c.against) + lst("Also", c.notes) + "</div>";
+}
+(function () {
+  const L = D.shortlists || {}, sec = (title, mean, rows) => "<h3>" + title + " · " + (rows || []).length + "</h3><div class='mean'>" + mean + "</div>" + ((rows || []).map(cardHtml).join("") || "<p class='mean'>None today.</p>");
+  $("v-score").innerHTML = "<p class='mean'>One tally per stock of everything the radar holds: price action, company financials, filings, large deals and promoter holding. It counts evidence; it does not forecast and it is not advice. The Screens tab shows how each price screen has actually performed.</p>" +
+    sec("Passes my screen", "Your own rules from config.json, on companies whose results are on file.", L.mine) +
+    sec("Most evidence in favour", "Score of 3 or more, from at least two different kinds of evidence.", L.strongest) +
+    sec("Price and business disagree", "For example a breakout in a company with flags in its accounts, or good results in a falling stock.", L.conflicts) +
+    sec("Most evidence against", "Score of -2 or lower.", L.weakest);
+})();
+
 // filings
-const lst = (title, xs) => (xs || []).length ? "<h4>" + title + "</h4><ul>" + xs.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "";
+function lst(title, xs) { return (xs || []).length ? "<h4>" + title + "</h4><ul>" + xs.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : ""; }
 const CONF = {high: "t-positive", medium: "w", low: "bad"};
 function readCard(a) {
   const v = a.verified;
@@ -162,6 +180,11 @@ function stockTable(rows) {
 (function () {
   if (!M.screens) { $("v-screens").innerHTML = "<p>No price data yet.</p>"; return; }
   let h = tiles() + "<p class='mean'>" + num(M.stocks_screened, 0) + " stocks screened on " + esc(M.date) + ", using " + esc(M.days_of_history) + " trading days of history. Stocks that traded under Rs 1 crore are left out. Volume × is today's volume against the 20-day average.</p>";
+  const R = M.screen_record;
+  if (R && R.screens && R.screens.all) { const b = R.screens.all, cell = (v, good) => "<td class='n " + (v == null ? "" : v > 0 === good ? "up" : v < 0 === good ? "down" : "") + "'>" + (v == null ? "–" : (v > 0 ? "+" : "") + num(v, 2) + "%") + "</td>";
+    h += "<h3>How the screens have done</h3><div class='mean'>Sampled on " + esc(R.sample_days) + " days between " + esc(R.from) + " and " + esc(R.to) + ": the average move 5 and 20 trading days after a stock appeared on each screen, and the edge over every liquid stock on the same days. A small recent sample: it shows whether a screen is working in this market, not what will happen next.</div><div class='wrap'><table><tr><th>Screen</th><th class='n'>Cases</th><th class='n'>After 5 days</th><th class='n'>Rose</th><th class='n'>Edge, 5 days</th><th class='n'>After 20 days</th><th class='n'>Rose</th><th class='n'>Edge, 20 days</th></tr>" +
+      Object.keys(R.screens).sort((x, y) => (R.screens[y].edge_20d || -99) - (R.screens[x].edge_20d || -99)).map(k => { const r = R.screens[k];
+        return "<tr><td>" + (k === "all" ? "<b>every liquid stock</b>" : esc(k.replace(/_/g, " "))) + "</td><td class='n'>" + num(r.n_5d, 0) + "</td>" + cell(r.avg_5d, true) + "<td class='n'>" + (r.rose_5d_pct == null ? "–" : r.rose_5d_pct + "%") + "</td>" + cell(r.edge_5d, true) + cell(r.avg_20d, true) + "<td class='n'>" + (r.rose_20d_pct == null ? "–" : r.rose_20d_pct + "%") + "</td>" + cell(r.edge_20d, true) + "</tr>"; }).join("") + "</table></div>"; }
   Object.keys(M.screens).forEach(k => { const s = M.screens[k]; if (!s.count) return;
     h += "<h3>" + esc(k.replace(/_/g, " ")) + " · " + s.count + "</h3><div class='mean'>" + esc(s.meaning) + (s.count > s.stocks.length ? " Showing the " + s.stocks.length + " with the strongest momentum." : "") + "</div>" + stockTable(s.stocks); });
   if ((D.growth || []).length) h += "<h3>results growth · " + D.growth.length + "</h3><div class='mean'>Latest results on file show revenue and profit both up 20% or more on a year ago. P/E is price over this period's EPS scaled to a year, not a trailing figure. Check the flags in the Stock tab.</div><div class='wrap'><table><tr><th>Stock</th><th>Period</th><th class='n'>Revenue YoY</th><th class='n'>Profit YoY</th><th class='n'>EBITDA margin</th><th class='n'>P/E</th><th class='n'>Market cap, Rs cr</th><th class='n'>From 52w high</th><th>Above 200-day</th><th class='n'>Flags</th></tr>" +
@@ -205,6 +228,8 @@ function stock() {
       tl(num(m.pe_annualised), "P/E on annualised EPS") + tl(num(m.peg, 2), "PEG") + tl(num(m.price_to_book, 2), "price to book") +
       tl(num(m.graham_number, 2), "Graham number") + tl(num(m.market_cap_cr, 0), "market cap, Rs cr") + tl(num(m.receivable_days, 0), "receivable days") + "</div>" +
       ((m.flags || []).length ? "<div class='card'><h4 style='margin-top:0'>Flags from the numbers</h4><ul>" + m.flags.map(x => "<li class='down'>" + esc(x) + "</li>").join("") + "</ul></div>" : "<div class='mean'>No flags from the numbers.</div>"); }
+  const sc = D.cards[sym];
+  if (sc) h += cardHtml(Object.assign({symbol: sym, name: "evidence tally", mine: false}, sc));
   if (hd) h += "<div class='mean'>Promoter holding " + num(hd.promoter_pct, 2) + "% as on " + esc(hd.as_on) + (hd.change_pts != null ? " · " + pct(hd.change_pts).replace("%", " points") + " since " + esc(hd.previous_as_on) : "") + "</div>";
   h += "<h3>Analyst reads · " + reads.length + "</h3>" + (reads.map(readCard).join("") || "<p class='mean'>None yet.</p>");
   const tbl = rows => rows.length ? "<div class='wrap'><table>" + rows.slice(0, 40).map(postRow).join("") + "</table></div>" : "<p class='mean'>Nothing in the past 45 days.</p>";
