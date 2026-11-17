@@ -21,6 +21,7 @@ import analyst
 ARCHIVE = "https://nsearchives.nseindia.com/"
 SERIES = {"EQ", "BE", "BZ", "SM", "ST"}       # main board and SME shares
 HISTORY_DAYS = 400       # calendar days to keep and backfill (about 270 trading days)
+SIGNALS_VERSION = 2      # raise when the screens or their columns change, so saved signals are recomputed
 MIN_TURNOVER_LAKH = 100  # screens ignore stocks that traded under Rs 1 crore on the day
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
 INDEX_LISTS = {
@@ -257,7 +258,8 @@ def update(data_dir, http_get, today=None, log=print):
     files = sorted(ddir.glob("*.csv.gz"))
     latest = files[-1].name[:10] if files else ""
     deals = []
-    if fetched or state.get("signals_for") != latest or not (mdir / "universe.json").exists():
+    if (fetched or state.get("signals_for") != latest or state.get("signals_version") != SIGNALS_VERSION
+            or not (mdir / "universe.json").exists()):
         try:
             lists = {name: http_get(ARCHIVE + path) for name, path in INDEX_LISTS.items()}
             universe = parse_universe(http_get(ARCHIVE + "content/equities/EQUITY_L.csv"), lists)
@@ -281,6 +283,7 @@ def update(data_dir, http_get, today=None, log=print):
             signals["deals"] = deals
             (mdir / "signals.json").write_text(json.dumps(signals), encoding="utf-8")
             state["signals_for"] = latest
+            state["signals_version"] = SIGNALS_VERSION
             log("market: %d new days, signals for %s on %d days of history, %d stocks screened"
                 % (fetched, latest, len(files), signals["stocks_screened"]))
     state_path.write_text(json.dumps(state), encoding="utf-8")

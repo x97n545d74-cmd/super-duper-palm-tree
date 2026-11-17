@@ -176,6 +176,9 @@ class Brain(unittest.TestCase):
         a = {"url": "u", "facts": ["Order Rs 120 crore", "18 months"], "confidence": "high"}
         brain.verify_read(a, lambda p: '[{"n":1,"verdict":"supported","note":""},{"n":2,"verdict":"contradicted","note":"says 24 months"}]')
         self.assertEqual((a["verified"]["supported"], a["verified"]["checked"], a["confidence"]), (1, 2, "low"))
+        c = {"url": "u", "facts": ["x"], "confidence": "low", "document_read": True}
+        brain.verify_read(c, lambda p: '[{"n":1,"verdict":"supported","note":""}]')
+        self.assertEqual(c["confidence"], "medium")                            # all facts hold: not "low"
         b = {"url": "u", "facts": ["x"], "confidence": "high"}
         brain.verify_read(b, lambda p: "garbage")
         self.assertEqual((b["confidence"], "verified" in b), ("high", False))  # no check is not a failed check

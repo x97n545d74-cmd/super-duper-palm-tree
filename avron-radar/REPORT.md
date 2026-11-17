@@ -48,7 +48,7 @@ Impact, complexity and running cost are rated high, medium or low. Status is as 
 | 2 | Triage step: a fast model ranks candidate filings before the analyst reads | high | low | low | done |
 | 3 | One read per event (skip XBRL copies and follow-ups) | high | low | saves | done |
 | 4 | Company memory: the analyst sees its earlier reads on the same company | high | low | low | done |
-| 5 | Independent fact check of important reads against the document | high | medium | low | done, not yet triggered live |
+| 5 | Independent fact check of important reads against the document | high | medium | low | done |
 | 6 | Brief checks itself (advice wording, missing sections, stocks not in its data) and corrects once | high | low | low | done |
 | 7 | Run log: duration, sources, counts, tokens per model | high | low | none | done |
 | 8 | Append-only daily files; dashboard on a history-free branch | high | medium | saves | done |
@@ -96,16 +96,20 @@ Impact, complexity and running cost are rated high, medium or low. Status is as 
 |---|---|---|---|
 | Sources read | 16 of 17 | 68 of 68 | |
 | Stocks with a year of prices | 0 | 1,677 screened | 287 trading days |
-| Full run time | not comparable | 171 s and 200 s | includes all Claude calls |
+| Full run time | not comparable | 171 s, 200 s, 248 s | includes all Claude calls; the longest had 4 reads, a fact check and a brief |
 | Repeat reads of one event | 2 of 3 | 0 of 1 | |
 | Tokens served from cache per run | 0 | about 20,000 | stronger model |
 | Unsourced-number false alarms | 2 of 3 reads | fixed | "200-day" was read as a figure |
-| Faults caught by the brief check | none possible | 1 | a brief cut off after 131 words; the cause is fixed |
-| Mean materiality of filings read | 1.75 (4 reads) | 2.0 (4 reads) | too few to conclude anything |
+| Faults caught by the brief check | none possible | 1 | a brief cut off after 131 words; after the fix the next brief was complete (720 words, all six sections) |
+| Fact checks run | none possible | 1 | a qualified audit review (materiality 4): 6 of 6 quoted facts confirmed against the document |
+| Mean materiality of filings read | 1.75 (4 reads) | 2.4 (8 reads) | too few to conclude anything; the last run did surface an auditor's qualification |
 
 Honest limits of this testing:
-- Filing selection is not proven better. Eight reads on one quiet evening is not a sample.
-- The fact check has not run live, because no filing scored 4 or above during testing. It is unit-tested only.
+- Filing selection is not proven better. Twelve reads on one evening is not a sample.
+- The fact check has run live once. One pass is not a measure of how often it catches errors.
+- The number check is strict: it also lists figures the analyst calculated itself (a percentage, a ratio). The dashboard says so.
+- The 720-word brief exceeded its 600-word budget.
+- The last brief had no moving-average levels, because the saved screens predated that change. They are now recomputed when the code changes; this is unit-tested but will first show live on the next run.
 - Parallel reading was not timed against sequential reading on the same day.
 - Labelling is behind: 647 posts were unlabelled after the test runs. At 90 per run it should catch up within a day; the run log will show if it does not.
 

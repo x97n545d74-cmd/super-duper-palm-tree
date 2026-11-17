@@ -144,7 +144,7 @@ function readCard(a) {
   "<span>· filed " + esc(when(a.published_at)) + "</span>" + (a.document_read ? "" : "<span class='chip bad'>summary only, document not read</span>") + "</div>" +
   "<a class='t' href='" + esc(safeUrl(a.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(a.headline) + "</a>" +
   "<p>" + esc(a.read) + "</p>" + (a.price_context ? "<p class='txt'>" + esc(a.price_context) + "</p>" : "") +
-  ((a.unsupported_numbers || []).length ? "<p class='txt down'>Figures in this read with no source in the filing or price data: " + esc(a.unsupported_numbers.join(", ")) + "</p>" : "") +
+  ((a.unsupported_numbers || []).length ? "<p class='txt down'>Figures not found in the quoted facts or the price data (they may be the analyst's own calculation; check them): " + esc(a.unsupported_numbers.join(", ")) + "</p>" : "") +
   (v && v.problems.length ? lst("Fact check problems", v.problems) : "") +
   lst("Facts from the filing", a.facts) + lst("Positives", a.positives) + lst("Risks", a.risks) + lst("Check next", a.check_next) + "</div>";
 }

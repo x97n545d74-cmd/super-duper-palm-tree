@@ -324,6 +324,8 @@ def verify_read(a, ask):
         a["confidence"] = "low"
     elif problems and a.get("confidence") == "high":
         a["confidence"] = "medium"
+    elif not problems and checked == len(facts) and a.get("confidence") == "low" and a.get("document_read"):
+        a["confidence"] = "medium"     # every quoted fact holds; the open figures are the analyst's own sums
     return a
 
 
