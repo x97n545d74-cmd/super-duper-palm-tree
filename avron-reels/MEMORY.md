@@ -36,6 +36,12 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - **Language: English** for this reel (user corrected the Hinglish draft: "English mai bnani thi"). Prompt #10 says Hinglish; ask the language on the next reel.
 - Fact check: $480M Maven (May 2024) real, raised to ~$1.28B (May 2025). "$2,000/soldier/month" has no source and "86% margin" is wrong (FY2025: gross ~82%, GAAP op 32%, adj. op 50%); both dropped. Script, timeline, caption and claim registry: `projects/2026-10-palantir/SCRIPT.md`. **Rendered 2026-10-29:** `deliverables/2026-10-palantir/AVRON_palantir_reel1_1080x1920.mp4` (38.6 s, −14.3 LUFS; Adam v3 VO generated via the connector, take B, 1.12x; 6 ElevenLabs SFX; graphics only). The ElevenLabs connector's SFX come out 1 s long, so no bed. Open: verify Chandrayaan-3 cost (~₹615 cr) and the day's ₹/$ rate before posting. Not published.
 
+## Avron Radar (2026-11-17, user asked for "an agent that keeps an eye on every social media platform")
+- Started from the user asking what Redbox (news squawk + chat + analysts + API) is and wanting the same on a website. There is **no website yet**. The user chose: agent as **code in this repo**, for **personal use**.
+- `avron-radar/` (repo root): `radar.py` (stdlib) reads public Reddit RSS, YouTube channel RSS, Telegram `t.me/s`, Google News RSS, Bluesky search and the official X API (every 6 h, metered); dedupes into `data/items-YYYY-MM.jsonl`; Claude labels each post (relevance, kind incl. rumour/tip, companies, summary); builds `radar.db` (SQLite) and `dashboard.html`. Sources and watchlist: `config.json`. Workflow `.github/workflows/avron-radar.yml` runs every 30 min and saves to the `avron-radar-data` branch (only once it is on the default branch).
+- Rules: read-only, no logins, no getting round blocks; Instagram/Facebook/LinkedIn are not collected. Posts are unverified chatter, never a source for a reel fact.
+- This cloud container blocks the social sites (only api.x.com is open; a request to open more was rejected), so only the X lane was tested live. The seed YouTube handles and Telegram channel are unverified until the first Actions run.
+
 ## Who and what
 - AVRON makes cinematic finance and explainer reels: 1080×1920, 30 fps, H.264/AAC, −14 LUFS.
 - The pipeline runs research → verification → script → storyboard → assets → animation → sound → render → QC → MP4.

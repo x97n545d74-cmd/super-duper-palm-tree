@@ -1,0 +1,46 @@
+{
+  "_note": "Starting lists. Edit freely. A source that does not exist shows as FAILED in the dashboard's Sources tab; remove or fix it there.",
+  "max_age_days": 3,
+  "disabled_lanes": [],
+  "watchlist": [
+    "order win", "capex", "QIP", "preferential issue", "warrants", "buyback", "demerger", "merger",
+    "SEBI", "RBI", "promoter", "pledge", "guidance", "data centre", "data center", "semiconductor",
+    "defence", "smallcap", "SME IPO"
+  ],
+  "subreddits": [
+    "IndianStockMarket",
+    "IndiaInvestments",
+    "IndianStreetBets",
+    "StockMarketIndia",
+    "DalalStreetTalks"
+  ],
+  "youtube_channels": [
+    "@CARachanaRanade",
+    "@pranjalkamra",
+    "@warikoo",
+    "@AkshatZayn",
+    "@ZerodhaOnline",
+    "@moneycontrol",
+    "@cnbctv18",
+    "@FinanceWithSharan"
+  ],
+  "telegram_channels": [
+    "moneycontrolcom"
+  ],
+  "news_queries": [
+    "NSE smallcap order win",
+    "SEBI order listed company",
+    "India data centre capacity announcement",
+    "India semiconductor plant listed company",
+    "promoter stake sale block deal"
+  ],
+  "bluesky_queries": [
+    "nifty smallcap",
+    "NSE order win"
+  ],
+  "x_queries": [
+    "(smallcap OR \"order win\" OR QIP) (NSE OR BSE) lang:en"
+  ],
+  "x_every_hours": 6,
+  "x_max_results": 10
+}
