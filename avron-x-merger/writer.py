@@ -492,6 +492,8 @@ def targets_prompt(now, covered):
         '"firm": the brokerage, or the analyst and firm for a short-term call',
         '"call": exactly BUY, HOLD or SELL (Overweight, Outperform, Accumulate, Add = BUY; Neutral, Equal-weight, Market perform = HOLD; '
         'Underweight, Underperform, Reduce = SELL)',
+        '"price": the stock\'s current or last traded share price as a plain number, taken from the same report; if the report does '
+        'not give it, find it in another report from today; null only if you cannot find it',
         '"target": the target price as a plain number, such as 287 or 1300',
         '"old_target": the previous target as a plain number if the report gives it, otherwise null',
         '"stop_loss": the stop-loss as a plain number if the report gives one, otherwise null',
@@ -518,11 +520,15 @@ def rupees(v):
 
 def target_groups(calls):
     """Turn the calls into short text blocks: one per stock for long-term calls, one line each for short-term."""
-    long_by_stock, short_lines = {}, []
+    long_by_stock, short_lines, price = {}, [], {}
+    for c in calls:                                   # one current price per stock, the first one reported
+        if rupees(c.get("price")) and c["stock"].upper() not in price:
+            price[c["stock"].upper()] = rupees(c.get("price"))
     for c in calls:
         tgt = rupees(c["target"])
+        now_txt = " (price now %s)" % price[c["stock"].upper()] if c["stock"].upper() in price else ""
         if c["horizon"] == "short":
-            line = "%s: %s. Target %s." % (c["stock"].upper(), c["call"], tgt)
+            line = "%s%s: %s. Target %s." % (c["stock"].upper(), now_txt, c["call"], tgt)
             if c.get("stop_loss") is not None:
                 line += " Stop-loss %s." % rupees(c["stop_loss"])
             short_lines.append(line + " By %s." % c["firm"])
@@ -532,7 +538,8 @@ def target_groups(calls):
         if old is not None and new is not None:
             line += " (no change)" if old == new else " (%s from %s)" % ("raised" if new > old else "cut", rupees(old))
         long_by_stock.setdefault(c["stock"].upper(), []).append(line + ".")
-    groups = [name + "\n" + "\n".join(lines) for name, lines in long_by_stock.items()]
+    groups = [name + (" (price now %s)" % price[name] if name in price else "") + "\n" + "\n".join(lines)
+              for name, lines in long_by_stock.items()]
     if short_lines:
         groups.append("SHORT-TERM IDEAS (days to weeks)\n" + short_lines[0])     # the heading stays with its first line
         groups.extend(short_lines[1:])
@@ -576,7 +583,7 @@ def run_targets(now, api_key):
             continue
         c = {
             "stock": clean(r.get("stock"), 40), "firm": clean(r.get("firm"), 60), "call": clean(r.get("call"), 10).upper(),
-            "target": r.get("target"), "old_target": r.get("old_target"), "stop_loss": r.get("stop_loss"),
+            "price": r.get("price"), "target": r.get("target"), "old_target": r.get("old_target"), "stop_loss": r.get("stop_loss"),
             "horizon": "short" if str(r.get("horizon") or "").lower().startswith("short") else "long",
             "link": str(r.get("link") or "").strip(),
         }
