@@ -210,6 +210,9 @@ class HoldingsAndCalendar(unittest.TestCase):
             n = F.save_holdings(tmp, [row("ABC Limited", "https://x/a.xml"), row("XYZ Limited", "https://x/bad.xml")], {}, fetch=fetch)
             saved = F.load_holdings(tmp)
             self.assertEqual((n, saved[0]["detail"], "detail" in saved[1]), (2, {"promoters": 52.1}, False))
+            calls = []
+            F.save_holdings(tmp, [], {}, fetch=lambda u: (calls.append(u), good)[1])     # a later run fills the gap
+            self.assertEqual((calls, F.load_holdings(tmp)[1]["detail"]), (["https://x/bad.xml"], {"promoters": 52.1}))
 
     def test_calendar_reads_meetings_and_ex_dates(self):
         items = [

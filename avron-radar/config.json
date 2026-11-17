@@ -142,6 +142,31 @@
       "url": "https://nsearchives.nseindia.com/content/RSS/Shareholding_Pattern.xml"
     },
     {
+      "name": "NSE voting results",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Voting_Results.xml"
+    },
+    {
+      "name": "NSE annual reports",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Annual_Reports.xml"
+    },
+    {
+      "name": "NSE buybacks",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Daily_Buyback.xml"
+    },
+    {
+      "name": "NSE offer documents",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Offer_Documents.xml"
+    },
+    {
+      "name": "NSE pledge and encumbrance disclosures",
+      "platform": "nse",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Sast_Regulation31.xml"
+    },
+    {
       "name": "RBI press releases",
       "platform": "regulator",
       "url": "https://www.rbi.org.in/pressreleases_rss.xml"

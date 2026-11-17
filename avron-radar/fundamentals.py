@@ -448,7 +448,22 @@ def save_holdings(data_dir, items, names, fetch=None, limit=40):
                     r["detail"] = detail
             except Exception:
                 pass
-    if new:
+    filled = 0
+    for r in old if fetch else []:      # rows saved before the breakdown existed, or whose file failed that day
+        if filled >= 15:
+            break
+        if "detail" not in r and r.get("url", "").lower().endswith(".xml") and r.get("tries", 0) < 3:
+            r["tries"] = r.get("tries", 0) + 1
+            filled += 1
+            try:
+                detail = parse_shareholding(fetch(r["url"]))
+                if detail:
+                    r["detail"] = detail
+            except Exception:
+                pass
+    if filled:
+        path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in old + new), encoding="utf-8")
+    elif new:
         with open(path, "a", encoding="utf-8") as fh:
             for r in new:
                 fh.write(json.dumps(r, ensure_ascii=False) + "\n")
