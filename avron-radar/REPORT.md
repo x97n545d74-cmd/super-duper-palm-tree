@@ -129,3 +129,38 @@ Honest limits of this testing:
 3. **Structured insider and takeover data.** Those feeds currently give a company name and a link.
 4. **Measure the screens**: record what each flagged stock did over the next 5 and 20 days, so the screens are judged on results.
 5. **Watch one full trading day**, then tune `filings_per_run`, the triage rules and the labelling cap from the run log.
+
+---
+
+# Ten improvement rounds (17 November 2026, evening)
+
+Each round: run the agent on GitHub against the real sources (test branches, live data untouched), read its output, find the weakest point, fix it, add a test, run again. 80 unit tests pass at the end.
+
+| Round | What the run showed | What changed | Confirmed live |
+|---|---|---|---|
+| 1 | GitHub's 30-minute timer never fired on this repository: every run so far had been started by hand. No company financials existed, so the investor formulas had nothing to work on. | The workflow now runs a round every 30 minutes for 5.5 hours and starts the next run itself. Added a results reader (Claude copies printed figures; code converts units and computes every ratio), promoter holdings and a two-week events calendar. | Two rounds five minutes apart, both saved. 68 of 68 sources. |
+| 2 | No results were copied: the day's filers were small companies outside the indexes. 541 posts were waiting for labels. | Results coverage widened beyond the indexes (20 a day). Labelling takes 120 a run and drops posts older than 48 hours. Added the evidence scorecard. | First results copied (Libas); figures match the analyst's independent read. Backlog 541 to 458. |
+| 3 | Nothing said whether the price screens work. | A track record for each screen (what stocks did 5 and 20 days later, against every liquid stock), a sector table, each deal's share of the day's volume, news searches for global cues. | The average liquid stock had fallen about 4% over 20 days; the trend-template screen did worse than that. Sectors: media, realty and healthcare led; utilities, capital goods and IT lagged. |
+| 4 | The scorecard gave points to screens the record showed were lagging. A 3,026-share deal counted as "buying". | Price-side points now follow each screen's record. The market gets a strong / mixed / weak label. Deals under 1% of volume are ignored, over 10% count double. A list for strong charts with no results on file. | The brief opens "Weak", names the sectors, says which screens have had an edge, and gives the level that breaks each setup. |
+| 5 | Results showed growth but not whether the business earns more per rupee of sales. | Margin a year ago and last quarter, the change in points, profit growth against sales growth; flags for a margin squeeze and for sales up with profit down. | IC Electricals: revenue +36%, profit +125%, margin up 7.1 points, with a flag that operating cash flow is negative. |
+| 6 | Nothing was personal to the reader. | `my_stocks`: everything that happened to the reader's own stocks in the past day, first in the brief and dashboard. `my_screen`: the reader's own rules. | The screen (market value under Rs 10,000 crore, revenue and profit up 20%) picked one company from the results on file. `my_stocks` is empty until symbols are added, so alerts are unit-tested only. |
+| 7 | A stock showed "82% below its high" after a demerger the exchange file had not restated. The brief's flows section saw only buyers. Small (SME) companies had no symbol, so their results were skipped. | One-day moves beyond the price bands are treated as corporate actions. Deals are netted per stock with buyers, sellers and anyone on both sides. NSE Emerge companies added to the universe. | Universe 2,638 to 3,221 companies. Four SME results copied, figures exact. Flows now shows a promoter trust selling Alkem to four mutual funds. |
+| 8 | No look back over a week; index valuations kept no history; the dashboard feed was mostly routine paperwork. | A Saturday weekly review, a daily line of index valuations and breadth, routine filings left out of the feed. | Dashboard 3.2 MB to 3.0 MB with more in it. The weekly review first runs on Saturday; unit-tested only. |
+| 9 | The reader's segments (data centres, semiconductors, defence and others) were not tracked. | A theme tracker: mentions in a day and a week, whether rising, the listed companies that come up, the newest items. Ten starting themes. | Renewables 27 mentions in a day with 7 filings; solar names surfaced. "Rising" is not yet meaningful: there is under a week of history. |
+| 10 | The reader could not ask the agent anything. | Ask a question from GitHub's Run workflow box; the answer is drawn only from what the radar holds and appears in the Ask tab. | Asked whether Libas's profit can be trusted: a correct, sourced answer including what the data does not cover. One bug found and fixed (an ordinary word matched as a symbol). |
+
+## What the ten rounds did not settle
+
+- **One evening of data.** Everything above was measured on 17 November. The screen record covers about two months of prices but the filings, results and themes cover days.
+- **Results season is over.** Six companies' results are on file. The reader is proven on small filers; it has not faced a large-company results PDF or a heavy results day.
+- **The unit of a results table can still be misread** (lakh for crore). Growth, margins, P/E, P/B and PEG are unaffected; rupee amounts and market value would be out by 10 or 100 times. Nothing in the code can detect that.
+- **The scorecard is a tally, not a tested strategy.** Its business and flows weights are judgement. Only the price side is checked against outcomes.
+- **Cost per day is still not in rupees.** A round used about 23,000 tokens in and 27,000 out on the fast model and about 55,000 in and 11,000 out on the stronger one when a brief was written.
+- **The repository is still public.**
+
+## Next
+
+1. Merge, then watch one full trading day and the first weekly review.
+2. Add your stocks to `my_stocks`.
+3. Decide where the data lives (see above).
+4. After two weeks: check the scorecard's lists against what the stocks did, and adjust the weights from evidence.

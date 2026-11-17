@@ -27,6 +27,8 @@ class Ask(unittest.TestCase):
         self.assertEqual(ask.find_symbols("how is newgen doing", SNAPS), ["NEWGEN"])
         self.assertEqual(ask.find_symbols("is it a good time for smallcaps", SNAPS), [])       # "it" is not the symbol IT
         self.assertEqual(ask.find_symbols("what about IT today", SNAPS), ["IT"])
+        snaps = dict(SNAPS, CONSUMER={"name": "Consumer Goods Co Limited"}, LIBAS={"name": "Libas Consumer Products Limited"})
+        self.assertEqual(ask.find_symbols("What do we know about Libas Consumer Products?", snaps), ["LIBAS"])
 
     def test_search_needs_real_matches(self):
         hits = ask.search(ITEMS, ask.keywords("which semiconductor plant was approved"))

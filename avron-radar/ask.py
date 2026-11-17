@@ -24,8 +24,7 @@ latest recent news update updates please think view take read""".split())
 def find_symbols(question, snapshots, limit=3):
     """NSE symbols the question names, by symbol or by company name."""
     q_words = set(re.findall(r"[A-Za-z0-9&-]+", question))
-    upper = {w.upper() for w in q_words}
-    hits = [s for s in snapshots if s in upper and (s in q_words or len(s) > 4)]      # a short symbol must be typed in capitals
+    hits = [s for s in snapshots if s in q_words]      # a symbol counts only when typed in capitals: "Consumer" is a word, CONSUMER a symbol
     qn = " " + market.norm_name(question) + " "
     for sym, r in snapshots.items():
         name = market.norm_name(r.get("name", ""))
