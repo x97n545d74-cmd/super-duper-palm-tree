@@ -29,9 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 3,
- "fails": {
-  "feeds|NSE announcements": 1
- },
+ "reddit_next": 4,
+ "fails": {},
  "paused_until": {}
 }
