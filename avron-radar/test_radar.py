@@ -136,6 +136,8 @@ class Flow(unittest.TestCase):
                 self.assertEqual(db.execute("SELECT kind, companies, watch FROM items").fetchall(),
                                  [("fact", "ABC Ltd", "order win")])
                 db.close()
+                self.assertTrue(list((tmp / "data").glob("items-????-??-??.jsonl")))   # one small file per day
+                self.assertTrue(list((tmp / "data").glob("tags-????-??-??.jsonl")))
                 page = (tmp / "dashboard.html").read_text(encoding="utf-8")
                 self.assertIn("ABC Ltd says it won an order.", page)
                 self.assertNotIn("/*DATA*/null", page)

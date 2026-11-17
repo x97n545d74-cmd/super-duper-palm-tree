@@ -14,11 +14,20 @@ through the platform's own official API when a key is supplied):
 Instagram, Facebook and LinkedIn are not collected: they show nothing useful
 without a login, and this script never logs in or gets round a block.
 
+  feeds     any RSS feed in config.json: NSE's official filing feeds, RBI, PIB,
+            the business papers, the ValuePickr forum
+
+It also keeps a year of NSE end-of-day prices for every stock (market.py),
+runs the technical screens (analyst.py), and has Claude read the important
+filings and write two briefs a day (brain.py, ANALYST.md).
+
 Commands:
-  collect   fetch every lane, add new posts to data/items-YYYY-MM.jsonl
+  collect   fetch every lane, add new posts to data/items-YYYY-MM-DD.jsonl
+  market    fetch missing price files and recompute the screens
   tag       ask Claude to label untagged posts (needs ANTHROPIC_API_KEY)
+  analyse   Claude reads the top unread filings and writes a brief if one is due
   build     rebuild radar.db (SQLite) and dashboard.html from the data files
-  run       collect, tag (if a key is set), build
+  run       all of the above, in that order
 
 Standard library only. For personal research: posts are stored as a short
 excerpt plus a link to the original, and nothing is republished.
@@ -39,6 +48,10 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import brain    # noqa: E402
+import market   # noqa: E402
+
 HERE = pathlib.Path(__file__).resolve().parent
 DATA = pathlib.Path(os.environ.get("RADAR_DATA", HERE / "data"))
 CONFIG = pathlib.Path(os.environ.get("RADAR_CONFIG", HERE / "config.json"))
@@ -47,10 +60,13 @@ BROWSER_UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 MODEL = os.environ.get("RADAR_MODEL", "claude-haiku-5-5")
 EXCERPT = 600          # characters of each post kept
 PAUSE = 1.5            # seconds between requests
-LANE_PAUSE = {"reddit": 6, "news": 6}   # these two rate-limit quick readers
+LANE_PAUSE = {"reddit": 6, "news": 6, "feeds": 0.5}   # Reddit and Google News rate-limit quick readers
+NO_TAG = {"nse", "deals"}   # official records: nothing for the chatter labeller to judge
+KEEP_DAYS = 45              # days of posts loaded for the dashboard and the database
+PER_SOURCE_CAP = 400        # most new posts taken from one source in one run
 REDDIT_PER_RUN = 2     # without a Reddit API key, read this many subreddits per run, in turn
 TAG_BATCH = 15         # posts per Claude call
-TAG_MAX_BATCHES = int(os.environ.get("RADAR_TAG_MAX_BATCHES", "8"))
+TAG_MAX_BATCHES = int(os.environ.get("RADAR_TAG_MAX_BATCHES", "6"))
 ATOM = "{http://www.w3.org/2005/Atom}"
 MEDIA = "{http://search.yahoo.com/mrss/}"
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
@@ -71,6 +87,10 @@ def parse_time(s):
     if not s:
         return ""
     s = s.strip()
+    try:      # NSE's feeds: 16-Nov-2026 09:14:05, India time
+        return iso(datetime.datetime.strptime(s, "%d-%b-%Y %H:%M:%S").replace(tzinfo=IST))
+    except ValueError:
+        pass
     try:
         dt = datetime.datetime.fromisoformat(s.replace("Z", "+00:00"))
     except ValueError:
@@ -95,12 +115,20 @@ def clip(s, n=EXCERPT):
     return s if len(s) <= n else s[: n - 1].rstrip() + "…"
 
 
-def http_get(url, headers=None, timeout=30, data=None):
+def http_get_bytes(url, headers=None, timeout=30, data=None):
     h = {"User-Agent": UA, "Accept-Language": "en-IN,en;q=0.8"}
     h.update(headers or {})
     req = urllib.request.Request(url, headers=h, data=data)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read().decode("utf-8", "replace")
+        return resp.read()
+
+
+def http_get(url, headers=None, timeout=30, data=None):
+    return http_get_bytes(url, headers, timeout, data).decode("utf-8", "replace")
+
+
+def browser_get(url):
+    return http_get(url, {"User-Agent": BROWSER_UA, "Accept": "*/*"}, timeout=60)
 
 
 def make_item(platform, source, native_id, url, title, text, author, published):
@@ -141,17 +169,28 @@ def parse_atom(xml_text, platform, source):
     return out
 
 
-def parse_rss(xml_text, platform, source):
-    """Google News search feeds."""
+DC = "{http://purl.org/dc/elements/1.1/}"
+
+
+def parse_rss(xml, platform, source):
+    """Any RSS 2.0 feed (text or bytes); an Atom feed is passed on to parse_atom."""
+    root = ET.fromstring(xml)
+    if root.tag == ATOM + "feed":
+        return parse_atom(xml, platform, source)
     out = []
-    root = ET.fromstring(xml_text)
     for it in root.iter("item"):
-        link = it.findtext("link") or ""
-        out.append(make_item(
-            platform, source, it.findtext("guid") or link, link,
-            it.findtext("title") or "", strip_tags(it.findtext("description") or ""),
-            it.findtext("source") or "", parse_time(it.findtext("pubDate")),
-        ))
+        link = (it.findtext("link") or "").strip()
+        title = (it.findtext("title") or "").strip()
+        when = it.findtext("pubDate") or it.findtext(DC + "date") or ""
+        body = strip_tags(it.findtext("description") or "")
+        # Some official feeds reuse one link for every row, so the link alone cannot be the identity.
+        native = (it.findtext("guid") or "").strip() or "|".join((link, title, when, body[:80]))
+        item = make_item(platform, source, native, link, title, body,
+                         it.findtext("source") or it.findtext(DC + "creator") or "", parse_time(when))
+        m = re.search(r"\|\s*SUBJECT:\s*(.+)$", body, re.S)
+        if m:
+            item["subject"] = clip(m.group(1), 120)
+        out.append(item)
     return out
 
 
@@ -275,6 +314,18 @@ def lane_news(cfg, state):
         yield q, (lambda url=url, q=q: parse_rss(http_get(url), "news", "search: " + q))
 
 
+def lane_feeds(cfg, state):
+    for f in cfg.get("feeds") or []:
+        def fetch(f=f):
+            raw = http_get_bytes(f["url"], {"User-Agent": BROWSER_UA, "Accept": "*/*"}, timeout=60)
+            found = parse_rss(raw.lstrip(), f.get("platform", "news"), f["name"])
+            words = [w.lower() for w in f.get("only_with") or []]
+            if words:
+                found = [i for i in found if any(w in (i["title"] + " " + i["text"]).lower() for w in words)]
+            return found
+        yield f["name"], fetch
+
+
 def lane_bluesky(cfg, state):
     for q in cfg.get("bluesky_queries") or []:
         path = "/xrpc/app.bsky.feed.searchPosts?sort=latest&limit=50&q=" + urllib.parse.quote(q)
@@ -325,48 +376,58 @@ def lane_x(cfg, state):
 
 
 LANES = [("reddit", lane_reddit), ("youtube", lane_youtube), ("telegram", lane_telegram),
-         ("news", lane_news), ("bluesky", lane_bluesky), ("x", lane_x)]
+         ("news", lane_news), ("bluesky", lane_bluesky), ("x", lane_x), ("feeds", lane_feeds)]
 
 
 # ---------- storage ----------
 
-def data_files():
-    return sorted(DATA.glob("items-*.jsonl"))
+def data_files(prefix="items", keep_days=KEEP_DAYS):
+    """Data files newest window only. Monthly files (the first format) are always included."""
+    cutoff = (now_utc() - datetime.timedelta(days=keep_days)).strftime("%Y-%m-%d")
+    out = []
+    for f in sorted(DATA.glob(prefix + "-*.jsonl")):
+        stamp = f.stem[len(prefix) + 1:]
+        if len(stamp) == 7 and stamp >= cutoff[:7] or len(stamp) == 10 and stamp >= cutoff:
+            out.append(f)
+    return out
 
 
-def load_items():
+def read_jsonl(path):
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            try:
+                yield json.loads(line)
+            except json.JSONDecodeError:
+                pass
+
+
+def load_items(keep_days=KEEP_DAYS):
     items = {}
-    for f in data_files():
-        for line in f.read_text(encoding="utf-8").splitlines():
-            if line.strip():
-                try:
-                    row = json.loads(line)
-                    items[row["id"]] = row
-                except (json.JSONDecodeError, KeyError):
-                    pass
+    for f in data_files("items", keep_days):
+        for row in read_jsonl(f):
+            if "id" in row:
+                items[row["id"]] = row
+    for f in data_files("tags", keep_days):
+        for row in read_jsonl(f):
+            if row.get("id") in items:
+                items[row["id"]]["tags"] = row["tags"]
     return items
 
 
-def append_items(rows):
+def append_rows(prefix, rows, stamp_key):
+    """Append-only daily files, so each run changes one small file."""
     DATA.mkdir(parents=True, exist_ok=True)
     by_file = {}
     for r in rows:
-        by_file.setdefault("items-%s.jsonl" % r["collected_at"][:7], []).append(r)
+        by_file.setdefault("%s-%s.jsonl" % (prefix, r[stamp_key][:10]), []).append(r)
     for name, group in by_file.items():
         with open(DATA / name, "a", encoding="utf-8") as fh:
             for r in group:
                 fh.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 
-def rewrite_items(items):
-    """Used after tagging: write every month file again with the updated rows."""
-    by_file = {}
-    for r in items.values():
-        by_file.setdefault("items-%s.jsonl" % r["collected_at"][:7], []).append(r)
-    for name, group in by_file.items():
-        group.sort(key=lambda r: (r["collected_at"], r["id"]))
-        (DATA / name).write_text(
-            "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in group), encoding="utf-8")
+def append_items(rows):
+    append_rows("items", rows, "collected_at")
 
 
 def load_json(path, default):
@@ -399,7 +460,7 @@ def collect(cfg):
             try:
                 found = fetch()
                 fresh = [i for i in found if i["id"] not in known
-                         and (not i["published_at"] or i["published_at"] >= cutoff)]
+                         and (not i["published_at"] or i["published_at"] >= cutoff)][:PER_SOURCE_CAP]
                 for i in fresh:
                     i["collected_at"] = stamp
                     i["watch"] = watch_hits(i, watchlist)
@@ -484,7 +545,8 @@ def tag(ask=None):
         return 0
     ask = ask or (lambda prompt: call_claude(prompt, api_key))
     items = load_items()
-    todo = sorted((r for r in items.values() if "tags" not in r), key=lambda r: r["collected_at"], reverse=True)
+    todo = sorted((r for r in items.values() if "tags" not in r and r["platform"] not in NO_TAG),
+                  key=lambda r: r["collected_at"], reverse=True)
     done = 0
     for n in range(0, min(len(todo), TAG_BATCH * TAG_MAX_BATCHES), TAG_BATCH):
         batch = todo[n:n + TAG_BATCH]
@@ -495,46 +557,110 @@ def tag(ask=None):
         except Exception as e:
             print("tag: batch failed: %s" % e)
             break
-        got = 0
-        for r in batch:
-            if r["id"] in tags:
-                items[r["id"]]["tags"] = tags[r["id"]]
-                got += 1
+        stamp = iso(now_utc())
+        new = [{"id": r["id"], "tagged_at": stamp, "tags": tags[r["id"]]} for r in batch if r["id"] in tags]
+        append_rows("tags", new, "tagged_at")
+        got = len(new)
         done += got
         if got < len(batch):
             print("tag: a batch came back with %d of %d labels" % (got, len(batch)))
-    if done:
-        rewrite_items(items)
     print("tagged %d posts (%d still untagged)" % (done, len(todo) - done))
     return done
 
 
+def deal_items(deals, stamp):
+    """Bulk and block deals as feed rows."""
+    out = []
+    for d in deals:
+        key = "|".join(str(d.get(k)) for k in ("kind", "date", "symbol", "client", "side", "quantity", "price"))
+        qty = "{:,.0f}".format(d["quantity"]) if d.get("quantity") else "?"
+        title = "%s: %s %s %s shares at Rs %s" % (d["symbol"], d["client"], (d["side"] or "").lower(), qty, d.get("price"))
+        item = make_item("deals", "NSE %s deals" % d["kind"], key,
+                         "https://www.nseindia.com/report-detail/display-bulk-and-block-deals",
+                         title, "%s (%s). %s deal on %s." % (d["name"], d["symbol"], d["kind"].capitalize(), d["date"]),
+                         d["client"], "")
+        item["collected_at"] = stamp
+        item["watch"] = []
+        out.append(item)
+    return out
+
+
+def market_step():
+    deals = market.update(DATA, browser_get)
+    known = set(load_items(7))
+    fresh = [i for i in deal_items(deals, iso(now_utc())) if i["id"] not in known]
+    append_items(fresh)
+
+
+def analyse(cfg):
+    items = list(load_items(3).values())
+    brain.read_filings(DATA, items, cfg)
+    brain.write_brief(DATA, items)
+
+
 def build():
     items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
+    analyses = sorted(brain.load_analyses(DATA), key=lambda a: a.get("read_at", ""), reverse=True)
+    signals = market.load_signals(DATA) or {}
     db_path = HERE / "radar.db"
     if db_path.exists():
         db_path.unlink()
     db = sqlite3.connect(db_path)
     db.execute("""CREATE TABLE items (
         id TEXT PRIMARY KEY, platform TEXT, source TEXT, url TEXT, title TEXT, text TEXT, author TEXT,
-        published_at TEXT, collected_at TEXT, watch TEXT, relevance INTEGER, kind TEXT,
+        published_at TEXT, collected_at TEXT, subject TEXT, watch TEXT, relevance INTEGER, kind TEXT,
         companies TEXT, topic TEXT, summary TEXT)""")
     for r in items:
         t = r.get("tags") or {}
-        db.execute("INSERT INTO items VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
+        db.execute("INSERT INTO items VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
             r["id"], r["platform"], r["source"], r["url"], r["title"], r["text"], r["author"],
-            r["published_at"], r["collected_at"], ", ".join(r.get("watch") or []),
+            r["published_at"], r["collected_at"], r.get("subject"), ", ".join(r.get("watch") or []),
             t.get("relevance"), t.get("kind"), ", ".join(t.get("companies") or []), t.get("topic"), t.get("summary")))
+    db.execute("""CREATE TABLE analyses (
+        id TEXT PRIMARY KEY, company TEXT, symbol TEXT, url TEXT, published_at TEXT, read_at TEXT,
+        headline TEXT, category TEXT, materiality INTEGER, tone TEXT, read TEXT, facts TEXT,
+        positives TEXT, risks TEXT, check_next TEXT, price_context TEXT, numbers TEXT)""")
+    for a in analyses:
+        db.execute("INSERT OR REPLACE INTO analyses VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
+            a["id"], a.get("company"), a.get("symbol"), a.get("url"), a.get("published_at"), a.get("read_at"),
+            a.get("headline"), a.get("category"), a.get("materiality"), a.get("tone"), a.get("read"),
+            json.dumps(a.get("facts")), json.dumps(a.get("positives")), json.dumps(a.get("risks")),
+            json.dumps(a.get("check_next")), a.get("price_context"), json.dumps(a.get("numbers"))))
+    db.execute("""CREATE TABLE prices (
+        symbol TEXT PRIMARY KEY, name TEXT, industry TEXT, idx TEXT, date TEXT, close REAL, change REAL,
+        vol_ratio REAL, deliv REAL, rsi REAL, from_high REAL, ret_3m REAL, atr_pct REAL,
+        momentum_rank INTEGER, turnover_cr REAL, screens TEXT)""")
+    hits = {}
+    for name, sc in (signals.get("screens") or {}).items():
+        for st in sc["stocks"]:
+            hits.setdefault(st["symbol"], []).append(name)
+    for sym, r in (signals.get("snapshots") or {}).items():
+        db.execute("INSERT INTO prices VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
+            sym, r["name"], r["industry"], r["index"], signals.get("date"), r["close"], r["change"],
+            r["vol_ratio"], r["deliv"], r["rsi"], r["from_high"], r["ret_3m"], r["atr_pct"],
+            r["momentum_rank"], r["turnover_cr"], ", ".join(hits.get(sym, []))))
     db.execute("CREATE INDEX items_time ON items (published_at)")
     db.execute("CREATE INDEX items_platform ON items (platform)")
     db.commit()
     db.close()
     health = load_json(DATA / "health.json", [])
     page = (HERE / "dashboard.template.html").read_text(encoding="utf-8")
-    payload = json.dumps({"built_at": iso(now_utc()), "items": items[:3000], "health": health},
+    market_view = {k: v for k, v in signals.items() if k != "snapshots"}
+    payload = json.dumps({"built_at": iso(now_utc()), "items": items[:4000], "health": health,
+                          "analyses": analyses[:300], "market": market_view,
+                          "briefs": brain.load_briefs(DATA)},
                          ensure_ascii=False).replace("</", "<\\/")
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")
-    print("built radar.db and dashboard.html with %d posts" % len(items))
+    print("built radar.db and dashboard.html: %d posts, %d filing reads, market data for %s"
+          % (len(items), len(analyses), signals.get("date") or "no day yet"))
+
+
+def step(name, fn):
+    """One failing step must not stop the others or lose what was collected."""
+    try:
+        fn()
+    except Exception as e:
+        print("%s step failed: %s: %s" % (name, type(e).__name__, str(e)[:300]))
 
 
 def main(argv):
@@ -542,14 +668,18 @@ def main(argv):
     cfg = load_json(CONFIG, None)
     if cfg is None:
         sys.exit("cannot read " + str(CONFIG))
+    if cmd not in ("collect", "market", "tag", "analyse", "build", "run"):
+        sys.exit(__doc__)
     if cmd in ("collect", "run"):
-        collect(cfg)
+        step("collect", lambda: collect(cfg))
+    if cmd in ("market", "run") and "market" not in (cfg.get("disabled_lanes") or []):
+        step("market", market_step)
     if cmd in ("tag", "run"):
-        tag()
+        step("tag", tag)
+    if cmd in ("analyse", "run"):
+        step("analyse", lambda: analyse(cfg))
     if cmd in ("build", "run"):
         build()
-    if cmd not in ("collect", "tag", "build", "run"):
-        sys.exit(__doc__)
 
 
 if __name__ == "__main__":

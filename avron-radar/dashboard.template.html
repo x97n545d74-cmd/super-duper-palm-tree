@@ -5,35 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Avron Radar</title>
 <style>
-:root{--bg:#fafaf8;--card:#fff;--ink:#16181d;--mute:#6b7280;--line:#e5e7eb;--gold:#b8892b;--chip:#f1f2f4;--bad:#b42318}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1114;--card:#171a1f;--ink:#eceef1;--mute:#9aa1ac;--line:#2a2f37;--gold:#d9ad55;--chip:#22262d;--bad:#f97066}}
+:root{--bg:#fafaf8;--card:#fff;--ink:#16181d;--mute:#6b7280;--line:#e5e7eb;--gold:#b8892b;--chip:#f1f2f4;--bad:#b42318;--good:#067647}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1114;--card:#171a1f;--ink:#eceef1;--mute:#9aa1ac;--line:#2a2f37;--gold:#d9ad55;--chip:#22262d;--bad:#f97066;--good:#47cd89}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{padding:20px 16px 12px;max-width:980px;margin:0 auto}
+header{padding:20px 16px 8px;max-width:1040px;margin:0 auto}
 h1{font-size:22px;margin:0;letter-spacing:-.02em}
 h1 span{color:var(--gold)}
 .sub{color:var(--mute);font-size:13px;margin-top:2px}
-.bar{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);z-index:2}
-.bar div{max-width:980px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap}
+nav{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);z-index:3}
+nav div{max-width:1040px;margin:0 auto;padding:8px 16px;display:flex;gap:6px;overflow-x:auto}
 input,select,button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
-input{flex:1 1 220px;min-width:0}
-button{cursor:pointer}
+button{cursor:pointer;white-space:nowrap}
 button.on{border-color:var(--gold);color:var(--gold)}
-main{max-width:980px;margin:0 auto;padding:12px 16px 60px}
+main{max-width:1040px;margin:0 auto;padding:12px 16px 60px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filters input{flex:1 1 220px;min-width:0}
 .count{color:var(--mute);font-size:13px;margin:4px 0 12px}
-.post{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
 .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--mute);margin-bottom:6px}
 .chip{background:var(--chip);border-radius:999px;padding:2px 8px}
 .chip.w{color:var(--gold)}
-.chip.k-rumour,.chip.k-tip,.chip.k-promo{color:var(--bad)}
-.post a.t{color:var(--ink);font-weight:600;text-decoration:none;overflow-wrap:anywhere}
-.post a.t:hover{text-decoration:underline}
-.sum{margin-top:4px}
+.chip.bad,.chip.k-rumour,.chip.k-tip,.chip.k-promo,.chip.t-negative{color:var(--bad)}
+.chip.t-positive{color:var(--good)}
+a.t{color:var(--ink);font-weight:600;text-decoration:none;overflow-wrap:anywhere}
+a.t:hover{text-decoration:underline}
 .txt{color:var(--mute);font-size:13.5px;margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere}
+.card ul{margin:6px 0 0;padding-left:18px}
+.card h4{margin:10px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+.wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
-td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
-.bad{color:var(--bad)}
+td,th{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+td.wraps{white-space:normal;overflow-wrap:anywhere}
+.up{color:var(--good)}.down{color:var(--bad)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.tile b{display:block;font-size:19px;letter-spacing:-.01em}
+.tile span{font-size:12px;color:var(--mute)}
+.brief h2{font-size:16px;margin:18px 0 6px}
+.brief p{margin:6px 0}
 .note{color:var(--mute);font-size:12.5px;margin-top:24px}
+h3{font-size:15px;margin:18px 0 4px}
+.mean{color:var(--mute);font-size:13px;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -41,40 +55,112 @@ td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);overfl
   <h1>Avron <span>Radar</span></h1>
   <div class="sub" id="built"></div>
 </header>
-<div class="bar"><div>
-  <input id="q" placeholder="Search company, topic, word" autocomplete="off">
-  <select id="platform"><option value="">All platforms</option></select>
-  <select id="kind"><option value="">All kinds</option></select>
-  <select id="rel"><option value="0">Any relevance</option><option value="3">Relevance 3+</option><option value="4">Relevance 4+</option></select>
-  <button id="watch">Watchlist only</button>
-  <button id="tab">Sources</button>
-</div></div>
+<nav><div id="tabs"></div></nav>
 <main>
-  <div class="count" id="count"></div>
-  <div id="list"></div>
-  <div id="sources" hidden></div>
-  <p class="note">Private research file. Posts are unverified social chatter, not facts: check a primary source before using anything. Each card links to the original post.</p>
+  <section id="v-brief"></section>
+  <section id="v-filings" hidden></section>
+  <section id="v-screens" hidden></section>
+  <section id="v-feed" hidden>
+    <div class="filters">
+      <input id="q" placeholder="Search company, topic, word" autocomplete="off">
+      <select id="platform"><option value="">All platforms</option></select>
+      <select id="kind"><option value="">All kinds</option></select>
+      <select id="rel"><option value="0">Any relevance</option><option value="3">Relevance 3+</option><option value="4">Relevance 4+</option></select>
+      <button id="watch">Watchlist only</button>
+    </div>
+    <div class="count" id="count"></div>
+    <div id="list"></div>
+  </section>
+  <section id="v-sources" hidden></section>
+  <p class="note">Private research file, not investment advice. Filings and prices come from NSE's official files. News, forum and social posts are unverified: check a primary source before relying on any of it. Screens describe what the price did; they do not predict what it will do.</p>
 </main>
 <script>
-const D = /*DATA*/null || {built_at:"", items:[], health:[]};
+const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[]};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
 const when = s => { if (!s) return ""; const d = new Date(s); return isNaN(d) ? "" : d.toLocaleString("en-IN", {day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit"}); };
-let watchOnly = false, showSources = false;
-$("built").textContent = D.items.length + " posts · updated " + (when(D.built_at) || "never");
+const num = (x, d) => x == null ? "–" : Number(x).toLocaleString("en-IN", {maximumFractionDigits: d == null ? 1 : d});
+const pct = x => x == null ? "–" : "<span class='" + (x > 0 ? "up" : x < 0 ? "down" : "") + "'>" + (x > 0 ? "+" : "") + num(x) + "%</span>";
+const M = D.market || {};
+$("built").textContent = D.items.length + " posts · " + (D.analyses || []).length + " filing reads · prices for " + (M.date || "no day yet") + " · updated " + (when(D.built_at) || "never");
+
+// tabs
+const TABS = [["brief","Brief"],["filings","Filings"],["screens","Screens"],["feed","Feed"],["sources","Sources"]];
+let tab = "brief";
+$("tabs").innerHTML = TABS.map(t => "<button data-t='" + t[0] + "'>" + t[1] + "</button>").join("");
+$("tabs").onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; show(); } };
+function show() {
+  TABS.forEach(t => { $("v-" + t[0]).hidden = t[0] !== tab; });
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.t === tab));
+}
+
+// brief (a small, safe Markdown reader: headings, bullets, bold)
+function md(text) {
+  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  let out = "", list = false;
+  text.split("\n").forEach(line => {
+    const l = line.trim();
+    const bullet = /^[-*] /.test(l);
+    if (list && !bullet) { out += "</ul>"; list = false; }
+    if (!l) return;
+    if (/^#{1,3} /.test(l)) out += "<h2>" + inline(l.replace(/^#+ /, "")) + "</h2>";
+    else if (bullet) { if (!list) { out += "<ul>"; list = true; } out += "<li>" + inline(l.slice(2)) + "</li>"; }
+    else out += "<p>" + inline(l) + "</p>";
+  });
+  return out + (list ? "</ul>" : "");
+}
+function tiles() {
+  const b = M.breadth, ix = M.indices || {};
+  if (!b) return "";
+  const t = (v, label) => "<div class='tile'><b>" + v + "</b><span>" + esc(label) + "</span></div>";
+  let h = "<div class='tiles'>";
+  ["Nifty 50","Nifty Smallcap 250","Nifty Microcap 250"].forEach(n => { if (ix[n]) h += t(num(ix[n].close, 0) + " " + pct(ix[n].change_pct), n + (ix[n].pe ? " · P/E " + num(ix[n].pe) : "")); });
+  if (ix["India VIX"]) h += t(num(ix["India VIX"].close, 2), "India VIX");
+  h += t(num(b.advancers, 0) + " / " + num(b.decliners, 0), "advancers / decliners");
+  h += t(num(b.pct_above_200dma) + "%", "stocks above 200-day average");
+  h += t(num(b.new_52w_highs, 0) + " / " + num(b.new_52w_lows, 0), "new 52-week highs / lows");
+  return h + "</div>";
+}
+$("v-brief").innerHTML = tiles() + ((D.briefs || []).length
+  ? D.briefs.map(b => "<div class='card brief'><div class='meta'><span class='chip w'>" + esc(b.name) + "</span></div>" + md(b.text) + "</div>").join("")
+  : "<p>No brief yet. The first one is written after the day's price file arrives (about 7 pm India time) or at 7 am.</p>");
+
+// filings
+const lst = (title, xs) => (xs || []).length ? "<h4>" + title + "</h4><ul>" + xs.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "";
+$("v-filings").innerHTML = (D.analyses || []).length ? D.analyses.map(a =>
+  "<div class='card'><div class='meta'><span class='chip w'>materiality " + esc(a.materiality) + "</span><span class='chip t-" + esc(a.tone) + "'>" + esc(a.tone) + "</span>" +
+  "<span class='chip'>" + esc(a.category) + "</span>" + (a.symbol ? "<span class='chip'>" + esc(a.symbol) + "</span>" : "") +
+  "<span>· filed " + esc(when(a.published_at)) + "</span>" + (a.document_read ? "" : "<span class='chip bad'>summary only, document not read</span>") + "</div>" +
+  "<a class='t' href='" + esc(safeUrl(a.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(a.headline) + "</a>" +
+  "<p>" + esc(a.read) + "</p>" + (a.price_context ? "<p class='txt'>" + esc(a.price_context) + "</p>" : "") +
+  lst("Facts from the filing", a.facts) + lst("Positives", a.positives) + lst("Risks", a.risks) + lst("Check next", a.check_next) + "</div>").join("")
+  : "<p>No filings read yet.</p>";
+
+// screens
+function stockTable(rows) {
+  return "<div class='wrap'><table><tr><th>Stock</th><th>Industry</th><th class='n'>Close</th><th class='n'>Day</th><th class='n'>Volume ×</th><th class='n'>Delivery %</th><th class='n'>RSI</th><th class='n'>From 52w high</th><th class='n'>Momentum rank</th></tr>" +
+    rows.map(r => "<tr><td><b>" + esc(r.symbol) + "</b></td><td class='wraps'>" + esc(r.industry || r.name) + "</td><td class='n'>" + num(r.close, 2) + "</td><td class='n'>" + pct(r.change) +
+      "</td><td class='n'>" + num(r.vol_ratio) + "</td><td class='n'>" + num(r.deliv) + "</td><td class='n'>" + num(r.rsi, 0) + "</td><td class='n'>" + pct(r.from_high) + "</td><td class='n'>" + num(r.momentum_rank, 0) + "</td></tr>").join("") + "</table></div>";
+}
+(function () {
+  if (!M.screens) { $("v-screens").innerHTML = "<p>No price data yet.</p>"; return; }
+  let h = tiles() + "<p class='mean'>" + num(M.stocks_screened, 0) + " stocks screened on " + esc(M.date) + ", using " + esc(M.days_of_history) + " trading days of history. Stocks that traded under Rs 1 crore are left out. Volume × is today's volume against the 20-day average.</p>";
+  Object.keys(M.screens).forEach(k => { const s = M.screens[k]; if (!s.count) return;
+    h += "<h3>" + esc(k.replace(/_/g, " ")) + " · " + s.count + "</h3><div class='mean'>" + esc(s.meaning) + (s.count > s.stocks.length ? " Showing the " + s.stocks.length + " with the strongest momentum." : "") + "</div>" + stockTable(s.stocks); });
+  h += "<h3>Top gainers</h3>" + stockTable(M.top_gainers || []) + "<h3>Top losers</h3>" + stockTable(M.top_losers || []);
+  if ((M.deals || []).length) h += "<h3>Bulk and block deals</h3><div class='wrap'><table><tr><th>Stock</th><th>Client</th><th>Side</th><th class='n'>Quantity</th><th class='n'>Price</th><th>Type</th></tr>" +
+    M.deals.map(d => "<tr><td><b>" + esc(d.symbol) + "</b></td><td class='wraps'>" + esc(d.client) + "</td><td class='" + (/buy/i.test(d.side) ? "up" : "down") + "'>" + esc(d.side) + "</td><td class='n'>" + num(d.quantity, 0) + "</td><td class='n'>" + num(d.price, 2) + "</td><td>" + esc(d.kind) + "</td></tr>").join("") + "</table></div>";
+  $("v-screens").innerHTML = h;
+})();
+
+// feed
+let watchOnly = false;
 const fill = (sel, vals) => vals.sort().forEach(v => { const o = document.createElement("option"); o.value = o.textContent = v; sel.appendChild(o); });
 fill($("platform"), [...new Set(D.items.map(i => i.platform))]);
 fill($("kind"), [...new Set(D.items.map(i => (i.tags || {}).kind).filter(Boolean))]);
-function render() {
-  $("list").hidden = showSources; $("sources").hidden = !showSources; $("count").hidden = showSources;
-  $("tab").classList.toggle("on", showSources); $("watch").classList.toggle("on", watchOnly);
-  if (showSources) {
-    $("sources").innerHTML = "<table><tr><th>Platform</th><th>Source</th><th>Status</th><th>Checked</th></tr>" +
-      D.health.map(h => "<tr><td>" + esc(h.lane) + "</td><td>" + esc(h.source) + "</td><td class='" + (h.ok ? "" : "bad") + "'>" +
-        (h.ok ? "ok · " + h.found + " read, " + h.new + " new" : "failed · " + esc(h.error)) + "</td><td>" + esc(when(h.checked_at)) + "</td></tr>").join("") + "</table>";
-    return;
-  }
+function feed() {
+  $("watch").classList.toggle("on", watchOnly);
   const q = $("q").value.trim().toLowerCase(), p = $("platform").value, k = $("kind").value, r = +$("rel").value;
   const rows = D.items.filter(i => {
     const t = i.tags || {};
@@ -88,21 +174,27 @@ function render() {
   $("count").textContent = rows.length + " of " + D.items.length + " posts" + (rows.length > 300 ? " (showing the newest 300)" : "");
   $("list").innerHTML = rows.slice(0, 300).map(i => {
     const t = i.tags || {};
-    return "<div class='post'><div class='meta'><span class='chip'>" + esc(i.platform) + "</span><span>" + esc(i.source) + "</span>" +
+    return "<div class='card'><div class='meta'><span class='chip'>" + esc(i.platform) + "</span><span>" + esc(i.source) + "</span>" +
       (i.author ? "<span>· " + esc(i.author) + "</span>" : "") + "<span>· " + esc(when(i.published_at || i.collected_at)) + "</span>" +
+      (i.subject ? "<span class='chip'>" + esc(i.subject) + "</span>" : "") +
       (t.kind ? "<span class='chip k-" + esc(t.kind) + "'>" + esc(t.kind) + "</span>" : "") +
       (t.relevance != null ? "<span class='chip'>relevance " + esc(t.relevance) + "</span>" : "") +
       (t.companies || []).map(c => "<span class='chip'>" + esc(c) + "</span>").join("") +
       (i.watch || []).map(w => "<span class='chip w'>" + esc(w) + "</span>").join("") + "</div>" +
       "<a class='t' href='" + esc(safeUrl(i.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(i.title || "(no title)") + "</a>" +
-      (t.summary ? "<div class='sum'>" + esc(t.summary) + "</div>" : "") +
+      (t.summary ? "<div>" + esc(t.summary) + "</div>" : "") +
       (i.text && i.text !== i.title ? "<div class='txt'>" + esc(i.text) + "</div>" : "") + "</div>";
   }).join("") || "<p>No posts match.</p>";
 }
-["q","platform","kind","rel"].forEach(id => $(id).addEventListener("input", render));
-$("watch").onclick = () => { watchOnly = !watchOnly; render(); };
-$("tab").onclick = () => { showSources = !showSources; render(); };
-render();
+["q","platform","kind","rel"].forEach(id => $(id).addEventListener("input", feed));
+$("watch").onclick = () => { watchOnly = !watchOnly; feed(); };
+
+// sources
+$("v-sources").innerHTML = "<div class='wrap'><table><tr><th>Lane</th><th>Source</th><th>Status</th><th>Checked</th></tr>" +
+  D.health.map(h => "<tr><td>" + esc(h.lane) + "</td><td class='wraps'>" + esc(h.source) + "</td><td class='wraps " + (h.ok ? "" : "down") + "'>" +
+    (h.ok ? "ok · " + h.found + " read, " + h.new + " new" : "failed · " + esc(h.error)) + "</td><td>" + esc(when(h.checked_at)) + "</td></tr>").join("") + "</table></div>";
+
+feed(); show();
 </script>
 </body>
 </html>
