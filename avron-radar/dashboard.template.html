@@ -58,12 +58,15 @@ h3{font-size:15px;margin:18px 0 4px}
 <nav><div id="tabs"></div></nav>
 <main>
   <section id="v-brief"></section>
+  <section id="v-score" hidden></section>
   <section id="v-filings" hidden></section>
   <section id="v-screens" hidden></section>
   <section id="v-stock" hidden>
     <div class="filters"><input id="sq" placeholder="Type an NSE symbol or company name" autocomplete="off"></div>
     <div id="stock"></div>
   </section>
+  <section id="v-themes" hidden></section>
+  <section id="v-ask" hidden></section>
   <section id="v-feed" hidden>
     <div class="filters">
       <input id="q" placeholder="Search company, topic, word" autocomplete="off">
@@ -79,7 +82,7 @@ h3{font-size:15px;margin:18px 0 4px}
   <p class="note">Private research file, not investment advice. Filings and prices come from NSE's official files. News, forum and social posts are unverified: check a primary source before relying on any of it. Screens describe what the price did; they do not predict what it will do.</p>
 </main>
 <script>
-const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[]};
+const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}, answers:[], my_stocks:[], themes:[]};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
@@ -90,7 +93,7 @@ const M = D.market || {};
 $("built").textContent = D.items.length + " posts · " + (D.analyses || []).length + " filing reads · prices for " + (M.date || "no day yet") + " · updated " + (when(D.built_at) || "never");
 
 // tabs
-const TABS = [["brief","Brief"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["feed","Feed"],["sources","System"]];
+const TABS = [["brief","Brief"],["score","Scorecard"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["themes","Themes"],["ask","Ask"],["feed","Feed"],["sources","System"]];
 let tab = "brief";
 $("tabs").innerHTML = TABS.map(t => "<button data-t='" + t[0] + "'>" + t[1] + "</button>").join("");
 $("tabs").onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; show(); } };
@@ -119,6 +122,7 @@ function tiles() {
   if (!b) return "";
   const t = (v, label) => "<div class='tile'><b>" + v + "</b><span>" + esc(label) + "</span></div>";
   let h = "<div class='tiles'>";
+  if (M.regime) h += t("<span class='" + ({strong: "up", weak: "down"}[M.regime.label] || "") + "'>" + esc(M.regime.label) + "</span>", "market regime");
   ["Nifty 50","Nifty Smallcap 250","Nifty Microcap 250"].forEach(n => { if (ix[n]) h += t(num(ix[n].close, 0) + " " + pct(ix[n].change_pct), n + (ix[n].pe ? " · P/E " + num(ix[n].pe) : "")); });
   if (ix["India VIX"]) h += t(num(ix["India VIX"].close, 2), "India VIX");
   h += t(num(b.advancers, 0) + " / " + num(b.decliners, 0), "advancers / decliners");
@@ -128,12 +132,38 @@ function tiles() {
 }
 const buzzHtml = (D.buzz || []).length ? "<h3>Talked about far more than usual in the past day</h3><div class='mean'>A jump in talk is a reason to look, not evidence. Tap a symbol in the Stock tab to see what is being said.</div><div class='wrap'><table><tr><th>Stock</th><th class='n'>Mentions, 24 h</th><th class='n'>Daily average before</th><th>Where</th></tr>" +
   D.buzz.slice(0, 12).map(b => "<tr><td><b>" + esc(b.symbol) + "</b></td><td class='n'>" + num(b.mentions_24h, 0) + "</td><td class='n'>" + num(b.daily_average_before) + "</td><td>" + esc((b.platforms || []).join(", ")) + "</td></tr>").join("") + "</table></div>" : "";
-$("v-brief").innerHTML = tiles() + buzzHtml + ((D.briefs || []).length
+const day = s => { const d = new Date(s + "T00:00:00"); return isNaN(d) ? s : d.toLocaleDateString("en-IN", {weekday:"short", day:"2-digit", month:"short"}); };
+const calHtml = (D.calendar || []).length ? "<h3>Coming up in the next two weeks</h3><div class='wrap'><table><tr><th>Date</th><th>Company</th><th>Event</th><th>What</th></tr>" +
+  D.calendar.slice(0, 40).map(c => "<tr><td>" + esc(day(c.date)) + "</td><td class='wraps'><b>" + esc(c.symbol || c.company) + "</b></td><td>" + esc(c.kind) + "</td><td class='wraps'>" + esc(c.what) + "</td></tr>").join("") + "</table></div>" : "";
+const mineHtml = (D.my_stocks || []).length ? "<h3>My stocks</h3>" + D.my_stocks.map(s => "<div class='card'><b>" + esc(s.symbol) + "</b> " + esc(s.name || "") +
+  (s.close != null ? " · " + num(s.close, 2) + " " + pct(s.change) + " · " + pct(s.from_high) + " from high" : "") +
+  ((s.lines || []).length ? "<ul>" + s.lines.map(l => "<li>" + esc(l) + "</li>").join("") + "</ul>" : "<div class='mean'>Nothing new in the past day.</div>") + "</div>").join("")
+  : "<p class='mean'>Tell the radar which stocks you follow (the \"my_stocks\" list in config.json) and they appear here first, with everything that happened to them in the past day.</p>";
+$("v-brief").innerHTML = tiles() + mineHtml + buzzHtml + calHtml + ((D.briefs || []).length
   ? D.briefs.map(b => "<div class='card brief'><div class='meta'><span class='chip w'>" + esc(b.name) + "</span></div>" + md(b.text) + "</div>").join("")
   : "<p>No brief yet. The first one is written after the day's price file arrives (about 7 pm India time) or at 7 am.</p>");
 
+// scorecard
+function cardHtml(c) {
+  return "<div class='card'><div class='meta'><span class='chip " + (c.score > 0 ? "t-positive" : c.score < 0 ? "bad" : "") + "'>score " + (c.score > 0 ? "+" : "") + esc(c.score) + "</span>" +
+    (c.conflict ? "<span class='chip bad'>price and business disagree</span>" : "") + (c.mine ? "<span class='chip w'>passes my screen</span>" : "") +
+    (c.industry ? "<span>" + esc(c.industry) + "</span>" : "") + (c.market_cap_cr ? "<span>· Rs " + num(c.market_cap_cr, 0) + " cr</span>" : "") + "</div>" +
+    "<b>" + esc(c.symbol) + "</b> " + esc(c.name || "") + (c.close != null ? " · " + num(c.close, 2) + " " + pct(c.change) : "") +
+    lst("In favour", c["for"]) + lst("Against", c.against) + lst("Also", c.notes) + "</div>";
+}
+(function () {
+  const L = D.shortlists || {}, sec = (title, mean, rows) => "<h3>" + title + " · " + (rows || []).length + "</h3><div class='mean'>" + mean + "</div>" + ((rows || []).map(cardHtml).join("") || "<p class='mean'>None today.</p>");
+  const G = M.regime;
+  $("v-score").innerHTML = (G ? "<div class='card'><div class='meta'><span class='chip " + ({strong: "t-positive", weak: "bad"}[G.label] || "w") + "'>market: " + esc(G.label) + "</span></div><b>" + esc(G.meaning) + "</b><ul>" + G.why.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul></div>" : "") + "<p class='mean'>One tally per stock of everything the radar holds: price action, company financials, filings, large deals and promoter holding. It counts evidence; it does not forecast and it is not advice. The Screens tab shows how each price screen has actually performed.</p>" +
+    sec("Passes my screen", "Your own rules from config.json, on companies whose results are on file.", L.mine) +
+    sec("Most evidence in favour", "Score of 3 or more, from at least two different kinds of evidence.", L.strongest) +
+    sec("Strong on price alone", "Price evidence of 3 or more with no results on file yet. Half the picture: check the business before taking it seriously.", L.price_only) +
+    sec("Price and business disagree", "For example a breakout in a company with flags in its accounts, or good results in a falling stock.", L.conflicts) +
+    sec("Most evidence against", "Score of -2 or lower.", L.weakest);
+})();
+
 // filings
-const lst = (title, xs) => (xs || []).length ? "<h4>" + title + "</h4><ul>" + xs.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "";
+function lst(title, xs) { return (xs || []).length ? "<h4>" + title + "</h4><ul>" + xs.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : ""; }
 const CONF = {high: "t-positive", medium: "w", low: "bad"};
 function readCard(a) {
   const v = a.verified;
@@ -159,11 +189,22 @@ function stockTable(rows) {
 (function () {
   if (!M.screens) { $("v-screens").innerHTML = "<p>No price data yet.</p>"; return; }
   let h = tiles() + "<p class='mean'>" + num(M.stocks_screened, 0) + " stocks screened on " + esc(M.date) + ", using " + esc(M.days_of_history) + " trading days of history. Stocks that traded under Rs 1 crore are left out. Volume × is today's volume against the 20-day average.</p>";
+  const R = M.screen_record;
+  if (R && R.screens && R.screens.all) { const b = R.screens.all, cell = (v, good) => "<td class='n " + (v == null ? "" : v > 0 === good ? "up" : v < 0 === good ? "down" : "") + "'>" + (v == null ? "–" : (v > 0 ? "+" : "") + num(v, 2) + "%") + "</td>";
+    h += "<h3>How the screens have done</h3><div class='mean'>Sampled on " + esc(R.sample_days) + " days between " + esc(R.from) + " and " + esc(R.to) + ": the average move 5 and 20 trading days after a stock appeared on each screen, and the edge over every liquid stock on the same days. A small recent sample: it shows whether a screen is working in this market, not what will happen next.</div><div class='wrap'><table><tr><th>Screen</th><th class='n'>Cases</th><th class='n'>After 5 days</th><th class='n'>Rose</th><th class='n'>Edge, 5 days</th><th class='n'>After 20 days</th><th class='n'>Rose</th><th class='n'>Edge, 20 days</th></tr>" +
+      Object.keys(R.screens).sort((x, y) => (R.screens[y].edge_20d || -99) - (R.screens[x].edge_20d || -99)).map(k => { const r = R.screens[k];
+        return "<tr><td>" + (k === "all" ? "<b>every liquid stock</b>" : esc(k.replace(/_/g, " "))) + "</td><td class='n'>" + num(r.n_5d, 0) + "</td>" + cell(r.avg_5d, true) + "<td class='n'>" + (r.rose_5d_pct == null ? "–" : r.rose_5d_pct + "%") + "</td>" + cell(r.edge_5d, true) + cell(r.avg_20d, true) + "<td class='n'>" + (r.rose_20d_pct == null ? "–" : r.rose_20d_pct + "%") + "</td>" + cell(r.edge_20d, true) + "</tr>"; }).join("") + "</table></div>"; }
+  if ((M.sectors || []).length) h += "<h3>Sectors</h3><div class='mean'>Index companies grouped by NSE's industry label, strongest month first. Money moves between sectors before it shows in single stocks.</div><div class='wrap'><table><tr><th>Industry</th><th class='n'>Stocks</th><th class='n'>Today</th><th class='n'>1 month</th><th class='n'>3 months</th><th class='n'>Above 200-day</th><th class='n'>In uptrend</th></tr>" +
+    M.sectors.map(r => "<tr><td class='wraps'>" + esc(r.industry) + "</td><td class='n'>" + r.stocks + "</td><td class='n'>" + pct(r.avg_today) + "</td><td class='n'>" + pct(r.avg_1m) + "</td><td class='n'>" + pct(r.avg_3m) + "</td><td class='n'>" + (r.pct_above_200dma == null ? "–" : r.pct_above_200dma + "%") + "</td><td class='n'>" + r.in_uptrend + "</td></tr>").join("") + "</table></div>";
   Object.keys(M.screens).forEach(k => { const s = M.screens[k]; if (!s.count) return;
     h += "<h3>" + esc(k.replace(/_/g, " ")) + " · " + s.count + "</h3><div class='mean'>" + esc(s.meaning) + (s.count > s.stocks.length ? " Showing the " + s.stocks.length + " with the strongest momentum." : "") + "</div>" + stockTable(s.stocks); });
+  if ((D.growth || []).length) h += "<h3>results growth · " + D.growth.length + "</h3><div class='mean'>Latest results on file show revenue and profit both up 20% or more on a year ago. P/E is price over this period's EPS scaled to a year, not a trailing figure. Check the flags in the Stock tab.</div><div class='wrap'><table><tr><th>Stock</th><th>Period</th><th class='n'>Revenue YoY</th><th class='n'>Profit YoY</th><th class='n'>EBITDA margin</th><th class='n'>P/E</th><th class='n'>Market cap, Rs cr</th><th class='n'>From 52w high</th><th>Above 200-day</th><th class='n'>Flags</th></tr>" +
+    D.growth.slice(0, 60).map(g => "<tr><td><b>" + esc(g.symbol) + "</b></td><td>" + esc(g.period_end) + "</td><td class='n'>" + pct(g.revenue_yoy_pct) + "</td><td class='n'>" + pct(g.pat_yoy_pct) + "</td><td class='n'>" + num(g.ebitda_margin_pct) + "</td><td class='n'>" + num(g.pe_annualised) + "</td><td class='n'>" + num(g.market_cap_cr, 0) + "</td><td class='n'>" + pct(g.from_high) + "</td><td>" + (g.above_200dma ? "yes" : "no") + "</td><td class='n " + (g.flags ? "down" : "") + "'>" + esc(g.flags) + "</td></tr>").join("") + "</table></div>";
   h += "<h3>Top gainers</h3>" + stockTable(M.top_gainers || []) + "<h3>Top losers</h3>" + stockTable(M.top_losers || []);
-  if ((M.deals || []).length) h += "<h3>Bulk and block deals</h3><div class='wrap'><table><tr><th>Stock</th><th>Client</th><th>Side</th><th class='n'>Quantity</th><th class='n'>Price</th><th>Type</th></tr>" +
-    M.deals.map(d => "<tr><td><b>" + esc(d.symbol) + "</b></td><td class='wraps'>" + esc(d.client) + "</td><td class='" + (/buy/i.test(d.side) ? "up" : "down") + "'>" + esc(d.side) + "</td><td class='n'>" + num(d.quantity, 0) + "</td><td class='n'>" + num(d.price, 2) + "</td><td>" + esc(d.kind) + "</td></tr>").join("") + "</table></div>";
+  if ((M.deal_summary || []).length) h += "<h3>Large deals, netted per stock</h3><div class='mean'>Biggest net share of the day's volume first. The same party on both sides is a trader passing through, not a position.</div><div class='wrap'><table><tr><th>Stock</th><th class='n'>Net shares</th><th class='n'>Net % of day's volume</th><th>Buyers</th><th>Sellers</th><th>Both sides</th></tr>" +
+    M.deal_summary.slice(0, 40).map(d => "<tr><td><b>" + esc(d.symbol) + "</b></td><td class='n " + (d.net > 0 ? "up" : d.net < 0 ? "down" : "") + "'>" + num(d.net, 0) + "</td><td class='n'>" + num(d.net_pct_of_day_volume) + "</td><td class='wraps'>" + esc(d.buyers.join("; ")) + "</td><td class='wraps'>" + esc(d.sellers.join("; ")) + "</td><td class='wraps'>" + esc((d.same_party_both_sides || []).join("; ")) + "</td></tr>").join("") + "</table></div>";
+  if ((M.deals || []).length) h += "<h3>Every bulk and block deal</h3><div class='wrap'><table><tr><th>Stock</th><th>Client</th><th>Side</th><th class='n'>Quantity</th><th class='n'>Price</th><th class='n'>% of day's volume</th><th>Type</th></tr>" +
+    M.deals.map(d => "<tr><td><b>" + esc(d.symbol) + "</b></td><td class='wraps'>" + esc(d.client) + "</td><td class='" + (/buy/i.test(d.side) ? "up" : "down") + "'>" + esc(d.side) + "</td><td class='n'>" + num(d.quantity, 0) + "</td><td class='n'>" + num(d.price, 2) + "</td><td class='n'>" + num(d.pct_of_day_volume) + "</td><td>" + esc(d.kind) + "</td></tr>").join("") + "</table></div>";
   $("v-screens").innerHTML = h;
 })();
 
@@ -190,12 +231,36 @@ function stock() {
      [num(r.deliv) + "%", "delivery"], [num(r.momentum_rank, 0), "momentum rank (0-100)"], [num(r.atr_pct) + "%", "normal daily range (ATR)"]]
       .map(t => "<div class='tile'><b>" + t[0] + "</b><span>" + esc(t[1]) + "</span></div>").join("") + "</div>" +
     "<div class='mean'>On screens: " + (on.length ? on.map(k => esc(k.replace(/_/g, " "))).join(", ") : "none today") + "</div>";
+  const f = D.fundamentals[sym], hd = D.holdings[sym];
+  if (f) { const m = f.metrics, tl = (v, l) => "<div class='tile'><b>" + v + "</b><span>" + esc(l) + "</span></div>";
+    h += "<h3>Results for the " + esc(f.period_type.replace("_", " ")) + " ended " + esc(f.period_end) + " · " + esc(f.basis) + "</h3><div class='mean'>Figures copied from <a class='t' href='" + esc(safeUrl(f.url)) + "' target='_blank' rel='noopener noreferrer'>the filing</a>; every ratio is computed by code. Rupee amounts depend on the unit being read correctly: check them against the filing before relying on them.</div><div class='tiles'>" +
+      tl(num(m.revenue_cr, 2) + " " + pct(m.revenue_yoy_pct), "revenue, Rs cr · year on year") + tl(num(m.pat_cr, 2) + " " + pct(m.pat_yoy_pct), "profit after tax, Rs cr · year on year") +
+      tl(num(m.ebitda_margin_pct) + "%" + (m.margin_change_yoy_pts != null ? " " + pct(m.margin_change_yoy_pts).replace("%", " pts") : ""), "EBITDA margin · change on a year ago") + tl(num(m.net_margin_pct) + "%", "net margin") +
+      tl(num(m.roe_annualised_pct) + "%", "ROE, annualised") + tl(num(m.roce_annualised_pct) + "%", "ROCE, annualised") +
+      tl(num(m.debt_to_equity, 2), "debt to equity") + tl(num(m.interest_coverage), "interest cover") +
+      tl(num(m.pe_annualised), "P/E on annualised EPS") + tl(num(m.peg, 2), "PEG") + tl(num(m.price_to_book, 2), "price to book") +
+      tl(num(m.graham_number, 2), "Graham number") + tl(num(m.market_cap_cr, 0), "market cap, Rs cr") + tl(num(m.receivable_days, 0), "receivable days") + "</div>" +
+      ((m.flags || []).length ? "<div class='card'><h4 style='margin-top:0'>Flags from the numbers</h4><ul>" + m.flags.map(x => "<li class='down'>" + esc(x) + "</li>").join("") + "</ul></div>" : "<div class='mean'>No flags from the numbers.</div>"); }
+  const sc = D.cards[sym];
+  if (sc) h += cardHtml(Object.assign({symbol: sym, name: "evidence tally", mine: false}, sc));
+  if (hd) h += "<div class='mean'>Promoter holding " + num(hd.promoter_pct, 2) + "% as on " + esc(hd.as_on) + (hd.change_pts != null ? " · " + pct(hd.change_pts).replace("%", " points") + " since " + esc(hd.previous_as_on) : "") + "</div>";
   h += "<h3>Analyst reads · " + reads.length + "</h3>" + (reads.map(readCard).join("") || "<p class='mean'>None yet.</p>");
   const tbl = rows => rows.length ? "<div class='wrap'><table>" + rows.slice(0, 40).map(postRow).join("") + "</table></div>" : "<p class='mean'>Nothing in the past 45 days.</p>";
   h += "<h3>Exchange filings · " + filings.length + "</h3>" + tbl(filings) + "<h3>News and chatter · " + talk.length + "</h3>" + tbl(talk);
   $("stock").innerHTML = h;
 }
 $("sq").addEventListener("input", stock);
+
+// themes
+$("v-themes").innerHTML = "<p class='mean'>The themes you follow (the \"themes\" list in config.json): how much was said in the past day and week, which listed companies come up, and the newest items. Exchange filings are counted apart from news and chatter.</p>" +
+  ((D.themes || []).map(t => "<div class='card'><div class='meta'>" + (t.rising ? "<span class='chip w'>rising</span>" : "") + "<span>" + t.mentions_24h + " in the past day · " + t.mentions_7d + " in a week · " + t.filings_7d + " exchange filings</span></div><b>" + esc(t.theme) + "</b>" +
+    (t.companies.length ? "<div class='meta' style='margin-top:6px'>" + t.companies.map(c => "<span class='chip'>" + esc(c) + "</span>").join("") + "</div>" : "") +
+    (t.latest.length ? "<ul>" + t.latest.map(l => "<li>" + esc(l.date) + " · " + esc(l.platform) + (l.kind ? " (" + esc(l.kind) + ")" : "") + ": <a class='t' style='font-weight:400' href='" + esc(safeUrl(l.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(l.text) + "</a></li>").join("") + "</ul>" : "<div class='mean'>Nothing in the past week.</div>") + "</div>").join("") || "<p>No themes set.</p>");
+
+// ask
+$("v-ask").innerHTML = "<p class='mean'>Ask the radar a question and it answers from what it has collected, with its sources. On GitHub open Actions, choose Avron Radar, press Run workflow, type your question and run it. The answer appears here a few minutes later.</p>" +
+  ((D.answers || []).map(a => "<div class='card brief'><div class='meta'><span>" + esc(when(a.at)) + "</span>" + (a.symbols || []).map(x => "<span class='chip'>" + esc(x) + "</span>").join("") +
+    (a.problems || []).map(x => "<span class='chip bad'>" + esc(x) + "</span>").join("") + "</div><b>" + esc(a.question) + "</b>" + md(a.answer) + "</div>").join("") || "<p>No questions asked yet.</p>");
 
 // feed
 let watchOnly = false;

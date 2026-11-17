@@ -59,6 +59,28 @@ class Market(unittest.TestCase):
         self.assertLess(max(abs(m) for m in moves), 0.01)       # no fake -50% day
         self.assertAlmostEqual(bars[-1]["close"], bars[-1]["raw_close"])
 
+    def test_unrestated_demerger_is_not_a_crash(self):
+        d = days(60)
+        for _, rows in d[30:]:                                   # value halves overnight, previous close NOT restated
+            rows["ABC"] = {k: (v / 2 if k in ("prev", "close", "high", "low") else v) for k, v in rows["ABC"].items()}
+        d[30][1]["ABC"]["prev"] *= 2
+        bars = market.build_series(d)["ABC"]
+        moves = [b["close"] / a["close"] - 1 for a, b in zip(bars, bars[1:])]
+        self.assertLess(max(abs(m) for m in moves), 0.01)
+        normal = days(60)                                        # an ordinary 15% fall is left alone
+        normal[30][1]["ABC"]["close"] *= 0.85
+        fall = market.build_series(normal)["ABC"]
+        self.assertAlmostEqual(fall[30]["close"] / fall[29]["close"], 0.85 * 1.004, places=3)
+
+    def test_deal_summary_nets_buyers_and_sellers(self):
+        deals = [{"symbol": "ABC", "name": "ABC Ltd", "client": "FUND A", "side": "BUY", "quantity": 300.0, "pct_of_day_volume": 3.0},
+                 {"symbol": "ABC", "name": "ABC Ltd", "client": "TRADER", "side": "BUY", "quantity": 100.0, "pct_of_day_volume": 1.0},
+                 {"symbol": "ABC", "name": "ABC Ltd", "client": "TRADER", "side": "SELL", "quantity": 100.0, "pct_of_day_volume": 1.0},
+                 {"symbol": "XYZ", "name": "XYZ Ltd", "client": "PROMOTER CO", "side": "SELL", "quantity": 900.0, "pct_of_day_volume": 12.0}]
+        xyz, abc = market.deal_summary(deals)
+        self.assertEqual((xyz["symbol"], xyz["net"], xyz["net_pct_of_day_volume"], xyz["sellers"]), ("XYZ", -900.0, -12.0, ["PROMOTER CO"]))
+        self.assertEqual((abc["net"], abc["net_pct_of_day_volume"], abc["same_party_both_sides"]), (300.0, 3.0, ["TRADER"]))
+
     def test_signals_for_a_steady_uptrend(self):
         sig = market.compute_signals(days(260), {"ABC": {"name": "ABC Limited", "industry": "Capital Goods", "index": "smallcap250"}})
         self.assertEqual(sig["stocks_screened"], 1)
@@ -66,6 +88,37 @@ class Market(unittest.TestCase):
         self.assertEqual(sig["screens"]["trend_template"]["stocks"][0]["industry"], "Capital Goods")
         self.assertEqual(sig["breadth"]["pct_above_200dma"], 100.0)
         json.dumps(sig)                                           # must be saveable
+
+    def test_screen_record_measures_what_followed(self):
+        up, down = days(280, "UP", step=1.004), days(280, "DOWN", step=0.997)
+        merged = [(d, dict(a, **b)) for (d, a), (_, b) in zip(up, down)]
+        series = market.build_series(merged)
+        rec = market.screen_record(series, [d for d, _ in merged])
+        tt, base = rec["screens"]["trend_template"], rec["screens"]["all"]
+        self.assertGreater(rec["sample_days"], 5)
+        self.assertAlmostEqual(tt["avg_5d"], (1.004 ** 5 - 1) * 100, places=1)     # the rising stock, 5 days on
+        self.assertEqual(tt["rose_5d_pct"], 100)
+        self.assertGreater(tt["edge_5d"], 0)                                       # beat the average of both stocks
+        self.assertLess(base["avg_20d"], tt["avg_20d"])
+        self.assertNotIn("edge_5d", base)
+
+    def test_regime_labels(self):
+        rec = lambda b20: {"screens": {"all": {"avg_20d": b20, "rose_20d_pct": 30}}}
+        self.assertEqual(market.regime({"pct_above_200dma": 44.4}, rec(-4.07))["label"], "weak")
+        self.assertEqual(market.regime({"pct_above_200dma": 70}, rec(2.0))["label"], "strong")
+        self.assertEqual(market.regime({"pct_above_200dma": 52}, rec(0.5))["label"], "mixed")
+        self.assertEqual(market.regime({}, None)["label"], "unknown")
+        self.assertIn("-4.1%", market.regime({"pct_above_200dma": 44.4}, rec(-4.07))["why"][1])
+
+    def test_sector_table_ranks_industries(self):
+        mk = lambda close, sma, m1: {"close": close, "sma200": sma, "ret_1m": m1, "ret_3m": m1 * 2, "change": 1.0}
+        snaps = {("A%d" % i): mk(110, 100, 8.0) for i in range(4)}
+        snaps.update({("B%d" % i): mk(90, 100, -5.0) for i in range(4)})
+        snaps["LONE"] = mk(1, 1, 50.0)
+        uni = {k: {"industry": "Power" if k.startswith("A") else "IT" if k.startswith("B") else "Odd"} for k in snaps}
+        rows = market.sector_table(snaps, uni, {"A0", "A1"})
+        self.assertEqual([(r["industry"], r["pct_above_200dma"], r["avg_1m"], r["in_uptrend"]) for r in rows],
+                         [("Power", 100, 8.0, 2), ("IT", 0, -5.0, 0)])            # a one-stock industry is left out
 
     def test_illiquid_stocks_are_not_screened(self):
         d = days(260)
@@ -260,6 +313,12 @@ class Brain(unittest.TestCase):
         self.assertEqual(brain.brief_due({"briefs": ["2026-11-16-close"]}, {"date": "2026-11-16"}, evening), "")
         self.assertEqual(brain.brief_due({}, {"date": "2026-11-16"}, morning), "2026-11-17-morning")
         self.assertEqual(brain.brief_due({}, None, evening), "")
+        saturday = datetime.datetime(2026, 11, 21, 9, 0, tzinfo=ist)
+        self.assertEqual(brain.brief_due({}, {"date": "2026-11-20"}, saturday), "2026-W47-week")
+        self.assertEqual(brain.brief_due({"briefs": ["2026-W47-week"]}, {"date": "2026-11-20"}, saturday), "")   # no weekend morning brief
+        sunday = datetime.datetime(2026, 11, 22, 9, 0, tzinfo=ist)
+        self.assertEqual(brain.brief_due({}, {"date": "2026-11-20"}, sunday), "")
+        self.assertEqual(len(brain.check_brief("## The week in one paragraph\nx", {}, set(), brain.WEEK_SECTIONS)), 5)
 
     def test_deal_rows_for_the_feed(self):
         d = {"kind": "bulk", "date": "16-NOV-2026", "symbol": "ABC", "name": "ABC Limited", "client": "BIG FUND",

@@ -1,38 +1,55 @@
 name: Avron Radar
 
-# Every 30 minutes: reads the sources in avron-radar/config.json, keeps NSE's
-# daily price file for every stock, has Claude label posts, read the important
-# filings and write two briefs a day. Read-only: it never posts or logs in.
+# Keeps itself running, because GitHub's timer is unreliable on this repository:
+# one run does a round every 30 minutes for about 5.5 hours, then starts the next
+# run. The hourly timer below is only a backup that restarts the chain if it breaks.
+#
+# Each round reads the sources in avron-radar/config.json, keeps NSE's daily price
+# file for every stock, has Claude label posts, copy results figures, read the
+# important filings and write two briefs a day. Read-only: it never posts or logs in.
 #   avron-radar-data       every post, filing read, price day and brief (history kept)
 #   avron-radar-dashboard  only the latest dashboard.html and radar.db (no history)
-# Runs started by hand from another branch write to the same names ending in -test.
+# A run started by hand from another branch does one round, does not restart itself,
+# and writes to the same branch names ending in -test.
 on:
   schedule:
-    - cron: "7,37 * * * *"
+    - cron: "23 * * * *"
   workflow_dispatch:
+    inputs:
+      rounds:
+        description: "Rounds to run (leave empty for the normal chain)"
+        required: false
+      interval:
+        description: "Seconds between rounds (default 1800)"
+        required: false
+      question:
+        description: "Ask the radar a question (answers appear in the dashboard's Ask tab)"
+        required: false
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
-  group: avron-radar-${{ github.ref }}
+  group: avron-radar-${{ github.ref }}-${{ inputs.question != '' && 'ask' || 'chain' }}
   cancel-in-progress: false
 
 env:
-  SUFFIX: ${{ github.ref_name == github.event.repository.default_branch && ' ' || '-test' }}
+  LIVE: ${{ github.ref_name == github.event.repository.default_branch }}
 
 jobs:
   radar:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 355
     steps:
       - uses: actions/checkout@v4
 
       - name: Open the data branch
         run: |
-          BRANCH="avron-radar-data$(echo "$SUFFIX" | tr -d ' ')"
-          echo "DATA_BRANCH=$BRANCH" >> "$GITHUB_ENV"
-          echo "DASH_BRANCH=avron-radar-dashboard$(echo "$SUFFIX" | tr -d ' ')" >> "$GITHUB_ENV"
+          if [ "$LIVE" = "true" ]; then SUFFIX=""; else SUFFIX="-test"; fi
+          echo "DATA_BRANCH=avron-radar-data$SUFFIX" >> "$GITHUB_ENV"
+          echo "DASH_BRANCH=avron-radar-dashboard$SUFFIX" >> "$GITHUB_ENV"
+          BRANCH="avron-radar-data$SUFFIX"
           git config user.name "avron-radar"
           git config user.email "avron-radar@users.noreply.github.com"
           if git ls-remote --exit-code origin "$BRANCH" >/dev/null; then
@@ -43,7 +60,7 @@ jobs:
             git worktree add -q --orphan -b "$BRANCH" ../radar-data
           fi
 
-      - name: Collect, analyse, build
+      - name: Rounds
         env:
           RADAR_DATA: ${{ github.workspace }}/../radar-data/data
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -52,23 +69,65 @@ jobs:
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
-        run: python3 avron-radar/radar.py run
-
-      - name: Save the data
-        working-directory: ../radar-data
+          ROUNDS: ${{ inputs.rounds }}
+          INTERVAL: ${{ inputs.interval }}
+          QUESTION: ${{ inputs.question }}
         run: |
-          git rm -q --cached --ignore-unmatch dashboard.html && rm -f dashboard.html
-          git add -A
-          if ! git diff --cached --quiet; then
-            git commit -q -m "Radar $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
-            git push -q origin "HEAD:$DATA_BRANCH"
+          INTERVAL="${INTERVAL:-1800}"
+          if [ -n "$QUESTION" ]; then ROUNDS=1; fi      # a question is answered once, without collecting
+          if [ -z "$ROUNDS" ]; then
+            if [ "$LIVE" = "true" ]; then ROUNDS=11; else ROUNDS=1; fi     # 11 rounds x 30 minutes = 5.5 hours
           fi
+          round=0
+          while [ "$round" -lt "$ROUNDS" ]; do
+            round=$((round + 1))
+            start=$(date +%s)
+            echo "::group::Round $round of $ROUNDS at $(TZ=Asia/Kolkata date '+%H:%M') IST"
 
-      - name: Publish the dashboard
-        run: |
-          git worktree add -q --orphan -b dashboard-build ../dash
-          cp avron-radar/dashboard.html avron-radar/radar.db ../dash/
-          cd ../dash
-          git add -A
-          git commit -q -m "Dashboard $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
-          git push -q --force origin "HEAD:$DASH_BRANCH"
+            if [ "$LIVE" = "true" ] && [ "$round" -gt 1 ]; then      # pick up merged code and config changes
+              git fetch -q origin "$GITHUB_REF_NAME" && git checkout -q FETCH_HEAD || echo "code update failed this round"
+            fi
+
+            if [ -n "$QUESTION" ]; then
+              python3 avron-radar/radar.py ask "$QUESTION" || echo "the question failed"
+            else
+              python3 avron-radar/radar.py run || echo "radar failed this round"
+            fi
+
+            (
+              cd ../radar-data
+              git rm -q --cached --ignore-unmatch dashboard.html && rm -f dashboard.html
+              git add -A
+              if ! git diff --cached --quiet; then
+                git commit -q -m "Radar $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
+                # a question answered meanwhile may have pushed first: take its commit, then push
+                git pull -q --rebase origin "$DATA_BRANCH" 2>/dev/null || git rebase --abort 2>/dev/null || true
+                git push -q origin "HEAD:$DATA_BRANCH" || echo "data push failed this round"
+              fi
+            )
+
+            if [ -f avron-radar/dashboard.html ]; then
+              git worktree remove --force ../dash 2>/dev/null || true
+              git branch -q -D dashboard-build 2>/dev/null || true
+              git worktree add -q --orphan -b dashboard-build ../dash
+              cp avron-radar/dashboard.html avron-radar/radar.db ../dash/
+              (
+                cd ../dash
+                git add -A
+                git commit -q -m "Dashboard $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
+                git push -q --force origin "HEAD:$DASH_BRANCH" || echo "dashboard push failed this round"
+              )
+            fi
+            echo "::endgroup::"
+
+            if [ "$round" -lt "$ROUNDS" ]; then
+              wait=$(( start + INTERVAL - $(date +%s) ))
+              if [ "$wait" -gt 0 ]; then sleep "$wait"; fi
+            fi
+          done
+
+      - name: Start the next run
+        if: always() && github.ref_name == github.event.repository.default_branch && inputs.rounds == '' && inputs.question == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run avron-radar.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME"

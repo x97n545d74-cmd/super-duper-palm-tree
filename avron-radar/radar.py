@@ -27,6 +27,7 @@ Commands:
   tag       ask Claude to label untagged posts (needs ANTHROPIC_API_KEY)
   analyse   Claude reads the top unread filings and writes a brief if one is due
   build     rebuild radar.db (SQLite) and dashboard.html from the data files
+  ask       answer a question from what the radar holds: radar.py ask "What do we know about X?"
   run       all of the above, in that order
 
 Standard library only. For personal research: posts are stored as a short
@@ -50,8 +51,11 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import brain    # noqa: E402
-import market   # noqa: E402
+import ask as asker   # noqa: E402
+import brain          # noqa: E402
+import decide         # noqa: E402
+import fundamentals   # noqa: E402
+import market         # noqa: E402
 
 HERE = pathlib.Path(__file__).resolve().parent
 DATA = pathlib.Path(os.environ.get("RADAR_DATA", HERE / "data"))
@@ -70,7 +74,8 @@ FAILS_BEFORE_PAUSE = 6 # a source that fails this many runs in a row is rested
 PAUSE_HOURS = 6        # ...for this long, then tried again
 STATS = {}             # what this run did, written to the run log
 TAG_BATCH = 15         # posts per Claude call
-TAG_MAX_BATCHES = int(os.environ.get("RADAR_TAG_MAX_BATCHES", "6"))
+TAG_MAX_BATCHES = int(os.environ.get("RADAR_TAG_MAX_BATCHES", "8"))
+TAG_MAX_AGE_HOURS = 48 # a post older than this is no longer worth a label
 ATOM = "{http://www.w3.org/2005/Atom}"
 MEDIA = "{http://search.yahoo.com/mrss/}"
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
@@ -522,6 +527,10 @@ def collect(cfg):
             print("%-9s %-40s %s" % (entry["lane"], entry["source"][:40],
                   "ok  found %(found)d  new %(new)d" % entry if entry["ok"] else "FAILED  " + entry["error"]))
     append_items(new_rows)
+    try:      # promoter holdings are kept for good, not just for the dashboard's 45 days
+        STATS["holdings_added"] = fundamentals.save_holdings(DATA, new_rows, market.name_index(market.load_universe(DATA)))
+    except Exception as e:
+        print("holdings: %s" % str(e)[:150])
     (DATA / "state.json").write_text(json.dumps(state, indent=1), encoding="utf-8")
     (DATA / "health.json").write_text(json.dumps(health, indent=1), encoding="utf-8")
     ok = sum(1 for h in health if h["ok"])
@@ -584,8 +593,10 @@ def tag(ask=None):
         return 0
     ask = ask or (lambda prompt: call_claude(prompt, api_key))
     items = load_items()
-    todo = sorted((r for r in items.values() if "tags" not in r and r["platform"] not in NO_TAG),
-                  key=lambda r: r["collected_at"], reverse=True)
+    fresh = iso(now_utc() - datetime.timedelta(hours=TAG_MAX_AGE_HOURS))
+    todo = sorted((r for r in items.values() if "tags" not in r and r["platform"] not in NO_TAG
+                   and (r.get("published_at") or r["collected_at"]) >= fresh),
+                  key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
     done = 0
     for n in range(0, min(len(todo), TAG_BATCH * TAG_MAX_BATCHES), TAG_BATCH):
         batch = todo[n:n + TAG_BATCH]
@@ -634,8 +645,39 @@ def market_step():
 
 def analyse(cfg):
     items = list(load_items(3).values())
-    STATS["filing_reads"] = brain.read_filings(DATA, items, cfg)
-    STATS["brief"] = brain.write_brief(DATA, items)
+    STATS["results_copied"] = fundamentals.extract(DATA, items, cfg)
+    signals = market.load_signals(DATA) or {}
+    snaps = signals.get("snapshots") or {}
+    fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), snaps)
+    figures_for = lambda sym: ({"period_end": fund[sym]["period_end"], "period_type": fund[sym]["period_type"],
+                                "metrics": fund[sym]["metrics"]} if sym in fund else None)
+    STATS["filing_reads"] = brain.read_filings(DATA, items, cfg, figures_for=figures_for)
+    names = market.name_index_from_snapshots(signals)
+    day_ago = iso(now_utc() - datetime.timedelta(hours=30))
+    recent = [r for r in fundamentals.load_fundamentals(DATA) if r.get("copied_at", "") >= day_ago]
+    extra = {
+        "results": [{"symbol": r["symbol"], "period_end": r["period_end"], "period_type": r["period_type"],
+                     "metrics": fund[r["symbol"]]["metrics"]} for r in recent if r["symbol"] in fund][:25],
+        "calendar": fundamentals.calendar(load_items(7).values(), names)[:40],
+        "promoter_changes": [dict(symbol=s, **h) for s, h in fundamentals.holding_view(fundamentals.load_holdings(DATA)).items()
+                             if h["change_pts"] is not None and abs(h["change_pts"]) >= 0.5][:25],
+    }
+    cards = decide.scorecard(signals, fund, fundamentals.holding_view(fundamentals.load_holdings(DATA)),
+                             brain.load_analyses(DATA), brain.buzz(items, names), extra["calendar"],
+                             my_screen=cfg.get("my_screen"))
+    if cfg.get("my_stocks"):
+        linked = sorted(load_items(3).values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
+        link_symbols(linked, names)
+        extra["my_stocks"] = decide.my_stock_alerts(cfg["my_stocks"], signals, linked, brain.load_analyses(DATA), fund,
+                                                    extra["calendar"], brain.buzz(items, names))
+    if cfg.get("themes"):
+        week = sorted(load_items(8).values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
+        link_symbols(week, names)
+        extra["themes"] = [{k: t[k] for k in ("theme", "mentions_24h", "mentions_7d", "filings_7d", "rising", "companies")}
+                           for t in decide.theme_tracker(week, cfg["themes"]) if t["mentions_7d"]]
+    slim = lambda c: {k: c[k] for k in ("symbol", "industry", "score", "for", "against", "notes", "conflict", "close")}
+    extra["scorecard"] = {k: [slim(c) for c in v[:8]] for k, v in decide.shortlists(cards).items()}
+    STATS["brief"] = brain.write_brief(DATA, items, extra=extra)
 
 
 def token_totals(usage):
@@ -662,18 +704,52 @@ def log_run(started, cfg):
     return row
 
 
-def build():
-    items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
-    analyses = sorted(brain.load_analyses(DATA), key=lambda a: a.get("read_at", ""), reverse=True)
-    signals = market.load_signals(DATA) or {}
-    names = market.name_index_from_snapshots(signals)
-    for r in items:      # link each labelled post to the stocks it names
+def link_symbols(items, names):
+    """Link each labelled post, and each filing, to the stocks it names."""
+    for r in items:
         syms = brain.resolve_symbols((r.get("tags") or {}).get("companies"), names)
         if r["platform"] == "nse" and not syms:
             syms = [names[market.norm_name(r["title"])]] if market.norm_name(r["title"]) in names else []
         if syms:
             r["symbols"] = syms
+
+
+def ask_question(question, cfg):
+    """Answer one question from what the radar holds; saved for the dashboard's Ask tab."""
+    signals = market.load_signals(DATA) or {}
+    names = market.name_index_from_snapshots(signals)
+    items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
+    link_symbols(items, names)
+    fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), signals.get("snapshots") or {})
+    holds = fundamentals.holding_view(fundamentals.load_holdings(DATA))
+    analyses = brain.load_analyses(DATA)
+    cards = decide.scorecard(signals, fund, holds, analyses, brain.buzz(items, names),
+                             fundamentals.calendar(items, names), my_screen=cfg.get("my_screen"))
+    row = asker.answer(DATA, question, items, signals, fund, holds, cards, analyses)
+    if row:
+        print("\nQ: %s\n\n%s\n" % (row["question"], row["answer"]))
+    return row
+
+
+def build():
+    items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
+    analyses = sorted(brain.load_analyses(DATA), key=lambda a: a.get("read_at", ""), reverse=True)
+    signals = market.load_signals(DATA) or {}
+    names = market.name_index_from_snapshots(signals)
+    link_symbols(items, names)
     runs = [row for f in data_files("runs", 7) for row in read_jsonl(f)][-60:]
+    snaps = signals.get("snapshots") or {}
+    fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), snaps)
+    holds = fundamentals.holding_view(fundamentals.load_holdings(DATA))
+    cal = fundamentals.calendar(items, names)
+    growth = sorted(({"symbol": s, "period_end": f["period_end"], "revenue_yoy_pct": f["metrics"].get("revenue_yoy_pct"),
+                      "pat_yoy_pct": f["metrics"].get("pat_yoy_pct"), "ebitda_margin_pct": f["metrics"].get("ebitda_margin_pct"),
+                      "pe_annualised": f["metrics"].get("pe_annualised"), "market_cap_cr": f["metrics"].get("market_cap_cr"),
+                      "flags": len(f["metrics"]["flags"]),
+                      "above_200dma": bool(snaps.get(s) and snaps[s].get("sma200") and snaps[s]["close"] > snaps[s]["sma200"]),
+                      "from_high": (snaps.get(s) or {}).get("from_high")}
+                     for s, f in fund.items() if f["metrics"].get("growth_20")),
+                    key=lambda r: -(r["pat_yoy_pct"] or 0))
     db_path = HERE / "radar.db"
     if db_path.exists():
         db_path.unlink()
@@ -719,6 +795,30 @@ def build():
             for r in items])
     except sqlite3.OperationalError:
         pass             # this SQLite build has no full-text module; the plain tables still work
+    analysed = brain.load_analyses(DATA)
+    cards = decide.scorecard(signals, fund, holds, analysed, brain.buzz(items, names), cal,
+                             my_screen=(load_json(CONFIG, {}) or {}).get("my_screen"))
+    lists = decide.shortlists(cards)
+    mine = decide.my_stock_alerts((load_json(CONFIG, {}) or {}).get("my_stocks"), signals, items, analysed, fund, cal,
+                                  brain.buzz(items, names))
+    db.execute("CREATE TABLE scorecard (symbol TEXT PRIMARY KEY, score INTEGER, conflict INTEGER, mine INTEGER, in_favour TEXT, against TEXT, notes TEXT)")
+    db.executemany("INSERT INTO scorecard VALUES (?,?,?,?,?,?,?)", [
+        (c["symbol"], c["score"], int(c["conflict"]), int(c["mine"]), "; ".join(c["for"]), "; ".join(c["against"]),
+         "; ".join(c["notes"])) for c in cards.values()])
+    db.execute("""CREATE TABLE fundamentals (symbol TEXT PRIMARY KEY, company TEXT, period_end TEXT, period_type TEXT,
+        basis TEXT, revenue_cr REAL, pat_cr REAL, revenue_yoy_pct REAL, pat_yoy_pct REAL, ebitda_margin_pct REAL,
+        net_margin_pct REAL, roe_annualised_pct REAL, debt_to_equity REAL, pe_annualised REAL, market_cap_cr REAL,
+        flags TEXT, url TEXT)""")
+    for sym, f in fund.items():
+        m = f["metrics"]
+        db.execute("INSERT INTO fundamentals VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
+            sym, f["company"], f["period_end"], f["period_type"], f["basis"], m.get("revenue_cr"), m.get("pat_cr"),
+            m.get("revenue_yoy_pct"), m.get("pat_yoy_pct"), m.get("ebitda_margin_pct"), m.get("net_margin_pct"),
+            m.get("roe_annualised_pct"), m.get("debt_to_equity"), m.get("pe_annualised"), m.get("market_cap_cr"),
+            "; ".join(m["flags"]), f["url"]))
+    db.execute("CREATE TABLE holdings (symbol TEXT PRIMARY KEY, as_on TEXT, promoter_pct REAL, previous_as_on TEXT, change_pts REAL)")
+    db.executemany("INSERT INTO holdings VALUES (?,?,?,?,?)", [
+        (s, h["as_on"], h["promoter_pct"], h["previous_as_on"], h["change_pts"]) for s, h in holds.items()])
     db.execute("CREATE INDEX items_time ON items (published_at)")
     db.execute("CREATE INDEX items_platform ON items (platform)")
     db.commit()
@@ -726,14 +826,21 @@ def build():
     health = load_json(DATA / "health.json", [])
     page = (HERE / "dashboard.template.html").read_text(encoding="utf-8")
     market_view = {k: v for k, v in signals.items() if k != "snapshots"}
-    payload = json.dumps({"built_at": iso(now_utc()), "items": items[:4000], "health": health,
+    market_view["screens"] = {k: {x: y for x, y in v.items() if x != "all"} for k, v in (signals.get("screens") or {}).items()}
+    # The dashboard feed leaves out routine exchange paperwork (it stays in radar.db and on the Stock tab's source).
+    feed = [r for r in items if not (r["platform"] == "nse" and brain.ROUTINE.search(r.get("title", "") + " " + r.get("text", "")))]
+    payload = json.dumps({"built_at": iso(now_utc()), "items": feed[:4000], "health": health,
                           "analyses": analyses[:300], "market": market_view,
                           "briefs": brain.load_briefs(DATA), "stocks": signals.get("snapshots") or {},
-                          "buzz": brain.buzz(items, names), "runs": runs},
+                          "buzz": brain.buzz(items, names), "runs": runs,
+                          "fundamentals": fund, "holdings": holds, "calendar": cal, "growth": growth,
+                          "answers": asker.load_answers(DATA), "my_stocks": mine,
+                          "themes": decide.theme_tracker(items, (load_json(CONFIG, {}) or {}).get("themes")), "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
+                                                        for s, c in cards.items()}},
                          ensure_ascii=False).replace("</", "<\\/")
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")
-    print("built radar.db and dashboard.html: %d posts, %d filing reads, market data for %s"
-          % (len(items), len(analyses), signals.get("date") or "no day yet"))
+    print("built radar.db and dashboard.html: %d posts, %d filing reads, results for %d companies, market data for %s"
+          % (len(items), len(analyses), len(fund), signals.get("date") or "no day yet"))
 
 
 def step(name, fn):
@@ -751,8 +858,13 @@ def main(argv):
     cfg = load_json(CONFIG, None)
     if cfg is None:
         sys.exit("cannot read " + str(CONFIG))
-    if cmd not in ("collect", "market", "tag", "analyse", "build", "run"):
+    if cmd not in ("collect", "market", "tag", "analyse", "build", "run", "ask"):
         sys.exit(__doc__)
+    if cmd == "ask":
+        step("ask", lambda: ask_question(" ".join(argv[2:]), cfg))
+        step("run log", lambda: log_run(started, cfg))
+        build()
+        return
     if cmd in ("collect", "run"):
         step("collect", lambda: collect(cfg))
     if cmd in ("market", "run") and "market" not in (cfg.get("disabled_lanes") or []):
