@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avron Radar</title>
+<style>
+:root{--bg:#fafaf8;--card:#fff;--ink:#16181d;--mute:#6b7280;--line:#e5e7eb;--gold:#b8892b;--chip:#f1f2f4;--bad:#b42318}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1114;--card:#171a1f;--ink:#eceef1;--mute:#9aa1ac;--line:#2a2f37;--gold:#d9ad55;--chip:#22262d;--bad:#f97066}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:20px 16px 12px;max-width:980px;margin:0 auto}
+h1{font-size:22px;margin:0;letter-spacing:-.02em}
+h1 span{color:var(--gold)}
+.sub{color:var(--mute);font-size:13px;margin-top:2px}
+.bar{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);z-index:2}
+.bar div{max-width:980px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap}
+input,select,button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+input{flex:1 1 220px;min-width:0}
+button{cursor:pointer}
+button.on{border-color:var(--gold);color:var(--gold)}
+main{max-width:980px;margin:0 auto;padding:12px 16px 60px}
+.count{color:var(--mute);font-size:13px;margin:4px 0 12px}
+.post{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--mute);margin-bottom:6px}
+.chip{background:var(--chip);border-radius:999px;padding:2px 8px}
+.chip.w{color:var(--gold)}
+.chip.k-rumour,.chip.k-tip,.chip.k-promo{color:var(--bad)}
+.post a.t{color:var(--ink);font-weight:600;text-decoration:none;overflow-wrap:anywhere}
+.post a.t:hover{text-decoration:underline}
+.sum{margin-top:4px}
+.txt{color:var(--mute);font-size:13.5px;margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.bad{color:var(--bad)}
+.note{color:var(--mute);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Avron <span>Radar</span></h1>
+  <div class="sub" id="built"></div>
+</header>
+<div class="bar"><div>
+  <input id="q" placeholder="Search company, topic, word" autocomplete="off">
+  <select id="platform"><option value="">All platforms</option></select>
+  <select id="kind"><option value="">All kinds</option></select>
+  <select id="rel"><option value="0">Any relevance</option><option value="3">Relevance 3+</option><option value="4">Relevance 4+</option></select>
+  <button id="watch">Watchlist only</button>
+  <button id="tab">Sources</button>
+</div></div>
+<main>
+  <div class="count" id="count"></div>
+  <div id="list"></div>
+  <div id="sources" hidden></div>
+  <p class="note">Private research file. Posts are unverified social chatter, not facts: check a primary source before using anything. Each card links to the original post.</p>
+</main>
+<script>
+const D = /*DATA*/null || {built_at:"", items:[], health:[]};
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
+const when = s => { if (!s) return ""; const d = new Date(s); return isNaN(d) ? "" : d.toLocaleString("en-IN", {day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit"}); };
+let watchOnly = false, showSources = false;
+$("built").textContent = D.items.length + " posts · updated " + (when(D.built_at) || "never");
+const fill = (sel, vals) => vals.sort().forEach(v => { const o = document.createElement("option"); o.value = o.textContent = v; sel.appendChild(o); });
+fill($("platform"), [...new Set(D.items.map(i => i.platform))]);
+fill($("kind"), [...new Set(D.items.map(i => (i.tags || {}).kind).filter(Boolean))]);
+function render() {
+  $("list").hidden = showSources; $("sources").hidden = !showSources; $("count").hidden = showSources;
+  $("tab").classList.toggle("on", showSources); $("watch").classList.toggle("on", watchOnly);
+  if (showSources) {
+    $("sources").innerHTML = "<table><tr><th>Platform</th><th>Source</th><th>Status</th><th>Checked</th></tr>" +
+      D.health.map(h => "<tr><td>" + esc(h.lane) + "</td><td>" + esc(h.source) + "</td><td class='" + (h.ok ? "" : "bad") + "'>" +
+        (h.ok ? "ok · " + h.found + " read, " + h.new + " new" : "failed · " + esc(h.error)) + "</td><td>" + esc(when(h.checked_at)) + "</td></tr>").join("") + "</table>";
+    return;
+  }
+  const q = $("q").value.trim().toLowerCase(), p = $("platform").value, k = $("kind").value, r = +$("rel").value;
+  const rows = D.items.filter(i => {
+    const t = i.tags || {};
+    if (p && i.platform !== p) return false;
+    if (k && t.kind !== k) return false;
+    if (r && !((t.relevance || 0) >= r)) return false;
+    if (watchOnly && !(i.watch || []).length) return false;
+    if (q && !(i.title + " " + i.text + " " + i.source + " " + i.author + " " + (t.companies || []).join(" ") + " " + (t.topic || "")).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  $("count").textContent = rows.length + " of " + D.items.length + " posts" + (rows.length > 300 ? " (showing the newest 300)" : "");
+  $("list").innerHTML = rows.slice(0, 300).map(i => {
+    const t = i.tags || {};
+    return "<div class='post'><div class='meta'><span class='chip'>" + esc(i.platform) + "</span><span>" + esc(i.source) + "</span>" +
+      (i.author ? "<span>· " + esc(i.author) + "</span>" : "") + "<span>· " + esc(when(i.published_at || i.collected_at)) + "</span>" +
+      (t.kind ? "<span class='chip k-" + esc(t.kind) + "'>" + esc(t.kind) + "</span>" : "") +
+      (t.relevance != null ? "<span class='chip'>relevance " + esc(t.relevance) + "</span>" : "") +
+      (t.companies || []).map(c => "<span class='chip'>" + esc(c) + "</span>").join("") +
+      (i.watch || []).map(w => "<span class='chip w'>" + esc(w) + "</span>").join("") + "</div>" +
+      "<a class='t' href='" + esc(safeUrl(i.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(i.title || "(no title)") + "</a>" +
+      (t.summary ? "<div class='sum'>" + esc(t.summary) + "</div>" : "") +
+      (i.text && i.text !== i.title ? "<div class='txt'>" + esc(i.text) + "</div>" : "") + "</div>";
+  }).join("") || "<p>No posts match.</p>";
+}
+["q","platform","kind","rel"].forEach(id => $(id).addEventListener("input", render));
+$("watch").onclick = () => { watchOnly = !watchOnly; render(); };
+$("tab").onclick = () => { showSources = !showSources; render(); };
+render();
+</script>
+</body>
+</html>

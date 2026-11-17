@@ -1,3 +1,8 @@
 
 # Remotion browser download (created when a render runs from the repo root)
 .remotion/
+
+# Avron Radar: rebuilt from the data files on every run
+avron-radar/radar.db
+avron-radar/dashboard.html
+avron-radar/data/
