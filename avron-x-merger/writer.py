@@ -559,7 +559,7 @@ def pack_posts(title, groups, limit=262):
 def run_targets(now, api_key):
     recent = [r for r in read_queue() if r.get("lane") == "targets"][-6:]
     covered = ["%s | %s | %s" % (c.get("stock"), c.get("firm"), c.get("target")) for r in recent for c in r.get("calls") or []][-120:]
-    text, tin, tout = call_claude(targets_prompt(now, covered), api_key, search_tool(4), 10000)
+    text, tin, tout = call_claude(targets_prompt(now, covered), api_key, search_tool(6), 12000)
     items = parse_items(text)
     if items is None:
         print("[targets] Reply was not a JSON array. Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (tin, tout, text[:300]))
