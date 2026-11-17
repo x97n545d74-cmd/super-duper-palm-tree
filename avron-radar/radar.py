@@ -822,7 +822,9 @@ def build():
     page = (HERE / "dashboard.template.html").read_text(encoding="utf-8")
     market_view = {k: v for k, v in signals.items() if k != "snapshots"}
     market_view["screens"] = {k: {x: y for x, y in v.items() if x != "all"} for k, v in (signals.get("screens") or {}).items()}
-    payload = json.dumps({"built_at": iso(now_utc()), "items": items[:4000], "health": health,
+    # The dashboard feed leaves out routine exchange paperwork (it stays in radar.db and on the Stock tab's source).
+    feed = [r for r in items if not (r["platform"] == "nse" and brain.ROUTINE.search(r.get("title", "") + " " + r.get("text", "")))]
+    payload = json.dumps({"built_at": iso(now_utc()), "items": feed[:4000], "health": health,
                           "analyses": analyses[:300], "market": market_view,
                           "briefs": brain.load_briefs(DATA), "stocks": signals.get("snapshots") or {},
                           "buzz": brain.buzz(items, names), "runs": runs,

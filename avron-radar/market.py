@@ -413,6 +413,12 @@ def update(data_dir, http_get, today=None, log=print):
                     http_get(ARCHIVE + "content/indices/ind_close_all_%s.csv" % d.strftime("%d%m%Y")))
             except Exception as e:
                 log("market: index file failed: %s" % str(e)[:120])
+            if signals.get("indices"):      # one line a day, so index valuations build a history of their own
+                hist = mdir / "index_history.jsonl"
+                have = hist.read_text(encoding="utf-8") if hist.exists() else ""
+                if ('"date": "%s"' % latest) not in have:
+                    with open(hist, "a", encoding="utf-8") as fh:
+                        fh.write(json.dumps({"date": latest, "indices": signals["indices"], "breadth": signals["breadth"]}) + "\n")
             for kind in ("bulk", "block"):
                 try:
                     deals += parse_deals(http_get(ARCHIVE + "content/equities/%s.csv" % kind), kind)

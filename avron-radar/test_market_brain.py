@@ -313,6 +313,12 @@ class Brain(unittest.TestCase):
         self.assertEqual(brain.brief_due({"briefs": ["2026-11-16-close"]}, {"date": "2026-11-16"}, evening), "")
         self.assertEqual(brain.brief_due({}, {"date": "2026-11-16"}, morning), "2026-11-17-morning")
         self.assertEqual(brain.brief_due({}, None, evening), "")
+        saturday = datetime.datetime(2026, 11, 21, 9, 0, tzinfo=ist)
+        self.assertEqual(brain.brief_due({}, {"date": "2026-11-20"}, saturday), "2026-W47-week")
+        self.assertEqual(brain.brief_due({"briefs": ["2026-W47-week"]}, {"date": "2026-11-20"}, saturday), "")   # no weekend morning brief
+        sunday = datetime.datetime(2026, 11, 22, 9, 0, tzinfo=ist)
+        self.assertEqual(brain.brief_due({}, {"date": "2026-11-20"}, sunday), "")
+        self.assertEqual(len(brain.check_brief("## The week in one paragraph\nx", {}, set(), brain.WEEK_SECTIONS)), 5)
 
     def test_deal_rows_for_the_feed(self):
         d = {"kind": "bulk", "date": "16-NOV-2026", "symbol": "ABC", "name": "ABC Limited", "client": "BIG FUND",
