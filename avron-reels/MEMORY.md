@@ -57,7 +57,7 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - The user's father runs a chemist shop, Shankar Medicos, and has no AI exposure. The user asked for a system where he uploads PDFs, mail attachments or photos to tally his ledger with the other party's statement.
 - User's answers: his ledger is in **Tally or Busy**; he uses **both phone and shop PC**; screen in **Hindi, Punjabi and English, with voice**; reading paid by a **Claude API key**.
 - Built in `shankar-ledger/` (repo root): Node server (`server.js`, `lib/extract.js`, Claude copies rows only) + one page (`public/`), matching in plain code (`public/match.js`, 12 tests via `npm test`). README has run steps.
-- Not yet done: the Claude reading path has never run against the live API (no key in the cloud container); no hosting chosen; no key or PIN set. Not built: hand-fixing a misread row, Gmail inbox pull, history per party.
+- Live read tested 2026-11-17 on the two made-up sample PDFs (through the page too): all rows, balances and differences correct; about 4,100 tokens in and 900 out per one-page paper on claude-opus-5-5. Real papers, photos and handwriting are still untested. The user pasted an API key in chat; it sits only in `shankar-ledger/.env` in that session's container (ignored by git) and they were told to replace it. Never write a key into the repo or this file. Still open: hosting, APP_PIN, a real ledger pair to try. Not built: hand-fixing a misread row, Gmail inbox pull, history per party.
 - **Never commit a real ledger or statement: the repo is public.** `samples/` holds made-up papers only. AVRON brand rules do not apply to this app.
 
 ## Who and what
