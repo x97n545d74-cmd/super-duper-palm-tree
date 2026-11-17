@@ -351,6 +351,39 @@ SHP_GROUPS = (      # our name -> the category in NSE's shareholding file (match
 )
 
 
+SHP_NAME = re.compile(r"<in-bse-shp:NameOfTheShareholder contextRef=\"D_([A-Za-z]+_Context\d+)\"[^>]*>([^<]+)<")
+SHP_ROW = re.compile(r"<in-bse-shp:(ShareholdingAsAPercentageOfTotalNumberOfShares|NumberOfShares) contextRef=\"([A-Za-z]+_Context\d+)\"[^>]*>([^<]+)<")
+HOLDER_KIND = (("IndividualsOrHUF", "promoter"), ("BodiesCorporate", "company"), ("MutualFund", "mutual fund"),
+               ("ForeignPortfolio", "foreign investor"), ("Insurance", "insurer"), ("AlternativeInvestment", "fund"),
+               ("AlternateInvestment", "fund"), ("DetailsOfSharesHeldByResidentIndividual", "individual"),
+               ("NonResidentIndians", "non-resident"), ("Promoter", "promoter"))
+
+
+def named_holders(xml_text):
+    """Every shareholder the file names (promoters, and public holders above 1%): name, kind, percent, shares."""
+    names = dict(SHP_NAME.findall(xml_text))
+    pct, shares = {}, {}
+    for fact, ctx, val in SHP_ROW.findall(xml_text):
+        try:
+            (pct if fact.startswith("Shareholding") else shares)[ctx] = float(val)
+        except ValueError:
+            pass
+    out = []
+    for ctx, name in names.items():
+        if ctx not in pct:
+            continue
+        cat = ctx.rsplit("_Context", 1)[0]
+        kind = next((k for start, k in HOLDER_KIND if start in cat), "other")
+        out.append({"name": " ".join(html_unescape(name).split()), "kind": kind,
+                    "pct": round(pct[ctx] * 100, 2), "shares": int(shares.get(ctx, 0))})
+    return sorted(out, key=lambda h: -h["pct"])
+
+
+def html_unescape(s):
+    import html
+    return html.unescape(s)
+
+
 def parse_shareholding(xml_text):
     """NSE's shareholding XBRL -> percentages by kind of holder, and the number of shareholders.
     Only the summary rows are read (context names ending _ContextI), not the list of individual holders."""
@@ -373,6 +406,9 @@ def parse_shareholding(xml_text):
             out[name] = round(sum(vals) * 100, 2)
     if holders.get("ShareholdingPattern"):
         out["shareholders"] = int(holders["ShareholdingPattern"])
+    public = [h for h in named_holders(xml_text) if h["kind"] != "promoter"]
+    if public:
+        out["named_public_holders"] = public[:25]
     return out or None
 
 
@@ -450,10 +486,54 @@ def holding_view(rows):
             out[sym]["detail"] = last["detail"]
             if prev and prev.get("detail"):
                 d, e = last["detail"], prev["detail"]
-                out[sym]["detail_change"] = {k: round(d[k] - e[k], 2) for k in d if k in e and k != "shareholders"}
+                out[sym]["detail_change"] = {k: round(d[k] - e[k], 2) for k in d if k in e
+                                             and k not in ("shareholders", "named_public_holders")}
+                now_h = {norm_person(h["name"]): h for h in d.get("named_public_holders") or []}
+                old_h = {norm_person(h["name"]): h for h in e.get("named_public_holders") or []}
+                moves = []
+                for key, h in now_h.items():
+                    if key not in old_h:
+                        moves.append({"name": h["name"], "move": "new above 1%", "pct": h["pct"]})
+                    elif abs(h["pct"] - old_h[key]["pct"]) >= 0.25:
+                        moves.append({"name": h["name"], "move": "raised" if h["pct"] > old_h[key]["pct"] else "cut",
+                                      "pct": h["pct"], "was": old_h[key]["pct"]})
+                for key, h in old_h.items():
+                    if key not in now_h:
+                        moves.append({"name": h["name"], "move": "no longer above 1%", "was": h["pct"]})
+                out[sym]["holder_moves"] = moves
                 inst = lambda x: sum(x.get(k, 0) for k in ("mutual_funds", "foreign_investors", "insurers", "other_domestic_institutions"))
                 out[sym]["institutions_change_pts"] = round(inst(d) - inst(e), 2)
     return out
+
+
+def norm_person(name):
+    return " ".join(re.sub(r"[^a-z ]", " ", (name or "").lower()).split())
+
+
+def investor_book(holding_rows, deals, investors):
+    """What the investors and funds the reader follows (config.json "investors": display name -> the
+    spellings to look for) hold and trade. Holdings come from the newest shareholding file per company
+    (holders above 1% are named); trades come from bulk and block deals, which name the party.
+    Returns {investor: {"holdings": [...], "deals": [...]}}."""
+    latest = {}
+    for r in sorted(holding_rows, key=lambda r: r["as_on"]):
+        latest[r.get("symbol") or r["company"]] = r
+    book = {name: {"holdings": [], "deals": []} for name in investors or {}}
+    keys = {name: [norm_person(a) for a in [name] + list(aliases or [])] for name, aliases in (investors or {}).items()}
+    hit = lambda who, text: any(k and k in norm_person(text) for k in keys[who])
+    for sym, r in latest.items():
+        for h in (r.get("detail") or {}).get("named_public_holders") or []:
+            for who in book:
+                if hit(who, h["name"]):
+                    book[who]["holdings"].append({"symbol": r.get("symbol", ""), "company": r["company"], "as_on": r["as_on"],
+                                                  "pct": h["pct"], "shares": h["shares"], "held_as": h["name"]})
+    for d in deals or []:
+        for who in book:
+            if hit(who, d.get("client", "")):
+                book[who]["deals"].append({k: d.get(k) for k in ("date", "symbol", "side", "quantity", "price", "pct_of_day_volume", "client")})
+    for who in book:
+        book[who]["holdings"].sort(key=lambda h: -h["pct"])
+    return book
 
 
 # ---------- calendar ----------

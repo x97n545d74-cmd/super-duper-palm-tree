@@ -87,7 +87,14 @@
     "GIFT Nifty today",
     "Brent crude oil price today",
     "rupee dollar RBI intervention",
-    "US Federal Reserve rate decision markets"
+    "US Federal Reserve rate decision markets",
+    "Cabinet approves scheme crore",
+    "Union Budget allocation sector",
+    "PLI scheme approved companies",
+    "state election manifesto promises",
+    "assembly election 2027",
+    "government tender awarded crore",
+    "disinvestment privatisation government stake sale"
   ],
   "bluesky_queries": [
     "nifty smallcap",
@@ -149,32 +156,67 @@
       "platform": "regulator",
       "url": "https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
       "only_with": [
-        "finance",
-        "rbi",
-        "sebi",
-        "gst",
-        "tax",
-        "inflation",
-        "gdp",
+        "agri",
+        "approved",
+        "approves",
+        "aviation",
+        "bank",
+        "battery",
+        "budget",
+        "cabinet",
+        "coal",
+        "commerce",
+        "corridor",
+        "crore",
+        "data",
+        "defence",
+        "disinvestment",
+        "drone",
+        "electronics",
+        "ethanol",
         "export",
+        "fertiliser",
+        "finance",
+        "gdp",
+        "gst",
+        "health",
+        "highway",
+        "housing",
+        "hydrogen",
         "import",
         "industry",
-        "commerce",
-        "power",
-        "coal",
-        "steel",
-        "railway",
-        "defence",
-        "semiconductor",
-        "electronics",
-        "pli",
-        "cabinet",
-        "budget",
-        "disinvestment",
-        "bank",
+        "inflation",
+        "infrastructure",
+        "metro",
+        "mineral",
         "mines",
+        "mission",
+        "msme",
+        "nuclear",
         "petroleum",
-        "renewable"
+        "pli",
+        "policy",
+        "port",
+        "power",
+        "railway",
+        "rbi",
+        "renewable",
+        "road",
+        "scheme",
+        "sebi",
+        "semiconductor",
+        "shipping",
+        "solar",
+        "space",
+        "startup",
+        "steel",
+        "tax",
+        "telecom",
+        "tender",
+        "textile",
+        "urban",
+        "water",
+        "wind"
       ]
     },
     {
@@ -327,5 +369,162 @@
       "rights issue",
       "promoter pledge"
     ]
-  }
+  },
+  "investors": {
+    "Rekha Jhunjhunwala": [
+      "Jhunjhunwala Rekha",
+      "Rare Enterprises",
+      "Rakesh Jhunjhunwala"
+    ],
+    "Radhakishan Damani": [
+      "Damani Radhakishan",
+      "Bright Star Investments",
+      "Derive Trading"
+    ],
+    "Ashish Kacholia": [
+      "Ashish Rameshchandra Kacholia",
+      "Kacholia"
+    ],
+    "Dolly Khanna": [
+      "Dolly Rajiv Khanna",
+      "Rajiv Khanna"
+    ],
+    "Vijay Kedia": [
+      "Vijay Kishanlal Kedia",
+      "Kedia Securities"
+    ],
+    "Mukul Agrawal": [
+      "Mukul Mahavir Agrawal",
+      "Mukul Mahavir Prasad Agrawal",
+      "Param Capital"
+    ],
+    "Sunil Singhania": [
+      "Abakkus"
+    ],
+    "Ashish Dhawan": [
+      "Ashish Dhawan"
+    ],
+    "Porinju Veliyath": [
+      "Porinju V Veliyath",
+      "Equity Intelligence India"
+    ],
+    "Anil Kumar Goel": [
+      "Anil Kumar Goel",
+      "Seema Goel"
+    ],
+    "Madhusudan Kela": [
+      "Madhuri Madhusudan Kela",
+      "Madhusudan Murlidhar Kela",
+      "Singularity"
+    ],
+    "Nemish Shah": [
+      "Nemish S Shah",
+      "Enam"
+    ],
+    "Akash Bhanshali": [
+      "Akash Bhanshali"
+    ],
+    "Shankar Sharma": [
+      "Shankar Sharma"
+    ],
+    "Mohnish Pabrai": [
+      "Pabrai Investment",
+      "Dhandho"
+    ],
+    "Ramesh Damani": [
+      "Ramesh S Damani"
+    ],
+    "Sanjiv Shah": [
+      "Sanjiv Dhireshbhai Shah"
+    ],
+    "LIC": [
+      "Life Insurance Corporation of India"
+    ],
+    "Nippon India Small Cap Fund": [
+      "Nippon Life India Trustee",
+      "Nippon India Small Cap"
+    ],
+    "HDFC Small Cap Fund": [
+      "HDFC Small Cap Fund",
+      "HDFC Trustee"
+    ],
+    "SBI Small Cap Fund": [
+      "SBI Small Cap Fund"
+    ],
+    "Quant Mutual Fund": [
+      "Quant Mutual Fund",
+      "Quant Small Cap"
+    ],
+    "Government of Singapore": [
+      "Government of Singapore",
+      "Monetary Authority of Singapore"
+    ],
+    "Vanguard": [
+      "Vanguard"
+    ],
+    "Goldman Sachs": [
+      "Goldman Sachs"
+    ],
+    "Morgan Stanley": [
+      "Morgan Stanley"
+    ],
+    "Nomura": [
+      "Nomura"
+    ],
+    "Hitesh Javeri": [
+      "Hitesh Ramji Javeri",
+      "Harsha Hitesh Javeri"
+    ]
+  },
+  "policy_items_per_run": 20,
+  "elections": [
+    {
+      "where": "Uttar Pradesh",
+      "type": "state",
+      "expected": "expected early 2027",
+      "note": "Schedule not yet confirmed here: check the Election Commission's announcement."
+    },
+    {
+      "where": "Punjab",
+      "type": "state",
+      "expected": "expected early 2027",
+      "note": "Schedule not yet confirmed here: check the Election Commission's announcement."
+    },
+    {
+      "where": "Uttarakhand",
+      "type": "state",
+      "expected": "expected early 2027",
+      "note": "Schedule not yet confirmed here: check the Election Commission's announcement."
+    },
+    {
+      "where": "Goa",
+      "type": "state",
+      "expected": "expected early 2027",
+      "note": "Schedule not yet confirmed here: check the Election Commission's announcement."
+    },
+    {
+      "where": "Manipur",
+      "type": "state",
+      "expected": "expected early 2027",
+      "note": "Schedule not yet confirmed here: check the Election Commission's announcement."
+    },
+    {
+      "where": "Gujarat",
+      "type": "state",
+      "expected": "expected late 2027",
+      "note": "Schedule not yet confirmed here: check the Election Commission's announcement."
+    },
+    {
+      "where": "Himachal Pradesh",
+      "type": "state",
+      "expected": "expected late 2027",
+      "note": "Schedule not yet confirmed here: check the Election Commission's announcement."
+    },
+    {
+      "where": "Lok Sabha",
+      "type": "national",
+      "expected": "due by mid 2029",
+      "note": ""
+    }
+  ]
 }

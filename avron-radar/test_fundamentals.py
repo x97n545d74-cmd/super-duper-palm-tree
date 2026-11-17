@@ -158,6 +158,39 @@ class HoldingsAndCalendar(unittest.TestCase):
                              "small_shareholders": 14.06, "shareholders": 45600})         # the individual-holder row is ignored
         self.assertIsNone(F.parse_shareholding("<xml/>"))
 
+    def test_named_holders_and_the_investor_book(self):
+        def holder(cat, n, name, pct, shares):
+            ctx = "%s_Context%d" % (cat, n)
+            return ('<in-bse-shp:NameOfTheShareholder contextRef="D_%s">%s</in-bse-shp:NameOfTheShareholder>' % (ctx, name)
+                    + '<in-bse-shp:ShareholdingAsAPercentageOfTotalNumberOfShares contextRef="%s" unitRef="pure">%s</in-bse-shp:ShareholdingAsAPercentageOfTotalNumberOfShares>' % (ctx, pct)
+                    + '<in-bse-shp:NumberOfShares contextRef="%s">%s</in-bse-shp:NumberOfShares>' % (ctx, shares))
+        big = "DetailsOfSharesHeldByResidentIndividualShareholdersHoldingNominalShareCapitalInExcessOfRsTwoLakh"
+        xml = (holder("IndividualsOrHUF", 15, "PROMOTER ONE", "0.2152", "111593000") + holder(big, 15, "ASHISH KACHOLIA", "0.0617", "32000000")
+               + holder("MutualFunds", 3, "HDFC SMALL CAP FUND", "0.0310", "16000000")
+               + '<in-bse-shp:ShareholdingAsAPercentageOfTotalNumberOfShares contextRef="ShareholdingOfPromoterAndPromoterGroup_ContextI">0.3339</in-bse-shp:ShareholdingAsAPercentageOfTotalNumberOfShares>')
+        hs = F.named_holders(xml)
+        self.assertEqual([(h["name"], h["kind"], h["pct"]) for h in hs],
+                         [("PROMOTER ONE", "promoter", 21.52), ("ASHISH KACHOLIA", "individual", 6.17), ("HDFC SMALL CAP FUND", "mutual fund", 3.1)])
+        detail = F.parse_shareholding(xml)
+        self.assertEqual([h["name"] for h in detail["named_public_holders"]], ["ASHISH KACHOLIA", "HDFC SMALL CAP FUND"])
+        rows = [{"key": "k", "symbol": "SUPREMEENG", "company": "Supreme Engineering Limited", "as_on": "2026-11-10", "promoter_pct": 33.39, "detail": detail}]
+        deals = [{"date": "17-NOV-2026", "symbol": "XYZ", "client": "ASHISH RAMESHCHANDRA KACHOLIA", "side": "BUY", "quantity": 500000.0, "price": 210.0},
+                 {"date": "17-NOV-2026", "symbol": "XYZ", "client": "SOMEONE ELSE", "side": "SELL", "quantity": 1.0, "price": 1.0}]
+        book = F.investor_book(rows, deals, {"Ashish Kacholia": ["Ashish Rameshchandra Kacholia"], "Vijay Kedia": ["Kedia Securities"]})
+        k = book["Ashish Kacholia"]
+        self.assertEqual((k["holdings"][0]["symbol"], k["holdings"][0]["pct"], len(k["deals"]), k["deals"][0]["side"]), ("SUPREMEENG", 6.17, 1, "BUY"))
+        self.assertEqual(book["Vijay Kedia"], {"holdings": [], "deals": []})
+
+    def test_holder_moves_between_two_files(self):
+        h = lambda name, pct: {"name": name, "kind": "individual", "pct": pct, "shares": 1}
+        rows = [{"key": "a", "symbol": "ABC", "as_on": "2026-06-30", "promoter_pct": 50, "detail": {"named_public_holders": [h("DOLLY KHANNA", 1.4), h("OLD HOLDER", 2.0), h("STEADY FUND", 3.0)]}},
+                {"key": "b", "symbol": "ABC", "as_on": "2026-09-30", "promoter_pct": 50, "detail": {"named_public_holders": [h("Dolly Khanna", 2.1), h("STEADY FUND", 3.1), h("MUKUL MAHAVIR AGRAWAL", 1.2)]}}]
+        moves = {m["name"]: m for m in F.holding_view(rows)["ABC"]["holder_moves"]}
+        self.assertEqual((moves["Dolly Khanna"]["move"], moves["Dolly Khanna"]["was"]), ("raised", 1.4))
+        self.assertEqual(moves["MUKUL MAHAVIR AGRAWAL"]["move"], "new above 1%")
+        self.assertEqual(moves["OLD HOLDER"]["move"], "no longer above 1%")
+        self.assertNotIn("STEADY FUND", moves)
+
     def test_institutional_change_between_two_quarters(self):
         rows = [{"key": "a", "symbol": "ABC", "as_on": "2026-06-30", "promoter_pct": 52.1, "detail": {"mutual_funds": 6.0, "foreign_investors": 11.0, "small_shareholders": 16.0}},
                 {"key": "b", "symbol": "ABC", "as_on": "2026-09-30", "promoter_pct": 52.1, "detail": {"mutual_funds": 8.1, "foreign_investors": 10.5, "small_shareholders": 14.5}}]

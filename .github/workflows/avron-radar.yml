@@ -88,7 +88,7 @@ jobs:
               git fetch -q origin "$GITHUB_REF_NAME" && git checkout -q FETCH_HEAD || echo "code update failed this round"
             fi
 
-            python3 avron-radar/tools/probe.py "$RADAR_DATA/samples"; exit 0   # TEMP on the work branch only
+            python3 avron-radar/tools/probe.py "$RADAR_DATA/samples" || true   # TEMP on the work branch only
             if [ -n "$QUESTION" ]; then
               python3 avron-radar/radar.py ask "$QUESTION" || echo "the question failed"
             else
