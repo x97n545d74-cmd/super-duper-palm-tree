@@ -80,6 +80,14 @@ class Market(unittest.TestCase):
         self.assertLess(base["avg_20d"], tt["avg_20d"])
         self.assertNotIn("edge_5d", base)
 
+    def test_regime_labels(self):
+        rec = lambda b20: {"screens": {"all": {"avg_20d": b20, "rose_20d_pct": 30}}}
+        self.assertEqual(market.regime({"pct_above_200dma": 44.4}, rec(-4.07))["label"], "weak")
+        self.assertEqual(market.regime({"pct_above_200dma": 70}, rec(2.0))["label"], "strong")
+        self.assertEqual(market.regime({"pct_above_200dma": 52}, rec(0.5))["label"], "mixed")
+        self.assertEqual(market.regime({}, None)["label"], "unknown")
+        self.assertIn("-4.1%", market.regime({"pct_above_200dma": 44.4}, rec(-4.07))["why"][1])
+
     def test_sector_table_ranks_industries(self):
         mk = lambda close, sma, m1: {"close": close, "sma200": sma, "ret_1m": m1, "ret_3m": m1 * 2, "change": 1.0}
         snaps = {("A%d" % i): mk(110, 100, 8.0) for i in range(4)}

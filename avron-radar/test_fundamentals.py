@@ -59,6 +59,14 @@ class Results(unittest.TestCase):
         self.assertNotIn("market_cap_cr", m)
         self.assertIn("misread", m["flags"][0])
 
+    def test_a_misread_face_value_is_flagged_with_the_value_that_would_fit(self):
+        fv1 = json.loads(REPLY)
+        fv1["face_value"] = 1                                           # the table says Rs 10
+        m = F.derive(F.parse_results(json.dumps(fv1)), close=480.0)
+        self.assertEqual((m["consistency"], m["would_fit_face_value"]), ("mismatch", 10.0))
+        self.assertNotIn("market_cap_cr", m)                            # nothing is guessed
+        self.assertIn("face value of Rs 10", m["flags"][0])
+
     def test_a_wrong_unit_changes_rupee_amounts_but_not_the_ratios(self):
         right = F.derive(F.parse_results(REPLY), close=480.0)
         wrong = F.derive(F.parse_results(REPLY.replace('"lakh"', '"crore"')), close=480.0)

@@ -21,7 +21,7 @@ import analyst
 ARCHIVE = "https://nsearchives.nseindia.com/"
 SERIES = {"EQ", "BE", "BZ", "SM", "ST"}       # main board and SME shares
 HISTORY_DAYS = 400       # calendar days to keep and backfill (about 270 trading days)
-SIGNALS_VERSION = 5      # raise when the screens or their columns change, so saved signals are recomputed
+SIGNALS_VERSION = 6      # raise when the screens or their columns change, so saved signals are recomputed
 MIN_TURNOVER_LAKH = 100  # screens ignore stocks that traded under Rs 1 crore on the day
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
 INDEX_LISTS = {
@@ -134,7 +134,7 @@ def compute_signals(days, universe):
     with200 = [s for s in liquid.values() if s["sma200"]]
     changes = [s["change"] for s in liquid.values() if s["change"] is not None]
     movers = sorted(liquid, key=lambda x: liquid[x]["change"] or 0)
-    return {
+    out = {
         "date": date,
         "days_of_history": len(days),
         "stocks_screened": len(liquid),
@@ -148,11 +148,14 @@ def compute_signals(days, universe):
         "top_gainers": [row(x) for x in movers[::-1][:15]],
         "top_losers": [row(x) for x in movers[:15]],
         "screens": out_screens,
-        "screen_record": screen_record(series, [d for d, _ in days]),
+        "screen_record": None,
         "sectors": sector_table(snaps, universe, set(screens.get("trend_template", []))),
         "volumes": {sym: series[sym][-1]["volume"] for sym in snaps},
         "snapshots": {sym: row(sym) for sym in snaps},     # every stock, for looking one up
     }
+    out["screen_record"] = screen_record(series, [d for d, _ in days])
+    out["regime"] = regime(out["breadth"], out["screen_record"])
+    return out
 
 
 def sector_table(snaps, universe, on_trend):
@@ -181,7 +184,32 @@ def sector_table(snaps, universe, on_trend):
     return sorted(rows, key=lambda r: -(r["avg_1m"] if r["avg_1m"] is not None else -999))
 
 
-def screen_record(series, dates, lookback=60, step=5, horizons=(5, 20)):
+def regime(breadth, record):
+    """A plain label for the market the screens are working in, with the reasons."""
+    above = (breadth or {}).get("pct_above_200dma")
+    base = ((record or {}).get("screens") or {}).get("all") or {}
+    b20, rose = base.get("avg_20d"), base.get("rose_20d_pct")
+    why = []
+    if above is not None:
+        why.append("%s%% of stocks are above their 200-day average" % above)
+    if b20 is not None:
+        why.append("the average liquid stock moved %+.1f%% over 20 trading days and %s%% of them rose" % (b20, rose))
+    if above is None or b20 is None:
+        label = "unknown"
+    elif above >= 60 and b20 > 0:
+        label = "strong"
+    elif above < 45 or b20 < -2:
+        label = "weak"
+    else:
+        label = "mixed"
+    meaning = {"strong": "Breakouts and uptrends have the wind behind them.",
+               "mixed": "Be selective: only setups with volume, delivery and a business reason.",
+               "weak": "Most stocks are falling. Breakouts fail more often than not; protecting capital comes first.",
+               "unknown": "Not enough history yet."}[label]
+    return {"label": label, "why": why, "meaning": meaning}
+
+
+def screen_record(series, dates, lookback=60, step=3, horizons=(5, 20)):
     """How each screen has actually done lately: for sample days in the past `lookback` trading days,
     the average return 5 and 20 trading days after a stock appeared on the screen, the share that rose,
     and the same for every liquid stock on those days (the baseline). A check on the screens, not a promise."""

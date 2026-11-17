@@ -18,8 +18,35 @@ WEIGHTS = {
 }
 
 
+SCREEN_OF = {"trend_template": "trend_template", "breakout_52w": "breakout_52w", "breakout_20d": "breakout_20d",
+             "delivery_spike": "delivery_spike", "golden_cross": "golden_cross", "death_cross": "death_cross",
+             "stretched": "overbought", "heavy_selling": "volume_shock"}
+
+
+def tuned_weights(record):
+    """The price-side weights, adjusted by how each screen has actually done lately (its 20-day edge over
+    the average liquid stock). A bullish screen that has lagged the market earns no points; a bearish
+    signal that has not been followed by weakness costs none. Returns (weights, notes)."""
+    w, notes = dict(WEIGHTS), {}
+    screens = (record or {}).get("screens") or {}
+    for key, screen in SCREEN_OF.items():
+        edge = (screens.get(screen) or {}).get("edge_20d")
+        if edge is None:
+            continue
+        bullish = WEIGHTS[key] > 0
+        if (bullish and edge <= -0.5) or (not bullish and edge >= 0.5):
+            w[key] = 0
+            notes[key] = "%s has %s the market by %.1f%% over 20 days lately, so it earns no points" % (
+                screen.replace("_", " "), "lagged" if bullish else "beaten", abs(edge))
+    return w, notes
+
+
 def _add(card, group, key, text, points=None):
-    pts = WEIGHTS[key] if points is None else points
+    pts = card.get("_w", WEIGHTS)[key] if points is None else points
+    if pts == 0:
+        note = card.get("_notes", {}).get(key)
+        card["notes"].append(text + (" (" + note + ")" if note else ""))
+        return
     card["score"] += pts
     card["groups"][group] = card["groups"].get(group, 0) + pts
     card["for" if pts > 0 else "against"].append(text)
@@ -37,9 +64,11 @@ def scorecard(signals, fund=None, holds=None, analyses=None, buzz=None, calendar
         for st in sc.get("all") or [x["symbol"] for x in sc["stocks"]]:
             on.setdefault(st, set()).add(name)
     cards = {}
+    weights, wnotes = tuned_weights(signals.get("screen_record"))
 
     def card(sym):
-        return cards.setdefault(sym, {"symbol": sym, "score": 0, "for": [], "against": [], "notes": [], "groups": {}})
+        return cards.setdefault(sym, {"symbol": sym, "score": 0, "for": [], "against": [], "notes": [], "groups": {},
+                                      "_w": weights, "_notes": wnotes})
 
     for sym, hits in on.items():
         s = snaps.get(sym) or {}
@@ -93,15 +122,22 @@ def scorecard(signals, fund=None, holds=None, analyses=None, buzz=None, calendar
         else:
             card(sym)["notes"].append("filing (%s): %s" % (a.get("tone"), a["headline"][:110]))
 
-    net = {}
+    net, share = {}, {}
     for d in signals.get("deals") or []:
         if d.get("quantity"):
-            net[d["symbol"]] = net.get(d["symbol"], 0) + (d["quantity"] if "BUY" in (d.get("side") or "").upper() else -d["quantity"])
+            sign = 1 if "BUY" in (d.get("side") or "").upper() else -1
+            net[d["symbol"]] = net.get(d["symbol"], 0) + sign * d["quantity"]
+            share[d["symbol"]] = share.get(d["symbol"], 0) + sign * (d.get("pct_of_day_volume") or 0)
     for sym, qty in net.items():
+        pct = abs(share.get(sym, 0))
+        if pct < 1:          # under 1% of the day's trading is noise (often the same trader in and out)
+            continue
+        size = " ({:.0f}% of the day's volume)".format(pct)
+        big = 2 if pct >= 10 else None
         if qty > 0:
-            _add(card(sym), "flows", "deal_buying", "bulk or block deals: net buying of {:,.0f} shares".format(qty))
+            _add(card(sym), "flows", "deal_buying", "bulk or block deals: net buying of {:,.0f} shares".format(qty) + size, big)
         elif qty < 0:
-            _add(card(sym), "flows", "deal_selling", "bulk or block deals: net selling of {:,.0f} shares".format(-qty))
+            _add(card(sym), "flows", "deal_selling", "bulk or block deals: net selling of {:,.0f} shares".format(-qty) + size, big and -big)
     for sym, h in holds.items():
         if h.get("change_pts") is not None and abs(h["change_pts"]) >= 0.5:
             _add(card(sym), "flows", "promoter_up" if h["change_pts"] > 0 else "promoter_down",
@@ -122,6 +158,8 @@ def scorecard(signals, fund=None, holds=None, analyses=None, buzz=None, calendar
         c.update(name=s.get("name", ""), industry=s.get("industry", ""), close=s.get("close"), change=s.get("change"),
                  market_cap_cr=f.get("market_cap_cr"))
         c["mine"] = bool(my_screen and passes(my_screen, f))
+        c.pop("_w", None)
+        c.pop("_notes", None)
     return cards
 
 
@@ -146,4 +184,7 @@ def shortlists(cards, n=25):
     weakest = sorted((c for c in rows if c["score"] <= -2), key=lambda c: c["score"])[:n]
     conflicts = sorted((c for c in rows if c["conflict"]), key=lambda c: -abs(c["score"]))[:n]
     mine = sorted((c for c in rows if c["mine"]), key=lambda c: -c["score"])[:n]
-    return {"strongest": strongest, "weakest": weakest, "conflicts": conflicts, "mine": mine}
+    chosen = {c["symbol"] for c in strongest}
+    price_only = sorted((c for c in rows if c["groups"].get("price", 0) >= 3 and c["symbol"] not in chosen
+                         and "business" not in c["groups"]), key=lambda c: -c["groups"]["price"])[:n]
+    return {"strongest": strongest, "weakest": weakest, "conflicts": conflicts, "mine": mine, "price_only": price_only}

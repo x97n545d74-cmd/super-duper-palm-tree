@@ -153,13 +153,22 @@ def derive(rec, close=None):
     if rec.get("paid_up_capital") and rec.get("face_value"):
         shares = rec["paid_up_capital"] * 1e7 / rec["face_value"]
         if c.get("eps_basic") and c["pat"]:
+            fits = lambda fv: 0.5 <= (c["pat"] * 1e7 / (rec["paid_up_capital"] * 1e7 / fv)) / c["eps_basic"] <= 2
+            if not fits(rec["face_value"]):
+                # Which figure was misread cannot be known from here, so nothing is corrected: the valuation is
+                # withheld and the reader is told what would make the figures agree.
+                other = [fv for fv in (10.0, 5.0, 2.0, 1.0) if fv != rec["face_value"] and fits(fv)]
+                if other:
+                    m["would_fit_face_value"] = other[0]
             implied = c["pat"] * 1e7 / shares
             ratio = implied / c["eps_basic"] if c["eps_basic"] else 0
             # Catches a misread row or column. It cannot catch a wrong unit, because profit and share
             # capital are printed in the same unit and the error cancels out.
             m["consistency"] = "ok" if 0.5 <= ratio <= 2 else "mismatch"
             if m["consistency"] == "mismatch":
-                flags.append("profit, share capital and EPS do not agree: a figure was probably misread")
+                flags.append("profit, share capital and EPS do not agree: a figure was probably misread"
+                             + ("; they would agree with a face value of Rs %g" % m["would_fit_face_value"] if m.get("would_fit_face_value") else "")
+                             + ". Market value and per-share figures are withheld")
     else:
         m["consistency"] = "not possible"
     eps_year = c["eps_basic"] * k if c.get("eps_basic") is not None else None

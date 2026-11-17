@@ -121,6 +121,7 @@ function tiles() {
   if (!b) return "";
   const t = (v, label) => "<div class='tile'><b>" + v + "</b><span>" + esc(label) + "</span></div>";
   let h = "<div class='tiles'>";
+  if (M.regime) h += t("<span class='" + ({strong: "up", weak: "down"}[M.regime.label] || "") + "'>" + esc(M.regime.label) + "</span>", "market regime");
   ["Nifty 50","Nifty Smallcap 250","Nifty Microcap 250"].forEach(n => { if (ix[n]) h += t(num(ix[n].close, 0) + " " + pct(ix[n].change_pct), n + (ix[n].pe ? " · P/E " + num(ix[n].pe) : "")); });
   if (ix["India VIX"]) h += t(num(ix["India VIX"].close, 2), "India VIX");
   h += t(num(b.advancers, 0) + " / " + num(b.decliners, 0), "advancers / decliners");
@@ -147,9 +148,11 @@ function cardHtml(c) {
 }
 (function () {
   const L = D.shortlists || {}, sec = (title, mean, rows) => "<h3>" + title + " · " + (rows || []).length + "</h3><div class='mean'>" + mean + "</div>" + ((rows || []).map(cardHtml).join("") || "<p class='mean'>None today.</p>");
-  $("v-score").innerHTML = "<p class='mean'>One tally per stock of everything the radar holds: price action, company financials, filings, large deals and promoter holding. It counts evidence; it does not forecast and it is not advice. The Screens tab shows how each price screen has actually performed.</p>" +
+  const G = M.regime;
+  $("v-score").innerHTML = (G ? "<div class='card'><div class='meta'><span class='chip " + ({strong: "t-positive", weak: "bad"}[G.label] || "w") + "'>market: " + esc(G.label) + "</span></div><b>" + esc(G.meaning) + "</b><ul>" + G.why.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul></div>" : "") + "<p class='mean'>One tally per stock of everything the radar holds: price action, company financials, filings, large deals and promoter holding. It counts evidence; it does not forecast and it is not advice. The Screens tab shows how each price screen has actually performed.</p>" +
     sec("Passes my screen", "Your own rules from config.json, on companies whose results are on file.", L.mine) +
     sec("Most evidence in favour", "Score of 3 or more, from at least two different kinds of evidence.", L.strongest) +
+    sec("Strong on price alone", "Price evidence of 3 or more with no results on file yet. Half the picture: check the business before taking it seriously.", L.price_only) +
     sec("Price and business disagree", "For example a breakout in a company with flags in its accounts, or good results in a falling stock.", L.conflicts) +
     sec("Most evidence against", "Score of -2 or lower.", L.weakest);
 })();
