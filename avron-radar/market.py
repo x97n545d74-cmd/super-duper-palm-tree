@@ -21,7 +21,7 @@ import analyst
 ARCHIVE = "https://nsearchives.nseindia.com/"
 SERIES = {"EQ", "BE", "BZ", "SM", "ST"}       # main board and SME shares
 HISTORY_DAYS = 400       # calendar days to keep and backfill (about 270 trading days)
-SIGNALS_VERSION = 6      # raise when the screens or their columns change, so saved signals are recomputed
+SIGNALS_VERSION = 7      # raise when the screens or their columns change, so saved signals are recomputed
 MIN_TURNOVER_LAKH = 100  # screens ignore stocks that traded under Rs 1 crore on the day
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
 INDEX_LISTS = {
@@ -85,6 +85,11 @@ def build_series(days):
             if bars:
                 last = bars[-1]["raw_close"]
                 f = r["prev"] / last if last else 1
+                jump = r["close"] / last if last else 1
+                if abs(f - 1) <= 0.02 and (jump < 0.65 or jump > 1.6):
+                    # A move this size in one day is beyond the exchange's price bands: it is a demerger or
+                    # similar that was not restated, not a crash. Treat it as a corporate action.
+                    f = jump
                 if abs(f - 1) > 0.02:                      # a corporate action, not rounding
                     for b in bars:
                         for k in ("close", "high", "low"):
@@ -306,6 +311,30 @@ def name_index(universe):
     return {norm_name(u["name"]): sym for sym, u in universe.items() if u.get("name")}
 
 
+def deal_summary(deals):
+    """Bulk and block deals added up per stock: who bought, who sold, the net, and the net as a share of
+    the day's volume. Biggest net share first."""
+    by = {}
+    for d in deals or []:
+        if not d.get("quantity"):
+            continue
+        row = by.setdefault(d["symbol"], {"symbol": d["symbol"], "name": d.get("name", ""), "bought": 0, "sold": 0,
+                                          "net_pct_of_day_volume": 0.0, "buyers": [], "sellers": []})
+        buy = "BUY" in (d.get("side") or "").upper()
+        row["bought" if buy else "sold"] += d["quantity"]
+        row["net_pct_of_day_volume"] += (1 if buy else -1) * (d.get("pct_of_day_volume") or 0)
+        names = row["buyers" if buy else "sellers"]
+        if d.get("client") and d["client"] not in names:
+            names.append(d["client"])
+    for row in by.values():
+        both = set(row["buyers"]) & set(row["sellers"])
+        row["same_party_both_sides"] = sorted(both)[:3]          # in and out the same day: trading, not a position
+        row["net"] = row["bought"] - row["sold"]
+        row["net_pct_of_day_volume"] = round(row["net_pct_of_day_volume"], 1)
+        row["buyers"], row["sellers"] = row["buyers"][:4], row["sellers"][:4]
+    return sorted(by.values(), key=lambda r: -abs(r["net_pct_of_day_volume"]))
+
+
 def name_index_from_snapshots(signals):
     """Company name -> symbol from the saved signals (no extra file read)."""
     return {norm_name(r.get("name", "")): sym for sym, r in (signals or {}).get("snapshots", {}).items() if r.get("name")}
@@ -386,6 +415,7 @@ def update(data_dir, http_get, today=None, log=print):
                 if d.get("quantity") and vols.get(d["symbol"]):
                     d["pct_of_day_volume"] = round(100 * d["quantity"] / vols[d["symbol"]], 1)
             signals["deals"] = deals
+            signals["deal_summary"] = deal_summary(deals)
             (mdir / "signals.json").write_text(json.dumps(signals), encoding="utf-8")
             state["signals_for"] = latest
             state["signals_version"] = SIGNALS_VERSION

@@ -59,6 +59,28 @@ class Market(unittest.TestCase):
         self.assertLess(max(abs(m) for m in moves), 0.01)       # no fake -50% day
         self.assertAlmostEqual(bars[-1]["close"], bars[-1]["raw_close"])
 
+    def test_unrestated_demerger_is_not_a_crash(self):
+        d = days(60)
+        for _, rows in d[30:]:                                   # value halves overnight, previous close NOT restated
+            rows["ABC"] = {k: (v / 2 if k in ("prev", "close", "high", "low") else v) for k, v in rows["ABC"].items()}
+        d[30][1]["ABC"]["prev"] *= 2
+        bars = market.build_series(d)["ABC"]
+        moves = [b["close"] / a["close"] - 1 for a, b in zip(bars, bars[1:])]
+        self.assertLess(max(abs(m) for m in moves), 0.01)
+        normal = days(60)                                        # an ordinary 15% fall is left alone
+        normal[30][1]["ABC"]["close"] *= 0.85
+        fall = market.build_series(normal)["ABC"]
+        self.assertAlmostEqual(fall[30]["close"] / fall[29]["close"], 0.85 * 1.004, places=3)
+
+    def test_deal_summary_nets_buyers_and_sellers(self):
+        deals = [{"symbol": "ABC", "name": "ABC Ltd", "client": "FUND A", "side": "BUY", "quantity": 300.0, "pct_of_day_volume": 3.0},
+                 {"symbol": "ABC", "name": "ABC Ltd", "client": "TRADER", "side": "BUY", "quantity": 100.0, "pct_of_day_volume": 1.0},
+                 {"symbol": "ABC", "name": "ABC Ltd", "client": "TRADER", "side": "SELL", "quantity": 100.0, "pct_of_day_volume": 1.0},
+                 {"symbol": "XYZ", "name": "XYZ Ltd", "client": "PROMOTER CO", "side": "SELL", "quantity": 900.0, "pct_of_day_volume": 12.0}]
+        xyz, abc = market.deal_summary(deals)
+        self.assertEqual((xyz["symbol"], xyz["net"], xyz["net_pct_of_day_volume"], xyz["sellers"]), ("XYZ", -900.0, -12.0, ["PROMOTER CO"]))
+        self.assertEqual((abc["net"], abc["net_pct_of_day_volume"], abc["same_party_both_sides"]), (300.0, 3.0, ["TRADER"]))
+
     def test_signals_for_a_steady_uptrend(self):
         sig = market.compute_signals(days(260), {"ABC": {"name": "ABC Limited", "industry": "Capital Goods", "index": "smallcap250"}})
         self.assertEqual(sig["stocks_screened"], 1)

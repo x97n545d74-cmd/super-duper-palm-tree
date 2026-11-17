@@ -463,7 +463,7 @@ def brief_inputs(kind, signals, analyses, items, hours):
             "top_losers": slim(signals.get("top_losers", []), 10),
             "screens": {name: {"meaning": s["meaning"], "count": s["count"], "stocks": slim(s["stocks"], 12)}
                         for name, s in signals.get("screens", {}).items() if s["count"]},
-            "deals": signals.get("deals", [])[:40],
+            "deals_by_stock": (signals.get("deal_summary") or [])[:25],
             "screen_record": signals.get("screen_record"),
             "regime": signals.get("regime"),
             "sectors": (signals.get("sectors") or [])[:6] + (signals.get("sectors") or [])[-4:],
@@ -537,7 +537,7 @@ The filings that matter, most important first. One short paragraph each: the fac
 ## Setups on the screens
 Start with one sentence from screen_record: which screens have had an edge over the average stock lately and which have not. Then up to six stocks where the screens show something worth a look. For each: which screen, the volume and delivery evidence, the level that would invalidate the setup (use prior_high20 for a breakout, sma50 or sma200 for a trend, with atr_pct as the measure of normal movement), and whether any filing, news or chatter spike explains the move. Say when there is no reason behind a move.
 ## Flows
-Bulk and block deals worth noting: who, which side.
+From deals_by_stock (already netted per stock, largest share of the day's volume first): who bought, who sold, and how big against the day's trading. A party on both sides the same day is trading, not taking a position. Add promoter holding changes if any.
 ## Chatter to verify
 Up to four claims from news or social posts that would matter if true, each with what to check. Name any stock in chatter_spikes whose mentions jumped, and say that a jump in talk is not evidence.
 ## Tomorrow's checklist
