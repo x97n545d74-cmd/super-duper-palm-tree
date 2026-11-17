@@ -29,7 +29,9 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 3,
- "fails": {},
+ "reddit_next": 4,
+ "fails": {
+  "reddit|r/StockMarketIndia": 1
+ },
  "paused_until": {}
 }
