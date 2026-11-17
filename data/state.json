@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 2,
+ "reddit_next": 3,
  "fails": {
   "reddit|r/StockMarketIndia": 2,
   "reddit|r/DalalStreetTalks": 2,
@@ -39,7 +39,7 @@
   "reddit|r/NSEbets": 2,
   "reddit|r/IndianStockMarket": 2,
   "reddit|r/IndiaInvestments": 2,
-  "reddit|r/IndianStreetBets": 1
+  "reddit|r/IndianStreetBets": 2
  },
  "paused_until": {
   "feeds|Moneycontrol business": 1794970619.9994793,
