@@ -32,8 +32,22 @@ Without a key, the "sample" button still works, so you can see the result screen
 
 - **On the shop PC**: run `npm start` and open `http://localhost:8080`.
 - **On the phone, same Wi-Fi**: open `http://<PC's IP address>:8080`.
-- **From anywhere**: host this folder on any Node host (Render, Railway, a small VPS) with the two
-  environment variables set. Always set `APP_PIN` there, or anyone with the link can spend your API credit.
+- **From anywhere**: host it online (next section).
+
+## Put it on the Android phone
+
+The phone cannot run the reader itself, so the app is hosted online and opened like an app.
+
+1. Sign up at render.com with the GitHub account that owns this repo.
+2. New → Blueprint → pick this repo. Render reads `render.yaml` at the repo root.
+3. When it asks, type the two secrets: `ANTHROPIC_API_KEY` and `APP_PIN`. They stay in Render, not in this repo.
+4. After the deploy, Render shows an address like `https://shankar-ledger.onrender.com`.
+5. On the phone, open that address in Chrome → menu (⋮) → **Add to Home screen**. It opens full screen from the icon.
+6. The first time, it asks for the shop PIN once.
+
+The free plan sleeps when unused, so the first open after a break can take up to a minute.
+Eight wrong PIN tries from one address (40 overall) lock PIN checks for an hour.
+`render.yaml` has not been deployed yet; if Render rejects a field, fix it in the dashboard.
 
 ## Settings (`.env`)
 

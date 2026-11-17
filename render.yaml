@@ -1,0 +1,17 @@
+# Hosting for the Shankar Medicos ledger checker on render.com (see shankar-ledger/README.md).
+# The API key and PIN are typed into Render's dashboard, never stored in this repo.
+services:
+  - type: web
+    name: shankar-ledger
+    runtime: node
+    plan: free
+    rootDir: shankar-ledger
+    branch: claude/brave-euler-fxpgll
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/status
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: APP_PIN
+        sync: false

@@ -41,6 +41,27 @@ function allowed(ip) {
   return true;
 }
 
+// A 4-digit PIN is easy to guess, so wrong tries are counted: 8 per address and
+// 40 overall per hour, then PIN checks are refused until the hour passes.
+const wrong = { byIp: new Map(), all: [] };
+function pinLocked(ip) {
+  const now = Date.now();
+  wrong.all = wrong.all.filter((t) => now - t < 3600e3);
+  const mine = (wrong.byIp.get(ip) || []).filter((t) => now - t < 3600e3);
+  wrong.byIp.set(ip, mine);
+  return mine.length >= 8 || wrong.all.length >= 40;
+}
+function pinWrong(ip) {
+  const now = Date.now();
+  wrong.all.push(now);
+  wrong.byIp.set(ip, [...(wrong.byIp.get(ip) || []), now]);
+}
+function clientIp(req) {
+  // Hosts put the caller's address last in X-Forwarded-For; without a proxy, use the socket.
+  const fwd = String(req.headers['x-forwarded-for'] || '').split(',').map((x) => x.trim()).filter(Boolean);
+  return fwd.length ? fwd[fwd.length - 1] : (req.socket.remoteAddress || '');
+}
+
 function pinOk(given) {
   if (!PIN) return true;
   const a = crypto.createHash('sha256').update(String(given || '')).digest();
@@ -79,7 +100,7 @@ function cleanFiles(files) {
 }
 
 async function handleExtract(req, res) {
-  const ip = req.socket.remoteAddress || '';
+  const ip = clientIp(req);
   // The reply is sent as 200 with spaces every few seconds while Claude reads, so
   // phone networks and hosting proxies do not drop a slow request. The JSON follows.
   res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no' });
@@ -87,7 +108,8 @@ async function handleExtract(req, res) {
   const done = (obj) => { clearInterval(beat); res.end(JSON.stringify(obj)); };
   try {
     const body = JSON.parse((await readBody(req)).toString('utf8'));
-    if (!pinOk(body.pin)) return done({ ok: false, error: 'pin' });
+    if (PIN && pinLocked(ip)) return done({ ok: false, error: 'locked' });
+    if (!pinOk(body.pin)) { if (body.pin) pinWrong(ip); return done({ ok: false, error: 'pin' }); }
     if (!hasCredentials()) return done({ ok: false, error: 'no_key' });
     if (!allowed(ip)) return done({ ok: false, error: 'busy' });
     const side = body.side === 'theirs' ? 'theirs' : 'ours';
@@ -119,13 +141,6 @@ function serveStatic(req, res) {
 
 const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/api/extract') return void handleExtract(req, res);
-  if (req.method === 'POST' && req.url === '/api/pin') {
-    return void readBody(req).then((b) => {
-      let ok = false;
-      try { ok = pinOk(JSON.parse(b.toString('utf8')).pin); } catch { /* bad body */ }
-      res.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify({ ok }));
-    }).catch(() => res.writeHead(400).end());
-  }
   if (req.method === 'GET' && req.url === '/api/status') {
     res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
     return void res.end(JSON.stringify({ reader: hasCredentials(), pin: Boolean(PIN) }));
