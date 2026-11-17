@@ -114,6 +114,21 @@ class Scorecard(unittest.TestCase):
         self.assertTrue(any("death cross" in l for l in quiet["lines"]))
         self.assertIn("check the symbol", missing["lines"][0])
 
+    def test_activity_checklist_keeps_empty_lines_and_latest_first(self):
+        f = lambda when, subject, text="", source="NSE announcements": {"published_at": when, "subject": subject, "text": text, "source": source, "url": "u" + when}
+        rows = {r["what"]: r for r in decide.activity_checklist([
+            f("2026-11-10T00:00:00Z", "Bagging/Receiving of orders/contracts"), f("2026-11-16T00:00:00Z", "Press Release", "ABC has received a Letter of Award"),
+            f("2026-11-12T00:00:00Z", "Outcome of Board Meeting"), f("2026-11-01T00:00:00Z", None, "TYPE OF SECURITY : Equity Shares", "NSE insider trading")])}
+        self.assertEqual((rows["Orders and contracts"]["count"], rows["Orders and contracts"]["latest"]), (2, "2026-11-16"))
+        self.assertEqual(rows["Results"]["count"], 1)
+        self.assertEqual(rows["Insider trading disclosures"]["count"], 1)
+        self.assertEqual((rows["Auditor changes"]["count"], rows["Auditor changes"]["latest"]), (0, ""))
+        self.assertEqual(len(rows), len(decide.ACTIVITY))
+
+    def test_institutional_buying_scores(self):
+        cards = decide.scorecard(SIG, {}, {"GOOD": {"change_pts": None, "promoter_pct": 50, "institutions_change_pts": 1.6}}, now=NOW)
+        self.assertTrue(any("funds and foreign investors raised their holding by 1.60 points" in x for x in cards["GOOD"]["for"]))
+
     def test_theme_tracker(self):
         mk = lambda when, platform, title, syms=(): {"platform": platform, "published_at": when, "title": title, "text": "", "symbols": list(syms), "url": "u"}
         items = [mk("2026-11-17T0%d:00:00Z" % h, "news", "New data centre capacity in Navi Mumbai", ["ANANTRAJ"]) for h in range(4)]

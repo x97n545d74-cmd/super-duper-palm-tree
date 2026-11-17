@@ -528,7 +528,8 @@ def collect(cfg):
                   "ok  found %(found)d  new %(new)d" % entry if entry["ok"] else "FAILED  " + entry["error"]))
     append_items(new_rows)
     try:      # promoter holdings are kept for good, not just for the dashboard's 45 days
-        STATS["holdings_added"] = fundamentals.save_holdings(DATA, new_rows, market.name_index(market.load_universe(DATA)))
+        STATS["holdings_added"] = fundamentals.save_holdings(DATA, new_rows, market.name_index(market.load_universe(DATA)),
+                                                             fetch=browser_get)
     except Exception as e:
         print("holdings: %s" % str(e)[:150])
     (DATA / "state.json").write_text(json.dumps(state, indent=1), encoding="utf-8")
@@ -827,6 +828,13 @@ def build():
     page = (HERE / "dashboard.template.html").read_text(encoding="utf-8")
     market_view = {k: v for k, v in signals.items() if k != "snapshots"}
     market_view["screens"] = {k: {x: y for x, y in v.items() if x != "all"} for k, v in (signals.get("screens") or {}).items()}
+    by_stock = {}      # every filing, routine ones included, for each company's activity checklist
+    for r in items:
+        if r["platform"] == "nse":
+            for sym in r.get("symbols") or []:
+                by_stock.setdefault(sym, []).append(r)
+    activity = {sym: {row["what"]: [row["count"], row["latest"], row["text"], row["url"]]
+                      for row in decide.activity_checklist(fs) if row["count"]} for sym, fs in by_stock.items()}
     # The dashboard feed leaves out routine exchange paperwork (it stays in radar.db and on the Stock tab's source).
     feed = [r for r in items if not (r["platform"] == "nse" and brain.ROUTINE.search(r.get("title", "") + " " + r.get("text", "")))]
     payload = json.dumps({"built_at": iso(now_utc()), "items": feed[:4000], "health": health,
@@ -835,6 +843,7 @@ def build():
                           "buzz": brain.buzz(items, names), "runs": runs,
                           "fundamentals": fund, "holdings": holds, "calendar": cal, "growth": growth,
                           "answers": asker.load_answers(DATA), "my_stocks": mine,
+                          "activity_names": [n for n, _ in decide.ACTIVITY], "activity": activity,
                           "themes": decide.theme_tracker(items, (load_json(CONFIG, {}) or {}).get("themes")), "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
                                                         for s, c in cards.items()}},
                          ensure_ascii=False).replace("</", "<\\/")

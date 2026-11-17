@@ -146,6 +146,38 @@ class HoldingsAndCalendar(unittest.TestCase):
                                                         "previous_as_on": "2026-06-30", "change_pts": -2.5})
         self.assertEqual(F.holding_rows([row("30-Sep-2026", "52.60")], names, known), [])
 
+    def test_shareholding_file_is_read_by_kind_of_holder(self):
+        fact = lambda cat, v, f="ShareholdingAsAPercentageOfTotalNumberOfShares": '<in-bse-shp:%s contextRef="%s_ContextI" decimals="4" unitRef="pure">%s</in-bse-shp:%s>' % (f, cat, v, f)
+        xml = "".join([fact("ShareholdingOfPromoterAndPromoterGroup", "0.5210"), fact("MutualFunds", "0.0812"),
+                       fact("ForeignPortfolioInvestorsCategoryI", "0.1100"), fact("ForeignPortfolioInvestorsCategoryII", "0.0050"),
+                       fact("InsuranceCompanies", "0.0200"), fact("ResidentIndividualShareholdersHoldingNominalShareCapitalUpToRsTwoLakh", "0.1406"),
+                       fact("ShareholdingPattern", "1"), fact("ShareholdingPattern", "45600", "NumberOfShareholders"),
+                       '<in-bse-shp:ShareholdingAsAPercentageOfTotalNumberOfShares contextRef="IndividualsOrHUF_Context15" unitRef="pure">0.9</in-bse-shp:ShareholdingAsAPercentageOfTotalNumberOfShares>'])
+        d = F.parse_shareholding(xml)
+        self.assertEqual(d, {"promoters": 52.1, "mutual_funds": 8.12, "foreign_investors": 11.5, "insurers": 2.0,
+                             "small_shareholders": 14.06, "shareholders": 45600})         # the individual-holder row is ignored
+        self.assertIsNone(F.parse_shareholding("<xml/>"))
+
+    def test_institutional_change_between_two_quarters(self):
+        rows = [{"key": "a", "symbol": "ABC", "as_on": "2026-06-30", "promoter_pct": 52.1, "detail": {"mutual_funds": 6.0, "foreign_investors": 11.0, "small_shareholders": 16.0}},
+                {"key": "b", "symbol": "ABC", "as_on": "2026-09-30", "promoter_pct": 52.1, "detail": {"mutual_funds": 8.1, "foreign_investors": 10.5, "small_shareholders": 14.5}}]
+        v = F.holding_view(rows)["ABC"]
+        self.assertEqual((v["detail_change"]["mutual_funds"], v["detail_change"]["small_shareholders"], v["institutions_change_pts"]), (2.1, -1.5, 1.6))
+
+    def test_save_holdings_fetches_the_breakdown_and_survives_a_bad_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = pathlib.Path(tmp)
+            row = lambda co, url: {"source": "NSE shareholding patterns", "title": co, "url": url,
+                                   "text": "AS ON DATE : 30-Sep-2026 | PR_AND_PRGRP: 52.10 | PUBLIC_VAL: 47.9"}
+            good = '<in-bse-shp:ShareholdingAsAPercentageOfTotalNumberOfShares contextRef="ShareholdingOfPromoterAndPromoterGroup_ContextI">0.521</in-bse-shp:ShareholdingAsAPercentageOfTotalNumberOfShares>'
+            def fetch(url):
+                if "bad" in url:
+                    raise OSError("down")
+                return good
+            n = F.save_holdings(tmp, [row("ABC Limited", "https://x/a.xml"), row("XYZ Limited", "https://x/bad.xml")], {}, fetch=fetch)
+            saved = F.load_holdings(tmp)
+            self.assertEqual((n, saved[0]["detail"], "detail" in saved[1]), (2, {"promoters": 52.1}, False))
+
     def test_calendar_reads_meetings_and_ex_dates(self):
         items = [
             {"source": "NSE board meetings", "title": "Vinsys IT Services India Limited",

@@ -338,6 +338,44 @@ def extract(data_dir, items, cfg, ask=None, log=print):
 HOLDING = re.compile(r"AS ON DATE\s*:\s*(\d{1,2}-[A-Za-z]{3}-\d{4}).*?PR_AND_PRGRP:\s*([\d.]+)", re.S)
 
 
+SHP_FACT = re.compile(r"<in-bse-shp:(ShareholdingAsAPercentageOfTotalNumberOfShares|NumberOfShareholders) contextRef=\"([A-Za-z]+)_ContextI\"[^>]*>([^<]+)<")
+SHP_GROUPS = (      # our name -> the category in NSE's shareholding file (matched on the start of its name)
+    ("promoters", ("ShareholdingOfPromoterAndPromoterGroup",)),
+    ("mutual_funds", ("MutualFunds",)),
+    ("foreign_investors", ("ForeignPortfolioInvestors", "InstitutionsForeign")),
+    ("insurers", ("InsuranceCompanies",)),
+    ("other_domestic_institutions", ("AlternativeInvestmentFunds", "AlternateInvestmentFunds", "Banks", "ProvidentFundsOrPensionFunds", "NBFCsRegisteredWithRBI")),
+    ("small_shareholders", ("ResidentIndividualShareholdersHoldingNominalShareCapitalUpToRsTwoLakh",)),
+    ("large_individuals", ("ResidentIndividualShareholdersHoldingNominalShareCapitalInExcessOfRsTwoLakh",)),
+    ("bodies_corporate", ("BodiesCorporate",)),
+)
+
+
+def parse_shareholding(xml_text):
+    """NSE's shareholding XBRL -> percentages by kind of holder, and the number of shareholders.
+    Only the summary rows are read (context names ending _ContextI), not the list of individual holders."""
+    pct, holders = {}, {}
+    for fact, cat, val in SHP_FACT.findall(xml_text):
+        try:
+            v = float(val)
+        except ValueError:
+            continue
+        (pct if fact.startswith("Shareholding") else holders)[cat] = v
+    if "ShareholdingPattern" not in pct and "ShareholdingOfPromoterAndPromoterGroup" not in pct:
+        return None
+    out = {}
+    for name, starts in SHP_GROUPS:
+        if name == "foreign_investors" and "InstitutionsForeign" in pct:
+            out[name] = round(pct["InstitutionsForeign"] * 100, 2)        # the subtotal, when the file has one
+            continue
+        vals = [v for cat, v in pct.items() if cat.startswith(starts) and not (name == "foreign_investors" and cat == "InstitutionsForeign")]
+        if vals:
+            out[name] = round(sum(vals) * 100, 2)
+    if holders.get("ShareholdingPattern"):
+        out["shareholders"] = int(holders["ShareholdingPattern"])
+    return out or None
+
+
 def holding_rows(items, names, known):
     """New promoter-holding rows from the shareholding feed: one per company and as-on date."""
     out = []
@@ -360,10 +398,20 @@ def holding_rows(items, names, known):
     return out
 
 
-def save_holdings(data_dir, items, names):
+def save_holdings(data_dir, items, names, fetch=None, limit=40):
+    """Adds new holding rows. With `fetch` (url -> text), each new row also gets the breakdown by kind of
+    holder from NSE's shareholding file; a file that cannot be read leaves the promoter figure only."""
     path = data_dir / "holdings.jsonl"
     old = load_holdings(data_dir)
     new = holding_rows(items, names, {r["key"] for r in old})
+    for r in new[:limit] if fetch else []:
+        if r["url"].lower().endswith(".xml"):
+            try:
+                detail = parse_shareholding(fetch(r["url"]))
+                if detail:
+                    r["detail"] = detail
+            except Exception:
+                pass
     if new:
         with open(path, "a", encoding="utf-8") as fh:
             for r in new:
@@ -398,6 +446,13 @@ def holding_view(rows):
         out[sym] = {"as_on": last["as_on"], "promoter_pct": last["promoter_pct"],
                     "previous_as_on": prev["as_on"] if prev else None,
                     "change_pts": round(last["promoter_pct"] - prev["promoter_pct"], 2) if prev else None}
+        if last.get("detail"):
+            out[sym]["detail"] = last["detail"]
+            if prev and prev.get("detail"):
+                d, e = last["detail"], prev["detail"]
+                out[sym]["detail_change"] = {k: round(d[k] - e[k], 2) for k in d if k in e and k != "shareholders"}
+                inst = lambda x: sum(x.get(k, 0) for k in ("mutual_funds", "foreign_investors", "insurers", "other_domestic_institutions"))
+                out[sym]["institutions_change_pts"] = round(inst(d) - inst(e), 2)
     return out
 
 

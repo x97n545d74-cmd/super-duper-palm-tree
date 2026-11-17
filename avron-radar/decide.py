@@ -15,6 +15,7 @@ WEIGHTS = {
     "growth_20": 2, "margin_expanding": 1, "high_roe": 1, "low_debt": 1, "cheap_for_growth": 1, "flag": -1, "qualified_audit": -3,
     # flows
     "deal_buying": 1, "deal_selling": -1, "promoter_up": 1, "promoter_down": -1,
+    "institutions_up": 1, "institutions_down": -1,
 }
 
 
@@ -144,6 +145,12 @@ def scorecard(signals, fund=None, holds=None, analyses=None, buzz=None, calendar
         if h.get("change_pts") is not None and abs(h["change_pts"]) >= 0.5:
             _add(card(sym), "flows", "promoter_up" if h["change_pts"] > 0 else "promoter_down",
                  "promoter holding %+.2f points to %s%%" % (h["change_pts"], h["promoter_pct"]))
+
+    for sym, h in holds.items():
+        ch = h.get("institutions_change_pts")
+        if ch is not None and abs(ch) >= 0.5:
+            _add(card(sym), "flows", "institutions_up" if ch > 0 else "institutions_down",
+                 "funds and foreign investors %s their holding by %.2f points" % ("raised" if ch > 0 else "cut", abs(ch)))
 
     for b in buzz or []:
         if b["symbol"] in cards:
@@ -290,3 +297,37 @@ def theme_tracker(items, themes, now=None):
                        for w, i in hits[:6]],
         })
     return sorted(out, key=lambda r: (-r["mentions_24h"], -r["mentions_7d"]))
+
+
+import re as _re
+
+ACTIVITY = (      # what to tick off for a company, and the words in an exchange filing that count as it
+    ("Results", r"financial result|outcome of board meeting"),
+    ("Orders and contracts", r"bagging|receiving of orders|award of order|letter of award|letter of intent|order win"),
+    ("Fund raising and dilution", r"preferential|qualified institutions placement|\bqip\b|rights issue|warrants|fund rais|allotment of (equity|securities)|alteration of capital"),
+    ("Acquisitions and restructuring", r"acquisition|amalgamation|merger|scheme of arrangement|demerger|open offer|restructuring|joint venture"),
+    ("Capacity and capex", r"capacity|capex|expansion|commissioning|commencement of (commercial )?production|new plant"),
+    ("Management and board changes", r"change in director|change in management|resignation|appointment|cessation"),
+    ("Auditor changes", r"auditor"),
+    ("Credit rating", r"credit rating"),
+    ("Pledges and takeover disclosures", r"pledge|encumbrance|takeover|sast|acquirer"),
+    ("Dividends, buybacks, bonus, splits", r"dividend|buy ?back|bonus|split|sub-division"),
+    ("Investor meets and presentations", r"investor presentation|analysts?/institutional|investor meet|con\. call|transcript|earnings call"),
+    ("Legal and regulatory", r"litigation|dispute|penalty|show cause|sebi order|tax demand|nclt|insolvency|search and seizure|fraud"),
+    ("Insider trading disclosures", r"insider trading|type of security"),
+)
+
+
+def activity_checklist(filings):
+    """A company's exchange filings sorted into a fixed checklist. For each line: how many filings in
+    the period, the date of the latest and what it said. Lines with nothing are kept, so gaps show."""
+    rows = []
+    for name, pattern in ACTIVITY:
+        rx = _re.compile(pattern, _re.I)
+        hits = [f for f in filings if rx.search((f.get("subject") or "") + " " + f.get("source", "") + " " + f.get("text", "")[:300])]
+        hits.sort(key=lambda f: f.get("published_at") or f.get("collected_at", ""), reverse=True)
+        rows.append({"what": name, "count": len(hits),
+                     "latest": (hits[0].get("published_at") or hits[0].get("collected_at", ""))[:10] if hits else "",
+                     "text": (hits[0].get("subject") or hits[0].get("text", ""))[:140] if hits else "",
+                     "url": hits[0].get("url", "") if hits else ""})
+    return rows
