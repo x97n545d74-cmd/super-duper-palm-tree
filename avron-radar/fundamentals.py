@@ -128,6 +128,15 @@ def _r(x, n=1):
     return None if x is None else round(x, n)
 
 
+def _ebitda_margin(col):
+    """EBITDA margin of one results column, or None if a figure is missing."""
+    if not col or not col.get("revenue") or col["revenue"] <= 0:
+        return None
+    if None in (col.get("pbt"), col.get("finance_cost"), col.get("depreciation")):
+        return None
+    return (col["pbt"] + col["finance_cost"] + col["depreciation"] - (col.get("other_income") or 0)) / col["revenue"] * 100
+
+
 def derive(rec, close=None):
     """Every ratio, computed in code from the copied figures. Also the checks that catch a wrong unit."""
     c, y, p = rec["current"], rec.get("year_ago") or {}, rec.get("previous") or {}
@@ -144,6 +153,16 @@ def derive(rec, close=None):
             m["ebitda_cr"], m["ebitda_margin_pct"] = _r(ebitda, 2), _r(ebitda / c["revenue"] * 100)
         if c.get("other_income") is not None and c.get("pbt") and c["pbt"] > 0:
             m["other_income_share_of_pbt_pct"] = _r(c["other_income"] / c["pbt"] * 100)
+    # Is the business earning more or less on each rupee of sales than a year ago and than last quarter?
+    now_m, ya_m, prev_m = _ebitda_margin(c), _ebitda_margin(y), _ebitda_margin(p)
+    if now_m is not None and ya_m is not None:
+        m["ebitda_margin_year_ago_pct"] = _r(ya_m)
+        m["margin_change_yoy_pts"] = _r(now_m - ya_m)
+    if now_m is not None and prev_m is not None and rec["period_type"] == "quarter":
+        m["margin_change_qoq_pts"] = _r(now_m - prev_m)
+    if m.get("revenue_yoy_pct") is not None and m.get("pat_yoy_pct") is not None and m["revenue_yoy_pct"] > 0:
+        # profit growing faster than sales = operating leverage; slower = costs are eating the growth
+        m["profit_growth_vs_sales_growth"] = _r(m["pat_yoy_pct"] - m["revenue_yoy_pct"])
     if c.get("pbt") is not None and c.get("finance_cost"):
         m["interest_coverage"] = _r(analyst.interest_coverage(c["pbt"] + c["finance_cost"], c["finance_cost"]))
     if rec.get("cfo") is not None and c["pat"] > 0 and rec["period_type"] != "quarter":
@@ -224,7 +243,12 @@ def derive(rec, close=None):
         flags.append("debt is over twice equity")
     if m.get("interest_coverage") is not None and m["interest_coverage"] < 2:
         flags.append("interest cover below 2")
+    if (m.get("margin_change_yoy_pts") or 0) <= -3:
+        flags.append("EBITDA margin is down %.1f points on a year ago" % -m["margin_change_yoy_pts"])
+    if (m.get("revenue_yoy_pct") or 0) >= 15 and m.get("pat_yoy_pct") is not None and m["pat_yoy_pct"] < 0:
+        flags.append("sales grew but profit fell")
     m["flags"] = flags
+    m["margin_expanding"] = bool((m.get("margin_change_yoy_pts") or 0) >= 2 and (m.get("revenue_yoy_pct") or 0) > 0)
     m["growth_20"] = bool((m.get("revenue_yoy_pct") or 0) >= 20 and (m.get("pat_yoy_pct") or 0) >= 20)
     return m
 
@@ -252,7 +276,8 @@ def latest_by_symbol(rows, snapshots=None):
         close = ((snapshots or {}).get(sym) or {}).get("close")
         view[sym] = {"symbol": sym, "company": r.get("company"), "period_end": r["period_end"],
                      "period_type": r["period_type"], "basis": r["basis"], "url": r.get("url"),
-                     "document_read": r.get("document_read"), "metrics": derive(r, close)}
+                     "document_read": r.get("document_read"), "copied_at": r.get("copied_at", ""),
+                     "metrics": derive(r, close)}
     return view
 
 

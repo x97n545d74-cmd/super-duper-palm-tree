@@ -665,6 +665,11 @@ def analyse(cfg):
     cards = decide.scorecard(signals, fund, fundamentals.holding_view(fundamentals.load_holdings(DATA)),
                              brain.load_analyses(DATA), brain.buzz(items, names), extra["calendar"],
                              my_screen=cfg.get("my_screen"))
+    if cfg.get("my_stocks"):
+        linked = sorted(load_items(3).values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
+        link_symbols(linked, names)
+        extra["my_stocks"] = decide.my_stock_alerts(cfg["my_stocks"], signals, linked, brain.load_analyses(DATA), fund,
+                                                    extra["calendar"], brain.buzz(items, names))
     slim = lambda c: {k: c[k] for k in ("symbol", "industry", "score", "for", "against", "notes", "conflict", "close")}
     extra["scorecard"] = {k: [slim(c) for c in v[:8]] for k, v in decide.shortlists(cards).items()}
     STATS["brief"] = brain.write_brief(DATA, items, extra=extra)
@@ -789,6 +794,8 @@ def build():
     cards = decide.scorecard(signals, fund, holds, analysed, brain.buzz(items, names), cal,
                              my_screen=(load_json(CONFIG, {}) or {}).get("my_screen"))
     lists = decide.shortlists(cards)
+    mine = decide.my_stock_alerts((load_json(CONFIG, {}) or {}).get("my_stocks"), signals, items, analysed, fund, cal,
+                                  brain.buzz(items, names))
     db.execute("CREATE TABLE scorecard (symbol TEXT PRIMARY KEY, score INTEGER, conflict INTEGER, mine INTEGER, in_favour TEXT, against TEXT, notes TEXT)")
     db.executemany("INSERT INTO scorecard VALUES (?,?,?,?,?,?,?)", [
         (c["symbol"], c["score"], int(c["conflict"]), int(c["mine"]), "; ".join(c["for"]), "; ".join(c["against"]),
@@ -820,7 +827,7 @@ def build():
                           "briefs": brain.load_briefs(DATA), "stocks": signals.get("snapshots") or {},
                           "buzz": brain.buzz(items, names), "runs": runs,
                           "fundamentals": fund, "holdings": holds, "calendar": cal, "growth": growth,
-                          "answers": asker.load_answers(DATA), "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
+                          "answers": asker.load_answers(DATA), "my_stocks": mine, "shortlists": lists, "cards": {s: {k: c[k] for k in ("score", "for", "against", "notes", "conflict")}
                                                         for s, c in cards.items()}},
                          ensure_ascii=False).replace("</", "<\\/")
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")

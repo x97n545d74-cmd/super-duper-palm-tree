@@ -12,7 +12,7 @@ WEIGHTS = {
     "trend_template": 2, "breakout_52w": 2, "breakout_20d": 1, "delivery_spike": 1, "golden_cross": 1,
     "strong_momentum": 1, "death_cross": -2, "below_200dma": -1, "stretched": -1, "heavy_selling": -1,
     # business
-    "growth_20": 2, "high_roe": 1, "low_debt": 1, "cheap_for_growth": 1, "flag": -1, "qualified_audit": -3,
+    "growth_20": 2, "margin_expanding": 1, "high_roe": 1, "low_debt": 1, "cheap_for_growth": 1, "flag": -1, "qualified_audit": -3,
     # flows
     "deal_buying": 1, "deal_selling": -1, "promoter_up": 1, "promoter_down": -1,
 }
@@ -94,6 +94,8 @@ def scorecard(signals, fund=None, holds=None, analyses=None, buzz=None, calendar
         m, c, s = f["metrics"], card(sym), snaps.get(sym) or {}
         if m.get("growth_20"):
             _add(c, "business", "growth_20", "revenue %+.0f%% and profit %+.0f%% on a year ago" % (m["revenue_yoy_pct"], m["pat_yoy_pct"]))
+        if m.get("margin_expanding"):
+            _add(c, "business", "margin_expanding", "EBITDA margin up %s points on a year ago, with sales growing" % m["margin_change_yoy_pts"])
         if (m.get("roe_annualised_pct") or 0) >= 15:
             _add(c, "business", "high_roe", "ROE %s%% (annualised)" % m["roe_annualised_pct"])
         if m.get("debt_to_equity") is not None and m["debt_to_equity"] < 0.5:
@@ -188,3 +190,63 @@ def shortlists(cards, n=25):
     price_only = sorted((c for c in rows if c["groups"].get("price", 0) >= 3 and c["symbol"] not in chosen
                          and "business" not in c["groups"]), key=lambda c: -c["groups"]["price"])[:n]
     return {"strongest": strongest, "weakest": weakest, "conflicts": conflicts, "mine": mine, "price_only": price_only}
+
+
+def my_stock_alerts(symbols, signals, items, analyses, fund, calendar, buzz, now=None, hours=24):
+    """What happened in the past day to the stocks the reader follows (config.json "my_stocks").
+    Returns [{symbol, name, close, change, lines}] for every followed stock, quiet ones included."""
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    since = (now - datetime.timedelta(hours=hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    snaps = (signals or {}).get("snapshots") or {}
+    out = []
+    for sym in symbols or []:
+        sym = sym.strip().upper()
+        s = snaps.get(sym)
+        lines = []
+        if not s:
+            out.append({"symbol": sym, "name": "", "close": None, "change": None, "lines": ["not found in NSE's price file: check the symbol"]})
+            continue
+        chg, atr = s.get("change"), s.get("atr_pct")
+        if chg is not None and (abs(chg) >= 5 or (atr and abs(chg) >= 2 * atr)):
+            lines.append("moved %+.1f%% on %sx normal volume (its normal daily range is %s%%)" % (chg, s.get("vol_ratio"), atr))
+        on = [k.replace("_", " ") for k, v in ((signals or {}).get("screens") or {}).items()
+              if sym in (v.get("all") or [x["symbol"] for x in v["stocks"]])]
+        if on:
+            lines.append("on screens: " + ", ".join(on))
+        for a in analyses or []:
+            if a.get("symbol") == sym and a.get("read_at", "") >= since:
+                lines.append("analyst read (materiality %s, %s): %s" % (a.get("materiality"), a.get("tone"), a["headline"][:140]))
+        read_ids = {a["id"] for a in analyses or [] if a.get("symbol") == sym}
+        for i in items or []:
+            when = i.get("published_at") or i.get("collected_at", "")
+            if sym not in (i.get("symbols") or []) or when < since:
+                continue
+            if i["platform"] == "nse" and i.get("id") not in read_ids:
+                lines.append("filing: " + (i.get("subject") or i.get("text", ""))[:120])
+            elif i["platform"] not in ("nse", "deals") and (i.get("tags") or {}).get("relevance", 0) >= 3:
+                t = i["tags"]
+                lines.append("%s (%s): %s" % (i["platform"], t.get("kind"), (t.get("summary") or i["title"])[:140]))
+        f = (fund or {}).get(sym)
+        if f and f.get("copied_at", "") >= since:
+            m = f["metrics"]
+            lines.append("results for %s: revenue %s%% and profit %s%% on a year ago%s" % (
+                f["period_end"], m.get("revenue_yoy_pct"), m.get("pat_yoy_pct"),
+                "; flags: " + "; ".join(m["flags"]) if m.get("flags") else ""))
+        for d in (signals or {}).get("deals") or []:
+            if d["symbol"] == sym:
+                lines.append("deal: %s %s %s shares (%s%% of the day's volume)" % (
+                    d.get("client", "?"), (d.get("side") or "").lower(), "{:,.0f}".format(d.get("quantity") or 0), d.get("pct_of_day_volume")))
+        for ev in calendar or []:
+            if ev.get("symbol") == sym:
+                lines.append("coming up: %s on %s (%s)" % (ev["kind"], ev["date"], ev["what"]))
+        for b in buzz or []:
+            if b["symbol"] == sym:
+                lines.append("talked about %d times in a day against a usual %s" % (b["mentions_24h"], b["daily_average_before"]))
+        seen, unique = set(), []
+        for l in lines:
+            if l not in seen:
+                seen.add(l)
+                unique.append(l)
+        out.append({"symbol": sym, "name": s.get("name", ""), "close": s.get("close"), "change": chg,
+                    "from_high": s.get("from_high"), "lines": unique[:12]})
+    return out

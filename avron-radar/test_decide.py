@@ -95,6 +95,25 @@ class Scorecard(unittest.TestCase):
         with_flows = decide.shortlists(decide.scorecard(SIG, {}, now=NOW))
         self.assertEqual(([c["symbol"] for c in with_flows["strongest"]], with_flows["price_only"]), (["GOOD"], []))
 
+    def test_alerts_for_my_stocks(self):
+        sig = dict(SIG)
+        sig["snapshots"] = dict(SIG["snapshots"], GOOD=dict(SIG["snapshots"]["GOOD"], change=9.0, atr_pct=3.0))
+        items = [{"id": "f1", "platform": "nse", "symbols": ["GOOD"], "published_at": "2026-11-17T08:00:00Z", "subject": "Acquisition", "text": ""},
+                 {"id": "f0", "platform": "nse", "symbols": ["GOOD"], "published_at": "2026-11-10T08:00:00Z", "subject": "Old filing", "text": ""},
+                 {"id": "p1", "platform": "reddit", "symbols": ["GOOD"], "published_at": "2026-11-17T09:00:00Z", "title": "t",
+                  "tags": {"relevance": 4, "kind": "rumour", "summary": "Claims a big order is coming."}},
+                 {"id": "p2", "platform": "reddit", "symbols": ["GOOD"], "published_at": "2026-11-17T09:00:00Z", "title": "meme", "tags": {"relevance": 1}}]
+        a, quiet, missing = decide.my_stock_alerts(["good", "WEAK", "NOPE"], sig, items, [], {}, [{"symbol": "GOOD", "kind": "board meeting", "date": "2026-11-20", "what": "Fund raising"}], [], now=NOW)
+        text = " | ".join(a["lines"])
+        for part in ("moved +9.0%", "on screens: trend template, breakout 52w", "filing: Acquisition", "reddit (rumour): Claims a big order",
+                     "deal: ", "coming up: board meeting on 2026-11-20"):
+            self.assertIn(part, text)
+        self.assertNotIn("Old filing", text)
+        self.assertNotIn("meme", text)
+        self.assertEqual(quiet["symbol"], "WEAK")
+        self.assertTrue(any("death cross" in l for l in quiet["lines"]))
+        self.assertIn("check the symbol", missing["lines"][0])
+
     def test_my_screen_needs_known_figures(self):
         self.assertFalse(decide.passes({"max_market_cap_cr": 10000}, {}))                 # unknown size is not a pass
         self.assertFalse(decide.passes({"no_flags": True}, {"flags": ["x"]}))

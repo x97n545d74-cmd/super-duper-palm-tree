@@ -50,6 +50,10 @@ class Results(unittest.TestCase):
         self.assertEqual(m["receivable_days"], 68.0)
         self.assertTrue(m["growth_20"])
         self.assertEqual(m["flags"], [])
+        # year ago: (1000 + 220 + 280 - 80) / 9000 = 15.8%; now 16.7%
+        self.assertEqual((m["ebitda_margin_year_ago_pct"], m["margin_change_yoy_pts"], m["margin_expanding"]), (15.8, 0.9, False))
+        self.assertEqual(m["profit_growth_vs_sales_growth"], 26.7)   # profit +60% on sales +33%: operating leverage
+        self.assertNotIn("margin_change_qoq_pts", m)                 # the previous-quarter column had no cost lines
 
     def test_a_misread_figure_is_caught_and_valuation_is_withheld(self):
         misread = json.loads(REPLY)
@@ -82,6 +86,13 @@ class Results(unittest.TestCase):
         flags = " ".join(F.derive(F.parse_results(json.dumps(bad)))["flags"])
         for word in ("qualified", "other income", "150 days", "twice equity", "interest cover"):
             self.assertIn(word, flags)
+
+    def test_margin_squeeze_and_profitless_growth_are_flagged(self):
+        sq = json.loads(REPLY)
+        sq["current"].update(pbt=500, pat=375, eps_basic=1.875)
+        flags = " ".join(F.derive(F.parse_results(json.dumps(sq)))["flags"])
+        self.assertIn("EBITDA margin is down 8.3 points", flags)     # 7.5% now against 15.8%
+        self.assertIn("sales grew but profit fell", flags)
 
     def test_no_growth_figure_from_a_loss_base(self):
         loss = json.loads(REPLY)

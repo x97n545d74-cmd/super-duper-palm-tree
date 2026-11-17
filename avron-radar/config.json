@@ -248,5 +248,6 @@
     "min_revenue_growth_pct": 20,
     "min_profit_growth_pct": 20
   },
-  "daily_results_outside_indexes": 20
+  "daily_results_outside_indexes": 20,
+  "my_stocks": []
 }

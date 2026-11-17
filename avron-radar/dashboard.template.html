@@ -81,7 +81,7 @@ h3{font-size:15px;margin:18px 0 4px}
   <p class="note">Private research file, not investment advice. Filings and prices come from NSE's official files. News, forum and social posts are unverified: check a primary source before relying on any of it. Screens describe what the price did; they do not predict what it will do.</p>
 </main>
 <script>
-const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}, answers:[]};
+const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}, answers:[], my_stocks:[]};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
@@ -134,7 +134,11 @@ const buzzHtml = (D.buzz || []).length ? "<h3>Talked about far more than usual i
 const day = s => { const d = new Date(s + "T00:00:00"); return isNaN(d) ? s : d.toLocaleDateString("en-IN", {weekday:"short", day:"2-digit", month:"short"}); };
 const calHtml = (D.calendar || []).length ? "<h3>Coming up in the next two weeks</h3><div class='wrap'><table><tr><th>Date</th><th>Company</th><th>Event</th><th>What</th></tr>" +
   D.calendar.slice(0, 40).map(c => "<tr><td>" + esc(day(c.date)) + "</td><td class='wraps'><b>" + esc(c.symbol || c.company) + "</b></td><td>" + esc(c.kind) + "</td><td class='wraps'>" + esc(c.what) + "</td></tr>").join("") + "</table></div>" : "";
-$("v-brief").innerHTML = tiles() + buzzHtml + calHtml + ((D.briefs || []).length
+const mineHtml = (D.my_stocks || []).length ? "<h3>My stocks</h3>" + D.my_stocks.map(s => "<div class='card'><b>" + esc(s.symbol) + "</b> " + esc(s.name || "") +
+  (s.close != null ? " · " + num(s.close, 2) + " " + pct(s.change) + " · " + pct(s.from_high) + " from high" : "") +
+  ((s.lines || []).length ? "<ul>" + s.lines.map(l => "<li>" + esc(l) + "</li>").join("") + "</ul>" : "<div class='mean'>Nothing new in the past day.</div>") + "</div>").join("")
+  : "<p class='mean'>Tell the radar which stocks you follow (the \"my_stocks\" list in config.json) and they appear here first, with everything that happened to them in the past day.</p>";
+$("v-brief").innerHTML = tiles() + mineHtml + buzzHtml + calHtml + ((D.briefs || []).length
   ? D.briefs.map(b => "<div class='card brief'><div class='meta'><span class='chip w'>" + esc(b.name) + "</span></div>" + md(b.text) + "</div>").join("")
   : "<p>No brief yet. The first one is written after the day's price file arrives (about 7 pm India time) or at 7 am.</p>");
 
@@ -228,7 +232,7 @@ function stock() {
   if (f) { const m = f.metrics, tl = (v, l) => "<div class='tile'><b>" + v + "</b><span>" + esc(l) + "</span></div>";
     h += "<h3>Results for the " + esc(f.period_type.replace("_", " ")) + " ended " + esc(f.period_end) + " · " + esc(f.basis) + "</h3><div class='mean'>Figures copied from <a class='t' href='" + esc(safeUrl(f.url)) + "' target='_blank' rel='noopener noreferrer'>the filing</a>; every ratio is computed by code. Rupee amounts depend on the unit being read correctly: check them against the filing before relying on them.</div><div class='tiles'>" +
       tl(num(m.revenue_cr, 2) + " " + pct(m.revenue_yoy_pct), "revenue, Rs cr · year on year") + tl(num(m.pat_cr, 2) + " " + pct(m.pat_yoy_pct), "profit after tax, Rs cr · year on year") +
-      tl(num(m.ebitda_margin_pct) + "%", "EBITDA margin") + tl(num(m.net_margin_pct) + "%", "net margin") +
+      tl(num(m.ebitda_margin_pct) + "%" + (m.margin_change_yoy_pts != null ? " " + pct(m.margin_change_yoy_pts).replace("%", " pts") : ""), "EBITDA margin · change on a year ago") + tl(num(m.net_margin_pct) + "%", "net margin") +
       tl(num(m.roe_annualised_pct) + "%", "ROE, annualised") + tl(num(m.roce_annualised_pct) + "%", "ROCE, annualised") +
       tl(num(m.debt_to_equity, 2), "debt to equity") + tl(num(m.interest_coverage), "interest cover") +
       tl(num(m.pe_annualised), "P/E on annualised EPS") + tl(num(m.peg, 2), "PEG") + tl(num(m.price_to_book, 2), "price to book") +
