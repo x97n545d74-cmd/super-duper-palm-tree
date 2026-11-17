@@ -8,6 +8,7 @@ Run by GitHub Actions about every 5 minutes. Three lanes:
          news that can move the Indian market.
   story  three times a day: Claude writes one startup or business story as a 7-post thread.
   targets twice a day: brokerage and analyst target prices, in beginner-friendly words.
+  deals  twice a day: which big investors bought or sold which stocks.
 Results are appended to queue.jsonl. Standard library only.
 
 Claude does the fetching through Anthropic's web fetch tool; this script
@@ -40,6 +41,8 @@ OUTLETS = ("Economic Times, Times of India, Business Today, Moneycontrol, Mint, 
 STORY_POSTS = 7
 TARGET_HOURS = (8, 13)   # India time: one brokerage-targets list after each of these hours
 TARGET_MAX_CALLS = 20
+DEAL_HOURS = (9, 19)     # India time: one "who bought, who sold" list after each of these hours
+DEAL_MAX = 15
 STORY_HOURS = (9, 13, 19)   # India time: one business story after each of these hours
 STATE = pathlib.Path(os.environ.get("AVRON_STATE", "/tmp/avron_x_merger_state.json"))
 FEED_TOKENS = 10000     # how much of the feed Claude reads (newest items come first)
@@ -546,10 +549,13 @@ def target_groups(calls):
     return groups
 
 
-def pack_posts(title, groups, limit=262):
+TARGET_GUIDE = ("Target = the price they expect in about 1 year.\n"
+                "Stop-loss = the price at which they say exit to limit your loss.")
+TARGET_CLOSING = "These are the brokerages' views, not ours."
+
+
+def pack_posts(title, groups, limit=262, guide=TARGET_GUIDE, closing=TARGET_CLOSING):
     """Pack text blocks into posts of at most `limit` characters, keeping each stock's block whole where it fits."""
-    guide = ("Target = the price they expect in about 1 year.\n"
-             "Stop-loss = the price at which they say exit to limit your loss.")
     posts, cur = [title + "\n\n" + guide], ""
     for g in groups:
         for piece in ([g] if len(g) <= limit else g.split("\n")):     # an oversized block is split by line
@@ -559,7 +565,6 @@ def pack_posts(title, groups, limit=262):
                 cur = piece
             else:
                 cur = (cur + "\n\n" + piece) if cur else piece
-    closing = "These are the brokerages' views, not ours."
     if cur and len(cur) + 2 + len(closing) <= limit:
         posts.append(cur + "\n\n" + closing)
     else:
@@ -567,6 +572,17 @@ def pack_posts(title, groups, limit=262):
             posts.append(cur)
         posts.append(closing)
     return ["%s (%d/%d)" % (t, i + 1, len(posts)) for i, t in enumerate(posts)]
+
+
+def price_prompt(now, stocks):
+    return "\n".join([
+        "Find the latest share price on NSE or BSE for each of these Indian stocks, from reports or quote pages dated "
+        + now.strftime("%d-%b-%Y") + " or the last trading day:",
+        "\n".join("- " + x for x in stocks),
+        "",
+        "Reply with ONLY one JSON object and nothing else, mapping each stock name exactly as written above to its price "
+        "as a plain number, or to null if you could not find a price you are confident of. Never guess.",
+    ])
 
 
 def run_targets(now, api_key):
@@ -596,6 +612,17 @@ def run_targets(now, api_key):
     if len(calls) < 2:
         print("[targets] Offered %d, usable %d: too few for a list. Nothing saved. Tokens in/out: %d / %d" % (len(items), len(calls), tin, tout))
         return
+    missing = sorted({c["stock"] for c in calls if to_number(c.get("price")) is None})
+    if missing:                                   # a target means little to a beginner without today's price beside it
+        try:
+            ptext, pin, pout = call_claude(price_prompt(now, missing), api_key, search_tool(4), 4000)
+            tin, tout = tin + pin, tout + pout
+            found = parse_object(ptext) or {}
+            for c in calls:
+                if to_number(c.get("price")) is None and to_number(found.get(c["stock"])) is not None:
+                    c["price"] = found[c["stock"]]
+        except Exception as e:
+            print("[targets] price lookup failed: %s" % e)
     calls.sort(key=lambda c: (c["horizon"] == "short", c["stock"].upper()))
     title = "WHAT BROKERAGES EXPECT | " + now.strftime("%d %b").upper()
     thread = pack_posts(title, target_groups(calls))
@@ -610,6 +637,99 @@ def run_targets(now, api_key):
     }
     append_rows([row])
     print("[targets] Offered %d, used %d calls in %d posts. Tokens in/out: %d / %d" % (len(items), len(calls), len(thread), tin, tout))
+    for t in thread:
+        print("   | " + t.replace("\n", "\n   | "))
+
+
+# ---------------------------------------------------------------- lane 5: who bought, who sold
+def deals_prompt(now, covered):
+    done = "\n".join("- " + c for c in covered) if covered else "(nothing yet)"
+    return "\n".join([
+        "You track what large investors are doing in Indian listed stocks, for a news desk.",
+        "The current time in India is: " + now.strftime(FMT),
+        "",
+        "Search the web for reports from the last 24 hours of well-known and institutional investors buying or selling "
+        "Indian stocks: NSE and BSE bulk deals and block deals, stake purchases and stake sales, and newly disclosed "
+        "shareholding changes. Investors of interest: foreign institutions (FIIs/FPIs such as Goldman Sachs, Morgan Stanley, "
+        "Societe Generale, BlackRock, Vanguard, GIC, Norges), domestic mutual funds and insurers (SBI MF, HDFC MF, ICICI Prudential, "
+        "LIC), promoters and private equity funds, and marquee individual investors (such as Radhakishan Damani, Vijay Kedia, "
+        "Ashish Kacholia, Mukul Agrawal, Dolly Khanna, Sunil Singhania, Madhusudan Kela and the Jhunjhunwala family's Rare Enterprises).",
+        "Look across: " + OUTLETS + ".",
+        "Skip these, which were already published (stock | investor | action):",
+        done,
+        "",
+        "Rules: include an item ONLY if the report names the investor and the stock and says clearly whether they bought or sold. "
+        "Copy quantities, prices and values exactly as reported, with their units; never guess or calculate. Up to %d items, "
+        "the best-known investors and largest deals first." % DEAL_MAX,
+        "",
+        "Reply with ONLY a JSON array and nothing else. One object per item:",
+        '"stock": the company name, short form',
+        '"investor": the investor\'s name as reported',
+        '"action": exactly BOUGHT or SOLD',
+        '"quantity": the shares or stake as reported, at most 40 characters, such as "12.5 lakh shares" or "1.2% stake"; or null',
+        '"price": the deal price per share as a plain number if reported, otherwise null',
+        '"value": the deal value as reported, at most 30 characters, such as "Rs 51 crore"; or null',
+        '"how": one of "bulk deal", "block deal", "stake purchase", "stake sale", "shareholding change"',
+        '"link": the URL of the report',
+        "",
+        "If you find no qualifying items, reply with exactly: []",
+    ])
+
+
+def deal_groups(deals):
+    by_stock = {}
+    for d in deals:
+        line = "%s %s" % (d["investor"], d["action"])
+        if d.get("quantity"):
+            line += " " + d["quantity"]
+        if rupees(d.get("price")):
+            line += " at %s" % rupees(d["price"])
+        if d.get("value"):
+            line += " (%s)" % d["value"].replace("Rs.", "₹").replace("Rs ", "₹")
+        by_stock.setdefault(d["stock"].upper(), []).append(line + ".")
+    return [name + "\n" + "\n".join(lines) for name, lines in by_stock.items()]
+
+
+def run_deals(now, api_key):
+    recent = [r for r in read_queue() if r.get("lane") == "deals"][-6:]
+    covered = ["%s | %s | %s" % (d.get("stock"), d.get("investor"), d.get("action")) for r in recent for d in r.get("deals") or []][-120:]
+    text, tin, tout = call_claude(deals_prompt(now, covered), api_key, search_tool(6), 12000)
+    items = parse_items(text)
+    if items is None:
+        print("[deals] Reply was not a JSON array. Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (tin, tout, text[:300]))
+        return
+    deals, seen = [], set(covered)
+    for r in items[:DEAL_MAX]:
+        if not isinstance(r, dict):
+            continue
+        d = {
+            "stock": clean(r.get("stock"), 40), "investor": clean(r.get("investor"), 60), "action": clean(r.get("action"), 10).upper(),
+            "quantity": clean(r.get("quantity"), 40) or None, "price": r.get("price"), "value": clean(r.get("value"), 30) or None,
+            "how": clean(r.get("how"), 30), "link": str(r.get("link") or "").strip(),
+        }
+        key = "%s | %s | %s" % (d["stock"], d["investor"], d["action"])
+        if not d["stock"] or not d["investor"] or d["action"] not in ("BOUGHT", "SOLD") or not d["link"].startswith("http") or key in seen:
+            continue
+        seen.add(key)
+        deals.append(d)
+    if not deals:
+        print("[deals] Offered %d, usable 0. Nothing saved. Tokens in/out: %d / %d" % (len(items), tin, tout))
+        return
+    deals.sort(key=lambda d: d["stock"].upper())
+    title = "WHO BOUGHT, WHO SOLD | " + now.strftime("%d %b").upper()
+    guide = "Big investors' deals in Indian stocks, as reported.\nBulk and block deals are large trades disclosed by the exchanges."
+    thread = pack_posts(title, deal_groups(deals), guide=guide, closing="Reported deals only. Not a suggestion to buy or sell.")
+    if any(len(t) > 280 for t in thread):
+        print("[deals] A post came out too long. Nothing saved.")
+        return
+    row = {
+        "id": "%s-D01" % now.strftime("%Y%m%d-%H%M"), "created_ist": now.strftime("%Y-%m-%d %H:%M"), "lane": "deals",
+        "company": "", "headline": title, "detail": "", "post_text": thread[0], "thread": thread,
+        "story_text": "\n\n".join(t.rsplit(" (", 1)[0] for t in thread), "deals": deals,
+        "verify_link": deals[0]["link"], "verify_links": sorted({d["link"] for d in deals}), "document_read": True,
+    }
+    append_rows([row])
+    print("[deals] Offered %d, used %d deals in %d posts. Tokens in/out: %d / %d" % (len(items), len(deals), len(thread), tin, tout))
     for t in thread:
         print("   | " + t.replace("\n", "\n   | "))
 
@@ -643,6 +763,8 @@ def main():
         plan.append(("story", run_story))
     if only == "targets" or (not only and slot_due(now, "targets", TARGET_HOURS)):
         plan.append(("targets", run_targets))
+    if only == "deals" or (not only and slot_due(now, "deals", DEAL_HOURS)):
+        plan.append(("deals", run_deals))
     failed = 0
     for name, fn in plan:
         try:
