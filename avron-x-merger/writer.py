@@ -6,7 +6,8 @@ Run by GitHub Actions about every 5 minutes. Three lanes:
          the new filings worth posting, reads each one and writes a headline.
   news   every 20 minutes: Claude searches the web for Indian and global
          news that can move the Indian market.
-  story  three times a day: Claude writes one business story as a short thread.
+  story  three times a day: Claude writes one startup or business story as a 7-post thread.
+  targets twice a day: brokerage and analyst target prices, in beginner-friendly words.
 Results are appended to queue.jsonl. Standard library only.
 
 Claude does the fetching through Anthropic's web fetch tool; this script
@@ -37,6 +38,8 @@ NEWS_MAX_ITEMS = 3
 OUTLETS = ("Economic Times, Times of India, Business Today, Moneycontrol, Mint, Business Standard, CNBC-TV18, "
            "Financial Express, Hindu BusinessLine, NDTV Profit, Reuters, Bloomberg, PTI and the regulators' own sites")
 STORY_POSTS = 7
+TARGET_HOURS = (8, 13)   # India time: one brokerage-targets list after each of these hours
+TARGET_MAX_CALLS = 20
 STORY_HOURS = (9, 13, 19)   # India time: one business story after each of these hours
 STATE = pathlib.Path(os.environ.get("AVRON_STATE", "/tmp/avron_x_merger_state.json"))
 FEED_TOKENS = 10000     # how much of the feed Claude reads (newest items come first)
@@ -421,17 +424,21 @@ def story_prompt(now, covered):
     ])
 
 
-def story_due(now):
-    """True when the latest story hour has passed and no story has been written since it."""
-    passed = [h for h in STORY_HOURS if now.hour >= h]
+def slot_due(now, lane, hours):
+    """True when the latest hour in `hours` has passed and nothing in this lane has been written since it."""
+    passed = [h for h in hours if now.hour >= h]
     if not passed:
         return False
     slot, day = passed[-1], now.strftime("%Y-%m-%d")
     for r in read_queue():
         made = str(r.get("created_ist", ""))
-        if r.get("lane") == "story" and made.startswith(day) and int(made[11:13] or 0) >= slot:
+        if r.get("lane") == lane and made.startswith(day) and int(made[11:13] or 0) >= slot:
             return False
     return True
+
+
+def story_due(now):
+    return slot_due(now, "story", STORY_HOURS)
 
 
 def run_story(now, api_key):
@@ -455,6 +462,143 @@ def run_story(now, api_key):
     append_rows([row])
     print("[story] Appended 1 (%d posts). Tokens in/out: %d / %d" % (len(thread), tin, tout))
     print(" -", headline)
+
+
+# ---------------------------------------------------------------- lane 4: brokerage targets
+def targets_prompt(now, covered):
+    done = "\n".join("- " + c for c in covered) if covered else "(nothing yet)"
+    return "\n".join([
+        "You compile what brokerages and analysts are saying about Indian listed stocks, for a news desk.",
+        "The current time in India is: " + now.strftime(FMT),
+        "",
+        "Search the web for brokerage and analyst calls on Indian stocks reported in the last 24 hours: target prices, "
+        "ratings, upgrades, downgrades, new coverage, and short-term calls that come with a stop-loss. "
+        "Look across: " + OUTLETS + ".",
+        "Skip these calls, which were already published (stock | firm | target):",
+        done,
+        "",
+        "Rules: include a call ONLY if the report names the brokerage or the analyst's firm, the stock and a target price. "
+        "Copy every number exactly as reported; never guess, never calculate a figure. If one stock has calls from several "
+        "firms, include each. Up to %d calls, the most widely followed stocks first." % TARGET_MAX_CALLS,
+        "",
+        "Reply with ONLY a JSON array and nothing else. One object per call:",
+        '"stock": the company name, short form, as commonly written',
+        '"firm": the brokerage, or the analyst and firm for a short-term call',
+        '"call": exactly BUY, HOLD or SELL (Overweight, Outperform, Accumulate, Add = BUY; Neutral, Equal-weight, Market perform = HOLD; '
+        'Underweight, Underperform, Reduce = SELL)',
+        '"target": the target price as a plain number, such as 287 or 1300',
+        '"old_target": the previous target as a plain number if the report gives it, otherwise null',
+        '"stop_loss": the stop-loss as a plain number if the report gives one, otherwise null',
+        '"horizon": "long" for a 12-month research target, "short" for an intraday or few-weeks call',
+        '"link": the URL of the report',
+        "",
+        "If you find no qualifying calls, reply with exactly: []",
+    ])
+
+
+def to_number(v):
+    try:
+        return float(str(v).replace(",", "").replace("Rs", "").replace("₹", "").strip())
+    except Exception:
+        return None
+
+
+def rupees(v):
+    n = to_number(v)
+    if n is None:
+        return None
+    return "₹{:,.0f}".format(n) if n == int(n) else "₹{:,.2f}".format(n)
+
+
+def target_groups(calls):
+    """Turn the calls into short text blocks: one per stock for long-term calls, one line each for short-term."""
+    long_by_stock, short_lines = {}, []
+    for c in calls:
+        tgt = rupees(c["target"])
+        if c["horizon"] == "short":
+            line = "%s: %s. Target %s." % (c["stock"].upper(), c["call"], tgt)
+            if c.get("stop_loss") is not None:
+                line += " Stop-loss %s." % rupees(c["stop_loss"])
+            short_lines.append(line + " By %s." % c["firm"])
+            continue
+        line = "%s: %s. Expects %s" % (c["firm"], c["call"], tgt)
+        old, new = to_number(c.get("old_target")), to_number(c["target"])
+        if old is not None and new is not None:
+            line += " (no change)" if old == new else " (%s from %s)" % ("raised" if new > old else "cut", rupees(old))
+        long_by_stock.setdefault(c["stock"].upper(), []).append(line + ".")
+    groups = [name + "\n" + "\n".join(lines) for name, lines in long_by_stock.items()]
+    if short_lines:
+        groups.append("SHORT-TERM IDEAS (days to weeks)\n" + short_lines[0])     # the heading stays with its first line
+        groups.extend(short_lines[1:])
+    return groups
+
+
+def pack_posts(title, groups, limit=262):
+    """Pack text blocks into posts of at most `limit` characters, keeping each stock's block whole where it fits."""
+    guide = ("Target = the price they expect in about 1 year.\n"
+             "Stop-loss = the price at which they say exit to limit your loss.")
+    posts, cur = [title + "\n\n" + guide], ""
+    for g in groups:
+        for piece in ([g] if len(g) <= limit else g.split("\n")):     # an oversized block is split by line
+            piece = piece[:limit]
+            if cur and len(cur) + 2 + len(piece) > limit:
+                posts.append(cur)
+                cur = piece
+            else:
+                cur = (cur + "\n\n" + piece) if cur else piece
+    closing = "These are the brokerages' views, not ours."
+    if cur and len(cur) + 2 + len(closing) <= limit:
+        posts.append(cur + "\n\n" + closing)
+    else:
+        if cur:
+            posts.append(cur)
+        posts.append(closing)
+    return ["%s (%d/%d)" % (t, i + 1, len(posts)) for i, t in enumerate(posts)]
+
+
+def run_targets(now, api_key):
+    recent = [r for r in read_queue() if r.get("lane") == "targets"][-6:]
+    covered = ["%s | %s | %s" % (c.get("stock"), c.get("firm"), c.get("target")) for r in recent for c in r.get("calls") or []][-120:]
+    text, tin, tout = call_claude(targets_prompt(now, covered), api_key, search_tool(4), 10000)
+    items = parse_items(text)
+    if items is None:
+        print("[targets] Reply was not a JSON array. Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (tin, tout, text[:300]))
+        return
+    calls, seen = [], set(covered)
+    for r in items[:TARGET_MAX_CALLS]:
+        if not isinstance(r, dict):
+            continue
+        c = {
+            "stock": clean(r.get("stock"), 40), "firm": clean(r.get("firm"), 60), "call": clean(r.get("call"), 10).upper(),
+            "target": r.get("target"), "old_target": r.get("old_target"), "stop_loss": r.get("stop_loss"),
+            "horizon": "short" if str(r.get("horizon") or "").lower().startswith("short") else "long",
+            "link": str(r.get("link") or "").strip(),
+        }
+        key = "%s | %s | %s" % (c["stock"], c["firm"], c["target"])
+        if (not c["stock"] or not c["firm"] or c["call"] not in ("BUY", "HOLD", "SELL") or to_number(c["target"]) is None
+                or not c["link"].startswith("http") or key in seen):
+            continue
+        seen.add(key)
+        calls.append(c)
+    if len(calls) < 2:
+        print("[targets] Offered %d, usable %d: too few for a list. Nothing saved. Tokens in/out: %d / %d" % (len(items), len(calls), tin, tout))
+        return
+    calls.sort(key=lambda c: (c["horizon"] == "short", c["stock"].upper()))
+    title = "WHAT BROKERAGES EXPECT | " + now.strftime("%d %b").upper()
+    thread = pack_posts(title, target_groups(calls))
+    if any(len(t) > 280 for t in thread):
+        print("[targets] A post came out too long. Nothing saved.")
+        return
+    row = {
+        "id": "%s-T01" % now.strftime("%Y%m%d-%H%M"), "created_ist": now.strftime("%Y-%m-%d %H:%M"), "lane": "targets",
+        "company": "", "headline": title, "detail": "", "post_text": thread[0], "thread": thread,
+        "story_text": "\n\n".join(t.rsplit(" (", 1)[0] for t in thread), "calls": calls,
+        "verify_link": calls[0]["link"], "verify_links": sorted({c["link"] for c in calls}), "document_read": True,
+    }
+    append_rows([row])
+    print("[targets] Offered %d, used %d calls in %d posts. Tokens in/out: %d / %d" % (len(items), len(calls), len(thread), tin, tout))
+    for t in thread:
+        print("   | " + t.replace("\n", "\n   | "))
 
 
 # ---------------------------------------------------------------- scheduling
@@ -484,6 +628,8 @@ def main():
         plan.append(("news", run_news))
     if only == "story" or (not only and story_due(now)):
         plan.append(("story", run_story))
+    if only == "targets" or (not only and slot_due(now, "targets", TARGET_HOURS)):
+        plan.append(("targets", run_targets))
     failed = 0
     for name, fn in plan:
         try:

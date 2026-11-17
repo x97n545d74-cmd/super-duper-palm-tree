@@ -24,12 +24,12 @@ One JSON object per line:
 |---|---|
 | `id` | Unique id. Skip any id already in `posted.jsonl`. |
 | `created_ist` | When the writer added it, India time. |
-| `lane` | `nse` for an exchange filing, `news` for Indian or global news that can move the market, `story` for a business story. |
+| `lane` | `nse` for an exchange filing, `news` for Indian or global news that can move the market, `story` for a business story, `targets` for a list of brokerage target prices. |
 | `company` | Company name, or empty for a general story. |
 | `headline` | UPPER CASE, in the form `COMPANY: FACT`. |
 | `detail` | One plain sentence with the next most useful fact. May be empty. |
 | `post_text` | Ready to post: headline, a line break, then detail. 280 characters or fewer. No source, no link, no hashtags. |
-| `thread` | Only on `story` items: the whole story as a list of numbered posts (1/7, 2/7 ...). **Post all of them**: the first as a new post, each of the others as a reply to the one before it. Posting only the first leaves the story unfinished. |
+| `thread` | On `story` and `targets` items: the whole story as a list of numbered posts (1/7, 2/7 ...). **Post all of them**: the first as a new post, each of the others as a reply to the one before it. Posting only the first leaves the story unfinished. |
 | `story_text` | Only on `story` items: the same story as one piece of text, for accounts that can publish long posts. |
 | `verify_link` | The filing or article the facts came from. **For Sahil's verification only. Never post it.** |
 | `document_read` | `true` if the writer read the filing document, `false` if it used the feed summary only. |
