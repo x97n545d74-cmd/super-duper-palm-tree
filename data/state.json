@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 0,
+ "reddit_next": 1,
  "fails": {
   "reddit|r/StockMarketIndia": 6,
   "reddit|r/DalalStreetTalks": 6,
@@ -37,7 +37,8 @@
   "reddit|r/NSEbets": 4,
   "reddit|r/IndianStockMarket": 6,
   "reddit|r/IndiaInvestments": 6,
-  "reddit|r/IndianStreetBets": 6
+  "reddit|r/IndianStreetBets": 6,
+  "news|Union Budget allocation sector": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795016025.7519443,
