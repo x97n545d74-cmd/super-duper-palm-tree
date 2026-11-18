@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 3,
+ "reddit_next": 4,
  "fails": {
   "reddit|r/StockMarketIndia": 6,
   "reddit|r/DalalStreetTalks": 6,
@@ -37,8 +37,7 @@
   "reddit|r/NSEbets": 4,
   "reddit|r/IndianStockMarket": 6,
   "reddit|r/IndiaInvestments": 6,
-  "reddit|r/IndianStreetBets": 6,
-  "news|India GDP inflation IIP data": 1
+  "reddit|r/IndianStreetBets": 6
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795016025.7519443,
