@@ -60,6 +60,17 @@ jobs:
             git worktree add -q --orphan -b "$BRANCH" ../radar-data
           fi
 
+      - name: Open the X desk's branch
+        run: |
+          if [ "$LIVE" = "true" ]; then
+            git fetch -q --depth 1 origin avron-x-merger
+            git worktree add -q ../xmerger FETCH_HEAD
+            git -C ../xmerger switch -q -c avron-x-merger
+            echo "RADAR_X_FILE=$(cd ..; pwd)/xmerger/avron-x-merger/radar.jsonl" >> "$GITHUB_ENV"
+          else
+            echo "RADAR_X_FILE=$(cd ..; pwd)/radar-data/data/x_outbox_test.jsonl" >> "$GITHUB_ENV"   # tests never reach X
+          fi
+
       - name: Rounds
         env:
           RADAR_DATA: ${{ github.workspace }}/../radar-data/data
@@ -88,6 +99,9 @@ jobs:
               git fetch -q origin "$GITHUB_REF_NAME" && git checkout -q FETCH_HEAD || echo "code update failed this round"
             fi
 
+            if [ "$LIVE" = "true" ]; then
+              git -C ../xmerger pull -q --rebase origin avron-x-merger || echo "X desk pull failed this round"
+            fi
             if [ -n "$QUESTION" ]; then
               python3 avron-radar/radar.py ask "$QUESTION" || echo "the question failed"
             else
@@ -105,6 +119,20 @@ jobs:
                 git push -q origin "HEAD:$DATA_BRANCH" || echo "data push failed this round"
               fi
             )
+
+            if [ "$LIVE" = "true" ] && [ -f ../xmerger/avron-x-merger/radar.jsonl ]; then
+              (
+                cd ../xmerger
+                git add avron-x-merger/radar.jsonl
+                if ! git diff --cached --quiet; then
+                  git commit -q -m "Radar: items for the X desk $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
+                  for try in 1 2 3; do
+                    git pull -q --rebase origin avron-x-merger && git push -q origin HEAD:avron-x-merger && break
+                    sleep 10
+                  done || echo "X desk push failed this round"
+                fi
+              )
+            fi
 
             if [ -f avron-radar/dashboard.html ]; then
               git worktree remove --force ../dash 2>/dev/null || true

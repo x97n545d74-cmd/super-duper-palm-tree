@@ -58,6 +58,7 @@ import flows          # noqa: E402
 import fundamentals   # noqa: E402
 import market         # noqa: E402
 import policy         # noqa: E402
+import xout           # noqa: E402
 
 HERE = pathlib.Path(__file__).resolve().parent
 DATA = pathlib.Path(os.environ.get("RADAR_DATA", HERE / "data"))
@@ -776,6 +777,31 @@ def log_run(started, cfg):
     return row
 
 
+def x_queue(cfg):
+    """Radar items for the X desk, appended to the file named by RADAR_X_FILE (the workflow points it at
+    avron-x-merger/radar.jsonl on the live branch, and at a file in the test data branch otherwise)."""
+    path = os.environ.get("RADAR_X_FILE")
+    xp = cfg.get("x_post") or {}
+    if not path or not xp.get("enabled"):
+        return 0
+    signals = market.load_signals(DATA) or {}
+    rows = []
+    if xp.get("close_card"):
+        rows.append(xout.close_card(signals, flows.summary(flows.load_history(DATA))))
+    room = int(xp.get("max_investor_posts_per_day", 3)) - xout.todays(path, "-RH-") - xout.todays(path, "-RD-")
+    if room > 0 and xp.get("investors"):
+        since = iso(now_utc() - datetime.timedelta(hours=36))
+        desk = " ".join(r["title"] + " " + r["text"] for r in load_items(3).values()
+                        if r["platform"] == "avronx" and (r.get("published_at") or r["collected_at"]) >= since)
+        rows += xout.investor_moves(fundamentals.holding_view(fundamentals.load_holdings(DATA)), signals.get("deals"),
+                                    signals, cfg.get("investors") or {}, xp["investors"], desk, limit=room)
+    n = xout.queue(path, rows)
+    if n:
+        print("x queue: %d item(s) added for the X desk" % n)
+    STATS["x_items"] = n
+    return n
+
+
 def link_symbols(items, names):
     """Link each labelled post, and each filing, to the stocks it names."""
     for r in items:
@@ -970,6 +996,7 @@ def main(argv):
     if cmd in ("analyse", "run"):
         step("analyse", lambda: analyse(cfg))
     if cmd == "run":
+        step("x queue", lambda: x_queue(cfg))
         step("run log", lambda: log_run(started, cfg))
     if cmd in ("build", "run"):
         build()
