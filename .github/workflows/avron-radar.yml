@@ -49,6 +49,7 @@ jobs:
           if [ "$LIVE" = "true" ]; then SUFFIX=""; else SUFFIX="-test"; fi
           echo "DATA_BRANCH=avron-radar-data$SUFFIX" >> "$GITHUB_ENV"
           echo "DASH_BRANCH=avron-radar-dashboard$SUFFIX" >> "$GITHUB_ENV"
+          echo "PUBLIC_BRANCH=avron-radar-public$SUFFIX" >> "$GITHUB_ENV"
           BRANCH="avron-radar-data$SUFFIX"
           git config user.name "avron-radar"
           git config user.email "avron-radar@users.noreply.github.com"
@@ -144,6 +145,18 @@ jobs:
                 git add -A
                 git commit -q -m "Dashboard $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
                 git push -q --force origin "HEAD:$DASH_BRANCH" || echo "dashboard push failed this round"
+              )
+            fi
+            if [ -f avron-radar/avron-feed.json ] && [ -z "$QUESTION" ]; then      # the website's feed and widget
+              git worktree remove --force ../pub 2>/dev/null || true
+              git branch -q -D public-build 2>/dev/null || true
+              git worktree add -q --orphan -b public-build ../pub
+              cp avron-radar/avron-feed.json avron-radar/public/avron-widget.js avron-radar/public/embed-example.html ../pub/
+              (
+                cd ../pub
+                git add -A
+                git commit -q -m "Public feed $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
+                git push -q --force origin "HEAD:$PUBLIC_BRANCH" || echo "public feed push failed this round"
               )
             fi
             echo "::endgroup::"

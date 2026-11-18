@@ -96,3 +96,11 @@ Starting the workflow by hand from a branch other than the default does one roun
 
 - **Reads** the Avron X merger desk's `queue.jsonl` and `posted.jsonl` every round: its headlines join the feed, marked posted or queued, and the brief does not repeat what is already public.
 - **Writes** `avron-x-merger/radar.jsonl` on the live chain only: one market-close card per trading day (evening, or next morning before the open) and at most three moves a day by the individual investors in `x_post.investors`. Built by code from NSE and NSDL files. The poster session posts them automatically (the user's choice, 18 Nov 2026). Runs started from other branches write to `x_outbox_test.jsonl` on the test data branch and never reach X. Turn it off with `"x_post": {"enabled": false}`.
+
+## The website feed
+
+Every round the live chain publishes three files to the `avron-radar-public` branch:
+
+- `avron-feed.json`: what the user chose to show visitors (market today, business news headlines linking to their publishers, government decisions and the election watch, the events calendar, the X desk's posts). Nothing about single-stock views, the user's lists, investors or chatter; a feed that carries any of them is refused (`public.check_feed`). Any website can read it: https://raw.githubusercontent.com/x97n545d74-cmd/super-duper-palm-tree/avron-radar-public/avron-feed.json
+- `avron-widget.js`: renders the feed. Copy it into the website (GitHub serves files as plain text, so browsers will not run it from GitHub), then add `<div data-avron-radar data-sections="market,business,government,calendar,x"></div>` and `<script src="/avron-widget.js" defer></script>`.
+- `embed-example.html`: a page showing the two lines in use.
