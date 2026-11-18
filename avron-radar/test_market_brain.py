@@ -261,7 +261,7 @@ class Brain(unittest.TestCase):
 
     def test_brief_check_and_self_correction(self):
         data = {"market": {"screens": {"x": {"stocks": [{"symbol": "ABC"}]}}}}
-        good = "## Market regime\nx\n## What changed in businesses\nx\n## Setups on the screens\nABC broke out\n## Tomorrow's checklist\nx"
+        good = "## Market regime\nx\n## What changed in businesses\nx\n## Business and economy\nx\n## Setups on the screens\nABC broke out\n## Tomorrow's checklist\nx"
         self.assertEqual(brain.check_brief(good, data, {"ABC", "XYZ"}), [])
         bad = good.replace("ABC broke out", "XYZ is a strong buy with a target price")
         probs = brain.check_brief(bad, data, {"ABC", "XYZ"})

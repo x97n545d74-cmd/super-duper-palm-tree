@@ -331,3 +331,53 @@ def activity_checklist(filings):
                      "text": (hits[0].get("subject") or hits[0].get("text", ""))[:140] if hits else "",
                      "url": hits[0].get("url", "") if hits else ""})
     return rows
+
+
+_STOP = set("a an the of in on for to and or with by from at as is are was were be has have had its it this that "
+            "after over into up down new says said will may amid vs".split())
+
+
+def _words(t):
+    return {w for w in _re.findall(r"[a-z0-9]+", (t or "").lower()) if w not in _STOP and len(w) > 2}
+
+
+def business_digest(items, now=None, hours=24, limit=40):
+    """The day's business and economy news, one entry per story: the same story from several outlets is
+    merged and counted, since wide coverage is itself a sign of importance. Only labelled news items
+    (and the X desk's checked headlines) with relevance 3 or more; tips, promotions and memes are left out."""
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    since = (now - datetime.timedelta(hours=hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    pool = []
+    for i in items:
+        t = i.get("tags") or {}
+        when = i.get("published_at") or i.get("collected_at", "")
+        if when < since or i["platform"] not in ("news", "avronx", "regulator"):
+            continue
+        if i["platform"] != "avronx" and (t.get("relevance", 0) < 3 or t.get("kind") in ("tip", "promo", "question")):
+            continue
+        pool.append((when, i))
+    pool.sort(key=lambda p: p[0], reverse=True)
+    stories = []
+    for when, i in pool:
+        t = i.get("tags") or {}
+        w = _words(i.get("title", "") + " " + (t.get("summary") or ""))
+        for s in stories:
+            if len(w & s["_w"]) >= 3 and len(w & s["_w"]) / max(1, min(len(w), len(s["_w"]))) >= 0.45:
+                s["sources"].add(i["source"].split(":")[0])
+                s["_w"] |= w
+                s["relevance"] = max(s["relevance"], t.get("relevance", 4))
+                for c in i.get("symbols") or []:
+                    if c not in s["companies"]:
+                        s["companies"].append(c)
+                break
+        else:
+            stories.append({"_w": w, "when": when, "title": i.get("title", ""), "summary": t.get("summary") or "",
+                            "area": t.get("area") or ("markets" if i["platform"] == "avronx" else "other"),
+                            "kind": t.get("kind") or "fact", "relevance": t.get("relevance", 4),
+                            "sources": {i["source"].split(":")[0]}, "companies": list(i.get("symbols") or []),
+                            "url": i.get("url", ""), "on_x": bool(i.get("x_url"))})
+    for s in stories:
+        s["outlets"] = len(s.pop("sources"))
+        s.pop("_w")
+    stories.sort(key=lambda s: (s["relevance"], s["outlets"], s["when"]), reverse=True)
+    return stories[:limit]

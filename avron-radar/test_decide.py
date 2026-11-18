@@ -140,6 +140,21 @@ class Scorecard(unittest.TestCase):
         self.assertEqual(dc["companies"], ["ANANTRAJ", "NETWEB"])
         self.assertEqual((chips["theme"], chips["mentions_7d"], chips["latest"]), ("semiconductors", 0, []))
 
+    def test_business_digest_merges_one_story_across_outlets(self):
+        n = lambda src, title, rel=4, kind="fact", area="deal", when="2026-11-17T09:00:00Z", platform="news": {
+            "platform": platform, "source": src, "title": title, "published_at": when, "url": "u", "symbols": [],
+            "tags": {"relevance": rel, "kind": kind, "area": area, "summary": title}}
+        items = [n("Mint companies", "Tata Motors to acquire Iveco commercial vehicle unit for 3.8 billion euros"),
+                 n("ET Industry", "Tata Motors acquires Iveco commercial vehicle business in 3.8 billion euro deal"),
+                 n("BBC business", "Iveco agrees 3.8 billion euro takeover by Tata Motors", area="global"),
+                 n("ET Economy", "India's retail inflation eases to 1.5% in October", area="economy", when="2026-11-17T08:00:00Z"),
+                 n("Reddit", "Buy this stock now, 10x", kind="tip"),
+                 n("ET Tech", "Celebrity wedding photos", rel=1),
+                 n("Mint markets", "Old story", when="2026-11-15T08:00:00Z")]
+        d = decide.business_digest(items, now=NOW)
+        self.assertEqual([(s["area"], s["outlets"]) for s in d], [("deal", 3), ("economy", 1)])
+        self.assertTrue(d[0]["title"].startswith("Tata Motors"))
+
     def test_my_screen_needs_known_figures(self):
         self.assertFalse(decide.passes({"max_market_cap_cr": 10000}, {}))                 # unknown size is not a pass
         self.assertFalse(decide.passes({"no_flags": True}, {"flags": ["x"]}))

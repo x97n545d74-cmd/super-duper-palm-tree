@@ -152,6 +152,25 @@ class Parsers(unittest.TestCase):
         self.assertEqual(t["b"]["calls"], 1)
 
 
+class XDesk(unittest.TestCase):
+    def test_merger_files_become_feed_rows_with_posting_status(self):
+        q = "\n".join([
+            json.dumps({"id": "20261118-1144-N01", "created_ist": "2026-11-18 11:44", "lane": "news", "company": "Ashoka Buildcon",
+                        "headline": "ASHOKA BUILDCON: LOWEST BIDDER FOR RS 1,465 CRORE NHAI PROJECT", "detail": "18-month execution.",
+                        "post_text": "x", "verify_link": "https://example.com/a", "document_read": True}),
+            json.dumps({"id": "20261118-0900-S01", "created_ist": "2026-11-18 09:00", "lane": "story", "company": "",
+                        "headline": "STORY", "thread": ["one (1/2)", "two (2/2)"], "story_text": "one\n\ntwo", "verify_link": "https://example.com/b"}),
+            "not json", json.dumps({"id": "no-headline"})])
+        p = json.dumps({"id": "20261118-1144-N01", "posted_ist": "2026-11-18 11:51", "tweet_id": "2122938319998800187"})
+        items, posted = radar.parse_merger(q, p)
+        self.assertEqual(len(items), 2)
+        a = items[0]
+        self.assertEqual((a["platform"], a["source"], a["company"], a["url"], a["published_at"]),
+                         ("avronx", "Avron X desk: news", "Ashoka Buildcon", "https://example.com/a", "2026-11-18T06:14:00Z"))
+        self.assertEqual(items[1]["text"], "one\n\ntwo")
+        self.assertEqual(posted, {"20261118-1144-N01": "2122938319998800187"})
+
+
 class Flow(unittest.TestCase):
     def test_collect_dedupes_survives_a_dead_source_then_tags_and_builds(self):
         with tempfile.TemporaryDirectory() as tmp:

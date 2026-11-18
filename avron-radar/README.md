@@ -38,7 +38,8 @@ GitHub > Actions > Avron Radar > Run workflow > type a question (for example "Wh
 |---|---|---|
 | Exchange | NSE announcements, results, insider trading, takeover disclosures, board meetings, corporate actions, shareholding; daily prices; bulk and block deals; index lists | nothing |
 | Regulators | RBI press releases and notifications, PIB | nothing |
-| News | Zerodha Pulse, ET, Moneycontrol, Mint, Business Standard, BusinessLine, CNBC-TV18, Google News searches | nothing |
+| News | Markets: Zerodha Pulse, ET, Moneycontrol, Mint, Business Standard, BusinessLine, CNBC-TV18. Business and economy: the same papers' company, industry, economy and tech sections, Inc42, YourStory, ET Startups, Google News business, CNBC world, BBC business. Google News searches | nothing |
+| X desk | the Avron X merger desk's queue and posting record (`x_merger` in config) | nothing |
 | Forum and social | ValuePickr, Reddit, YouTube channels, public Telegram channels, Bluesky | Reddit reads one subreddit per run unless `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` are set |
 | X | switched off (`"disabled_lanes": ["x"]`); the official API charges per post read | to switch on: remove `"x"` and add `X_BEARER_TOKEN` |
 
@@ -73,7 +74,7 @@ Not collected: Instagram, Facebook, LinkedIn (login walls and terms that forbid 
 ```
 python3 avron-radar/radar.py run        # everything
 python3 avron-radar/radar.py collect    # or one step: collect, market, tag, analyse, build
-cd avron-radar && python3 -m unittest   # 95 tests, no network
+cd avron-radar && python3 -m unittest   # 105 tests, no network
 ```
 
 Starting the workflow by hand from a branch other than the default does one round, does not restart itself, and writes to `avron-radar-data-test` and `avron-radar-dashboard-test`, so live data is untouched.
@@ -90,3 +91,8 @@ Starting the workflow by hand from a branch other than the default does one roun
 - Filings and prices come from NSE's official files. News, forum and social posts are unverified.
 - The analyst gives no buy, sell or hold instructions and no price targets. It describes evidence, setups and what would break them.
 - This is a private research file. Don't republish the collected posts.
+
+## The X desk connection
+
+- **Reads** the Avron X merger desk's `queue.jsonl` and `posted.jsonl` every round: its headlines join the feed, marked posted or queued, and the brief does not repeat what is already public.
+- **Writes** `avron-x-merger/radar.jsonl` on the live chain only: one market-close card per trading day (evening, or next morning before the open) and at most three moves a day by the individual investors in `x_post.investors`. Built by code from NSE and NSDL files. The poster session posts them automatically (the user's choice, 18 Nov 2026). Runs started from other branches write to `x_outbox_test.jsonl` on the test data branch and never reach X. Turn it off with `"x_post": {"enabled": false}`.
