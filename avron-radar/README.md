@@ -116,3 +116,15 @@ One entry per story, newest first, the past 24 hours: headline, source, link, ho
 ## Models
 
 Everything that reads sources uses Claude Haiku 5.5: labelling posts, triaging and reading filings, fact checks, copying results figures, policy notes (the user's choice, 18 Nov 2026). The brief and answers to questions use Claude Sonnet 5.5. The live news lane uses no model. Change them with the environment variables `RADAR_MODEL`, `RADAR_READ_MODEL` and `RADAR_ANALYST_MODEL`.
+
+## Scraped data for the personal dashboard (private, key-only)
+
+`export.py` builds `scraped.json` every round with the scraped data only: posts and news (headline, link, source, time, a 300-character excerpt), exchange filings, the X desk's items, NSE's end-of-day summary, bulk and block deals, and foreign-investor flows. Nothing the radar or Claude produced (labels, reads, briefs, scores, screens, copied results, policy notes), no personal lists or settings, no run logs. `export.check` refuses a file that carries any of them.
+
+When the repository secret `PRIVATE_DATA_TOKEN` exists, the workflow force-pushes `scraped.json` to the private repository named in `config.json` (`private_data`), branch `main` (runs from other branches use `test`). The dashboard reads it with a separate read-only token:
+
+```
+GET https://api.github.com/repos/x97n545d74-cmd/avron-radar-private/contents/scraped.json?ref=main
+Authorization: Bearer <read-only token>
+Accept: application/vnd.github.raw+json
+```

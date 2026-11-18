@@ -85,6 +85,7 @@ jobs:
           INTERVAL: ${{ inputs.interval }}
           QUESTION: ${{ inputs.question }}
           GH_TOKEN: ${{ github.token }}
+          PRIVATE_DATA_TOKEN: ${{ secrets.PRIVATE_DATA_TOKEN }}
         run: |
           INTERVAL="${INTERVAL:-1800}"
           if [ -n "$QUESTION" ]; then ROUNDS=1; fi      # a question is answered once, without collecting
@@ -160,6 +161,17 @@ jobs:
                 git push -q --force origin "HEAD:$PUBLIC_BRANCH" || echo "public feed push failed this round"
               )
             fi
+            if [ -n "$PRIVATE_DATA_TOKEN" ] && [ -f avron-radar/scraped.json ] && [ -z "$QUESTION" ]; then   # the private scraped-data file
+              PREPO=$(python3 -c "import json;print(json.load(open('avron-radar/config.json'))['private_data']['repo'])")
+              PBRANCH=$(python3 -c "import json;d=json.load(open('avron-radar/config.json'))['private_data'];print(d['branch'] if '$LIVE'=='true' else d['test_branch'])")
+              rm -rf ../private && mkdir ../private && cp avron-radar/scraped.json ../private/
+              (
+                cd ../private && git init -q -b "$PBRANCH" && git add -A \
+                  && git -c user.name=avron-radar -c user.email=avron-radar@users.noreply.github.com commit -q -m "Scraped data $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST" \
+                  && git push -q --force "https://x-access-token:${PRIVATE_DATA_TOKEN}@github.com/${PREPO}.git" "HEAD:${PBRANCH}"
+              ) || echo "private data push failed this round"
+            fi
+
             if [ "$LIVE" = "true" ] && [ -z "$QUESTION" ]; then      # watchdog: is the live news lane alive?
               if git fetch -q --depth 1 origin avron-radar-live 2>/dev/null; then
                 age=$(( $(date +%s) - $(git log -1 --format=%ct FETCH_HEAD) ))
