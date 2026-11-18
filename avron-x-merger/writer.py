@@ -479,6 +479,8 @@ def filings_prompt(now, covered):
         "Writing rules: use ONLY facts in the reports. Keep every number, name and unit exactly as reported; never guess. "
         "Write in your own words. Neutral tone: no opinion, no advice, no hype, no hashtags. Do not name the publication, "
         "and put no link in the text. Every sentence must state a fact; never write what may happen or what to watch.",
+        "The headline must carry the key figure: for results, profit or revenue with its change; for an order or deal, its value. "
+        "If the report gives no figure for a results item, leave that item out.",
         "",
         "Reply with ONLY a JSON array and nothing else. One object per announcement:",
         '"company": the company name',
