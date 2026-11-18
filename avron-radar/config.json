@@ -360,16 +360,6 @@
       "url": "https://www.thehindubusinessline.com/economy/feeder/default.rss"
     },
     {
-      "name": "Financial Express business",
-      "platform": "news",
-      "url": "https://www.financialexpress.com/business/feed/"
-    },
-    {
-      "name": "Financial Express economy",
-      "platform": "news",
-      "url": "https://www.financialexpress.com/economy/feed/"
-    },
-    {
       "name": "Moneycontrol latest",
       "platform": "news",
       "url": "https://www.moneycontrol.com/rss/latestnews.xml"
@@ -393,11 +383,6 @@
       "name": "Inc42 startups",
       "platform": "news",
       "url": "https://inc42.com/feed/"
-    },
-    {
-      "name": "Entrackr startups",
-      "platform": "news",
-      "url": "https://entrackr.com/feed/"
     },
     {
       "name": "YourStory",
