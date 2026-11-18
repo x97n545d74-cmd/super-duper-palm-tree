@@ -1,4 +1,5 @@
 """Checks the radar's X items: exact facts, length, no links, no repeats. No network."""
+import datetime
 import json
 import pathlib
 import sys
@@ -13,6 +14,7 @@ SIG = {"date": "2026-11-17", "stocks_screened": 1677,
        "breadth": {"advancers": 827, "decliners": 833, "pct_above_200dma": 45.7},
        "snapshots": {"SUPREMEENG": {"name": "Supreme Engineering Limited"}, "XYZ": {"name": "Xyz Industries Ltd"},
                      "ALKEM": {"name": "Alkem Laboratories Limited"}}}
+EVENING = datetime.datetime(2026, 11, 17, 19, 30, tzinfo=xout.IST)
 FLOWS = {"date": "2026-11-17", "fii_index_futures_long_pct": 33.4, "fpi": {"date": "2026-11-17", "equity_net_cr": 5107.61}}
 INV = {"Ashish Kacholia": ["Ashish Rameshchandra Kacholia", "Kacholia"], "Dolly Khanna": ["Dolly Rajiv Khanna"],
        "Morgan Stanley": ["Morgan Stanley"]}
@@ -20,7 +22,7 @@ INV = {"Ashish Kacholia": ["Ashish Rameshchandra Kacholia", "Kacholia"], "Dolly 
 
 class Close(unittest.TestCase):
     def test_close_card_text(self):
-        r = xout.close_card(SIG, FLOWS)
+        r = xout.close_card(SIG, FLOWS, EVENING)
         self.assertEqual(r["headline"], "MARKET CLOSE, 17 NOV: NIFTY 50 UP 0.38% AT 25,387.40; 827 OF 1,677 ACTIVELY TRADED STOCKS ROSE, 833 FELL")
         self.assertIn("Foreign investors bought a net Rs 5,107.61 crore of shares.", r["detail"])
         self.assertIn("33.4% of their index futures positions are long.", r["detail"])
@@ -28,10 +30,18 @@ class Close(unittest.TestCase):
         self.assertEqual((r["id"], r["lane"]), ("20261117-RC01", "radar"))
 
     def test_waits_for_both_files_and_names_an_older_flow_day(self):
-        self.assertIsNone(xout.close_card(SIG, dict(FLOWS, date="2026-11-14")))
-        self.assertIsNone(xout.close_card(None, FLOWS))
-        r = xout.close_card(SIG, dict(FLOWS, fpi={"date": "2026-11-14", "equity_net_cr": -812.5}))
+        self.assertIsNone(xout.close_card(SIG, dict(FLOWS, date="2026-11-14"), EVENING))
+        self.assertIsNone(xout.close_card(None, FLOWS, EVENING))
+        r = xout.close_card(SIG, dict(FLOWS, fpi={"date": "2026-11-14", "equity_net_cr": -812.5}), EVENING)
         self.assertIn("sold a net Rs 812.50 crore of shares on 14 Nov.", r["detail"])
+
+    def test_a_late_card_is_never_posted(self):
+        at = lambda *a: datetime.datetime(*a, tzinfo=xout.IST)
+        self.assertIsNotNone(xout.close_card(SIG, FLOWS, at(2026, 11, 18, 8, 30)))        # next morning, before the open
+        self.assertIsNone(xout.close_card(SIG, FLOWS, at(2026, 11, 18, 12, 30)))          # next day, market open
+        fri = dict(SIG, date="2026-11-20")
+        self.assertIsNotNone(xout.close_card(fri, dict(FLOWS, date="2026-11-20"), at(2026, 11, 23, 8, 0)))   # Monday morning after a Friday
+        self.assertIsNone(xout.close_card(fri, dict(FLOWS, date="2026-11-20"), at(2026, 11, 25, 8, 0)))
 
     def test_indian_grouping(self):
         self.assertEqual((xout.indian(1234567), xout.indian(500000), xout.indian(999), xout.indian(25387.4, 2)), ("12,34,567", "5,00,000", "999", "25,387.40"))
@@ -69,7 +79,7 @@ class Queue(unittest.TestCase):
     def test_append_once_and_refuse_bad_text(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = pathlib.Path(tmp) / "radar.jsonl"
-            good = xout.close_card(SIG, FLOWS)
+            good = xout.close_card(SIG, FLOWS, EVENING)
             bad = dict(good, id="x2", post_text="see https://example.com")
             self.assertEqual(xout.queue(path, [good, bad, None]), 1)
             self.assertEqual(xout.queue(path, [good]), 0)

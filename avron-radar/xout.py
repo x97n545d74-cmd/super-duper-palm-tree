@@ -48,9 +48,15 @@ def row(rid, headline, detail, company="", link=""):
             "verify_link": link, "document_read": True, "source": "avron-radar"}
 
 
-def close_card(signals, flows_summary):
-    """The day's close in one post, or None until both the price file and the flows for that day are in."""
+def close_card(signals, flows_summary, now=None):
+    """The day's close in one post, or None until both the price file and the flows for that day are in.
+    Only on that trading day's evening or the next morning before the open, so a late card is never posted."""
     if not signals or not flows_summary or flows_summary.get("date") != signals.get("date"):
+        return None
+    now = now or datetime.datetime.now(IST)
+    d0 = datetime.date.fromisoformat(signals["date"])
+    if not (now.date() == d0 or (now.date() - d0).days in (1, 2, 3) and now.hour < 9 and all(
+            (d0 + datetime.timedelta(days=k)).weekday() >= 5 for k in range(1, (now.date() - d0).days))):
         return None
     ix = (signals.get("indices") or {}).get("Nifty 50") or {}
     b = signals.get("breadth") or {}
