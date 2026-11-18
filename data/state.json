@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 5,
+ "reddit_next": 0,
  "fails": {
   "reddit|r/StockMarketIndia": 6,
   "reddit|r/DalalStreetTalks": 6,
@@ -38,7 +38,11 @@
   "reddit|r/IndianStockMarket": 6,
   "reddit|r/IndiaInvestments": 6,
   "reddit|r/IndianStreetBets": 6,
-  "news|merger acquisition India company deal crore": 1
+  "feeds|Moneycontrol business": 1,
+  "feeds|Moneycontrol market reports": 1,
+  "feeds|Moneycontrol latest": 1,
+  "feeds|Moneycontrol economy": 1,
+  "news|Cabinet approves scheme crore": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795016025.7519443,
