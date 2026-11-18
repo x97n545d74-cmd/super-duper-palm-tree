@@ -34,7 +34,7 @@ FETCH_TOOL = os.environ.get("AVRON_FETCH_TOOL", "web_fetch_20250910")   # plain 
 FETCH_BETA = os.environ.get("AVRON_FETCH_BETA", "web-fetch-2025-09-10")
 SEARCH_TOOL = os.environ.get("AVRON_SEARCH_TOOL", "web_search_20250305")
 NEWS_EVERY_MINUTES = int(os.environ.get("AVRON_NEWS_EVERY_MINUTES", "20"))   # how often the market-news lane runs
-NEWS_SEARCHES = int(os.environ.get("AVRON_NEWS_SEARCHES", "4"))
+NEWS_SEARCHES = int(os.environ.get("AVRON_NEWS_SEARCHES", "5"))
 NEWS_MAX_ITEMS = 3
 OUTLETS = ("Economic Times, Times of India, Business Today, Moneycontrol, Mint, Business Standard, CNBC-TV18, "
            "Financial Express, Hindu BusinessLine, NDTV Profit, Reuters, Bloomberg, PTI and the regulators' own sites")
@@ -338,7 +338,11 @@ def news_prompt(now, covered):
         "that matters for Indian sectors.",
         "3. Company news from Indian listed companies: results with figures, large orders, acquisitions, fund raising, "
         "management changes and regulatory action, especially anything announced after market hours.",
-        "4. US President Donald Trump's posts on Truth Social and his public statements, when they bear on India, trade and "
+        "4. Global brokerages' calls on India as a whole: a rating upgrade or downgrade of Indian equities, a new Nifty or "
+        "Sensex target, or a changed India GDP, inflation or rupee forecast from houses such as Goldman Sachs, Morgan Stanley, "
+        "JPMorgan, Jefferies, CLSA, Nomura, HSBC, UBS, Citi, BofA and Bernstein, and rating agencies such as Moody's, S&P and "
+        "Fitch. Use one of your searches for this every time; name the house in the headline.",
+        "5. US President Donald Trump's posts on Truth Social and his public statements, when they bear on India, trade and "
         "tariffs, visas, oil, Russia, China, Pakistan, the Middle East, the dollar or the Federal Reserve. Use one of your "
         "searches for this every time. Report such a post only if an established news outlet has reported it; say what he "
         "said in your own words, never invent or guess wording, and start the headline with TRUMP (TRUTH SOCIAL): or TRUMP:. "
