@@ -84,6 +84,7 @@ jobs:
           ROUNDS: ${{ inputs.rounds }}
           INTERVAL: ${{ inputs.interval }}
           QUESTION: ${{ inputs.question }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           INTERVAL="${INTERVAL:-1800}"
           if [ -n "$QUESTION" ]; then ROUNDS=1; fi      # a question is answered once, without collecting
@@ -158,6 +159,18 @@ jobs:
                 git commit -q -m "Public feed $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST"
                 git push -q --force origin "HEAD:$PUBLIC_BRANCH" || echo "public feed push failed this round"
               )
+            fi
+            if [ "$LIVE" = "true" ] && [ -z "$QUESTION" ]; then      # watchdog: is the live news lane alive?
+              if git fetch -q --depth 1 origin avron-radar-live 2>/dev/null; then
+                age=$(( $(date +%s) - $(git log -1 --format=%ct FETCH_HEAD) ))
+              else
+                age=999999
+              fi
+              hour=$(TZ=Asia/Kolkata date +%-H)
+              if { [ "$hour" -ge 6 ] && [ "$age" -gt 1200 ]; } || [ "$age" -gt 2700 ]; then
+                echo "live lane silent for ${age}s: restarting it"
+                gh workflow run avron-live.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" || true
+              fi
             fi
             echo "::endgroup::"
 

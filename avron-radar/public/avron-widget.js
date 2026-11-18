@@ -2,11 +2,14 @@
    <div data-avron-radar></div> where it should appear, and load it with <script src="/avron-widget.js" defer></script>.
    GitHub serves files as plain text, so browsers will not run this script straight from GitHub; the data
    feed, on the other hand, can be read from GitHub by any site.
-   Options on the div: data-sections="market,business,government,calendar,x" (any order, any subset),
-   data-feed="URL of avron-feed.json" (default: the radar's public feed on GitHub).
+   Options on the div: data-sections="live,market,business,government,calendar,x" (any order, any subset),
+   data-feed="URL of avron-feed.json", data-live-feed="URL of live.json" (defaults: the radar's public files on GitHub).
+   The live section refreshes itself every 2 minutes; the rest every 15 minutes.
    Colours follow the host page: override --avr-fg, --avr-muted, --avr-line, --avr-panel, --avr-up, --avr-down, --avr-accent. */
 (function () {
   var DEFAULT_FEED = "https://raw.githubusercontent.com/x97n545d74-cmd/super-duper-palm-tree/avron-radar-public/avron-feed.json";
+  var DEFAULT_LIVE = "https://raw.githubusercontent.com/x97n545d74-cmd/super-duper-palm-tree/avron-radar-live/live.json";
+  var LIVE_EVERY = 120000, FEED_EVERY = 900000;
   var CSS = [
     ".avr{--avr-fg:#15171c;--avr-muted:#5d6472;--avr-line:#e3e5ea;--avr-panel:#f6f7f9;--avr-up:#0a7a43;--avr-down:#b4231a;--avr-accent:#1f4fd1;",
     "color:var(--avr-fg);font:15px/1.5 inherit;display:flex;flex-direction:column;gap:20px}",
@@ -27,7 +30,10 @@
     ".avr th,.avr td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--avr-line);white-space:nowrap}",
     ".avr th{color:var(--avr-muted);font-weight:600}.avr td.avr-n,.avr th.avr-n{text-align:right}",
     ".avr .avr-pre{white-space:pre-line}",
-    ".avr .avr-note{color:var(--avr-muted);font-size:.75em}"
+    ".avr .avr-note{color:var(--avr-muted);font-size:.75em}",
+    ".avr .avr-live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--avr-up);margin-right:6px;vertical-align:middle}",
+    ".avr .avr-live-dot.avr-off{background:var(--avr-muted)}",
+    ".avr .avr-new{border-left:3px solid var(--avr-accent);padding-left:8px}"
   ].join("");
 
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
@@ -40,6 +46,28 @@
   function day(s) { var d = new Date(s + "T00:00:00"); return isNaN(d) ? s : d.toLocaleDateString("en-IN", {weekday: "short", day: "numeric", month: "short"}); }
   function tile(value, label, colorBy) { var t = el("div", "avr-tile"), b = el("b", null, value); if (colorBy != null) tone(b, colorBy); t.appendChild(b); t.appendChild(el("span", null, label)); return t; }
   function meta(parts) { var m = el("div", "avr-meta"); parts.forEach(function (p) { if (p) m.appendChild(typeof p === "string" ? el("span", null, p) : p); }); return m; }
+
+  function ago(s) { var m = Math.round((Date.now() - new Date(s)) / 60000); return isNaN(m) ? "" : m < 1 ? "just now" : m < 60 ? m + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : when(s); }
+  var LABEL = {filing: "NSE filing", news: null, x: null};
+
+  function live(f, L, host) {
+    if (!L || !(L.items || []).length) return null;
+    var s = el("section"), h = el("h3"), age = (Date.now() - new Date(L.updated_at)) / 60000;
+    var dot = el("span", "avr-live-dot" + (age > 30 ? " avr-off" : "")); h.appendChild(dot); h.appendChild(document.createTextNode("Live news"));
+    s.appendChild(h);
+    s.appendChild(el("p", "avr-sub", age > 30 ? "Live updates are paused. Last update " + ago(L.updated_at) + "." : "Updated " + ago(L.updated_at) + ". Refreshes on its own."));
+    var ul = el("ul"), seen = host.__avrSeen || {}, first = !host.__avrSeen;
+    (L.items || []).slice(0, Number(host.getAttribute("data-live-count")) || 25).forEach(function (n) {
+      var li = el("li", !first && !seen[n.id] ? "avr-new" : null);
+      li.appendChild(link(n.headline, n.url));
+      if (n.detail) li.appendChild(el("div", null, n.detail));
+      li.appendChild(meta([ago(n.time), n.source, LABEL[n.kind] && n.source !== LABEL[n.kind] ? el("span", "avr-chip", LABEL[n.kind]) : null,
+                           n.outlets > 1 ? el("span", "avr-chip", n.outlets + " outlets") : null]));
+      ul.appendChild(li);
+    });
+    host.__avrSeen = {}; (L.items || []).forEach(function (n) { host.__avrSeen[n.id] = 1; });
+    s.appendChild(ul); return s;
+  }
 
   function market(f) {
     var m = f.market; if (!m) return null;
@@ -117,23 +145,34 @@
     s.appendChild(ul); return s;
   }
 
-  var PARTS = {market: market, business: business, government: government, calendar: calendar, x: xdesk};
+  var PARTS = {live: live, market: market, business: business, government: government, calendar: calendar, x: xdesk};
 
-  function render(host, f) {
-    var root = el("div", "avr"), wanted = (host.getAttribute("data-sections") || "market,business,government,calendar,x").split(",");
-    wanted.forEach(function (k) { var fn = PARTS[k.trim()]; var part = fn && fn(f); if (part) root.appendChild(part); });
-    root.appendChild(el("p", "avr-note", "Updated " + when(f.built_at) + ". " + f.disclaimer));
+  function render(host, f, L) {
+    var root = el("div", "avr"), wanted = (host.getAttribute("data-sections") || "live,market,business,government,calendar,x").split(",");
+    wanted.forEach(function (k) { var fn = PARTS[k.trim()]; var part = fn && (k.trim() === "live" ? fn(f, L, host) : f && fn(f)); if (part) root.appendChild(part); });
+    if (!root.firstChild) { host.textContent = "Market data is unavailable right now."; return; }
+    var src = f || L;
+    root.appendChild(el("p", "avr-note", (f ? "Market data updated " + when(f.built_at) + ". " : "") + src.disclaimer));
     host.replaceChildren(root);
+  }
+
+  function getJSON(url) {
+    return fetch(url, {cache: "no-cache"}).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) { if (j.version !== 1) throw new Error("feed version"); return j; }).catch(function () { return null; });
   }
 
   function start() {
     if (!document.getElementById("avr-style")) { var st = document.createElement("style"); st.id = "avr-style"; st.textContent = CSS; document.head.appendChild(st); }
     document.querySelectorAll("[data-avron-radar]").forEach(function (host) {
-      var url = host.getAttribute("data-feed") || DEFAULT_FEED;
+      if (host.__avrStarted) return;
+      host.__avrStarted = true;
+      var feedUrl = host.getAttribute("data-feed") || DEFAULT_FEED, liveUrl = host.getAttribute("data-live-feed") || DEFAULT_LIVE;
+      var wantsLive = (host.getAttribute("data-sections") || "live").indexOf("live") !== -1, F = null, L = null;
       if (!host.firstChild) host.textContent = "Loading market data…";
-      fetch(url, {cache: "no-cache"}).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(function (f) { if (f.version !== 1) throw new Error("feed version"); render(host, f); })
-        .catch(function () { host.textContent = "Market data is unavailable right now."; });
+      function draw() { if (F || L) render(host, F, L); else host.textContent = "Market data is unavailable right now."; }
+      Promise.all([getJSON(feedUrl), wantsLive ? getJSON(liveUrl) : null]).then(function (r) { F = r[0]; L = r[1]; draw(); });
+      if (wantsLive) setInterval(function () { if (!document.hidden) getJSON(liveUrl).then(function (j) { if (j) { L = j; draw(); } }); }, LIVE_EVERY);
+      setInterval(function () { if (!document.hidden) getJSON(feedUrl).then(function (j) { if (j) { F = j; draw(); } }); }, FEED_EVERY);
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
