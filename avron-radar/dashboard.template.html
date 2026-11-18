@@ -58,6 +58,7 @@ h3{font-size:15px;margin:18px 0 4px}
 <nav><div id="tabs"></div></nav>
 <main>
   <section id="v-brief"></section>
+  <section id="v-business" hidden></section>
   <section id="v-score" hidden></section>
   <section id="v-filings" hidden></section>
   <section id="v-screens" hidden></section>
@@ -84,7 +85,7 @@ h3{font-size:15px;margin:18px 0 4px}
   <p class="note">Private research file, not investment advice. Filings and prices come from NSE's official files. News, forum and social posts are unverified: check a primary source before relying on any of it. Screens describe what the price did; they do not predict what it will do.</p>
 </main>
 <script>
-const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}, answers:[], my_stocks:[], themes:[], activity:{}, activity_names:[], investors:{}, investors_followed:[], held_by:{}, policy:{sectors:[], elections:[]}, flows:null};
+const D = /*DATA*/null || {built_at:"", items:[], health:[], analyses:[], market:{}, briefs:[], stocks:{}, buzz:[], runs:[], fundamentals:{}, holdings:{}, calendar:[], growth:[], shortlists:{}, cards:{}, answers:[], my_stocks:[], themes:[], activity:{}, activity_names:[], business:[], investors:{}, investors_followed:[], held_by:{}, policy:{sectors:[], elections:[]}, flows:null};
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
@@ -95,7 +96,7 @@ const M = D.market || {};
 $("built").textContent = D.items.length + " posts · " + (D.analyses || []).length + " filing reads · prices for " + (M.date || "no day yet") + " · updated " + (when(D.built_at) || "never");
 
 // tabs
-const TABS = [["brief","Brief"],["score","Scorecard"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["policy","Policy"],["investors","Investors"],["themes","Themes"],["ask","Ask"],["feed","Feed"],["sources","System"]];
+const TABS = [["brief","Brief"],["business","Business"],["score","Scorecard"],["filings","Filings"],["screens","Screens"],["stock","Stock"],["policy","Policy"],["investors","Investors"],["themes","Themes"],["ask","Ask"],["feed","Feed"],["sources","System"]];
 let tab = "brief";
 $("tabs").innerHTML = TABS.map(t => "<button data-t='" + t[0] + "'>" + t[1] + "</button>").join("");
 $("tabs").onclick = e => { if (e.target.dataset.t) { tab = e.target.dataset.t; show(); } };
@@ -144,6 +145,18 @@ const mineHtml = (D.my_stocks || []).length ? "<h3>My stocks</h3>" + D.my_stocks
 $("v-brief").innerHTML = tiles() + mineHtml + buzzHtml + calHtml + ((D.briefs || []).length
   ? D.briefs.map(b => "<div class='card brief'><div class='meta'><span class='chip w'>" + esc(b.name) + "</span></div>" + md(b.text) + "</div>").join("")
   : "<p>No brief yet. The first one is written after the day's price file arrives (about 7 pm India time) or at 7 am.</p>");
+
+// business and economy news, one entry per story
+(function () {
+  const AREA = {deal: "Deals", company: "Companies", industry: "Industries", economy: "Economy", policy: "Policy", startup: "Startups", global: "Global", markets: "Markets", other: "Other"};
+  const B = D.business || [];
+  const by = {}; B.forEach(s => { (by[s.area] = by[s.area] || []).push(s); });
+  $("v-business").innerHTML = "<p class='mean'>The past day's business and economy news from " + "the business papers, startup sites and global outlets, one entry per story. The same story from several outlets is merged and counted: wide coverage means big news, not that it is true.</p>" +
+    (Object.keys(AREA).filter(a => by[a]).map(a => "<h3>" + AREA[a] + " · " + by[a].length + "</h3>" + by[a].map(s =>
+      "<div class='card'><div class='meta'>" + (s.outlets > 1 ? "<span class='chip w'>" + s.outlets + " outlets</span>" : "") + (s.kind && s.kind !== "fact" ? "<span class='chip k-" + esc(s.kind) + "'>" + esc(s.kind) + "</span>" : "") +
+      (s.on_x ? "<span class='chip'>posted on X</span>" : "") + (s.companies || []).map(c => "<span class='chip'>" + esc(c) + "</span>").join("") + "<span>· " + esc(when(s.when)) + "</span></div>" +
+      "<a class='t' href='" + esc(safeUrl(s.url)) + "' target='_blank' rel='noopener noreferrer'>" + esc(s.title) + "</a>" + (s.summary && s.summary !== s.title ? "<div>" + esc(s.summary) + "</div>" : "") + "</div>").join("")).join("") || "<p>No business news labelled in the past day yet.</p>");
+})();
 
 // scorecard
 function cardHtml(c) {

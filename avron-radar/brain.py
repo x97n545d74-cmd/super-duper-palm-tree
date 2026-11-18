@@ -509,7 +509,7 @@ def buzz(items, index, now=None):
 
 ADVICE = re.compile(r"\b(strong buy|buy on dips|buy now|sell now|should (buy|sell|hold)|we recommend|"
                     r"target price|price target|book profits?|accumulate at|stop[- ]loss at)\b", re.I)
-SECTIONS = ("Market regime", "What changed in businesses", "Setups on the screens", "Tomorrow's checklist")
+SECTIONS = ("Market regime", "What changed in businesses", "Business and economy", "Setups on the screens", "Tomorrow's checklist")
 
 
 def check_brief(text, data, known_symbols, sections=SECTIONS):
@@ -531,7 +531,7 @@ WEEK_FORMAT = """Use this structure, in Markdown. All six headings must appear, 
 ## The week in one paragraph
 What kind of market it was (regime, breadth, sectors) and the one thing that mattered most.
 ## Businesses: what changed
-The five to eight filings and results of the week that change an investment case, most important first: fact, read, main risk. Group repeats on one company.
+The five to eight filings and results of the week that change an investment case, most important first: fact, read, main risk. Group repeats on one company. Then the week's biggest business and economy stories from business_news, in a few lines.
 ## Where money moved
 Sectors gaining and losing over the month, the largest deals by share of volume, promoter holding changes. Then government: the week's decisions by sector with the money approved, and any election promises or results, from "government".
 ## What the screens taught us
@@ -551,11 +551,13 @@ BRIEF_TASK = {
     "morning": "Write the morning brief: what came in since yesterday's close and what to watch when the market opens. "
                "The market data is from the last close.",
 }
-BRIEF_FORMAT = """Use this structure, in Markdown. All six headings must appear, in this order. At most 750 words in total, so keep each section tight:
+BRIEF_FORMAT = """Use this structure, in Markdown. All seven headings must appear, in this order. At most 900 words in total, so keep each section tight:
 ## Market regime
 Open with the regime label and what it means. Then three or four sentences from breadth, the indices, VIX and the sectors table (strongest and weakest industries over a month): is this a market that rewards breakouts or punishes them, and where is the money going?
 ## What changed in businesses
 The filings that matter, most important first. One short paragraph each: the fact, your read, the main risk. Skip noise.
+## Business and economy
+From business_news (the day's stories, one entry each, with how many outlets carried it): up to eight that matter most for Indian businesses and investors, grouped by area (deals, companies and industries, the economy, startups, global). One line each: what happened, and which listed companies or sectors it touches. Wide coverage (several outlets) means it is big news, not that it is true. Leave out what is already in "What changed in businesses", and anything marked on_x unless your read adds something.
 ## Setups on the screens
 Start with one sentence from screen_record: which screens have had an edge over the average stock lately and which have not. Then up to six stocks where the screens show something worth a look. For each: which screen, the volume and delivery evidence, the level that would invalidate the setup (use prior_high20 for a breakout, sma50 or sma200 for a trend, with atr_pct as the measure of normal movement), and whether any filing, news or chatter spike explains the move. Say when there is no reason behind a move.
 ## Flows
