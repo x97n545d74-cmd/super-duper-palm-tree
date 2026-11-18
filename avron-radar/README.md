@@ -112,3 +112,7 @@ Every round the live chain publishes three files to the `avron-radar-public` bra
 https://raw.githubusercontent.com/x97n545d74-cmd/super-duper-palm-tree/avron-radar-live/live.json
 
 One entry per story, newest first, the past 24 hours: headline, source, link, how many outlets carried it, and for NSE filings the exchange's one-line description. Tips, broker calls, live blogs, sport, film and horoscopes are filtered out, and routine exchange paperwork is skipped. The main radar chain and the live chain each restart the other if it goes quiet. The widget's `live` section reads this file and refreshes itself every 2 minutes. GitHub caches these files for up to 5 minutes, so a headline reaches the website about 3 to 8 minutes after it appears in a source.
+
+## Models
+
+Everything that reads sources uses Claude Haiku 5.5: labelling posts, triaging and reading filings, fact checks, copying results figures, policy notes (the user's choice, 18 Nov 2026). The brief and answers to questions use Claude Sonnet 5.5. The live news lane uses no model. Change them with the environment variables `RADAR_MODEL`, `RADAR_READ_MODEL` and `RADAR_ANALYST_MODEL`.

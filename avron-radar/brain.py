@@ -16,8 +16,9 @@ import urllib.request
 import market
 
 HERE = pathlib.Path(__file__).resolve().parent
-MODEL = os.environ.get("RADAR_ANALYST_MODEL", "claude-sonnet-5-5")     # reads filings, writes briefs
-FAST_MODEL = os.environ.get("RADAR_MODEL", "claude-haiku-5-5")         # labels, triage, fact checks
+MODEL = os.environ.get("RADAR_ANALYST_MODEL", "claude-sonnet-5-5")     # writes briefs, answers questions
+FAST_MODEL = os.environ.get("RADAR_MODEL", "claude-haiku-5-5")         # labels, triage, fact checks, results, policy
+READ_MODEL = os.environ.get("RADAR_READ_MODEL", "claude-haiku-5-5")    # reads filing documents (user's choice, 18 Nov 2026)
 USAGE = []      # one row per Claude call in this run: model, purpose, tokens. Written to the run log.
 VERIFY_FROM = 4  # filing reads at or above this materiality get an independent fact check
 FETCH_TOOL = os.environ.get("RADAR_FETCH_TOOL", "web_fetch_20250910")
@@ -378,7 +379,7 @@ def read_filings(data_dir, items, cfg, ask=None, log=print, ask_triage=None, ask
     system = (HERE / "ANALYST.md").read_text(encoding="utf-8")
     nse = ["nsearchives.nseindia.com"]
     if not ask:
-        ask = lambda p: call_claude(p, api_key, system, 8000, nse, purpose="filing read")
+        ask = lambda p: call_claude(p, api_key, system, 8000, nse, model=READ_MODEL, purpose="filing read")
         ask_triage = lambda p: call_claude(p, api_key, TRIAGE_RULES, 4000, model=FAST_MODEL, purpose="triage")
         ask_verify = lambda p: call_claude(p, api_key, VERIFY_RULES, 4000, nse, model=FAST_MODEL, purpose="fact check")
     st = _state(data_dir)
