@@ -121,6 +121,12 @@ const S = {
     en: 'The demo does not read your own papers. The full app reads your photos and PDFs.',
   },
   e_locked: { hi: 'गलत PIN कई बार डाला गया। एक घंटे बाद दोबारा करें।', pa: 'ਗਲਤ PIN ਕਈ ਵਾਰ ਪਾਇਆ ਗਿਆ। ਇੱਕ ਘੰਟੇ ਬਾਅਦ ਦੁਬਾਰਾ ਕਰੋ।', en: 'Wrong PIN too many times. Try again after an hour.' },
+  e_claude_off: {
+    hi: 'Claude से पढ़ने की इजाज़त नहीं मिली। Claude में लॉगिन करके यह पेज खोलें और पूछने पर "Allow" दबाएँ।',
+    pa: 'Claude ਨਾਲ ਪੜ੍ਹਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਮਿਲੀ। Claude ਵਿੱਚ ਲੌਗਇਨ ਕਰਕੇ ਇਹ ਪੇਜ ਖੋਲ੍ਹੋ ਅਤੇ ਪੁੱਛਣ ਤੇ "Allow" ਦਬਾਓ।',
+    en: 'Claude is not allowed to read here. Open this page while logged in to Claude and press "Allow" when asked.',
+  },
+  e_signin: { hi: 'Claude में दोबारा लॉगिन करें, फिर कोशिश करें।', pa: 'Claude ਵਿੱਚ ਦੁਬਾਰਾ ਲੌਗਇਨ ਕਰੋ, ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।', en: 'Log in to Claude again, then try again.' },
   e_no_key: { hi: 'कागज़ पढ़ने की सेवा अभी चालू नहीं है। जिसने यह लगाया है उन्हें बताएँ।', pa: 'ਕਾਗਜ਼ ਪੜ੍ਹਨ ਦੀ ਸੇਵਾ ਹਾਲੇ ਚਾਲੂ ਨਹੀਂ ਹੈ। ਜਿਸ ਨੇ ਇਹ ਲਗਾਇਆ ਹੈ ਉਨ੍ਹਾਂ ਨੂੰ ਦੱਸੋ।', en: 'The reader is not switched on yet. Tell the person who set this up.' },
   e_key: { hi: 'कागज़ पढ़ने की सेवा की चाबी काम नहीं कर रही। जिसने यह लगाया है उन्हें बताएँ।', pa: 'ਕਾਗਜ਼ ਪੜ੍ਹਨ ਦੀ ਸੇਵਾ ਦੀ ਚਾਬੀ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੀ। ਜਿਸ ਨੇ ਇਹ ਲਗਾਇਆ ਹੈ ਉਨ੍ਹਾਂ ਨੂੰ ਦੱਸੋ।', en: 'The reader key is not working. Tell the person who set this up.' },
   e_busy: { hi: 'अभी बहुत काम चल रहा है। थोड़ी देर बाद दोबारा करें।', pa: 'ਹੁਣੇ ਬਹੁਤ ਕੰਮ ਚੱਲ ਰਿਹਾ ਹੈ। ਥੋੜ੍ਹੀ ਦੇਰ ਬਾਅਦ ਦੁਬਾਰਾ ਕਰੋ।', en: 'Too busy right now. Try again in a little while.' },

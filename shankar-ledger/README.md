@@ -34,6 +34,15 @@ Without a key, the "sample" button still works, so you can see the result screen
 - **On the phone, same Wi-Fi**: open `http://<PC's IP address>:8080`.
 - **From anywhere**: host it online (next section).
 
+## Claude page (no server, no key)
+
+`tools/build_claude_page.sh <folder>` builds the version published as a Claude artifact. It reads papers in the
+page on the viewer's own Claude account (artifact capability `sample` with images), so it needs no server and no
+API key. PDFs made by software go to Claude as text with columns kept in place; scans and photos go as images
+(tall pages as two overlapping halves). If a paper's totals do not add up, it reads once more on the most capable
+model. Publish with `capabilities: {sample: {images: true}}`. The bundled libraries were passed through
+`tools/escape_ctrl.py`, because the artifact host refuses raw control characters and U+FFFD.
+
 ## Demo (no server, no key)
 
 `tools/build_demo.sh <folder>` builds a page with the two sample papers preloaded; "check" runs on them in the

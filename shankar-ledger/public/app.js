@@ -1,6 +1,7 @@
 import { LANGS, t } from './i18n.js';
 import { reconcile, selfCheck, whoOwes } from './match.js';
 import { demoOurs, demoTheirs } from './demo.js';
+import { pdfToParts, photoToBlobs, readViaClaude } from './claude-reader.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -13,6 +14,9 @@ const store = {
 // Demo build (demo/index.html sets window.LEDGER_DEMO): sample papers are preloaded and
 // "check" runs on them without the server or an API key.
 const DEMO = Boolean(window.LEDGER_DEMO);
+// Claude build (published as a Claude artifact): papers are read in the page on the
+// viewer's own Claude account, with no server and no API key.
+const VIA_CLAUDE = Boolean(window.LEDGER_VIA_CLAUDE);
 const DEMO_FILES = {
   ours: [{ name: 'sample-our-ledger-tally.pdf', thumb: 'sample-our-ledger.png', sample: true }],
   theirs: [{ name: 'sample-party-statement.pdf', thumb: 'sample-party-statement.png', sample: true }],
@@ -147,6 +151,9 @@ function loadSheetLib() {
 async function toUpload(file) {
   const name = file.name || 'photo.jpg';
   const ext = (name.split('.').pop() || '').toLowerCase();
+  if (VIA_CLAUDE && (file.type === 'application/pdf' || ext === 'pdf')) {
+    return { name, badge: 'PDF', ...await pdfToParts(file) };
+  }
   if (file.type === 'application/pdf' || ext === 'pdf') {
     const dataUrl = await readAs(file, 'dataurl');
     return { kind: 'file', name, mime: 'application/pdf', data: dataUrl.split(',')[1], badge: 'PDF' };
@@ -160,6 +167,7 @@ async function toUpload(file) {
   if (ext === 'csv' || ext === 'txt' || file.type.startsWith('text/')) {
     return { kind: 'text', name, text: await readAs(file, 'text'), badge: ext.toUpperCase() || 'TXT' };
   }
+  if (VIA_CLAUDE) return { kind: 'images', name, ...await photoToBlobs(file) };
   const img = await shrinkImage(file);
   return { kind: 'file', name, ...img };
 }
@@ -170,7 +178,8 @@ async function addFiles(side, fileList) {
   for (const file of fileList) {
     try {
       const up = await toUpload(file);
-      const size = (list) => list.reduce((n, f) => n + (f.data || f.text || '').length, 0);
+      const size = (list) => list.reduce((n, f) => n + (f.data || f.text || '').length
+        + (f.blobs || []).reduce((m, b) => m + b.size * 1.37, 0), 0);
       if (size(state.files[side]) + size([up]) > MAX_SIDE_BYTES) { setError('e_too_big'); break; }
       state.files[side].push(up);
     } catch (err) {
@@ -236,10 +245,22 @@ class ReadError extends Error { constructor(code) { super(code); this.code = cod
 
 async function readSide(side) {
   const files = state.files[side].map(({ kind, name, mime, data, text }) => ({ kind, name, mime, data, text }));
-  const key = JSON.stringify(files.map((f) => [f.name, (f.data || f.text).length, (f.data || f.text).slice(0, 64)]));
+  const sig = (f) => (f.blobs ? f.blobs.map((b) => b.size).join(',') : (f.data || f.text || ''));
+  const key = JSON.stringify(state.files[side].map((f) => [f.name, sig(f).length, sig(f).slice(0, 64)]));
   if (state.docs[side]?.key === key) return state.docs[side].doc;
 
   setStatus(side, 'reading');
+  if (VIA_CLAUDE) {
+    try {
+      const doc = await readViaClaude(side, state.files[side]);
+      state.docs[side] = { key, doc };
+      setStatus(side, 'done');
+      return doc;
+    } catch (err) {
+      setStatus(side, null);
+      throw new ReadError(err?.code || 'service');
+    }
+  }
   for (;;) {
     let reply;
     try {
@@ -376,7 +397,7 @@ function renderResult() {
     h('button', { class: 'btn', id: 'listenBtn', type: 'button', onclick: () => speak(spokenSummary) },
       svg('M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z'), h('span', {}, T(speaking ? 'stop' : 'listen'))),
     h('a', { class: 'btn wa', target: '_blank', rel: 'noopener', href: `https://wa.me/?text=${encodeURIComponent(shareText())}` }, T('whatsapp')),
-    DEMO ? null : h('button', { class: 'btn ghost', type: 'button', onclick: () => window.print() }, T('print')),
+    DEMO || VIA_CLAUDE ? null : h('button', { class: 'btn ghost', type: 'button', onclick: () => window.print() }, T('print')),
     h('button', { class: 'btn ghost', type: 'button', onclick: reset }, T('again'))));
 
   out.push(section(T('secMismatch'), rec.mismatches.length, T('secMismatchSub'), rec.mismatches.map((m) => h('li', {},
