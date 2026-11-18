@@ -121,6 +121,8 @@ Everything that reads sources uses Claude Haiku 5.5: labelling posts, triaging a
 
 `export.py` builds `scraped.json` every round with the scraped data only: posts and news (headline, link, source, time, a 300-character excerpt), exchange filings, the X desk's items, NSE's end-of-day summary, bulk and block deals, and foreign-investor flows. Nothing the radar or Claude produced (labels, reads, briefs, scores, screens, copied results, policy notes), no personal lists or settings, no run logs. `export.check` refuses a file that carries any of them.
 
+Save the writer key only as the Actions secret (Settings > Secrets and variables > Actions), never as a file in this repository: the repository is public, and GitHub revokes any key committed to a public repository. Each run checks the key first and puts a warning on the run page if GitHub refuses it, it cannot see the private repository, or it cannot write.
+
 When the repository secret `PRIVATE_DATA_TOKEN` exists, the workflow force-pushes `scraped.json` to the private repository named in `config.json` (`private_data`), branch `main` (runs from other branches use `test`). The dashboard reads it with a separate read-only token:
 
 ```
