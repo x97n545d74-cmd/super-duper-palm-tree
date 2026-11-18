@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 2,
+ "reddit_next": 3,
  "fails": {
   "reddit|r/StockMarketIndia": 4,
   "reddit|r/DalalStreetTalks": 4,
@@ -37,8 +37,7 @@
   "reddit|r/NSEbets": 4,
   "reddit|r/IndianStockMarket": 4,
   "reddit|r/IndiaInvestments": 4,
-  "reddit|r/IndianStreetBets": 3,
-  "news|India semiconductor plant listed company": 1
+  "reddit|r/IndianStreetBets": 4
  },
  "paused_until": {}
 }
