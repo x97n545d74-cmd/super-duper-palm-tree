@@ -184,3 +184,23 @@ dialog .btn.ghost { min-height: 52px; }
   background: var(--amber-soft); color: #5c3c00; border: 1px solid #f0d58a; font-weight: 600;
 }
 .files a.view { color: var(--green-dark); font-weight: 700; min-height: 44px; padding: 0 10px; display: inline-flex; align-items: center; }
+
+/* Paper checks and what to do */
+.papers { display: grid; gap: 12px; grid-template-columns: 1fr; padding: 0 16px 16px; }
+@media (min-width: 620px) { .papers { grid-template-columns: 1fr 1fr; } }
+.paper { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.paper.good { background: var(--green-soft); border-color: #b9dccd; }
+.paper.bad { background: var(--red-soft); border-color: #f3c2bd; }
+.paper .k { color: var(--muted); font-size: .95rem; }
+.paper .v { font-weight: 700; font-size: 1.1rem; margin: 2px 0 8px; }
+.paper.good .v { color: var(--green-dark); }
+.paper.bad .v { color: var(--red); }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: .95rem; }
+.checks li { display: flex; gap: 8px; align-items: flex-start; }
+.checks .mk { font-weight: 700; flex: none; width: 1.1em; }
+.checks li.ok .mk { color: var(--green-dark); }
+.checks li.bad { color: var(--red); font-weight: 600; }
+.where { list-style: none; margin: 0; padding: 0 16px 14px; display: grid; gap: 8px; }
+.where li { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.where b { font-variant-numeric: tabular-nums; }
+.act { margin-top: 6px; font-size: .92rem; color: var(--ink); background: var(--amber-soft); border-radius: 8px; padding: 6px 8px; }

@@ -166,6 +166,8 @@ function clean(doc) {
     period_to: String(doc.period_to || ''),
     opening_balance: bal(doc.opening_balance),
     closing_balance: bal(doc.closing_balance),
+    printed_total_debit: num(doc.printed_total_debit),
+    printed_total_credit: num(doc.printed_total_credit),
     notes: String(doc.notes || ''),
     entries: doc.entries.map((e) => ({
       date: String(e?.date || ''), ref: String(e?.ref || ''),
@@ -223,6 +225,8 @@ export async function readViaClaude(side, files) {
       period_to: parts.find((p) => p.period_to)?.period_to || '',
       opening_balance: parts.find((p) => known(p.opening_balance))?.opening_balance || parts[0].opening_balance,
       closing_balance: [...parts].reverse().find((p) => known(p.closing_balance))?.closing_balance || parts[0].closing_balance,
+      printed_total_debit: [...parts].reverse().find((p) => p.printed_total_debit > 0)?.printed_total_debit || 0,
+      printed_total_credit: [...parts].reverse().find((p) => p.printed_total_credit > 0)?.printed_total_credit || 0,
       is_ledger: parts.some((p) => p.is_ledger),
       entries: parts.flatMap((p) => p.entries),
       notes: parts.map((p) => p.notes).filter(Boolean).join(' '),

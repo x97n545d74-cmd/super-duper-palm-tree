@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { reconcile, selfCheck, refKeys, whoOwes, signedBalance } from '../public/match.js';
+import { reconcile, selfCheck, refKeys, whoOwes, signedBalance, paperCheck, whereAndWhat } from '../public/match.js';
 import { demoOurs, demoTheirs } from '../public/demo.js';
 
 const E = (date, ref, debit, credit, type = 'invoice') => ({ date, ref, type, particulars: '', debit, credit });
@@ -180,4 +180,43 @@ test('selfCheck marks the row whose printed running balance does not follow', ()
   const c = selfCheck(d);
   assert.equal(c.breaks, 1);
   assert.equal(d.entries[1].balanceBreak, true);
+});
+
+test('paperCheck: a correct paper passes every check', () => {
+  const d = { ...doc(bal(0, 'credit'), bal(500, 'credit'), [E('2026-04-01', 'B/101', 0, 1500), E('2026-04-05', 'NEFT', 1000, 0, 'payment')]),
+    period_from: '2026-04-01', period_to: '2026-04-30', printed_total_debit: 1000, printed_total_credit: 1500 };
+  const p = paperCheck(d);
+  assert.equal(p.allOk, true);
+  assert.equal(p.checks.arithmetic.state, 'ok');
+  assert.equal(p.checks.totals.state, 'ok');
+});
+
+test('paperCheck: a row missing from the paper shows against the printed totals', () => {
+  const d = { ...doc(bal(0, 'credit'), bal(500, 'credit'), [E('2026-04-01', 'B/101', 0, 1500)]),
+    printed_total_debit: 1000, printed_total_credit: 1500 };
+  const p = paperCheck(d);
+  assert.equal(p.checks.totals.state, 'bad');
+  assert.equal(p.readDoubt, true);
+  assert.equal(p.paperWrong, false);
+});
+
+test('paperCheck: printed totals that do not give the printed closing mean the paper is wrong', () => {
+  const d = { ...doc(bal(0, 'credit'), bal(700, 'credit'), [E('2026-04-01', 'B/101', 0, 1500), E('2026-04-05', 'NEFT', 1000, 0, 'payment')]),
+    printed_total_debit: 1000, printed_total_credit: 1500 };
+  const p = paperCheck(d);
+  assert.equal(p.checks.arithmetic.state, 'bad');
+  assert.equal(p.paperWrong, true);
+});
+
+test('paperCheck: the same bill twice is caught', () => {
+  const d = doc(null, null, [E('2026-04-01', 'B/101', 0, 1500), E('2026-04-02', 'B/101', 0, 1500)]);
+  const p = paperCheck(d);
+  assert.equal(p.checks.duplicates.state, 'bad');
+  assert.equal(d.entries[1].duplicate, true);
+});
+
+test('whereAndWhat names the short side and a next step', () => {
+  assert.deepEqual(whereAndWhat('onlyTheirs', { type: 'invoice', date: '2026-11-14' }, '2026-11-17'), { where: 'ours', act: 'actBillTheirsRecent' });
+  assert.deepEqual(whereAndWhat('onlyOurs', { type: 'payment', date: '2026-11-14' }, '2026-11-17'), { where: 'theirs', act: 'actPayOursRecent' });
+  assert.equal(whereAndWhat('onlyOurs', { type: 'invoice', date: '2026-05-01' }, '2026-11-17').act, 'actBillOurs');
 });

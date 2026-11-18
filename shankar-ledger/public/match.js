@@ -358,6 +358,86 @@ export function selfCheck(doc) {
   return out;
 }
 
+/**
+ * Is the paper itself right? Checks that do not depend on the other party's paper:
+ * - its own arithmetic: opening + printed debit total - printed credit total = printed closing
+ * - its rows add up to the totals printed on it (a row missing from our reading, or from the paper)
+ * - every row's printed running balance follows from the row above
+ * - no entry written twice, no entry dated outside the paper's own period
+ * Each check is 'ok', 'bad' or 'na' (the paper does not print what the check needs).
+ */
+export function paperCheck(doc) {
+  const entries = doc.entries || [];
+  const sc = selfCheck(doc);
+  const open = signedBalance(doc.opening_balance);
+  const close = signedBalance(doc.closing_balance);
+  const pDr = round2(doc.printed_total_debit), pCr = round2(doc.printed_total_credit);
+  const sumDr = round2(entries.reduce((t, e) => t + (Number(e.debit) || 0), 0));
+  const sumCr = round2(entries.reduce((t, e) => t + (Number(e.credit) || 0), 0));
+  const hasTotals = pDr > 0 || pCr > 0;
+  const checks = {};
+
+  checks.arithmetic = !hasTotals || close == null ? { state: 'na' }
+    : (() => {
+      const want = round2((open ?? 0) + pDr - pCr);
+      const off = round2(want - close);
+      return { state: Math.abs(off) < 1 ? 'ok' : 'bad', off, want, close };
+    })();
+  checks.totals = !hasTotals ? { state: 'na' }
+    : { state: Math.abs(sumDr - pDr) < 1 && Math.abs(sumCr - pCr) < 1 ? 'ok' : 'bad', sumDr, sumCr, pDr, pCr, offDr: round2(sumDr - pDr), offCr: round2(sumCr - pCr) };
+  checks.closing = !sc.checked ? { state: 'na' } : { state: sc.ok ? 'ok' : 'bad', off: sc.off };
+  const withBal = entries.filter((e) => e.balance && e.balance.side && e.balance.side !== 'unknown').length;
+  checks.running = withBal < Math.max(3, entries.length / 2) ? { state: 'na' }
+    : { state: sc.breaks ? 'bad' : 'ok', breaks: sc.breaks, rows: entries.filter((e) => e.balanceBreak) };
+
+  // Same bill or voucher number with the same amount twice on one paper.
+  const seen = new Map();
+  const dups = [];
+  for (const e of entries) {
+    const k = refKeys(e.ref).full;
+    if (!k || k.length < 3) continue;
+    const key = `${k}|${signed(e)}`;
+    if (seen.has(key)) { dups.push(e); e.duplicate = true; } else seen.set(key, e);
+  }
+  checks.duplicates = { state: dups.length ? 'bad' : 'ok', rows: dups };
+
+  const from = dayNumber(doc.period_from), to = dayNumber(doc.period_to);
+  const outside = entries.filter((e) => {
+    const d = dayNumber(e.date);
+    return d != null && ((from != null && d < from - 1) || (to != null && d > to + 1));
+  });
+  checks.dates = from == null && to == null ? { state: 'na' } : { state: outside.length ? 'bad' : 'ok', rows: outside };
+
+  // The paper itself is in doubt only when its own printed figures disagree with each other.
+  const paperWrong = checks.arithmetic.state === 'bad' || checks.duplicates.state === 'bad' || checks.dates.state === 'bad';
+  const readDoubt = checks.arithmetic.state !== 'bad' && (checks.totals.state === 'bad' || checks.closing.state === 'bad' || checks.running.state === 'bad');
+  return { checks, rows: entries.length, sumDr, sumCr, paperWrong, readDoubt, allOk: !paperWrong && !readDoubt };
+}
+
+/** Which paper is short of an entry or has it different, and the next step for the shop. */
+export function whereAndWhat(kind, x, periodEnd) {
+  const recent = (e) => {
+    const d = dayNumber(e?.date), end = dayNumber(periodEnd);
+    return d != null && end != null && end - d <= 10;
+  };
+  switch (kind) {
+    case 'onlyTheirs': // The party wrote it, our books do not have it.
+      if (x.type === 'payment') return { where: 'ours', act: 'actPayTheirs' };
+      if (x.type === 'return' || x.type === 'credit_note') return { where: 'ours', act: 'actReturnTheirs' };
+      if (x.type === 'debit_note' || x.type === 'other') return { where: 'ours', act: 'actChargeTheirs' };
+      return { where: 'ours', act: recent(x) ? 'actBillTheirsRecent' : 'actBillTheirs' };
+    case 'onlyOurs': // Our books have it, the party's statement does not.
+      if (x.type === 'payment') return { where: 'theirs', act: recent(x) ? 'actPayOursRecent' : 'actPayOurs' };
+      if (x.type === 'return' || x.type === 'debit_note' || x.type === 'credit_note') return { where: 'theirs', act: 'actReturnOurs' };
+      if (x.duplicate) return { where: 'ours', act: 'actDupOurs' };
+      return { where: 'theirs', act: 'actBillOurs' };
+    case 'billDiff': return { where: 'both', act: 'actBillDiff' };
+    case 'payDiff': return { where: 'both', act: 'actPayDiff' };
+    case 'partial': return { where: x.side, act: 'actPartial' };
+    default: return { where: 'both', act: '' };
+  }
+}
+
 /** "We have to pay" or "we have to receive", read from either paper. */
 export function whoOwes(signedAmount, isOurLedger) {
   if (signedAmount == null) return { kind: 'unknown', amount: null };

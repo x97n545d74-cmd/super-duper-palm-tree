@@ -1,5 +1,5 @@
 import { LANGS, t } from './i18n.js';
-import { reconcile, selfCheck, whoOwes } from './match.js';
+import { reconcile, selfCheck, whoOwes, paperCheck, whereAndWhat } from './match.js';
 import { demoOurs, demoTheirs } from './demo.js';
 import { pdfToParts, photoToBlobs, readViaClaude } from './claude-reader.js';
 
@@ -326,7 +326,11 @@ async function run() {
 /* ---------- result ---------- */
 function showResult(ours, theirs, sample) {
   window.__ledgerDocs = { ours, theirs }; // read back by the local test bench
-  state.result = { ours, theirs, sample, rec: reconcile(ours, theirs), checks: { ours: selfCheck(ours), theirs: selfCheck(theirs) } };
+  state.result = {
+    ours, theirs, sample, rec: reconcile(ours, theirs),
+    checks: { ours: selfCheck(ours), theirs: selfCheck(theirs) },
+    papers: { ours: paperCheck(ours), theirs: paperCheck(theirs) },
+  };
   $('#setup').hidden = true;
   $('#result').hidden = false;
   renderResult();
@@ -344,12 +348,18 @@ function entryLine(e) {
   return bits.join(' · ');
 }
 
-function entryRow(e, sideLabel) {
+function actLine(act) {
+  return act ? h('div', { class: 'act' }, h('b', {}, `${T('whatToDo')}: `), T(act)) : null;
+}
+
+function entryRow(e, sideLabel, act) {
   return h('li', {},
     h('div', { class: 'what' },
       h('div', { class: 'l1' }, entryLine(e), (e.unclear || e.balanceBreak) ? h('span', { class: 'chip' }, T('unclearTag')) : null,
+        e.duplicate ? h('span', { class: 'chip' }, T('dupTag')) : null,
         sideLabel ? h('span', { class: 'chip sidechip' }, sideLabel) : null),
-      e.particulars ? h('div', { class: 'l2' }, e.particulars) : null),
+      e.particulars ? h('div', { class: 'l2' }, e.particulars) : null,
+      actLine(act)),
     h('div', { class: 'amt' }, `₹${inr(Math.abs(e.amt))}`));
 }
 
@@ -387,11 +397,12 @@ function renderResult() {
 
   if (rec.agreedUpTo && !ok) out.push(h('div', { class: 'note good' }, T('agreed', { d: fmtDate(rec.agreedUpTo) })));
 
+  const periodEnd = [ours.period_to, theirs.period_to].filter(Boolean).sort()[0] || '';
+  out.push(paperCards());
+  out.push(whereCard());
   for (const side of ['ours', 'theirs']) {
     const c = checks[side];
-    if (!c.ok) out.push(h('div', { class: 'note bad' }, T('readWarn', { side: sideName(side), x: inr(Math.abs(c.off)) })));
-    else if (!c.checked) out.push(h('div', { class: 'note' }, T('readNoCheck', { side: sideName(side) })));
-    if (c.unclear || c.breaks) out.push(h('div', { class: 'note' }, T('unclear', { side: sideName(side), n: c.unclear + c.breaks })));
+    if (c.unclear) out.push(h('div', { class: 'note' }, T('unclear', { side: sideName(side), n: c.unclear })));
   }
   if (b.openingDiff != null && Math.abs(b.openingDiff) >= 1) out.push(h('div', { class: 'note' }, T('openingDiff', { x: inr(Math.abs(b.openingDiff)) })));
   if (rec.unexplained != null && Math.abs(rec.unexplained) >= 1) out.push(h('div', { class: 'note bad' }, T('unexplained', { x: inr(Math.abs(rec.unexplained)) })));
@@ -411,21 +422,25 @@ function renderResult() {
       h('small', {}, `${T('oursAmt')} ₹${inr(Math.abs(m.ours.amt))}`),
       h('small', {}, `${T('theirsAmt')} ₹${inr(Math.abs(m.theirs.amt))}`),
       h('span', { class: 'gap' }, T('gapOf', { x: inr(Math.abs(m.difference)) }))));
+  const withAct = (li, act) => { $('.what', li).append(actLine(act)); return li; };
   const billDiffs = rec.mismatches.filter((m) => m.kind !== 'payment');
   const payDiffs = rec.mismatches.filter((m) => m.kind === 'payment');
-  out.push(section(T('secMismatch'), billDiffs.length, T('secMismatchSub'), billDiffs.map(pairRow)));
-  out.push(section(T('secPayDiff'), payDiffs.length, T('secPayDiffSub'), payDiffs.map(pairRow)));
+  out.push(section(T('secMismatch'), billDiffs.length, T('secMismatchSub'), billDiffs.map((m) => withAct(pairRow(m), 'actBillDiff'))));
+  out.push(section(T('secPayDiff'), payDiffs.length, T('secPayDiffSub'), payDiffs.map((m) => withAct(pairRow(m), 'actPayDiff'))));
   out.push(section(T('secPartial'), rec.partial.length, T('secPartialSub'), rec.partial.map((p) => h('li', {},
     h('div', { class: 'what' },
       h('div', { class: 'l1' }, entryLine(p.bill), h('span', { class: 'chip sidechip' }, T(p.side === 'ours' ? 'inOurs' : 'inTheirs'))),
-      p.bill.particulars ? h('div', { class: 'l2' }, p.bill.particulars) : null),
+      p.bill.particulars ? h('div', { class: 'l2' }, p.bill.particulars) : null,
+      actLine('actPartial')),
     h('div', { class: 'amt' },
       h('small', {}, `${T('billAmt')} ₹${inr(Math.abs(p.bill.amt))}`),
       h('small', {}, `${T('paidAmt')} ₹${inr(Math.abs(p.payment.amt))}`),
       h('span', { class: 'gap' }, T('leftAmt', { x: inr(Math.abs(p.rest)) })))))));
 
-  out.push(section(T('secOnlyOurs'), rec.onlyOurs.length, null, rec.onlyOurs.map((e) => entryRow(e))));
-  out.push(section(T('secOnlyTheirs'), rec.onlyTheirs.length, null, rec.onlyTheirs.map((e) => entryRow(e))));
+  out.push(section(T('secOnlyOurs'), rec.onlyOurs.length, null,
+    rec.onlyOurs.map((e) => entryRow(e, null, whereAndWhat('onlyOurs', e, periodEnd).act))));
+  out.push(section(T('secOnlyTheirs'), rec.onlyTheirs.length, null,
+    rec.onlyTheirs.map((e) => entryRow(e, null, whereAndWhat('onlyTheirs', e, periodEnd).act))));
   out.push(section(T('secOut'), rec.outOfPeriod.length, T('secOutSub'),
     rec.outOfPeriod.map((x) => entryRow(x.entry, T(x.side === 'ours' ? 'inOurs' : 'inTheirs'))), true));
 
@@ -463,6 +478,50 @@ function renderResult() {
 
   $('#result').replaceChildren(...out.filter(Boolean));
 
+  function paperCards() {
+    const ORDER = ['arithmetic', 'totals', 'closing', 'running', 'duplicates', 'dates'];
+    const card = (side) => {
+      const pc = state.result.papers[side];
+      const head = pc.paperWrong ? 'chkWrong' : pc.readDoubt ? 'chkDoubt' : 'chkOk';
+      const lines = ORDER.map((k) => {
+        const c = pc.checks[k];
+        if (!c || c.state === 'na') return null;
+        const good = c.state === 'ok';
+        const vars = {
+          arithmetic: { x: inr(Math.abs(c.off || 0)) },
+          totals: { n: pc.rows, x: inr(Math.abs(c.offDr || 0) + Math.abs(c.offCr || 0)) },
+          closing: { x: inr(Math.abs(c.off || 0)) },
+          running: { n: c.breaks || 0 },
+          duplicates: { r: (c.rows || []).map((e) => e.ref).filter(Boolean).slice(0, 4).join(', ') },
+          dates: { n: (c.rows || []).length },
+        }[k];
+        return h('li', { class: good ? 'ok' : 'bad' }, h('span', { class: 'mk', 'aria-hidden': 'true' }, good ? '✓' : '✗'), T(`chk_${k}_${good ? 'ok' : 'bad'}`, vars));
+      }).filter(Boolean);
+      return h('div', { class: `paper ${head === 'chkOk' ? 'good' : 'bad'}` },
+        h('div', { class: 'k' }, sideName(side)),
+        h('div', { class: 'v' }, T(head)),
+        h('ul', { class: 'checks' }, lines));
+    };
+    return h('section', { class: 'sec' },
+      h('h3', {}, h('span', {}, T('chkTitle'))),
+      h('div', { class: 'papers' }, card('ours'), card('theirs')));
+  }
+
+  function whereCard() {
+    const mine = rec.onlyTheirs.length + rec.onlyOurs.filter((e) => e.duplicate).length;
+    const theirsShort = rec.onlyOurs.filter((e) => !e.duplicate).length;
+    const both = rec.mismatches.length + rec.partial.length;
+    if (!mine && !theirsShort && !both) return null;
+    const sum = (list) => inr(Math.abs(list.reduce((t, e) => t + e.amt, 0)));
+    const row = (key, n, amt) => (n ? h('li', {}, h('span', {}, T(key, { n })), amt ? h('b', {}, `₹${amt}`) : null) : null);
+    return h('section', { class: 'sec' },
+      h('h3', {}, h('span', {}, T('whereTitle'))),
+      h('ul', { class: 'where' },
+        row('whereOurs', mine, sum(rec.onlyTheirs)),
+        row('whereTheirs', theirsShort, sum(rec.onlyOurs.filter((e) => !e.duplicate))),
+        row('whereBoth', both, null)));
+  }
+
   function spokenSummary(lang) {
     const say = (k, v) => t(lang, k, v);
     const parts = [say(ok ? 'sp_match' : 'sp_diff')];
@@ -481,6 +540,10 @@ function renderResult() {
     if (partyName) lines.push(`${T('party')}: ${partyName}`);
     lines.push(`${T(ok ? 'resMatch' : 'resDiff')}${!ok && b.balanceDiff != null ? ` (${T('diffAmount', { x: inr(Math.abs(b.balanceDiff)) })})` : ''}`);
     if (rec.agreedUpTo && !ok) lines.push(T('agreed', { d: fmtDate(rec.agreedUpTo) }));
+    for (const side of ['ours', 'theirs']) {
+      const pc = state.result.papers[side];
+      lines.push(`${sideName(side)}: ${T(pc.paperWrong ? 'chkWrong' : pc.readDoubt ? 'chkDoubt' : 'chkOk')}`);
+    }
     lines.push(`${T('ourBook')}: ${owesText(b.ourClose, true)}`, `${T('theirBook')}: ${owesText(b.theirClose, false)}`);
     const list = (title, items, fmt) => {
       if (!items.length) return;
