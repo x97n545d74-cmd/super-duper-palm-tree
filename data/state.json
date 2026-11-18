@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 2,
+ "reddit_next": 3,
  "fails": {
   "reddit|r/StockMarketIndia": 5,
   "reddit|r/DalalStreetTalks": 5,
@@ -37,7 +37,8 @@
   "reddit|r/NSEbets": 4,
   "reddit|r/IndianStockMarket": 5,
   "reddit|r/IndiaInvestments": 5,
-  "reddit|r/IndianStreetBets": 4
+  "reddit|r/IndianStreetBets": 5,
+  "news|promoter pledge shares": 1
  },
  "paused_until": {}
 }
