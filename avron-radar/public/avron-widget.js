@@ -1,4 +1,7 @@
-/* AVRON Radar widget. Put <div data-avron-radar></div> where it should appear, then load this script.
+/* AVRON Radar widget. Copy this file into the website (for Vercel: the project's public/ folder), put
+   <div data-avron-radar></div> where it should appear, and load it with <script src="/avron-widget.js" defer></script>.
+   GitHub serves files as plain text, so browsers will not run this script straight from GitHub; the data
+   feed, on the other hand, can be read from GitHub by any site.
    Options on the div: data-sections="market,business,government,calendar,x" (any order, any subset),
    data-feed="URL of avron-feed.json" (default: the radar's public feed on GitHub).
    Colours follow the host page: override --avr-fg, --avr-muted, --avr-line, --avr-panel, --avr-up, --avr-down, --avr-accent. */

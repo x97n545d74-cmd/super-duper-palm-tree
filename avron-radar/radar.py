@@ -813,7 +813,11 @@ def x_queue(cfg):
 
 
 def link_symbols(items, names):
-    """Link each labelled post, and each filing, to the stocks it names."""
+    """Link each labelled post, and each filing, to the stocks it names; mark what the X desk has posted."""
+    posted = x_posted()
+    for r in items:
+        if r.get("queue_id") and posted.get(r["queue_id"]):
+            r["x_url"] = "https://x.com/i/status/" + posted[r["queue_id"]]
     for r in items:
         syms = brain.resolve_symbols((r.get("tags") or {}).get("companies") or ([r["company"]] if r.get("company") else []), names)
         if r["platform"] == "nse" and not syms:
@@ -828,10 +832,6 @@ def ask_question(question, cfg):
     names = market.name_index_from_snapshots(signals)
     items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
     link_symbols(items, names)
-    posted = x_posted()
-    for r in items:      # what the X desk has already put out
-        if r.get("queue_id") and posted.get(r["queue_id"]):
-            r["x_url"] = "https://x.com/i/status/" + posted[r["queue_id"]]
     fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), signals.get("snapshots") or {})
     holds = fundamentals.holding_view(fundamentals.load_holdings(DATA))
     analyses = brain.load_analyses(DATA)
