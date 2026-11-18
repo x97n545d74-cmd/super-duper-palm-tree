@@ -29,19 +29,19 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 5,
+ "reddit_next": 6,
  "fails": {
   "reddit|r/StockMarketIndia": 3,
   "reddit|r/DalalStreetTalks": 3,
-  "reddit|r/IndianStocks": 2,
+  "reddit|r/IndianStocks": 3,
   "feeds|Moneycontrol business": 6,
   "feeds|Moneycontrol market reports": 6,
   "reddit|r/NSEbets": 2,
   "reddit|r/IndianStockMarket": 2,
   "reddit|r/IndiaInvestments": 2,
   "reddit|r/IndianStreetBets": 2,
-  "news|US Federal Reserve rate decision markets": 1,
-  "news|PLI scheme approved companies": 1
+  "news|rupee dollar RBI intervention": 1,
+  "news|state election manifesto promises": 1
  },
  "paused_until": {
   "feeds|Moneycontrol business": 1794970619.9994793,
