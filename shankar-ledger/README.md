@@ -34,6 +34,12 @@ Without a key, the "sample" button still works, so you can see the result screen
 - **On the phone, same Wi-Fi**: open `http://<PC's IP address>:8080`.
 - **From anywhere**: host it online (next section).
 
+## Demo (no server, no key)
+
+`tools/build_demo.sh <folder>` builds a page with the two sample papers preloaded; "check" runs on them in the
+browser and costs nothing. Picking your own file shows a note that the demo does not read real papers.
+It was published as a private Claude artifact on 2026-11-18.
+
 ## Put it on the Android phone
 
 The phone cannot run the reader itself, so the app is hosted online and opened like an app.

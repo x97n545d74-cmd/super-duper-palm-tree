@@ -109,6 +109,17 @@ const S = {
   cancel: { hi: 'रहने दें', pa: 'ਰਹਿਣ ਦਿਓ', en: 'Cancel' },
 
   e_pin: { hi: 'PIN गलत है। दोबारा डालें।', pa: 'PIN ਗਲਤ ਹੈ। ਦੁਬਾਰਾ ਪਾਓ।', en: 'Wrong PIN. Try again.' },
+  view: { hi: 'देखें', pa: 'ਵੇਖੋ', en: 'View' },
+  demoBanner: {
+    hi: 'डेमो: दोनों डिब्बों में नमूना कागज़ पहले से लगे हैं। बस हरा बटन दबाएँ।',
+    pa: 'ਡੈਮੋ: ਦੋਵੇਂ ਡੱਬਿਆਂ ਵਿੱਚ ਨਮੂਨਾ ਕਾਗਜ਼ ਪਹਿਲਾਂ ਤੋਂ ਲੱਗੇ ਹਨ। ਬੱਸ ਹਰਾ ਬਟਨ ਦਬਾਓ।',
+    en: 'Demo: sample papers are already in both boxes. Just press the green button.',
+  },
+  demoPick: {
+    hi: 'डेमो में अपने कागज़ नहीं पढ़े जाते। असली ऐप में फोटो या PDF डालकर मिलान होगा।',
+    pa: 'ਡੈਮੋ ਵਿੱਚ ਆਪਣੇ ਕਾਗਜ਼ ਨਹੀਂ ਪੜ੍ਹੇ ਜਾਂਦੇ। ਅਸਲੀ ਐਪ ਵਿੱਚ ਫੋਟੋ ਜਾਂ PDF ਪਾ ਕੇ ਮਿਲਾਨ ਹੋਵੇਗਾ।',
+    en: 'The demo does not read your own papers. The full app reads your photos and PDFs.',
+  },
   e_locked: { hi: 'गलत PIN कई बार डाला गया। एक घंटे बाद दोबारा करें।', pa: 'ਗਲਤ PIN ਕਈ ਵਾਰ ਪਾਇਆ ਗਿਆ। ਇੱਕ ਘੰਟੇ ਬਾਅਦ ਦੁਬਾਰਾ ਕਰੋ।', en: 'Wrong PIN too many times. Try again after an hour.' },
   e_no_key: { hi: 'कागज़ पढ़ने की सेवा अभी चालू नहीं है। जिसने यह लगाया है उन्हें बताएँ।', pa: 'ਕਾਗਜ਼ ਪੜ੍ਹਨ ਦੀ ਸੇਵਾ ਹਾਲੇ ਚਾਲੂ ਨਹੀਂ ਹੈ। ਜਿਸ ਨੇ ਇਹ ਲਗਾਇਆ ਹੈ ਉਨ੍ਹਾਂ ਨੂੰ ਦੱਸੋ।', en: 'The reader is not switched on yet. Tell the person who set this up.' },
   e_key: { hi: 'कागज़ पढ़ने की सेवा की चाबी काम नहीं कर रही। जिसने यह लगाया है उन्हें बताएँ।', pa: 'ਕਾਗਜ਼ ਪੜ੍ਹਨ ਦੀ ਸੇਵਾ ਦੀ ਚਾਬੀ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੀ। ਜਿਸ ਨੇ ਇਹ ਲਗਾਇਆ ਹੈ ਉਨ੍ਹਾਂ ਨੂੰ ਦੱਸੋ।', en: 'The reader key is not working. Tell the person who set this up.' },

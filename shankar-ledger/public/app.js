@@ -10,9 +10,18 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } },
 };
 
+// Demo build (demo/index.html sets window.LEDGER_DEMO): sample papers are preloaded and
+// "check" runs on them without the server or an API key.
+const DEMO = Boolean(window.LEDGER_DEMO);
+const DEMO_FILES = {
+  ours: [{ name: 'sample-our-ledger-tally.pdf', thumb: 'sample-our-ledger.png', sample: true }],
+  theirs: [{ name: 'sample-party-statement.pdf', thumb: 'sample-party-statement.png', sample: true }],
+};
+const demoFiles = () => ({ ours: [...DEMO_FILES.ours], theirs: [...DEMO_FILES.theirs] });
+
 const state = {
   lang: LANGS.some((l) => l.code === store.get('lang')) ? store.get('lang') : 'hi',
-  files: { ours: [], theirs: [] },
+  files: DEMO ? demoFiles() : { ours: [], theirs: [] },
   docs: { ours: null, theirs: null },   // { key, doc } so an unchanged side is not read twice
   busy: false,
   result: null,                          // { ours, theirs, rec, checks, sample }
@@ -70,7 +79,7 @@ function stopSpeaking() { if (synth) synth.cancel(); speaking = false; syncListe
 
 /** makeText(lang) returns the words to say. Punjabi falls back to Hindi when the device has no Punjabi voice. */
 function speak(makeText) {
-  if (!synth) { alert(T('noVoice')); return; }
+  if (!synth) { setError('noVoice'); return; }
   if (speaking) { stopSpeaking(); return; }
   let lang = state.lang;
   if (lang === 'pa' && !voiceFor('pa')) lang = 'hi';
@@ -156,6 +165,7 @@ async function toUpload(file) {
 }
 
 async function addFiles(side, fileList) {
+  if (DEMO) { setError('demoPick'); return; }
   setError(null);
   for (const file of fileList) {
     try {
@@ -178,7 +188,7 @@ function renderFiles(side) {
   $('[data-files]', box).replaceChildren(...list.map((f, i) => h('li', {},
     f.thumb ? h('img', { src: f.thumb, alt: '' }) : h('span', { class: 'ext' }, f.badge || 'FILE'),
     h('span', { class: 'name' }, f.name),
-    h('button', {
+    f.sample ? h('a', { href: f.thumb, target: '_blank', rel: 'noopener', class: 'view' }, T('view')) : h('button', {
       type: 'button', 'aria-label': `${T('remove')} ${f.name}`,
       onclick: () => { state.files[side].splice(i, 1); renderFiles(side); updateGo(); },
     }, T('remove')),
@@ -269,6 +279,14 @@ function pinGate() {
 async function run() {
   if (state.busy) return;
   state.busy = true; setError(null); stopSpeaking(); updateGo();
+  if (DEMO) {
+    setStatus('ours', 'reading'); setStatus('theirs', 'reading');
+    await new Promise((r) => setTimeout(r, 1400));
+    setStatus('ours', 'done'); setStatus('theirs', 'done');
+    state.busy = false; updateGo();
+    showResult(demoOurs, demoTheirs, true);
+    return;
+  }
   try {
     const [ours, theirs] = await Promise.all(['ours', 'theirs'].map(async (side) => {
       try { return await readSide(side); } catch (err) { err.side = side; throw err; }
@@ -358,7 +376,7 @@ function renderResult() {
     h('button', { class: 'btn', id: 'listenBtn', type: 'button', onclick: () => speak(spokenSummary) },
       svg('M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z'), h('span', {}, T(speaking ? 'stop' : 'listen'))),
     h('a', { class: 'btn wa', target: '_blank', rel: 'noopener', href: `https://wa.me/?text=${encodeURIComponent(shareText())}` }, T('whatsapp')),
-    h('button', { class: 'btn ghost', type: 'button', onclick: () => window.print() }, T('print')),
+    DEMO ? null : h('button', { class: 'btn ghost', type: 'button', onclick: () => window.print() }, T('print')),
     h('button', { class: 'btn ghost', type: 'button', onclick: reset }, T('again'))));
 
   out.push(section(T('secMismatch'), rec.mismatches.length, T('secMismatchSub'), rec.mismatches.map((m) => h('li', {},
@@ -434,7 +452,7 @@ function svg(d) {
 function reset() {
   stopSpeaking();
   state.result = null;
-  state.files = { ours: [], theirs: [] };
+  state.files = DEMO ? demoFiles() : { ours: [], theirs: [] };
   state.docs = { ours: null, theirs: null };
   setStatus('ours', null); setStatus('theirs', null);
   $('#result').hidden = true; $('#result').replaceChildren();
@@ -461,4 +479,8 @@ for (const box of $$('.box')) {
 $('#goBtn').addEventListener('click', run);
 $('#sampleBtn').addEventListener('click', () => showResult(demoOurs, demoTheirs, true));
 $('#helpBtn').addEventListener('click', () => speak((lang) => t(lang, 'helpSpeech')));
+if (DEMO) {
+  document.documentElement.classList.add('demo');
+  $('#sampleBtn').hidden = true;
+}
 applyLang();

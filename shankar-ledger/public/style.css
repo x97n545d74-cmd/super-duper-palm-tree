@@ -175,3 +175,11 @@ dialog .btn.ghost { min-height: 52px; }
   .sec, .bal { break-inside: avoid; border-color: #999; }
   details.sec:not([open]) > *:not(summary) { display: block; }
 }
+
+/* Demo build */
+.demobar { display: none; }
+.demo .demobar {
+  display: block; margin: 0 0 14px; padding: 12px 14px; border-radius: 12px;
+  background: var(--amber-soft); color: #5c3c00; border: 1px solid #f0d58a; font-weight: 600;
+}
+.files a.view { color: var(--green-dark); font-weight: 700; min-height: 44px; padding: 0 10px; display: inline-flex; align-items: center; }
