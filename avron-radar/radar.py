@@ -58,6 +58,7 @@ import flows          # noqa: E402
 import fundamentals   # noqa: E402
 import market         # noqa: E402
 import policy         # noqa: E402
+import public         # noqa: E402
 import xout           # noqa: E402
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -971,6 +972,14 @@ def build():
                                                         for s, c in cards.items()}},
                          ensure_ascii=False).replace("</", "<\\/")
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")
+    feed = public.build_feed(iso(now_utc()), signals, flows.summary(flows.load_history(DATA)),
+                             decide.business_digest(items, limit=60), gov, cal, items)
+    problems = public.check_feed(feed)
+    if problems:      # never publish a feed that carries something private
+        print("public feed NOT written: " + "; ".join(problems)[:300])
+        STATS.setdefault("failed_steps", []).append("public feed")
+    else:
+        (HERE / "avron-feed.json").write_text(json.dumps(feed, ensure_ascii=False), encoding="utf-8")
     print("built radar.db and dashboard.html: %d posts, %d filing reads, results for %d companies, market data for %s"
           % (len(items), len(analyses), len(fund), signals.get("date") or "no day yet"))
 

@@ -7,3 +7,4 @@ avron-radar/radar.db
 avron-radar/dashboard.html
 avron-radar/data/
 __pycache__/
+avron-radar/avron-feed.json
