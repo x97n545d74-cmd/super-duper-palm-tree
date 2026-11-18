@@ -551,5 +551,9 @@
       "expected": "due by mid 2029",
       "note": ""
     }
-  ]
+  ],
+  "x_merger": {
+    "queue_url": "https://raw.githubusercontent.com/x97n545d74-cmd/super-duper-palm-tree/avron-x-merger/avron-x-merger/queue.jsonl",
+    "posted_url": "https://raw.githubusercontent.com/x97n545d74-cmd/super-duper-palm-tree/avron-x-merger/avron-x-merger/posted.jsonl"
+  }
 }

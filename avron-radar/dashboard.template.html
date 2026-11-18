@@ -343,6 +343,7 @@ function feed() {
     return "<div class='card'><div class='meta'><span class='chip'>" + esc(i.platform) + "</span><span>" + esc(i.source) + "</span>" +
       (i.author ? "<span>· " + esc(i.author) + "</span>" : "") + "<span>· " + esc(when(i.published_at || i.collected_at)) + "</span>" +
       (i.subject ? "<span class='chip'>" + esc(i.subject) + "</span>" : "") +
+      (i.x_url ? "<a class='chip w' href='" + esc(safeUrl(i.x_url)) + "' target='_blank' rel='noopener noreferrer'>posted on X</a>" : (i.platform === "avronx" ? "<span class='chip'>in the X queue</span>" : "")) +
       (t.kind ? "<span class='chip k-" + esc(t.kind) + "'>" + esc(t.kind) + "</span>" : "") +
       (t.relevance != null ? "<span class='chip'>relevance " + esc(t.relevance) + "</span>" : "") +
       (t.companies || []).map(c => "<span class='chip'>" + esc(c) + "</span>").join("") +

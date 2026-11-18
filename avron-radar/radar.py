@@ -68,7 +68,7 @@ MODEL = os.environ.get("RADAR_MODEL", "claude-haiku-5-5")
 EXCERPT = 600          # characters of each post kept
 PAUSE = 1.5            # seconds between requests
 LANE_PAUSE = {"reddit": 6, "news": 6, "feeds": 0.5}   # Reddit and Google News rate-limit quick readers
-NO_TAG = {"nse", "deals"}   # official records: nothing for the chatter labeller to judge
+NO_TAG = {"nse", "deals", "avronx"}   # official records and the X desk's own checked headlines: nothing to label
 KEEP_DAYS = 45              # days of posts loaded for the dashboard and the database
 PER_SOURCE_CAP = 400        # most new posts taken from one source in one run
 REDDIT_PER_RUN = 1     # without a Reddit API key, Reddit allows one feed per visit: read one subreddit per run, in turn
@@ -398,8 +398,59 @@ def lane_x(cfg, state):
         yield q, fetch
 
 
+def parse_merger(queue_text, posted_text):
+    """The Avron X merger desk's files -> feed rows, plus {queue id: tweet id} for what it has posted.
+    The desk's headlines are already checked against their source, so they are kept as written."""
+    posted = {}
+    for line in (posted_text or "").splitlines():
+        try:
+            r = json.loads(line)
+            posted[r["id"]] = str(r.get("tweet_id") or "")
+        except (ValueError, KeyError, TypeError):
+            pass
+    out = []
+    for line in (queue_text or "").splitlines():
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if not r.get("id") or not r.get("headline"):
+            continue
+        when = ""
+        try:
+            when = iso(datetime.datetime.strptime(r.get("created_ist", ""), "%Y-%m-%d %H:%M").replace(tzinfo=IST))
+        except ValueError:
+            pass
+        body = r.get("story_text") or "\n".join(r.get("thread") or []) or r.get("detail") or ""
+        item = make_item("avronx", "Avron X desk: " + (r.get("lane") or "item"), r["id"], r.get("verify_link") or "",
+                         r["headline"], body, "", when)
+        item["company"] = r.get("company") or ""
+        item["queue_id"] = r["id"]
+        out.append(item)
+    return out, posted
+
+
+def lane_merger(cfg, state):
+    """What the Avron X merger desk wrote and posted (its files on the avron-x-merger branch)."""
+    m = cfg.get("x_merger") or {}
+    if not m.get("queue_url"):
+        return
+
+    def fetch():
+        items, posted = parse_merger(http_get(m["queue_url"]), http_get(m["posted_url"]) if m.get("posted_url") else "")
+        DATA.mkdir(parents=True, exist_ok=True)
+        (DATA / "x_posted.json").write_text(json.dumps(posted), encoding="utf-8")
+        return items
+    yield "Avron X desk", fetch
+
+
+def x_posted():
+    return load_json(DATA / "x_posted.json", {})
+
+
 LANES = [("reddit", lane_reddit), ("youtube", lane_youtube), ("telegram", lane_telegram),
-         ("news", lane_news), ("bluesky", lane_bluesky), ("x", lane_x), ("feeds", lane_feeds)]
+         ("news", lane_news), ("bluesky", lane_bluesky), ("x", lane_x), ("feeds", lane_feeds),
+         ("xdesk", lane_merger)]
 
 
 # ---------- storage ----------
@@ -691,6 +742,9 @@ def analyse(cfg):
                          for m in h.get("holder_moves") or []][:30],
     }
     extra["positioning"] = flows.summary(flows.load_history(DATA))
+    posted = x_posted()
+    extra["already_posted_on_x"] = [{"headline": r["title"], "company": r.get("company", "")}
+                                    for r in items if r["platform"] == "avronx" and posted.get(r.get("queue_id"))][:30]
     recent_notes = [n for n in policy.load_notes(DATA) if n.get("filed_at", "") >= day_ago]
     extra["government"] = [{k: n[k] for k in ("policy", "what", "level", "sectors", "money_cr", "stage", "companies_named", "official")}
                            for n in recent_notes][:20]
@@ -725,7 +779,7 @@ def log_run(started, cfg):
 def link_symbols(items, names):
     """Link each labelled post, and each filing, to the stocks it names."""
     for r in items:
-        syms = brain.resolve_symbols((r.get("tags") or {}).get("companies"), names)
+        syms = brain.resolve_symbols((r.get("tags") or {}).get("companies") or ([r["company"]] if r.get("company") else []), names)
         if r["platform"] == "nse" and not syms:
             syms = [names[market.norm_name(r["title"])]] if market.norm_name(r["title"]) in names else []
         if syms:
@@ -738,6 +792,10 @@ def ask_question(question, cfg):
     names = market.name_index_from_snapshots(signals)
     items = sorted(load_items().values(), key=lambda r: r.get("published_at") or r["collected_at"], reverse=True)
     link_symbols(items, names)
+    posted = x_posted()
+    for r in items:      # what the X desk has already put out
+        if r.get("queue_id") and posted.get(r["queue_id"]):
+            r["x_url"] = "https://x.com/i/status/" + posted[r["queue_id"]]
     fund = fundamentals.latest_by_symbol(fundamentals.load_fundamentals(DATA), signals.get("snapshots") or {})
     holds = fundamentals.holding_view(fundamentals.load_holdings(DATA))
     analyses = brain.load_analyses(DATA)
