@@ -24,6 +24,7 @@ ROWS = [
     news("India vs Australia cricket: highlights", "https://www.livemint.com/e"),
     news("RBI keeps repo rate unchanged at 5.50%, cuts CRR", "https://news.google.com/rss/articles/x", source="Google News"),
     news("Short", "https://www.livemint.com/f"),
+    news("Should you book profits in defence stocks after the rally?", "https://www.livemint.com/bp"),
     news("Old: Infosys wins big contract from European bank", "https://www.livemint.com/g", when="2026-11-16T08:00:00Z"),
     {"kind": "nse", "title": "ABC Limited", "subject": "Bagging/Receiving of orders/contracts", "url": "https://nsearchives.nseindia.com/a.pdf",
      "published_at": "2026-11-18T08:40:00Z", "text": "ABC Limited has received an order of Rs 120 crore |SUBJECT: Bagging/Receiving of orders/contracts"},
