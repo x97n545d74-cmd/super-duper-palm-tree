@@ -1,5 +1,5 @@
 {
- "reddit_next": 3,
+ "reddit_next": 4,
  "youtube_ids": {
   "@CARachanaRanade": "UCe3qdG0A_gr-sEdat5y2twQ",
   "@pranjalkamra": "UCwAdQUuPT6laN-AQR17fe1g",
@@ -36,7 +36,8 @@
   "feeds|Financial Express economy": 1,
   "feeds|Entrackr startups": 1,
   "reddit|r/IndiaInvestments": 1,
-  "reddit|r/IndianStreetBets": 1
+  "reddit|r/IndianStreetBets": 1,
+  "reddit|r/StockMarketIndia": 1
  },
  "paused_until": {}
 }
