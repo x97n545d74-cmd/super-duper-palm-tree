@@ -29,7 +29,9 @@ QUEUE = HERE / "queue.jsonl"
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
 FEED = "https://nsearchives.nseindia.com/content/RSS/Online_announcements.xml"
 NSE_PREFIX = "https://nsearchives.nseindia.com/"
-MODEL = os.environ.get("AVRON_MODEL", "claude-haiku-5-5")
+MODEL = os.environ.get("AVRON_MODEL", "claude-sonnet-5-5")            # scraping + turning findings into posts
+ADVANCED_MODEL = os.environ.get("AVRON_ADVANCED_MODEL", "claude-opus-5-5")   # SEBI/RBI + market-performance judgement
+ADVANCED_EFFORT = os.environ.get("AVRON_ADVANCED_EFFORT", "low")
 LOOKBACK_MINUTES = int(os.environ.get("AVRON_LOOKBACK_MINUTES", "30"))
 MAX_ITEMS = int(os.environ.get("AVRON_MAX_ITEMS", "4"))
 FETCH_TOOL = os.environ.get("AVRON_FETCH_TOOL", "web_fetch_20250910")   # plain fetch: fewer round trips, lower cost
@@ -221,13 +223,15 @@ def search_tool(max_uses):
     return [{"type": SEARCH_TOOL, "name": "web_search", "max_uses": max_uses}]
 
 
-def call_claude(prompt, api_key, tools, max_tokens):
+def call_claude(prompt, api_key, tools, max_tokens, advanced=False):
     """One Claude call with the given tools. Returns (reply text, input tokens, output tokens)."""
     messages = [{"role": "user", "content": prompt}]
     tin = tout = 0
     res = {}
     for _ in range(3):
-        body = {"model": MODEL, "max_tokens": max_tokens, "tools": tools, "messages": messages}
+        body = {"model": ADVANCED_MODEL if advanced else MODEL, "max_tokens": max_tokens, "tools": tools, "messages": messages}
+        if advanced:
+            body["output_config"] = {"effort": ADVANCED_EFFORT}
         req = urllib.request.Request(
             "https://api.anthropic.com/v1/messages",
             data=json.dumps(body).encode("utf-8"),
@@ -498,7 +502,7 @@ def run_news(now, api_key, lane="news", prompt_fn=None, searches=None):
     covered = covered_headlines(60)
     known_links = {r.get("verify_link") for r in read_queue()}
     prompt = (prompt_fn or news_prompt)(now, covered)
-    text, tin, tout = call_claude(prompt, api_key, search_tool(searches or NEWS_SEARCHES), 8000)
+    text, tin, tout = call_claude(prompt, api_key, search_tool(searches or NEWS_SEARCHES), 8000, advanced=(lane == "news"))
     items = parse_items(text)
     if items is None:
         print("[%s] Reply was not a JSON array. Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (lane, tin, tout, text[:300]))
