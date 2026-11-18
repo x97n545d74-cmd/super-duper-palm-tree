@@ -1,5 +1,5 @@
 {
- "reddit_next": 0,
+ "reddit_next": 1,
  "youtube_ids": {
   "@CARachanaRanade": "UCe3qdG0A_gr-sEdat5y2twQ",
   "@pranjalkamra": "UCwAdQUuPT6laN-AQR17fe1g",
@@ -31,7 +31,7 @@
  },
  "fails": {
   "reddit|r/NSEbets": 1,
-  "reddit|r/IndianStockMarket": 1,
+  "reddit|r/IndianStockMarket": 2,
   "feeds|Financial Express business": 1,
   "feeds|Financial Express economy": 1,
   "feeds|Entrackr startups": 1,
@@ -40,10 +40,10 @@
   "reddit|r/StockMarketIndia": 1,
   "reddit|r/DalalStreetTalks": 1,
   "reddit|r/IndianStocks": 1,
-  "feeds|Moneycontrol business": 1,
-  "feeds|Moneycontrol market reports": 1,
-  "feeds|Moneycontrol latest": 1,
-  "feeds|Moneycontrol economy": 1
+  "feeds|Moneycontrol business": 2,
+  "feeds|Moneycontrol market reports": 2,
+  "feeds|Moneycontrol latest": 2,
+  "feeds|Moneycontrol economy": 2
  },
  "paused_until": {}
 }
