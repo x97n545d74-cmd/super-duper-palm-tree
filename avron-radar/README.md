@@ -124,7 +124,7 @@ Everything that reads sources uses Claude Haiku 5.5: labelling posts, triaging a
 When the repository secret `PRIVATE_DATA_TOKEN` exists, the workflow force-pushes `scraped.json` to the private repository named in `config.json` (`private_data`), branch `main` (runs from other branches use `test`). The dashboard reads it with a separate read-only token:
 
 ```
-GET https://api.github.com/repos/x97n545d74-cmd/avron-radar-private/contents/scraped.json?ref=main
+GET https://api.github.com/repos/AvronMarket/avron-radar-private/contents/scraped.json?ref=main
 Authorization: Bearer <read-only token>
 Accept: application/vnd.github.raw+json
 ```
