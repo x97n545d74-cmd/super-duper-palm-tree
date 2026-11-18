@@ -1,5 +1,5 @@
 {
- "reddit_next": 6,
+ "reddit_next": 0,
  "youtube_ids": {
   "@CARachanaRanade": "UCe3qdG0A_gr-sEdat5y2twQ",
   "@pranjalkamra": "UCwAdQUuPT6laN-AQR17fe1g",
@@ -30,7 +30,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "fails": {
-  "news|India semiconductor plant listed company": 1
+  "reddit|r/NSEbets": 1
  },
  "paused_until": {}
 }
