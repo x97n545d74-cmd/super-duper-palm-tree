@@ -325,6 +325,7 @@ async function run() {
 
 /* ---------- result ---------- */
 function showResult(ours, theirs, sample) {
+  window.__ledgerDocs = { ours, theirs }; // read back by the local test bench
   state.result = { ours, theirs, sample, rec: reconcile(ours, theirs), checks: { ours: selfCheck(ours), theirs: selfCheck(theirs) } };
   $('#setup').hidden = true;
   $('#result').hidden = false;
@@ -346,7 +347,7 @@ function entryLine(e) {
 function entryRow(e, sideLabel) {
   return h('li', {},
     h('div', { class: 'what' },
-      h('div', { class: 'l1' }, entryLine(e), e.unclear ? h('span', { class: 'chip' }, T('unclearTag')) : null,
+      h('div', { class: 'l1' }, entryLine(e), (e.unclear || e.balanceBreak) ? h('span', { class: 'chip' }, T('unclearTag')) : null,
         sideLabel ? h('span', { class: 'chip sidechip' }, sideLabel) : null),
       e.particulars ? h('div', { class: 'l2' }, e.particulars) : null),
     h('div', { class: 'amt' }, `₹${inr(Math.abs(e.amt))}`));
@@ -384,11 +385,13 @@ function renderResult() {
     h('div', { class: 'bal' }, h('div', { class: 'k' }, T('ourBook')), h('div', { class: 'v' }, owesText(b.ourClose, true))),
     h('div', { class: 'bal' }, h('div', { class: 'k' }, T('theirBook')), h('div', { class: 'v' }, owesText(b.theirClose, false)))));
 
+  if (rec.agreedUpTo && !ok) out.push(h('div', { class: 'note good' }, T('agreed', { d: fmtDate(rec.agreedUpTo) })));
+
   for (const side of ['ours', 'theirs']) {
     const c = checks[side];
     if (!c.ok) out.push(h('div', { class: 'note bad' }, T('readWarn', { side: sideName(side), x: inr(Math.abs(c.off)) })));
     else if (!c.checked) out.push(h('div', { class: 'note' }, T('readNoCheck', { side: sideName(side) })));
-    if (c.unclear) out.push(h('div', { class: 'note' }, T('unclear', { side: sideName(side), n: c.unclear })));
+    if (c.unclear || c.breaks) out.push(h('div', { class: 'note' }, T('unclear', { side: sideName(side), n: c.unclear + c.breaks })));
   }
   if (b.openingDiff != null && Math.abs(b.openingDiff) >= 1) out.push(h('div', { class: 'note' }, T('openingDiff', { x: inr(Math.abs(b.openingDiff)) })));
   if (rec.unexplained != null && Math.abs(rec.unexplained) >= 1) out.push(h('div', { class: 'note bad' }, T('unexplained', { x: inr(Math.abs(rec.unexplained)) })));
@@ -400,19 +403,45 @@ function renderResult() {
     DEMO || VIA_CLAUDE ? null : h('button', { class: 'btn ghost', type: 'button', onclick: () => window.print() }, T('print')),
     h('button', { class: 'btn ghost', type: 'button', onclick: reset }, T('again'))));
 
-  out.push(section(T('secMismatch'), rec.mismatches.length, T('secMismatchSub'), rec.mismatches.map((m) => h('li', {},
+  const pairRow = (m) => h('li', {},
     h('div', { class: 'what' },
       h('div', { class: 'l1' }, entryLine(m.ours), (m.ours.unclear || m.theirs.unclear) ? h('span', { class: 'chip' }, T('unclearTag')) : null),
       m.ours.particulars ? h('div', { class: 'l2' }, m.ours.particulars) : null),
     h('div', { class: 'amt' },
       h('small', {}, `${T('oursAmt')} ₹${inr(Math.abs(m.ours.amt))}`),
       h('small', {}, `${T('theirsAmt')} ₹${inr(Math.abs(m.theirs.amt))}`),
-      h('span', { class: 'gap' }, T('gapOf', { x: inr(Math.abs(m.difference)) })))))));
+      h('span', { class: 'gap' }, T('gapOf', { x: inr(Math.abs(m.difference)) }))));
+  const billDiffs = rec.mismatches.filter((m) => m.kind !== 'payment');
+  const payDiffs = rec.mismatches.filter((m) => m.kind === 'payment');
+  out.push(section(T('secMismatch'), billDiffs.length, T('secMismatchSub'), billDiffs.map(pairRow)));
+  out.push(section(T('secPayDiff'), payDiffs.length, T('secPayDiffSub'), payDiffs.map(pairRow)));
+  out.push(section(T('secPartial'), rec.partial.length, T('secPartialSub'), rec.partial.map((p) => h('li', {},
+    h('div', { class: 'what' },
+      h('div', { class: 'l1' }, entryLine(p.bill), h('span', { class: 'chip sidechip' }, T(p.side === 'ours' ? 'inOurs' : 'inTheirs'))),
+      p.bill.particulars ? h('div', { class: 'l2' }, p.bill.particulars) : null),
+    h('div', { class: 'amt' },
+      h('small', {}, `${T('billAmt')} ₹${inr(Math.abs(p.bill.amt))}`),
+      h('small', {}, `${T('paidAmt')} ₹${inr(Math.abs(p.payment.amt))}`),
+      h('span', { class: 'gap' }, T('leftAmt', { x: inr(Math.abs(p.rest)) })))))));
 
   out.push(section(T('secOnlyOurs'), rec.onlyOurs.length, null, rec.onlyOurs.map((e) => entryRow(e))));
   out.push(section(T('secOnlyTheirs'), rec.onlyTheirs.length, null, rec.onlyTheirs.map((e) => entryRow(e))));
   out.push(section(T('secOut'), rec.outOfPeriod.length, T('secOutSub'),
     rec.outOfPeriod.map((x) => entryRow(x.entry, T(x.side === 'ours' ? 'inOurs' : 'inTheirs'))), true));
+
+  const quiet = (title, sub, rows) => (rows.length ? h('details', { class: 'sec calm' },
+    h('summary', {}, title), sub ? h('p', { class: 'secsub' }, sub) : null, h('ul', { class: 'rows' }, rows)) : null);
+  out.push(quiet(T('secCancelled', { n: rec.cancelled.length, d: fmtDate(rec.agreedUpTo) }), T('secCancelledSub'),
+    rec.cancelled.map(({ kind, item }) => {
+      const e = item.ours || item.bill || item;
+      const label = { mismatch: T(item.kind === 'payment' ? 'secPayDiff' : 'secMismatch'), partial: T('secPartial'), onlyOurs: T('inOurs'), onlyTheirs: T('inTheirs') }[kind];
+      return h('li', {},
+        h('div', { class: 'what' }, h('div', { class: 'l1' }, entryLine(e)), h('div', { class: 'l2' }, label)),
+        h('div', { class: 'amt' }, `₹${inr(Math.abs(item.difference ?? item.rest ?? item.amt))}`));
+    })));
+  out.push(quiet(T('secSettled', { n: rec.settled.length }), T('secSettledSub'), rec.settled.map((x) => h('li', {},
+    h('div', { class: 'what' }, h('div', { class: 'l1' }, entryLine(x.bill)), h('div', { class: 'l2' }, T(x.side === 'ours' ? 'inOurs' : 'inTheirs'))),
+    h('div', { class: 'amt' }, `₹${inr(Math.abs(x.bill.amt))}`)))));
 
   if (rec.matched.length) {
     out.push(h('details', { class: 'sec calm' },
@@ -423,9 +452,10 @@ function renderResult() {
         if (m.roundOff) notes.push(T('noteRound', { x: inr(Math.abs(m.roundOff)) }));
         if (m.dateFar) notes.push(T('noteDate', { n: m.dateGap }));
         if (m.how === 'group') notes.push(T('noteGroup', { n: (m.theirsGroup || m.oursGroup).length }));
+        if (m.how === 'payBill') notes.push(T('notePayBill', { r: m.bill.ref || '', x: inr(Math.abs(m.bill.amt)) }));
         return h('li', {},
           h('div', { class: 'what' },
-            h('div', { class: 'l1' }, entryLine(e), e.unclear ? h('span', { class: 'chip' }, T('unclearTag')) : null),
+            h('div', { class: 'l1' }, entryLine(e), (e.unclear || e.balanceBreak) ? h('span', { class: 'chip' }, T('unclearTag')) : null),
             notes.length ? h('div', { class: 'l2' }, notes.join(' · ')) : null),
           h('div', { class: 'amt' }, `₹${inr(Math.abs(e.amt))}`));
       }))));
@@ -436,9 +466,10 @@ function renderResult() {
   function spokenSummary(lang) {
     const say = (k, v) => t(lang, k, v);
     const parts = [say(ok ? 'sp_match' : 'sp_diff')];
+    if (rec.agreedUpTo && !ok) parts.push(say('sp_agreed', { d: fmtDate(rec.agreedUpTo) }));
     parts.push(`${say('ourBook')}, ${owesText(b.ourClose, true, true, lang)}.`);
     parts.push(`${say('theirBook')}, ${owesText(b.theirClose, false, true, lang)}.`);
-    if (rec.mismatches.length) parts.push(say('sp_nMismatch', { n: rec.mismatches.length }));
+    if (rec.mismatches.length + rec.partial.length) parts.push(say('sp_nMismatch', { n: rec.mismatches.length + rec.partial.length }));
     if (rec.onlyOurs.length) parts.push(say('sp_nOurs', { n: rec.onlyOurs.length }));
     if (rec.onlyTheirs.length) parts.push(say('sp_nTheirs', { n: rec.onlyTheirs.length }));
     if (readBad) parts.push(say('sp_warn'));
@@ -449,6 +480,7 @@ function renderResult() {
     const lines = [`*${T('shop')}: ${T('title')}*`];
     if (partyName) lines.push(`${T('party')}: ${partyName}`);
     lines.push(`${T(ok ? 'resMatch' : 'resDiff')}${!ok && b.balanceDiff != null ? ` (${T('diffAmount', { x: inr(Math.abs(b.balanceDiff)) })})` : ''}`);
+    if (rec.agreedUpTo && !ok) lines.push(T('agreed', { d: fmtDate(rec.agreedUpTo) }));
     lines.push(`${T('ourBook')}: ${owesText(b.ourClose, true)}`, `${T('theirBook')}: ${owesText(b.theirClose, false)}`);
     const list = (title, items, fmt) => {
       if (!items.length) return;
@@ -456,6 +488,7 @@ function renderResult() {
       items.slice(0, 40).forEach((x) => lines.push(`• ${fmt(x)}`));
     };
     list(T('secMismatch'), rec.mismatches, (m) => `${entryLine(m.ours)}: ${T('oursAmt')} ₹${inr(Math.abs(m.ours.amt))}, ${T('theirsAmt')} ₹${inr(Math.abs(m.theirs.amt))}`);
+    list(T('secPartial'), rec.partial, (p) => `${entryLine(p.bill)}: ${T('billAmt')} ₹${inr(Math.abs(p.bill.amt))}, ${T('paidAmt')} ₹${inr(Math.abs(p.payment.amt))}`);
     list(T('secOnlyOurs'), rec.onlyOurs, (e) => `${entryLine(e)}: ₹${inr(Math.abs(e.amt))}`);
     list(T('secOnlyTheirs'), rec.onlyTheirs, (e) => `${entryLine(e)}: ₹${inr(Math.abs(e.amt))}`);
     return lines.join('\n');

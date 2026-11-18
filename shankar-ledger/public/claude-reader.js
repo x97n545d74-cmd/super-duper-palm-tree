@@ -60,8 +60,12 @@ export async function pdfToParts(file) {
     const page = await pdf.getPage(n);
     pages.push({ page, text: pageText((await page.getTextContent()).items) });
   }
-  const digits = pages.map((p) => (p.text.match(/\d/g) || []).length).reduce((a, b) => a + b, 0);
-  if (digits >= 30 * pdf.numPages) {
+  // Some PDFs store text in a scrambled font encoding: it is there but not readable. Only
+  // trust the text when it holds real dates and amounts; otherwise send the pages as images.
+  const all = pages.map((p) => p.text).join('\n');
+  const dates = (all.match(/\b\d{1,2}\s*[-/.]\s*\d{1,2}\s*[-/.]\s*\d{2,4}\b/g) || []).length;
+  const amounts = (all.match(/\d[\d,]*\.\d{2}\b/g) || []).length;
+  if (dates >= 3 * pdf.numPages && amounts >= 3 * pdf.numPages) {
     return { kind: 'text', text: pages.map((p, i) => `--- page ${i + 1} ---\n${p.text}`).join('\n\n') };
   }
   const blobs = [];
@@ -167,7 +171,7 @@ function clean(doc) {
       date: String(e?.date || ''), ref: String(e?.ref || ''),
       type: types.includes(e?.type) ? e.type : 'other',
       particulars: String(e?.particulars || ''),
-      debit: num(e?.debit), credit: num(e?.credit), unclear: Boolean(e?.unclear),
+      debit: num(e?.debit), credit: num(e?.credit), balance: bal(e?.balance), unclear: Boolean(e?.unclear),
     })),
   };
 }
@@ -199,7 +203,9 @@ export async function readViaClaude(side, files) {
 
   const limits = await sample.limits().catch(() => null);
   if (blobs.length && !limits?.images) throw new ReadError('claude_off');
-  const per = limits?.images?.maxCount || 1;
+  // Keep both halves of a page in the same call: an even number of images per call.
+  const max = limits?.images?.maxCount || 1;
+  const per = max >= 2 ? max - (max % 2) : 1;
 
   const read = async (tier) => {
     if (blobs.length <= per) return askOnce(sample, side, texts, blobs, tier, null);
@@ -212,8 +218,9 @@ export async function readViaClaude(side, files) {
     const known = (b) => b.side !== 'unknown';
     return {
       ...parts[0],
+      // The period is printed in the header of the first page; later parts can only guess it.
       period_from: parts.find((p) => p.period_from)?.period_from || '',
-      period_to: [...parts].reverse().find((p) => p.period_to)?.period_to || '',
+      period_to: parts.find((p) => p.period_to)?.period_to || '',
       opening_balance: parts.find((p) => known(p.opening_balance))?.opening_balance || parts[0].opening_balance,
       closing_balance: [...parts].reverse().find((p) => known(p.closing_balance))?.closing_balance || parts[0].closing_balance,
       is_ledger: parts.some((p) => p.is_ledger),
@@ -224,12 +231,13 @@ export async function readViaClaude(side, files) {
 
   let doc = await read('default');
   const check = selfCheck(doc);
-  if (!check.ok || check.unclear > 0) {
+  if (!check.ok || check.unclear > 0 || check.breaks > 0) {
     // One more careful reading on the most capable model when the totals do not add up.
     try {
       const again = await read('complex');
       const c2 = selfCheck(again);
-      if (c2.ok || (!check.ok && Math.abs(c2.off) <= Math.abs(check.off))) doc = again;
+      const better = c2.ok && (!check.ok || c2.breaks < check.breaks || (c2.breaks === check.breaks && c2.unclear < check.unclear));
+      if (better || (!check.ok && !c2.ok && Math.abs(c2.off) < Math.abs(check.off))) doc = again;
     } catch (e) {
       if (e.code === 'claude_off' || e.code === 'cancelled') throw e;
     }

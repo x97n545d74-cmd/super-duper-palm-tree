@@ -153,6 +153,75 @@ export function reconcile(ours, theirs) {
   group(A, B, true);
   group(B, A, false);
 
+  // 4b. Settled inside one book: a bill and a payment for the same amount within a day, both
+  //     on the same paper and neither found on the other. Cash bills are booked this way in the
+  //     shop's books, and suppliers usually leave cash bills off the party statement. Such a pair
+  //     nets to zero, so it does not change the balance.
+  const settled = [];
+  const settle = (list, side) => {
+    for (const p of list) {
+      if (p.used || p.type !== 'payment') continue;
+      const bill = list
+        .filter((x) => !x.used && x !== p && x.type !== 'payment' && near(x.amt, -p.amt, EXACT)
+          && (gap(x, p) ?? 99) <= 1)
+        .sort((x, y) => gap(x, p) - gap(y, p))[0];
+      if (!bill) continue;
+      bill.used = true; p.used = true;
+      settled.push({ side, bill, payment: p });
+    }
+  };
+  settle(A, 'ours');
+  settle(B, 'theirs');
+
+  // 4c. Payments a few days apart on both papers with different amounts: usually the same cash
+  //     or bank payment written differently (for example, net of returns on one paper).
+  const payPairs = [];
+  for (const a of A) {
+    if (a.used || a.type !== 'payment') continue;
+    for (const b of B) {
+      if (b.used || b.type !== 'payment' || Math.sign(b.amt) !== Math.sign(a.amt)) continue;
+      const g = gap(a, b);
+      if (g != null && g <= 5) payPairs.push({ a, b, g });
+    }
+  }
+  payPairs.sort((x, y) => x.g - y.g);
+  for (const { a, b } of payPairs) {
+    if (a.used || b.used) continue;
+    a.used = true; b.used = true;
+    mismatches.push({ ours: a, theirs: b, difference: round2(a.amt - b.amt), kind: 'payment' });
+  }
+  // A payment in our books can cover a cash bill plus the amount the party received:
+  // when the difference equals an open bill of the same day, the pair is explained.
+  for (let i = mismatches.length - 1; i >= 0; i--) {
+    const m = mismatches[i];
+    if (m.kind !== 'payment') continue;
+    const bill = A.find((x) => !x.used && x.type !== 'payment' && near(x.amt, -m.difference, EXACT)
+      && (gap(x, m.ours) ?? 99) <= 1);
+    if (!bill) continue;
+    bill.used = true;
+    mismatches.splice(i, 1);
+    matched.push({ ours: m.ours, theirs: m.theirs, bill, how: 'payBill', roundOff: 0, dateGap: gap(m.ours, m.theirs), dateFar: false });
+  }
+
+  // 4d. A cash bill and a payment of the same day in one book that do not add up: the rest
+  //     stays open in that book. One row per bill, with what is left.
+  const partial = [];
+  const partly = (list, side) => {
+    for (const bill of list) {
+      if (bill.used || bill.type === 'payment') continue;
+      const p = list
+        .filter((x) => !x.used && x.type === 'payment' && Math.sign(x.amt) !== Math.sign(bill.amt)
+          && (gap(x, bill) ?? 99) <= 1)
+        .sort((x, y) => Math.abs(x.amt + bill.amt) - Math.abs(y.amt + bill.amt))[0];
+      if (!p) continue;
+      bill.used = true; p.used = true;
+      partial.push({ side, bill, payment: p, rest: round2(bill.amt + p.amt) });
+    }
+  };
+  partly(A, 'ours');
+  partly(B, 'theirs');
+  mismatches.sort((x, y) => (x.ours.day ?? 0) - (y.ours.day ?? 0));
+
   // 5. What is left. Entries dated outside the other paper's period are set apart:
   //    they are not mistakes, the other paper simply does not cover those days.
   const span = (doc) => [dayNumber(doc.period_from), dayNumber(doc.period_to)];
@@ -169,6 +238,52 @@ export function reconcile(ours, theirs) {
     if (outside(b, of, ot)) outOfPeriod.push({ entry: b, side: 'theirs' }); else onlyTheirs.push(b);
   }
 
+  // 5b. Last day both papers agreed. Walk both running balances day by day; where they add up
+  //     to zero, everything up to that day is square, so differences dated up to then cancel
+  //     each other out. They are set apart and the screen leads with what came after.
+  const startBal = (doc) => {
+    const b = doc.opening_balance;
+    if (!b || !(Number(b.amount) > 0)) return 0;
+    return signedBalance(b);
+  };
+  let agreedUpTo = null;
+  let cancelled = [];
+  const o0 = startBal(ours), t0 = startBal(theirs);
+  if (o0 != null && t0 != null) {
+    const moves = new Map();
+    const add = (day, v) => moves.set(day, round2((moves.get(day) || 0) + v));
+    for (const e of (ours.entries || [])) { const d = dayNumber(e.date); if (d != null) add(d, signed(e)); }
+    for (const e of (theirs.entries || [])) { const d = dayNumber(e.date); if (d != null) add(d, signed(e)); }
+    const lastDay = (doc) => Math.max(...(doc.entries || []).map((e) => dayNumber(e.date) ?? -Infinity));
+    const end = Math.min(lastDay(ours), lastDay(theirs), ot ?? Infinity, tt ?? Infinity);
+    let cum = round2(o0 + t0);
+    let best = null;
+    for (const day of [...moves.keys()].sort((x, y) => x - y)) {
+      if (day > end) break;
+      cum = round2(cum + moves.get(day));
+      if (Math.abs(cum) < 1) best = day;
+    }
+    if (best != null) {
+      const dayOf = (x) => Math.max(...[x.ours?.day, x.theirs?.day, x.bill?.day, x.payment?.day, x.day].filter((v) => v != null));
+      const before = (x) => dayOf(x) <= best;
+      const pick = [
+        ...mismatches.filter(before).map((m) => ({ kind: 'mismatch', item: m, effect: m.difference })),
+        ...partial.filter(before).map((p) => ({ kind: 'partial', item: p, effect: p.side === 'ours' ? p.rest : -p.rest })),
+        ...onlyOurs.filter(before).map((e) => ({ kind: 'onlyOurs', item: e, effect: e.amt })),
+        ...onlyTheirs.filter(before).map((e) => ({ kind: 'onlyTheirs', item: e, effect: -e.amt })),
+      ];
+      const net = round2(pick.reduce((t, x) => t + x.effect, 0));
+      if (Math.abs(net) < 1) {
+        agreedUpTo = new Date(best * 864e5).toISOString().slice(0, 10);
+        cancelled = pick;
+        const gone = new Set(pick.map((x) => x.item));
+        for (const list of [mismatches, partial, onlyOurs, onlyTheirs]) {
+          for (let i = list.length - 1; i >= 0; i--) if (gone.has(list[i])) list.splice(i, 1);
+        }
+      }
+    }
+  }
+
   // 6. Balances. In our books a supplier we owe sits in credit; in theirs we sit in debit.
   //    When both agree, the two signed balances add up to zero.
   const sum = (list, f) => round2(list.reduce((t, x) => t + f(x), 0));
@@ -183,18 +298,20 @@ export function reconcile(ours, theirs) {
     sum(onlyOurs, (e) => e.amt) - sum(onlyTheirs, (e) => e.amt)
     + sum(outOfPeriod, (x) => (x.side === 'ours' ? x.entry.amt : -x.entry.amt))
     + sum(mismatches, (m) => m.difference)
+    + sum(partial, (p) => (p.side === 'ours' ? p.rest : -p.rest))
+    + sum(cancelled, (x) => x.effect)
     + sum(matched, (m) => m.roundOff || 0),
   );
   const explained = round2(itemsDiff + (openingDiff || 0));
   const unexplained = balanceDiff != null ? round2(balanceDiff - explained) : null;
 
-  const clean = onlyOurs.length === 0 && onlyTheirs.length === 0 && mismatches.length === 0
+  const clean = onlyOurs.length === 0 && onlyTheirs.length === 0 && mismatches.length === 0 && partial.length === 0
     && outOfPeriod.length === 0 && (openingDiff == null || Math.abs(openingDiff) < 1);
   const balancesAgree = balanceDiff == null ? null : Math.abs(balanceDiff) < 1;
 
   return {
     status: clean && balancesAgree !== false ? 'match' : 'diff',
-    matched, mismatches, onlyOurs, onlyTheirs, outOfPeriod,
+    matched, mismatches, onlyOurs, onlyTheirs, outOfPeriod, settled, partial, cancelled, agreedUpTo,
     balances: { ourClose, theirClose, ourOpen, theirOpen, balanceDiff, openingDiff, balancesAgree },
     itemsDiff, explained, unexplained,
     counts: { ours: A.length, theirs: B.length, matched: matched.length },
@@ -222,6 +339,22 @@ export function selfCheck(doc) {
     out.ok = Math.abs(out.off) < 1;
   }
   if (entries.length === 0) out.ok = false;
+
+  // Row by row: previous balance + debit - credit must equal the balance printed on the row.
+  // A row where that fails was probably misread (or a row above it is missing): it is marked.
+  out.breaks = 0;
+  let prev = open == null ? 0 : open;
+  let seen = false;
+  for (const e of entries) {
+    const b = signedBalance(e.balance);
+    if (b == null || !(Number(e.balance?.amount) >= 0)) { prev = round2(prev + signed(e)); continue; }
+    const want = round2(prev + signed(e));
+    if (seen || open != null) {
+      if (Math.abs(want - b) >= 1) { out.breaks++; e.balanceBreak = true; }
+    }
+    seen = true;
+    prev = b;
+  }
   return out;
 }
 

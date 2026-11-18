@@ -116,3 +116,68 @@ test('whoOwes reads both papers the same way', () => {
   assert.equal(whoOwes(signedBalance(bal(500, 'debit')), true).kind, 'receive');
   assert.equal(whoOwes(0, true).kind, 'nil');
 });
+
+test('cash bill paid the same day in our books is settled, not missing', () => {
+  const ours = doc(bal(0, 'credit'), bal(0, 'credit'), [E('2026-04-10', 'C-22666', 0, 2507), E('2026-04-10', '', 2507, 0, 'payment')]);
+  const theirs = doc(bal(0, 'debit'), bal(0, 'debit'), [E('2026-04-02', 'R1', 100, 0), E('2026-04-03', '', 0, 100, 'payment')]);
+  theirs.entries[0].ref = 'R1';
+  ours.entries.push(E('2026-04-02', 'R1', 0, 100), E('2026-04-03', '', 100, 0, 'payment'));
+  const r = reconcile(ours, theirs);
+  assert.equal(r.settled.length, 1);
+  assert.equal(r.onlyOurs.length, 0);
+  assert.equal(r.status, 'match');
+});
+
+test('same payment with different amounts is one row with the difference', () => {
+  const ours = doc(null, null, [E('2026-04-18', '', 1135, 0, 'payment')]);
+  const theirs = doc(null, null, [E('2026-04-18', 'CASH', 0, 622, 'payment')]);
+  const r = reconcile(ours, theirs);
+  assert.equal(r.mismatches.length, 1);
+  assert.equal(r.mismatches[0].kind, 'payment');
+  assert.equal(r.mismatches[0].difference, 513);
+});
+
+test('payment that covers a cash bill plus the party\'s receipt is explained', () => {
+  const ours = doc(null, null, [E('2026-08-08', 'C-30295', 0, 1660), E('2026-08-08', '', 5375, 0, 'payment')]);
+  const theirs = doc(null, null, [E('2026-08-08', 'CASH', 0, 3715, 'payment')]);
+  const r = reconcile(ours, theirs);
+  assert.equal(r.mismatches.length, 0);
+  assert.equal(r.onlyOurs.length, 0);
+  assert.equal(r.matched[0].how, 'payBill');
+});
+
+test('cash bill partly paid leaves the rest as one row', () => {
+  const ours = doc(null, null, [E('2026-04-04', 'C-22267', 0, 8384), E('2026-04-04', '', 7798, 0, 'payment')]);
+  const theirs = doc(null, null, []);
+  const r = reconcile(ours, theirs);
+  assert.equal(r.partial.length, 1);
+  assert.equal(r.partial[0].rest, -586);
+});
+
+test('the last day both papers agree is found', () => {
+  // Early on the papers disagree for two days, then agree again; later a new bill is missing.
+  const ours = doc(bal(0, 'credit'), bal(1500, 'credit'), [
+    E('2026-04-18', 'R1', 0, 1135), E('2026-04-18', '', 1135, 0, 'payment'),
+    E('2026-05-01', 'R2', 0, 1500),
+  ]);
+  const theirs = doc(bal(0, 'debit'), bal(2200, 'debit'), [
+    E('2026-04-18', 'R1', 1135, 0), E('2026-04-18', 'CASH', 0, 622, 'payment'), E('2026-04-20', 'CASH', 0, 513, 'payment'),
+    E('2026-05-01', 'R2', 1500, 0), E('2026-05-03', 'R3', 700, 0),
+  ]);
+  const r = reconcile(ours, theirs);
+  assert.equal(r.agreedUpTo, '2026-05-01');
+  assert.deepEqual(r.onlyTheirs.map((e) => e.ref), ['R3']);
+  assert.equal(r.unexplained, 0);
+});
+
+test('selfCheck marks the row whose printed running balance does not follow', () => {
+  const B = (amount, side) => ({ amount, side });
+  const d = doc(bal(0, 'credit'), bal(1500, 'credit'), [
+    { ...E('2026-04-01', 'A', 0, 1000), balance: B(1000, 'credit') },
+    { ...E('2026-04-02', 'B', 0, 600), balance: B(1700, 'credit') }, // misread: should be 500
+    { ...E('2026-04-03', 'C', 200, 0), balance: B(1500, 'credit') },
+  ]);
+  const c = selfCheck(d);
+  assert.equal(c.breaks, 1);
+  assert.equal(d.entries[1].balanceBreak, true);
+});

@@ -133,6 +133,7 @@ a.btn { text-decoration: none; }
 .bal .v { font-size: 1.3rem; font-weight: 700; margin-top: 2px; }
 
 .note { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--amber-soft); color: #5c3c00; border: 1px solid #f0d58a; }
+.note.good { background: var(--green-soft); color: var(--green-dark); border-color: #b9dccd; font-weight: 600; }
 .note.bad { background: var(--red-soft); color: var(--red); border-color: #f3c2bd; font-weight: 600; }
 
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
