@@ -8,3 +8,4 @@ avron-radar/dashboard.html
 avron-radar/data/
 __pycache__/
 avron-radar/avron-feed.json
+avron-radar/scraped.json

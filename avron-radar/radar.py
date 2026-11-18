@@ -58,6 +58,7 @@ import flows          # noqa: E402
 import fundamentals   # noqa: E402
 import market         # noqa: E402
 import policy         # noqa: E402
+import export         # noqa: E402
 import public         # noqa: E402
 import xout           # noqa: E402
 
@@ -974,6 +975,11 @@ def build():
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")
     feed = public.build_feed(iso(now_utc()), signals, flows.summary(flows.load_history(DATA)),
                              decide.business_digest(items, limit=60), gov, cal, items)
+    scraped = export.build(items, signals, flows.load_history(DATA))
+    if export.check(scraped):
+        print("scraped export NOT written: " + ", ".join(export.check(scraped)))
+    else:
+        (HERE / "scraped.json").write_text(json.dumps(scraped, ensure_ascii=False), encoding="utf-8")
     problems = public.check_feed(feed)
     if problems:      # never publish a feed that carries something private
         print("public feed NOT written: " + "; ".join(problems)[:300])
