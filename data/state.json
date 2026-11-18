@@ -29,15 +29,18 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 4,
+ "reddit_next": 5,
  "fails": {
   "reddit|r/StockMarketIndia": 4,
-  "reddit|r/DalalStreetTalks": 3,
+  "reddit|r/DalalStreetTalks": 4,
   "reddit|r/IndianStocks": 3,
   "reddit|r/NSEbets": 3,
   "reddit|r/IndianStockMarket": 3,
   "reddit|r/IndiaInvestments": 3,
-  "reddit|r/IndianStreetBets": 3
+  "reddit|r/IndianStreetBets": 3,
+  "news|Union Budget allocation sector": 1,
+  "news|state election manifesto promises": 1,
+  "news|assembly election 2027": 1
  },
  "paused_until": {}
 }
