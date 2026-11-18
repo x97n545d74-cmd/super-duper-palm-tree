@@ -74,7 +74,7 @@ Not collected: Instagram, Facebook, LinkedIn (login walls and terms that forbid 
 ```
 python3 avron-radar/radar.py run        # everything
 python3 avron-radar/radar.py collect    # or one step: collect, market, tag, analyse, build
-cd avron-radar && python3 -m unittest   # 105 tests, no network
+cd avron-radar && python3 -m unittest   # 114 tests, no network
 ```
 
 Starting the workflow by hand from a branch other than the default does one round, does not restart itself, and writes to `avron-radar-data-test` and `avron-radar-dashboard-test`, so live data is untouched.
@@ -104,3 +104,11 @@ Every round the live chain publishes three files to the `avron-radar-public` bra
 - `avron-feed.json`: what the user chose to show visitors (market today, business news headlines linking to their publishers, government decisions and the election watch, the events calendar, the X desk's posts). Nothing about single-stock views, the user's lists, investors or chatter; a feed that carries any of them is refused (`public.check_feed`). Any website can read it: https://raw.githubusercontent.com/x97n545d74-cmd/super-duper-palm-tree/avron-radar-public/avron-feed.json
 - `avron-widget.js`: renders the feed. Copy it into the website (GitHub serves files as plain text, so browsers will not run it from GitHub), then add `<div data-avron-radar data-sections="market,business,government,calendar,x"></div>` and `<script src="/avron-widget.js" defer></script>`.
 - `embed-example.html`: a page showing the two lines in use.
+
+## The live news lane
+
+`.github/workflows/avron-live.yml` runs `live.py` every 3 minutes from 6 AM to midnight India time (every 15 minutes overnight), always on through the same self-restarting chain. Each round reads the news feeds, NSE's announcements and the X desk's posts, with no model and no cost, and publishes `live.json` to the `avron-radar-live` branch:
+
+https://raw.githubusercontent.com/x97n545d74-cmd/super-duper-palm-tree/avron-radar-live/live.json
+
+One entry per story, newest first, the past 24 hours: headline, source, link, how many outlets carried it, and for NSE filings the exchange's one-line description. Tips, broker calls, live blogs, sport, film and horoscopes are filtered out, and routine exchange paperwork is skipped. The main radar chain and the live chain each restart the other if it goes quiet. The widget's `live` section reads this file and refreshes itself every 2 minutes. GitHub caches these files for up to 5 minutes, so a headline reaches the website about 3 to 8 minutes after it appears in a source.
