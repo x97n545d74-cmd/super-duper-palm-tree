@@ -60,6 +60,21 @@ class Flows(unittest.TestCase):
             self.assertIn("33.4% of their index futures long (net short)", s["in_words"])
             self.assertNotIn("fpi_equity_net_cr", s)
 
+    def test_a_late_participant_file_is_filled_in(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = pathlib.Path(tmp)
+            def early(url):
+                if "participant" in url: raise OSError("not out yet")
+                if "nsdl" in url: return NSDL
+                return "1,KAYNES\n" if "secban" in url else json.dumps({"rates": {"INR": 93.9}})
+            self.assertTrue(flows.update(tmp, early, "2026-11-17", log=lambda *_: None))
+            self.assertIsNone(flows.summary(flows.load_history(tmp)).get("fii_index_futures_long_pct"))
+            self.assertFalse(flows.update(tmp, early, "2026-11-17", log=lambda *_: None))        # still not out
+            self.assertTrue(flows.update(tmp, lambda u: OI, "2026-11-17", log=lambda *_: None))
+            s = flows.summary(flows.load_history(tmp))
+            self.assertEqual((s["fii_index_futures_long_pct"], s["fpi_equity_net_cr"], s["days_on_file"]), (33.4, 5107.61, 1))
+            self.assertFalse(flows.update(tmp, lambda u: OI, "2026-11-17", log=lambda *_: None))   # complete: nothing to do
+
     def test_summary_changes_and_five_day_flow(self):
         day = lambda d, net, eq: {"date": d, "participants": {"FII": {"index_futures_net": net, "index_futures_long_pct": 40.0}},
                                   "fpi": {"date": d, "equity_net_cr": eq}}

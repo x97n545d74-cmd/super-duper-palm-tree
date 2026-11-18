@@ -148,8 +148,23 @@ def summary(history):
 def update(data_dir, http_get, date, log=print):
     """Fetch the day's files once the market file for `date` (YYYY-MM-DD) is in. Returns True if a row was added."""
     history = load_history(data_dir)
-    if not date or any(r["date"] == date for r in history):
+    if not date:
         return False
+    have = next((r for r in history if r["date"] == date), None)
+    if have is not None:
+        if have.get("participants"):
+            return False
+        try:      # NSE's participant file often comes out after the price file: fill it in when it does
+            parts = parse_participants(http_get(ARCHIVE + "content/nsccl/fao_participant_oi_%s.csv"
+                                                % datetime.date.fromisoformat(date).strftime("%d%m%Y")))
+        except Exception:
+            return False
+        if not parts:
+            return False
+        have["participants"] = parts
+        (data_dir / "market" / "flows.jsonl").write_text("".join(json.dumps(r) + "\n" for r in history), encoding="utf-8")
+        log("flows: participant positions added for %s" % date)
+        return True
     d = datetime.date.fromisoformat(date)
     row = {"date": date}
     try:
