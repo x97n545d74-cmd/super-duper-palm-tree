@@ -29,8 +29,8 @@ QUEUE = HERE / "queue.jsonl"
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
 FEED = "https://nsearchives.nseindia.com/content/RSS/Online_announcements.xml"
 NSE_PREFIX = "https://nsearchives.nseindia.com/"
-MODEL = os.environ.get("AVRON_MODEL", "claude-sonnet-5-5")            # scraping + turning findings into posts
-ADVANCED_MODEL = os.environ.get("AVRON_ADVANCED_MODEL", "claude-opus-5-5")   # SEBI/RBI + market-performance judgement
+MODEL = os.environ.get("AVRON_MODEL", "claude-haiku-5-5")            # scraping + turning findings into posts
+ADVANCED_MODEL = os.environ.get("AVRON_ADVANCED_MODEL", "claude-haiku-5-5")
 ADVANCED_EFFORT = os.environ.get("AVRON_ADVANCED_EFFORT", "low")
 LOOKBACK_MINUTES = int(os.environ.get("AVRON_LOOKBACK_MINUTES", "30"))
 MAX_ITEMS = int(os.environ.get("AVRON_MAX_ITEMS", "4"))
