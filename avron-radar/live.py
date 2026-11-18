@@ -38,7 +38,7 @@ JUNK = re.compile(r"\b(horoscope|rashifal|astrolog\w*|cricket|ipl|world cup|foot
                   r"live (updates?|blog)|market live|stock market live|live:|liveblog)\b", re.I)
 TIPS = re.compile(r"\b(buy call|sell call|buy rating|sell rating|buy now|buy on dips?|accumulate rating|rating: (buy|sell)|"
                   r"target price|price target|stocks? to (buy|watch|sell)|shares? to (buy|sell)|top picks?|multibaggers?|"
-                  r"should you (buy|sell)|buy or sell|technical picks?|trading ideas?|stock recommendations?|stocks? that could|"
+                  r"should you (buy|sell|bet|invest|subscribe|apply)|subscribe or (avoid|skip)|apply or (avoid|skip)|buy or sell|technical picks?|trading ideas?|stock recommendations?|stocks? that could|"
                   r"brokerages? (recommend|suggest)|picks? for (today|tomorrow|the week))\b", re.I)
 
 
