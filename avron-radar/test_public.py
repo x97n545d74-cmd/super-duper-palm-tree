@@ -38,6 +38,11 @@ class Feed(unittest.TestCase):
         self.assertEqual(self.feed["business"], [{"headline": "Tata Motors to buy Iveco unit", "url": "https://www.livemint.com/x", "source": "Mint",
                                                    "outlets": 3, "area": "deal", "time": "2026-11-17T09:00:00Z"}])
 
+    def test_one_advice_headline_is_dropped_not_the_whole_feed(self):
+        b = public.business_part([{"title": "Time to book profits in PSU banks?", "url": "u", "outlets": 2, "area": "markets", "kind": "fact", "when": "t"},
+                                  {"title": "SBI raises Rs 10,000 crore through bonds", "url": "u2", "outlets": 2, "area": "deal", "kind": "fact", "when": "t"}])
+        self.assertEqual([x["headline"] for x in b], ["SBI raises Rs 10,000 crore through bonds"])
+
     def test_google_news_titles_name_the_publisher(self):
         b = public.business_part([{"title": "IIFL Finance block deal: Fairfax may sell stake - Zee Business", "url": "https://news.google.com/rss/articles/x",
                                    "outlets": 6, "area": "deal", "kind": "fact", "when": "t"}])

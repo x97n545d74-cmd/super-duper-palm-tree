@@ -59,8 +59,8 @@ def market_part(signals, flows_summary):
 def business_part(digest, limit=30):
     out = []
     for s in digest[:limit]:
-        if s.get("kind") in ("rumour", "opinion"):
-            continue                       # a public page shows reported facts
+        if s.get("kind") in ("rumour", "opinion") or has_advice(s["title"]):
+            continue                       # a public page shows reported facts, not calls
         title, source = s["title"], outlet(s.get("url"))
         m = re.match(r"^(.*\S)\s+[-|]\s+([^-|]{2,40})$", title)
         if source == "Google News" and m:          # Google News titles end with " - Publisher"
@@ -113,6 +113,15 @@ def build_feed(built_at, signals, flows_summary, digest, gov_view, cal, items):
             "government": government_part(gov_view), "calendar": calendar_part(cal), "x_desk": x_part(items)}
 
 
+ADVICE = re.compile(r"\b(strong buy|buy now|sell now|target price|price target|book profits?|accumulate)\b", re.I)
+
+
+def has_advice(text):
+    """True when a headline reads as a call to buy or sell; such items are dropped one by one, so a single
+    publisher's headline cannot stop the whole feed."""
+    return bool(ADVICE.search(text or ""))
+
+
 PRIVATE_KEYS = ("scorecard", "analyses", "briefs", "brief", "investors", "holdings", "my_stocks", "cards",
                 "shortlists", "snapshots", "screens", "answers", "themes", "chatter")
 
@@ -121,6 +130,6 @@ def check_feed(feed):
     """Problems that must never reach a public page: a private section, a stock view, advice wording."""
     text = json.dumps(feed, ensure_ascii=False)
     problems = [k for k in PRIVATE_KEYS if '"%s"' % k in text]
-    for m in re.finditer(r"\b(strong buy|buy now|sell now|target price|price target|book profits?|accumulate)\b", text, re.I):
+    for m in ADVICE.finditer(text):
         problems.append("advice wording: " + m.group(0))
     return problems

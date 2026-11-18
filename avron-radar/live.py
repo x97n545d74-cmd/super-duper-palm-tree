@@ -38,7 +38,7 @@ JUNK = re.compile(r"\b(horoscope|rashifal|astrolog\w*|cricket|ipl|world cup|foot
                   r"live (updates?|blog)|market live|stock market live|live:|liveblog)\b", re.I)
 TIPS = re.compile(r"\b(buy call|sell call|buy rating|sell rating|buy now|buy on dips?|accumulate rating|rating: (buy|sell)|"
                   r"target price|price target|stocks? to (buy|watch|sell)|shares? to (buy|sell)|top picks?|multibaggers?|"
-                  r"should you (buy|sell)|buy or sell|technical picks?|trading ideas?|stock recommendations?|stocks? that could|"
+                  r"should you (buy|sell|bet|invest|subscribe|apply)|subscribe or (avoid|skip)|apply or (avoid|skip)|buy or sell|technical picks?|trading ideas?|stock recommendations?|stocks? that could|"
                   r"brokerages? (recommend|suggest)|picks? for (today|tomorrow|the week))\b", re.I)
 
 
@@ -125,12 +125,14 @@ def headline_and_source(row):
 
 def keep(row):
     """Is this row fit for a public live feed?"""
+    if public.has_advice((row.get("title") or "") + " " + (row.get("text") or "")):
+        return False
     if row.get("kind") == "x":
         return True
     if row.get("kind") == "nse":
         return brain.filing_score(row, None) >= 3            # orders, results, deals, fund raising, auditor news...
     title = row.get("title") or ""
-    return len(title) >= 25 and not JUNK.search(title) and not TIPS.search(title)
+    return len(title) >= 25 and not JUNK.search(title) and not TIPS.search(title) and not public.has_advice(title)
 
 
 def entry(row, seen_at):
@@ -196,6 +198,7 @@ def round_once(state_dir, cfg=None, read=None, now=None):
     except (OSError, ValueError):
         old = []
     rows, ok, total = (read or read_all)(cfg, cache)
+    old = [e for e in old if not public.has_advice(e.get("headline", "") + " " + e.get("detail", ""))]
     items, added = merge(old, rows, now)
     now = now or now_utc()
     hour = now.astimezone(IST).hour
