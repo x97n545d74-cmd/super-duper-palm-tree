@@ -691,5 +691,11 @@
       "Sanjiv Shah",
       "Hitesh Javeri"
     ]
+  },
+  "private_data": {
+    "_note": "Where scraped.json goes for the user's personal dashboard. Needs the repo secret PRIVATE_DATA_TOKEN (fine-grained, Contents read and write, this repository only). The dashboard reads it with a separate read-only token.",
+    "repo": "x97n545d74-cmd/avron-radar-private",
+    "branch": "main",
+    "test_branch": "test"
   }
 }
