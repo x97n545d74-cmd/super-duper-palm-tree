@@ -26,7 +26,7 @@ One JSON object per line:
 |---|---|
 | `id` | Unique id. Skip any id already in `posted.jsonl`. |
 | `created_ist` | When the writer added it, India time. |
-| `lane` | `radar` for an item from `radar.jsonl`, `nse` for an exchange filing, `news` for Indian or global news that can move the market, `story` for a business story, `targets` for a list of brokerage target prices, `deals` for big investors' buying and selling. |
+| `lane` | `radar` for an item from `radar.jsonl`, `nse` for an exchange filing read from NSE, `filing` for an exchange filing found through the business press, `news` for Indian or global news that can move the market, `story` for a business story, `targets` for a list of brokerage target prices, `deals` for big investors' buying and selling. |
 | `company` | Company name, or empty for a general story. |
 | `headline` | UPPER CASE, in the form `COMPANY: FACT`. |
 | `detail` | One plain sentence with the next most useful fact. May be empty. |

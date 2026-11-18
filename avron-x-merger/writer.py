@@ -6,6 +6,7 @@ Run by GitHub Actions about every 5 minutes. Three lanes:
          the new filings worth posting, reads each one and writes a headline.
   news   every 20 minutes: Claude searches the web for Indian and global
          news that can move the Indian market.
+  filing every 15 minutes: company announcements to NSE and BSE, found through the business press.
   story  three times a day: Claude writes one startup or business story as a 7-post thread.
   targets twice a day: brokerage and analyst target prices, in beginner-friendly words.
   deals  twice a day: which big investors bought or sold which stocks.
@@ -35,6 +36,8 @@ FETCH_TOOL = os.environ.get("AVRON_FETCH_TOOL", "web_fetch_20250910")   # plain 
 FETCH_BETA = os.environ.get("AVRON_FETCH_BETA", "web-fetch-2025-09-10")
 SEARCH_TOOL = os.environ.get("AVRON_SEARCH_TOOL", "web_search_20250305")
 NEWS_EVERY_MINUTES = int(os.environ.get("AVRON_NEWS_EVERY_MINUTES", "20"))   # how often the market-news lane runs
+FILINGS_EVERY_MINUTES = int(os.environ.get("AVRON_FILINGS_EVERY_MINUTES", "15"))   # company filings found through the press
+NSE_CLAUDE_EVERY_MINUTES = 30   # how often to let Claude try the NSE feed when our own download is stale
 NEWS_SEARCHES = int(os.environ.get("AVRON_NEWS_SEARCHES", "5"))
 NEWS_MAX_ITEMS = 3
 OUTLETS = ("Economic Times, Times of India, Business Today, Moneycontrol, Mint, Business Standard, CNBC-TV18, "
@@ -340,7 +343,11 @@ def run_nse(now, api_key):
     if direct is not None:
         candidates = [{"company": c["company"], "link": c["link"], "summary": c["summary"]} for c in pick_candidates(direct, since, known_links)]
         text = ""
+    elif os.environ.get("AVRON_ONLY") != "nse" and now.timestamp() - load_state().get("last_nse_claude", 0) < NSE_CLAUDE_EVERY_MINUTES * 60:
+        print("[nse] own copy stale; Claude tried the feed recently, skipping this round")
+        return
     else:                                             # fall back to letting Claude fetch the feed
+        mark_state("last_nse_claude", now.timestamp())
         text, total_in, total_out = call_claude(feed_prompt(now, since, known_links), api_key, fetch_tool(FEED_TOKENS), 8000)
         candidates = parse_items(text)
     if candidates is None:
@@ -449,13 +456,50 @@ def news_prompt(now, covered):
     ])
 
 
-def run_news(now, api_key):
-    covered = covered_headlines()
+def filings_prompt(now, covered):
+    done = "\n".join("- " + h for h in covered) if covered else "(nothing yet)"
+    return "\n".join([
+        "You are the corporate-filings desk of a real-time market news service for Indian investors.",
+        "The current time in India is: " + now.strftime(FMT),
+        "",
+        "Search the web for announcements that Indian listed companies made to NSE or BSE in the last 2 hours, as reported "
+        "by the business press and broker news pages: order wins and contracts, MoUs and partnerships, acquisitions and stake "
+        "deals, capacity expansion and capex, fund raising (QIP, preferential issue, rights, NCDs), buybacks, dividends, "
+        "quarterly results with figures, senior management changes, credit rating changes, USFDA and other regulatory outcomes, "
+        "penalties and legal orders. Cover small and mid-sized companies too, not only large ones.",
+        "Search in more than one way, for example: 'bags order', 'wins contract', 'signs MoU', 'to acquire stake', "
+        "'board approves', 'exchange filing today'. Look across: " + OUTLETS + ", plus Upstox, Angel One, HDFC Sky, "
+        "Business Upturn and Moneycontrol's stock pages.",
+        "",
+        "Already covered (do not repeat these or any story about the same announcement):",
+        done,
+        "",
+        "Pick at most %d announcements, the most market-moving first. If nothing new turned up, reply with exactly: []" % NEWS_MAX_ITEMS,
+        "",
+        "Writing rules: use ONLY facts in the reports. Keep every number, name and unit exactly as reported; never guess. "
+        "Write in your own words. Neutral tone: no opinion, no advice, no hype, no hashtags. Do not name the publication, "
+        "and put no link in the text. Every sentence must state a fact; never write what may happen or what to watch.",
+        "",
+        "Reply with ONLY a JSON array and nothing else. One object per announcement:",
+        '"company": the company name',
+        '"headline": UPPER CASE, at most 200 characters, in the form COMPANY: FACT',
+        '"detail": one plain sentence in normal case, at most 160 characters, giving a second reported fact; or an empty string',
+        '"link": the URL of the report you relied on most',
+    ])
+
+
+def run_filings(now, api_key):
+    run_news(now, api_key, lane="filing", prompt_fn=filings_prompt, searches=4)
+
+
+def run_news(now, api_key, lane="news", prompt_fn=None, searches=None):
+    covered = covered_headlines(60)
     known_links = {r.get("verify_link") for r in read_queue()}
-    text, tin, tout = call_claude(news_prompt(now, covered), api_key, search_tool(NEWS_SEARCHES), 8000)
+    prompt = (prompt_fn or news_prompt)(now, covered)
+    text, tin, tout = call_claude(prompt, api_key, search_tool(searches or NEWS_SEARCHES), 8000)
     items = parse_items(text)
     if items is None:
-        print("[news] Reply was not a JSON array. Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (tin, tout, text[:300]))
+        print("[%s] Reply was not a JSON array. Nothing saved. Tokens in/out: %d / %d. Reply began: %r" % (lane, tin, tout, text[:300]))
         return
     rows, stamp = [], now.strftime("%Y%m%d-%H%M")
     for r in items[:NEWS_MAX_ITEMS]:
@@ -473,13 +517,13 @@ def run_news(now, api_key):
             continue
         known_links.add(link)
         rows.append({
-            "id": "%s-N%02d" % (stamp, len(rows) + 1), "created_ist": now.strftime("%Y-%m-%d %H:%M"), "lane": "news",
-            "company": "", "headline": headline, "detail": detail, "post_text": post, "verify_link": link, "document_read": True,
+            "id": "%s-%s%02d" % (stamp, "F" if lane == "filing" else "N", len(rows) + 1), "created_ist": now.strftime("%Y-%m-%d %H:%M"),
+            "lane": lane, "company": clean(r.get("company"), 80), "headline": headline, "detail": detail, "post_text": post, "verify_link": link, "document_read": True,
         })
     append_rows(rows)
-    print("[news] Offered %d, appended %d. Tokens in/out: %d / %d" % (len(items), len(rows), tin, tout))
+    print("[%s] Offered %d, appended %d. Tokens in/out: %d / %d" % (lane, len(items), len(rows), tin, tout))
     if not rows:
-        print("[news] Reply began: %r" % text[:400])
+        print("[%s] Reply began: %r" % (lane, text[:400]))
     for row in rows:
         print(" -", row["headline"])
 
@@ -829,6 +873,15 @@ def run_deals(now, api_key):
 
 
 # ---------------------------------------------------------------- scheduling
+def mark_state(key, value):
+    st = load_state()
+    st[key] = value
+    try:
+        STATE.write_text(json.dumps(st))
+    except Exception:
+        pass
+
+
 def load_state():
     try:
         return json.loads(STATE.read_text())
@@ -853,6 +906,8 @@ def main():
         plan.append(("nse", run_nse))
     if only == "news" or (not only and now.timestamp() - last_news >= NEWS_EVERY_MINUTES * 60):
         plan.append(("news", run_news))
+    if only == "filing" or (not only and now.timestamp() - state.get("last_filing", 0) >= FILINGS_EVERY_MINUTES * 60):
+        plan.append(("filing", run_filings))
     if only == "story" or (not only and story_due(now)):
         plan.append(("story", run_story))
     if only == "targets" or (not only and slot_due(now, "targets", TARGET_HOURS)):
@@ -863,8 +918,11 @@ def main():
     for name, fn in plan:
         try:
             fn(now, api_key)
+            state = {**load_state(), **{k: v for k, v in state.items() if k.startswith("last_news") or k.startswith("last_filing")}}
             if name == "news":
                 state["last_news"] = now.timestamp()
+            if name == "filing":
+                state["last_filing"] = now.timestamp()
         except urllib.error.HTTPError as e:
             failed += 1
             print("[%s] Claude API error %s: %s" % (name, e.code, e.read().decode("utf-8", "replace")[:400]))
