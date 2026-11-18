@@ -230,7 +230,7 @@ def call_claude(prompt, api_key, tools, max_tokens, advanced=False):
     res = {}
     for _ in range(3):
         body = {"model": ADVANCED_MODEL if advanced else MODEL, "max_tokens": max_tokens, "tools": tools, "messages": messages}
-        if advanced:
+        if advanced and ADVANCED_MODEL != MODEL:
             body["output_config"] = {"effort": ADVANCED_EFFORT}
         req = urllib.request.Request(
             "https://api.anthropic.com/v1/messages",
