@@ -21,6 +21,7 @@ import pathlib
 import sys
 import urllib.error
 import urllib.request
+import xml.etree.ElementTree as ET
 
 HERE = pathlib.Path(__file__).resolve().parent
 QUEUE = HERE / "queue.jsonl"
@@ -69,6 +70,76 @@ def read_queue():
                 except json.JSONDecodeError:
                     pass
     return rows
+
+
+ROUTINE_WORDS = [
+    "newspaper", "declaration of nav", "investor presentation", "investor meet", "analysts/institutional",
+    "general updates", "monitoring agency", "asset/liability", "trading window", "loss of share certificate",
+    "record date", "payment of interest", "redemption", "esop", "esos", "postal ballot", "notice of meeting",
+    "duplicate share", "change in registrar", "compliance certificate", "reg. 74", "regulation 74",
+]
+NEWSWORTHY = ["order", "contract", "award", "acqui", "merger", "amalgamation", "result", "fund", "qip", "preferential",
+              "rights issue", "buyback", "buy-back", "dividend", "resign", "appoint", "cessation", "mou", "agreement",
+              "joint venture", "capacity", "expansion", "plant", "credit rating", "usfda", "fda", "penalty", "sebi", "raid",
+              "fraud", "default", "stake", "allotment", "warrant", "press release", "outcome", "split", "bonus"]
+
+
+def feed_direct(now):
+    """Download NSE's announcements feed ourselves. Returns a list of items, or None when it fails or looks stale."""
+    url = FEED + "?t=" + now.strftime("%Y%m%d%H%M")
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36",
+        "Accept": "application/rss+xml, application/xml, text/xml, */*",
+        "Accept-Language": "en-IN,en;q=0.9",
+        "Cache-Control": "no-cache",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=40) as resp:
+            raw = resp.read()
+        root = ET.fromstring(raw)
+    except Exception as e:
+        print("[nse] direct download failed: %s" % e)
+        return None
+    items = []
+    for it in root.iter("item"):
+        title = (it.findtext("title") or "").strip()
+        link = (it.findtext("link") or "").strip()
+        desc = " ".join((it.findtext("description") or "").split())
+        try:
+            when = datetime.datetime.strptime((it.findtext("pubDate") or "").strip(), FMT).replace(tzinfo=IST)
+        except ValueError:
+            continue
+        items.append({"company": title, "link": link, "summary": desc[:300], "when": when})
+    if not items:
+        print("[nse] direct download had no items")
+        return None
+    newest = max(i["when"] for i in items)
+    print("[nse] direct download: %d items, newest %s" % (len(items), newest.strftime(FMT)))
+    if (now - newest).total_seconds() > 6 * 3600 and 9 <= now.hour < 18 and now.weekday() < 5:
+        print("[nse] direct copy looks stale during market hours")
+        return None
+    return items
+
+
+def pick_candidates(items, since, known_links):
+    """Python version of the feed filter: new, not routine, not seen, document over its XBRL twin, newsworthy first."""
+    out, seen_co = [], {}
+    for i in sorted(items, key=lambda x: x["when"], reverse=True):
+        text = (i["summary"] + " " + i["company"]).lower()
+        if i["when"] <= since or not i["link"] or i["link"] in known_links:
+            continue
+        if any(w in text for w in ROUTINE_WORDS) or text.rstrip().endswith("subject: updates"):
+            continue
+        key = (i["company"].lower(), i["summary"][:80].lower())
+        if key in seen_co:                                   # the same disclosure twice: keep the document, not the .xml
+            if seen_co[key]["link"].lower().endswith(".xml") and not i["link"].lower().endswith(".xml"):
+                out[out.index(seen_co[key])] = i
+                seen_co[key] = i
+            continue
+        seen_co[key] = i
+        out.append(i)
+    out.sort(key=lambda x: (not any(w in x["summary"].lower() for w in NEWSWORTHY), -x["when"].timestamp()))
+    return out
 
 
 def feed_prompt(now, since, known_links):
@@ -264,8 +335,14 @@ def clean(text, limit):
 def run_nse(now, api_key):
     known_links = [r.get("verify_link") for r in read_queue() if r.get("verify_link")][-25:]
     since = now - datetime.timedelta(minutes=LOOKBACK_MINUTES)
-    text, total_in, total_out = call_claude(feed_prompt(now, since, known_links), api_key, fetch_tool(FEED_TOKENS), 8000)
-    candidates = parse_items(text)
+    total_in = total_out = 0
+    direct = feed_direct(now)
+    if direct is not None:
+        candidates = [{"company": c["company"], "link": c["link"], "summary": c["summary"]} for c in pick_candidates(direct, since, known_links)]
+        text = ""
+    else:                                             # fall back to letting Claude fetch the feed
+        text, total_in, total_out = call_claude(feed_prompt(now, since, known_links), api_key, fetch_tool(FEED_TOKENS), 8000)
+        candidates = parse_items(text)
     if candidates is None:
         why = ("Claude could not fetch the NSE feed this time." if "FEED_ERROR" in text
                else "The feed copy was stale." if "STALE_FEED" in text else "Feed reply was not a JSON array.")
