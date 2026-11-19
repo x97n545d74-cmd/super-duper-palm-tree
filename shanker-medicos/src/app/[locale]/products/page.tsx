@@ -6,7 +6,7 @@ import { waLink } from "@/lib/whatsapp";
 import { STOCK } from "@/lib/stock";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { FormGlyph } from "@/components/v2/FormGlyph";
-import { Split } from "@/components/v2/Split";
+import { Lines } from "@/components/v2/Lines";
 import { IconArrow, IconWhatsApp } from "@/components/ui/Icons";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/products">) {
@@ -22,9 +22,6 @@ export default async function StockPage({ params }: PageProps<"/[locale]/product
   const rxPhoto = waLink(s.whatsapp, t.mkt.rx.msgPhoto);
   return (
     <div className="relative isolate">
-      <div className="fields" aria-hidden="true">
-        <i />
-      </div>
       <div className="container-x relative z-10 pb-8 pt-10">
         <Breadcrumbs
           label={t.nav.breadcrumb}
@@ -36,8 +33,8 @@ export default async function StockPage({ params }: PageProps<"/[locale]/product
         <p data-rv className="eyebrow mt-10">
           {v.eyebrow}
         </p>
-        <h1 className="mt-4 max-w-4xl text-display">
-          <Split text={v.title} perWord={locale !== "en"} />
+        <h1 className="mt-4 max-w-5xl text-h1">
+          <Lines lines={v.title} />
         </h1>
         <p data-rv style={{ ["--i" as string]: 6 }} className="mt-6 max-w-2xl text-lg text-ink-2">
           {v.body}

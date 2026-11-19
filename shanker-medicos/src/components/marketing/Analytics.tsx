@@ -35,7 +35,7 @@ export function Analytics({ labels, privacyHref }: { labels: { text: string; acc
       <div role="dialog" aria-label="Cookies" className="fixed inset-x-3 bottom-3 z-[80] mx-auto max-w-xl rounded-card border border-line bg-white p-4 shadow-float sm:bottom-6">
         <p className="text-sm text-ink">
           {labels.text}{" "}
-          <Link href={privacyHref} className="link-u text-forest underline">
+          <Link href={privacyHref} className="link-u text-emerald underline">
             {labels.policy}
           </Link>
         </p>

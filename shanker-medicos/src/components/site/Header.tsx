@@ -28,10 +28,10 @@ export function Header({ ctx }: { ctx: SiteContext; showMobileSearch?: boolean }
         {t.nav.skip}
       </a>
       {s.offer_enabled && (
-        <div className="bg-forest text-white">
-          <p className="container-x flex items-center justify-center gap-3 py-2 text-center text-[0.8rem]">
-            <span className="hidden font-mono text-[0.68rem] uppercase tracking-[0.1em] text-white/60 sm:inline">{t.mkt.offer.badge}</span>
-            <Link href={`/${locale}/offers`} className="font-medium text-white underline-offset-4 hover:underline">
+        <div className="border-b border-line bg-black text-ink">
+          <p className="container-x flex items-center justify-center gap-3 py-2 text-center text-[0.78rem]">
+            <span className="hidden font-mono text-[0.66rem] uppercase tracking-[0.14em] text-emerald sm:inline">{t.mkt.offer.badge}</span>
+            <Link href={`/${locale}/offers`} className="font-medium text-ink underline-offset-4 hover:underline">
               {fmt(t.mkt.offer.announce, { percent: s.offer_percent, min: s.offer_min_amount.toLocaleString("en-IN") })} →
             </Link>
           </p>
@@ -39,7 +39,7 @@ export function Header({ ctx }: { ctx: SiteContext; showMobileSearch?: boolean }
       )}
       <header className="sticky top-0 z-40 border-b border-line/70">
         {/* Blur lives on its own layer: backdrop-filter on the header itself would trap the fixed mobile menu inside it. */}
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-ivory/80 backdrop-blur-xl" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-black/70 backdrop-blur-xl" />
         <div className="container-x flex h-[72px] items-center justify-between gap-6">
           <Link href={`/${locale}`} aria-label={`${s.business_name}, ${t.nav.home}`} className="shrink-0">
             <Logo />
@@ -50,7 +50,7 @@ export function Header({ ctx }: { ctx: SiteContext; showMobileSearch?: boolean }
               <LanguageSwitcher locale={locale} label={t.nav.language} />
             </div>
             {waGeneral && (
-              <a href={waGeneral} target="_blank" rel="noopener noreferrer" className="btn btn-wa hidden h-10 min-h-0 px-4 text-sm sm:inline-flex">
+              <a href={waGeneral} target="_blank" rel="noopener noreferrer" className="btn btn-wa hidden h-10 min-h-0 px-5 text-sm font-semibold sm:inline-flex">
                 <IconWhatsApp className="h-4 w-4" /> {t.cta.whatsapp}
               </a>
             )}

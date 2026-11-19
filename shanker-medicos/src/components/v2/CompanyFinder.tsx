@@ -26,14 +26,14 @@ export function CompanyFinder({ companies, labels, limit, askHref }: { companies
           </svg>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={labels.search} className="field h-14 rounded-[16px] pl-12 text-[1.02rem] shadow-hair" type="search" enterKeyHint="search" />
         </label>
-        <div className="flex gap-1 rounded-[16px] border border-line bg-white p-1" role="group" aria-label={labels.search}>
+        <div className="flex gap-1 rounded-[16px] border border-line bg-surface p-1" role="group" aria-label={labels.search}>
           {(["all", "indian", "multinational"] as const).map((k) => (
             <button
               key={k}
               type="button"
               aria-pressed={kind === k}
               onClick={() => setKind(k)}
-              className={`h-11 rounded-[12px] px-3.5 text-sm font-semibold transition-colors ${kind === k ? "bg-forest text-white" : "text-ink-2 hover:text-ink"}`}
+              className={`h-11 rounded-[12px] px-3.5 text-sm font-semibold transition-colors ${kind === k ? "bg-ink text-ivory" : "text-ink-2 hover:text-ink"}`}
             >
               {k === "all" ? labels.all : k === "indian" ? labels.indian : labels.mnc}
             </button>

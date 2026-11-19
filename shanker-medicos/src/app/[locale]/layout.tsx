@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0B2A45",
+  themeColor: "#0A0A0A",
   width: "device-width",
   initialScale: 1,
 };
@@ -40,7 +40,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const lang = isLocale(locale) ? LOCALE_META[locale].htmlLang : "en-IN";
   return (
     <html lang={lang} className={`${fontVars} no-js`} suppressHydrationWarning>
-      <body className="min-h-dvh">
+      <body className="night min-h-dvh">
         {/* Before first paint: JS on, and whether the entry video plays (homepage, first visit this session, motion allowed, not a crawler). */}
         <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
         <Header ctx={ctx} />

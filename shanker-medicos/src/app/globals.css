@@ -29,8 +29,8 @@
   --color-danger: #b42318;
 
   /* Type: Archivo (width axis) for everything, IBM Plex Mono for labels */
-  --font-display: var(--font-archivo), var(--font-deva), var(--font-guru), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-archivo), var(--font-deva), var(--font-guru), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-anton), var(--font-guru), var(--font-deva), Impact, sans-serif;
+  --font-sans: var(--font-inter), var(--font-deva), var(--font-guru), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plexmono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --text-display: clamp(2.6rem, 1.2rem + 4.6vw, 5.2rem);
@@ -91,14 +91,13 @@
     background: var(--color-ivory);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-stretch: 100%;
-    font-feature-settings: "tnum" 1;
+    font-feature-settings: "tnum" 1, "cv11" 1;
     -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4 {
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     font-weight: 700;
-    font-stretch: 88%;
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
   p { text-wrap: pretty; }
@@ -113,7 +112,6 @@
   :lang(pa) h1, :lang(pa) h2, :lang(pa) h3 {
     letter-spacing: 0;
     line-height: 1.3;
-    font-stretch: 92%;
   }
   :lang(hi) body, :lang(pa) body { line-height: 1.7; }
 }
@@ -206,6 +204,97 @@
   .prose-legal ul { list-style: disc; padding-left: 1.25rem; }
 }
 
+
+/* ================= NIGHT CINEMATIC (public site, v3) =================
+ * The public layout puts .night on <body>; admin keeps the light tokens.
+ * Tailwind colours are CSS variables, so the utilities follow. */
+.night {
+  --color-ivory: #0a0a0a;      /* canvas */
+  --color-surface: #141414;    /* cards */
+  --color-mint: #17211b;       /* tint */
+  --color-ink: #f4f3ee;
+  --color-ink-2: #a3a29c;      /* 7.7:1 on canvas */
+  --color-line: #262626;
+  --color-forest: #1c1c1c;     /* raised dark surface */
+  --color-forest-deep: #0f0f0f;
+  --color-emerald: #19c37d;    /* pharmacy green: accents, links */
+  --color-wa: #19c37d;
+  --color-open: #19c37d;
+  --color-coral: #ff6b4a;
+  --shadow-hair: 0 0 0 1px rgba(255,255,255,.04);
+  --shadow-lift: 0 1px 0 rgba(255,255,255,.04) inset, 0 30px 60px -30px rgba(0,0,0,.9);
+  --shadow-float: 0 40px 90px -30px rgba(0,0,0,.95);
+  background: var(--color-ivory);
+  color: var(--color-ink);
+  color-scheme: dark;
+}
+.night::after {
+  content: ""; position: fixed; inset: -50%; z-index: 80; pointer-events: none; opacity: .09; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain .6s steps(4) infinite;
+}
+@keyframes grain { 0%{transform:translate(0,0)} 25%{transform:translate(-3%,2%)} 50%{transform:translate(2%,-3%)} 75%{transform:translate(-2%,-1%)} 100%{transform:translate(3%,3%)} }
+.night ::selection { background: #19c37d; color: #04110a; }
+.night main { overflow-x: clip; } /* scroll-linked titles start slightly zoomed */
+.night .panel, .night .card { background: var(--color-surface); border-color: var(--color-line); }
+.night a.card:hover, .night button.card:hover { border-color: #3a3a3a; }
+.night .chip { background: rgba(255,255,255,.04); border-color: var(--color-line); color: var(--color-ink-2); }
+.night .field { background: #111; border-color: var(--color-line); color: var(--color-ink); }
+.night .btn-primary { background: #f4f3ee; color: #0a0a0a; box-shadow: none; }
+.night .btn-primary:hover { background: #fff; }
+.night .btn-ghost { background: transparent; border-color: #3a3a3a; color: var(--color-ink); }
+.night .btn-ghost:hover { border-color: #f4f3ee; }
+.night .btn-light { background: #f4f3ee; color: #0a0a0a; }
+.night .btn-wa { color: #04110a; box-shadow: 0 12px 30px -14px rgba(25,195,125,.6); }
+.night .btn-wa:hover { background: #2ad68f; }
+.night .btn { border-radius: 999px; }
+.night .hl { background-image: linear-gradient(transparent 62%, rgba(25,195,125,.45) 62%, rgba(25,195,125,.45) 94%, transparent 94%); }
+.night .eyebrow { color: var(--color-emerald); }
+
+/* Display type: Anton, uppercase, tight. Hindi / Punjabi use the narrowest, heaviest Noto. */
+.night h1, .night h2, .night .display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.005em; text-transform: uppercase; line-height: .9; }
+.night h3 { font-family: var(--font-sans); font-weight: 650; letter-spacing: -0.02em; text-transform: none; }
+.night :is(h1, h2, .display):lang(hi), .night :is(h1, h2, .display):lang(pa) { font-weight: 900; font-stretch: 62.5%; text-transform: none; line-height: 1.12; letter-spacing: 0; }
+.night .text-display { font-size: clamp(3.2rem, 1rem + 7.4vw, 9.2rem); line-height: .9; }
+.night .text-h1 { font-size: clamp(2.6rem, 1.4rem + 4.4vw, 6rem); line-height: .94; }
+.night .text-h2 { font-size: clamp(1.9rem, 1.2rem + 2.2vw, 3.4rem); line-height: .95; }
+.night .text-display:lang(hi), .night .text-display:lang(pa) { font-size: clamp(2.6rem, 1.2rem + 5.6vw, 7.4rem); line-height: 1.1; }
+.night .text-h1:lang(hi), .night .text-h1:lang(pa) { font-size: clamp(2.1rem, 1.2rem + 3.4vw, 4.8rem); line-height: 1.12; }
+.outline { color: transparent; -webkit-text-stroke: 1.5px currentColor; }
+.night .outline { -webkit-text-stroke-color: rgba(244,243,238,.55); }
+
+/* Line mask reveal: each .ln slides up out of its own mask */
+.ln { display: block; overflow: hidden; padding-bottom: .04em; margin-bottom: -.04em; }
+.ln > span { display: inline-block; transform: translate3d(0, 105%, 0); }
+.in .ln > span, .ln.in > span { transform: none; transition: transform 1s var(--ease-enter); transition-delay: calc(var(--d0, 0s) + var(--li, 0) * .09s); }
+html.no-js .ln > span, html[data-motion="off"] .ln > span { transform: none; }
+
+/* Marquee */
+.marquee { display: flex; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marquee > div { display: flex; flex-shrink: 0; gap: 3rem; padding-right: 3rem; animation: marq var(--dur, 60s) linear infinite; }
+.marquee.rev > div { animation-direction: reverse; }
+.marquee:hover > div { animation-play-state: paused; }
+@keyframes marq { to { transform: translate3d(-100%, 0, 0); } }
+
+/* Scroll-linked: big section titles settle as they enter (where supported) */
+@supports (animation-timeline: view()) {
+  .night .scrub { animation: scrub linear both; animation-timeline: view(); animation-range: entry 0% cover 40%; }
+  @keyframes scrub { from { transform: scale(1.12) translateY(8%); filter: blur(6px); opacity: .3; } to { transform: none; filter: none; opacity: 1; } }
+  .night .parallax { animation: par linear both; animation-timeline: view(); }
+  @keyframes par { from { transform: translateY(-6%) scale(1.08); } to { transform: translateY(6%) scale(1.08); } }
+}
+
+/* Knockout intro: black layer with white words, multiplied over the video */
+.ko { position: absolute; inset: 0; background: #000; mix-blend-mode: multiply; display: grid; place-items: center; transition: background-color .9s var(--ease-move); }
+.ko.open { background-color: transparent; }
+.ko .w { position: absolute; font-family: var(--font-display); color: #fff; line-height: .8; white-space: nowrap; text-transform: uppercase; opacity: 0; transform: scale(1.25); filter: blur(10px); transition: opacity .55s var(--ease-enter), transform .55s var(--ease-enter), filter .55s var(--ease-enter); }
+.ko .w.on { opacity: 1; transform: none; filter: none; }
+.ko .w.off { opacity: 0; transform: scale(.92); filter: blur(8px); transition-duration: .35s; transition-timing-function: var(--ease-move); }
+.ko .w.zoom { opacity: 1; filter: none; transform: scale(16); transition: transform 1.3s var(--ease-move); }
+.ko .w:lang(pa), .ko .w:lang(hi) { font-family: var(--font-guru), var(--font-deva); font-weight: 900; font-stretch: 62.5%; line-height: 1; }
+.intro .vign { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.75) 100%); pointer-events: none; }
+.intro-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.08) saturate(.85); }
+
 /* ---------- Canvas: slow colour fields (bright & clean) ---------- */
 .fields { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
 .fields::before, .fields::after {
@@ -279,9 +368,9 @@ html[data-motion="off"] .hl { background-size: 100% 100%; }
 @keyframes morph-in { from { opacity: 0; filter: blur(6px); transform: translate3d(0, 10px, 0) scale(.985); } to { opacity: 1; filter: none; transform: none; } }
 
 /* Entry video overlay */
-.intro { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; background: var(--color-ivory); }
+.intro { position: fixed; inset: 0; z-index: 90; background: #000; overflow: hidden; }
 html:not([data-intro="on"]) .intro { display: none; }
-.intro.leaving { background: transparent; pointer-events: none; transition: background-color var(--d-base) var(--ease-exit) .2s; }
+.intro.leaving { opacity: 0; pointer-events: none; transition: opacity .7s var(--ease-exit); }
 .intro .frame { transition: transform var(--d-large) var(--ease-move), border-radius var(--d-large) var(--ease-move), opacity var(--d-base) var(--ease-exit); }
 
 @keyframes rise { from { opacity: 0; transform: translateY(24px) scale(.96); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
@@ -297,7 +386,9 @@ html:not([data-intro="on"]) .intro { display: none; }
     transition-delay: 0ms !important;
     scroll-behavior: auto !important;
   }
-  [data-rv], .split .c, .toast { opacity: 1 !important; filter: none !important; transform: none !important; }
+  [data-rv], .split .c, .toast, .ln > span { opacity: 1 !important; filter: none !important; transform: none !important; }
+  .marquee > div, .night::after { animation: none !important; }
+  .marquee { flex-wrap: wrap; }
   .cursor { display: none; }
 }
 

@@ -16,6 +16,14 @@ Date: 19 November 2026, updated 20 November 2026 (marketing release; companies &
 
 Raw e2e results: `tests/e2e/last-run.json`.
 
+## 0d. v3 "Night cinematic" (19 Nov 2026)
+
+The owner rejected v2 (logo, kinetic type, entry video, UI). Three directions were made as recorded 10-second prototypes (Apothecary, Night cinematic, Punjab bold); the owner chose **Night cinematic**, now on every public page (admin keeps the light theme via a `.night` scope on the public layout).
+- Logo: green pharmacy cross with a knocked-out centre and an Anton wordmark; favicon and apple icon redrawn.
+- Entry: the earth-to-shop clip plays full screen inside giant cut-out words (Punjab → Batala → Dera Road → Shanker, in the visitor's language), each on the clip's own cut, then the last word zooms through to the storefront and the overlay lifts onto the full-bleed storefront hero.
+- Kinetic type: masked line reveals (all scripts), scroll-linked settle on section titles, green accent words, outline numerals, two counter-moving rows of company names, an editorial stock index that fills green on hover; grain over the page.
+- Checked: no horizontal overflow on phones after clipping the zoomed scroll titles; e2e 64/64, publish 10/10, unit 38/38.
+
 ## 0c. v2 redesign (19 Nov 2026)
 
 The owner found the first design looked "AI slop" and asked for AVRON motion graphics with the entry video, and for no medicine names on the site.

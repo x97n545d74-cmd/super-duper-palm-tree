@@ -131,8 +131,7 @@ await step("what we stock and the company finder work", async () => {
   const mnc = await cards.count();
   assert(mnc > 5 && mnc < all, `multinational ${mnc}`);
   await page.goto(`${BASE}/en`);
-  await page.click("button[role=tab]:has-text('Syrups')");
-  assert((await page.textContent("#stock-detail")).includes("dry syrups"), "stock panel tab");
+  assert((await page.locator("section#stock ol li a[href*='wa.me/919815552404']").count()) === 12, "homepage stock index");
   return `${all} companies, ${mnc} multinational`;
 });
 

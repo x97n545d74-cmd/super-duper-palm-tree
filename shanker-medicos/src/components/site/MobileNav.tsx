@@ -46,7 +46,7 @@ export function MobileNav({
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls="mobile-drawer"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-line bg-white text-ink xl:hidden"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink xl:hidden"
       >
         <IconMenu />
         <span className="sr-only">{labels.menu}</span>
@@ -66,7 +66,7 @@ export function MobileNav({
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <Logo />
-          <button ref={closeBtn} type="button" onClick={() => setOpen(false)} className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-line">
+          <button ref={closeBtn} type="button" onClick={() => setOpen(false)} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line">
             <IconClose />
             <span className="sr-only">{labels.close}</span>
           </button>
@@ -75,7 +75,7 @@ export function MobileNav({
           <ul className="space-y-1">
             {items.map((it) => (
               <li key={it.href}>
-                <Link href={it.href} className="block rounded-[12px] px-3 py-3 text-2xl font-bold tracking-tight text-ink hover:bg-mint" style={{ fontStretch: "88%" }}>
+                <Link href={it.href} className="display block py-2.5 text-[2.6rem] text-ink transition-colors hover:text-emerald">
                   {it.label}
                 </Link>
               </li>

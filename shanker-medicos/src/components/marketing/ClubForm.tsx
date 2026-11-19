@@ -55,8 +55,8 @@ export function ClubForm({
     const wa = n ? `https://wa.me/${n.length === 10 ? "91" + n : n}?text=${encodeURIComponent(labels.waMessage.replace("{code}", state.code))}` : null;
     return (
       <div role="status" className="rounded-card border border-emerald/30 bg-mint p-6">
-        <p className="font-semibold text-forest">{state.isNew ? labels.success : labels.successBack}</p>
-        <p lang="en" className="mt-3 font-mono text-3xl font-semibold tracking-[0.12em] text-forest" data-testid="member-code">
+        <p className="font-semibold text-emerald">{state.isNew ? labels.success : labels.successBack}</p>
+        <p lang="en" className="mt-3 font-mono text-3xl font-semibold tracking-[0.12em] text-emerald" data-testid="member-code">
           {state.code}
         </p>
         <p className="mt-3 text-sm text-ink">{labels.codeHow}</p>

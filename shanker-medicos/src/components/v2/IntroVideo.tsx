@@ -2,23 +2,26 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type Labels = { skip: string; beats: string[]; label: string };
+type Labels = { skip: string; label: string; words: string[]; coords: string };
 
-// Beat times match the clip: space (0s), Batala from above (1.4s), the street (3.4s), the shop (4.9s).
-const BEATS = [0, 1.4, 3.4, 4.9];
+// The clip's cuts: space (0s), Batala from above (1.4s), the street (3.4s), the shop (4.9s).
+const BEATS = [0.15, 1.4, 3.4, 4.9];
+const ZOOM_AT = 6.1;
 
 /**
- * Entry video (AVRON motion): the store's earth-to-shop clip plays once per
- * visit inside one panel, with mono captions per beat. When it ends (or on
- * Skip) the panel morphs into the hero's video frame and the page enters.
- * Shown only when <html data-intro="on"> (set before paint by the script in
- * the layout: homepage, first visit this session, motion allowed).
+ * Entry sequence (night cinematic). The store's earth-to-shop clip plays
+ * full screen behind a black layer; giant words are cut out of that layer
+ * so the video plays inside the letters (Punjab → Batala → Dera Road →
+ * Shanker), each word on the clip's own cut. The last word zooms through
+ * until the whole storefront shows, then the overlay lifts and the hero
+ * (the same storefront) is underneath. Once per visit, homepage only,
+ * never with reduced motion or for crawlers (see the layout's script).
  */
 export function IntroVideo({ labels }: { labels: Labels }) {
   const wrap = useRef<HTMLDivElement>(null);
-  const frame = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
-  const [beat, setBeat] = useState(0);
+  const [beat, setBeat] = useState(-1);
+  const [zoom, setZoom] = useState(false);
   const [progress, setProgress] = useState(0);
   const done = useRef(false);
 
@@ -33,34 +36,24 @@ export function IntroVideo({ labels }: { labels: Labels }) {
     const finish = () => {
       if (done.current) return;
       done.current = true;
-      const f = frame.current;
-      const w = wrap.current;
-      const target = document.querySelector<HTMLElement>("[data-intro-target]");
-      const end = () => {
+      setZoom(true);
+      wrap.current?.classList.add("leaving");
+      window.dispatchEvent(new Event("intro:morph"));
+      setTimeout(() => {
         root.style.overflow = "";
         root.dataset.intro = "off";
         window.dispatchEvent(new Event("intro:done"));
-      };
-      if (!f || !w || !target) return end();
-      const a = f.getBoundingClientRect();
-      const b = target.getBoundingClientRect();
-      if (b.bottom < 0 || b.top > window.innerHeight) return end();
-      const sx = b.width / a.width;
-      const tx = b.left + b.width / 2 - (a.left + a.width / 2);
-      const ty = b.top + b.height / 2 - (a.top + a.height / 2);
-      w.classList.add("leaving");
-      f.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${sx})`;
-      f.style.borderRadius = `${26 / sx}px`;
-      window.dispatchEvent(new Event("intro:morph"));
-      setTimeout(end, 760);
+      }, 720);
     };
     const onTime = () => {
       if (!v) return;
       const t = v.currentTime;
       setProgress(v.duration ? t / v.duration : 0);
-      let b = 0;
+      let b = -1;
       BEATS.forEach((s, i) => t >= s && (b = i));
       setBeat(b);
+      if (t >= ZOOM_AT) setZoom(true);
+      if (t >= ZOOM_AT + 1.2) finish();
     };
     const safety = setTimeout(finish, 11000);
     if (v) {
@@ -82,33 +75,33 @@ export function IntroVideo({ labels }: { labels: Labels }) {
     video.current?.pause();
     video.current?.dispatchEvent(new Event("ended"));
   };
+  const sizes = ["text-[30vw]", "text-[30vw]", "text-[21vw]", "text-[25vw]"];
 
   return (
     <div ref={wrap} className="intro" role="dialog" aria-label={labels.label}>
-      <div className="fields" aria-hidden="true">
-        <i />
+      <video ref={video} className="intro-video" src="/media/batala-store.mp4" poster="/media/batala-store-start.jpg" muted playsInline preload="auto" aria-hidden="true" />
+      <div className={`ko ${zoom ? "open" : ""}`} aria-hidden="true">
+        {labels.words.map((w, i) => {
+          const last = i === labels.words.length - 1;
+          const state = last && zoom ? "zoom" : i === beat ? "on" : i < beat ? "off" : "";
+          return (
+            <span key={i} lang={/[ऀ-੿]/.test(w) ? (/[਀-੿]/.test(w) ? "pa" : "hi") : "en"} className={`w ${sizes[i] || "text-[24vw]"} ${state}`}>
+              {w}
+            </span>
+          );
+        })}
       </div>
-      <div className="relative z-10 w-[min(94vw,980px)]">
-        <div ref={frame} className="frame relative overflow-hidden rounded-panel border border-line bg-forest shadow-float">
-          <video ref={video} className="aspect-video w-full object-cover" src="/media/batala-store.mp4" poster="/media/batala-store-start.jpg" muted playsInline preload="auto" aria-hidden="true" />
-          <div className="absolute inset-x-0 bottom-0 h-[3px] bg-white/15">
-            <div className="h-full bg-white/80" style={{ width: `${progress * 100}%`, transition: "width .25s linear" }} />
-          </div>
-        </div>
-        <div className="mt-5 flex items-center justify-between gap-4">
-          <p key={beat} className="split in font-mono text-sm uppercase tracking-[0.12em] text-ink sm:text-base" aria-live="polite">
-            <span className="text-emerald">{String(beat + 1).padStart(2, "0")}</span>
-            <span className="mx-2 text-ink-2">/</span>
-            {Array.from(labels.beats[beat] || "").map((ch, i) => (
-              <span key={i} className="c" style={{ ["--ci" as string]: i }}>
-                {ch === " " ? " " : ch}
-              </span>
-            ))}
-          </p>
-          <button type="button" onClick={skip} className="btn btn-ghost h-10 min-h-0 px-4 text-sm">
-            {labels.skip}
-          </button>
-        </div>
+      <div className="vign" />
+      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 px-5 pb-5 sm:px-10 sm:pb-8">
+        <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-white/60">
+          <span className="text-[#19c37d]">●</span> {labels.coords}
+        </p>
+        <button type="button" onClick={skip} className="rounded-full border border-white/30 px-4 py-2 text-sm font-medium text-white backdrop-blur hover:border-white">
+          {labels.skip}
+        </button>
+      </div>
+      <div className="absolute inset-x-0 bottom-0 h-[2px] bg-white/10">
+        <div className="h-full bg-[#19c37d]" style={{ width: `${progress * 100}%`, transition: "width .25s linear" }} />
       </div>
     </div>
   );

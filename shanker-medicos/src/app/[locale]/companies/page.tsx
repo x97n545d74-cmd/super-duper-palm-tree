@@ -5,7 +5,7 @@ import { pageMeta, jsonLd } from "@/lib/seo";
 import { waLink } from "@/lib/whatsapp";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { CompanyFinder } from "@/components/v2/CompanyFinder";
-import { Split } from "@/components/v2/Split";
+import { Lines } from "@/components/v2/Lines";
 import { SITE_URL } from "@/lib/env";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/companies">) {
@@ -28,9 +28,6 @@ export default async function CompaniesPage({ params }: PageProps<"/[locale]/com
   };
   return (
     <div className="relative isolate">
-      <div className="fields" aria-hidden="true">
-        <i />
-      </div>
       <div className="container-x relative z-10 pb-8 pt-10">
         <Breadcrumbs
           label={t.nav.breadcrumb}
@@ -42,8 +39,8 @@ export default async function CompaniesPage({ params }: PageProps<"/[locale]/com
         <p data-rv className="eyebrow mt-10">
           {v.eyebrow}
         </p>
-        <h1 className="mt-4 max-w-4xl text-display">
-          <Split text={v.title} perWord={locale !== "en"} />
+        <h1 className="mt-4 max-w-5xl text-h1">
+          <Lines lines={v.title} />
         </h1>
         <p data-rv style={{ ["--i" as string]: 6 }} className="mt-6 max-w-2xl text-lg text-ink-2">
           {v.body}

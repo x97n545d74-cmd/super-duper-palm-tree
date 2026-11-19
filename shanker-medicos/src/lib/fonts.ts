@@ -1,15 +1,21 @@
 import localFont from "next/font/local";
 
 // Self-hosted (no request to Google at runtime), all SIL Open Font License.
-// Archivo has a width axis (62–125): condensed for signboard headlines,
-// normal for reading. The Noto scripts carry the same axis so Hindi and
-// Punjabi headlines condense the same way.
-export const archivo = localFont({
-  src: "../fonts/archivo-latin-wdth-normal.woff2",
-  variable: "--font-archivo",
+// Night cinematic (v3): Anton for display, Inter for reading. Hindi and
+// Punjabi display lines use Noto at its narrowest width and heaviest weight
+// so they sit next to Anton.
+export const anton = localFont({
+  src: "../fonts/anton-latin-400-normal.woff2",
+  variable: "--font-anton",
+  weight: "400",
+  display: "swap",
+});
+
+export const inter = localFont({
+  src: "../fonts/inter-latin-wght-normal.woff2",
+  variable: "--font-inter",
   weight: "100 900",
   display: "swap",
-  declarations: [{ prop: "font-stretch", value: "62% 125%" }],
 });
 
 export const mono = localFont({
@@ -40,4 +46,4 @@ export const guru = localFont({
   declarations: [{ prop: "font-stretch", value: "62.5% 100%" }],
 });
 
-export const fontVars = `${archivo.variable} ${mono.variable} ${deva.variable} ${guru.variable}`;
+export const fontVars = `${anton.variable} ${inter.variable} ${mono.variable} ${deva.variable} ${guru.variable}`;

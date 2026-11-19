@@ -226,15 +226,16 @@ await step("what we stock: 12 kinds, each with a WhatsApp question to the store"
   assert(/[਀-੿]/.test(await page.textContent("#syrups h2")), "Punjabi kind names");
 });
 
-await step("stock panel: tabs switch the detail card (panel morph)", async () => {
+await step("homepage stock index: 12 kinds, each a WhatsApp question in the visitor's language", async () => {
   await page.goto(`${BASE}/en`);
-  assert((await page.textContent("#stock-detail")).includes("Tablets"), "first tab");
-  await page.click("button[role=tab]:has-text('Eye & ear drops')");
-  assert((await page.getAttribute("button[role=tab]:has-text('Eye & ear drops')", "aria-selected")) === "true", "aria-selected");
-  const detail = await page.textContent("#stock-detail");
-  assert(detail.includes("eye ointments"), detail.slice(0, 80));
-  const wa = await page.locator("#stock-detail a[href*='wa.me']").getAttribute("href");
-  assert(new URL(wa).searchParams.get("text").includes("eye & ear drops"), "message follows the tab");
+  const rows = page.locator("section#stock ol li a[href*='wa.me']");
+  assert((await rows.count()) === 12, `${await rows.count()} rows`);
+  const eye = await page.locator("#k-drops a").getAttribute("href");
+  assert(new URL(eye).searchParams.get("text").includes("eye & ear drops"), "message for eye & ear drops");
+  assert((await page.textContent("#k-injectables")).includes("Prescription needed"), "injectables flagged");
+  await page.goto(`${BASE}/hi`);
+  const hi = new URL(await page.locator("#k-syrups a").getAttribute("href")).searchParams.get("text");
+  assert(/[ऀ-ॿ]/.test(hi), hi);
 });
 
 await step("company finder: instant search, Indian / multinational filter, WhatsApp ask", async () => {
@@ -267,7 +268,7 @@ await step("entry video: plays once on the homepage, Skip lands it in the hero, 
   await p.click(".intro button:has-text('Skip')");
   await p.waitForFunction(() => document.documentElement.dataset.intro === "off", null, { timeout: 4000 });
   assert(!(await p.locator(".intro").isVisible()), "overlay still visible");
-  await p.waitForFunction(() => document.querySelector("h1 .split")?.classList.contains("in"), null, { timeout: 4000 });
+  await p.waitForFunction(() => document.querySelector("#hero-h [data-rv-group]")?.classList.contains("in"), null, { timeout: 4000 });
   await p.goto(`${BASE}/en`);
   assert((await p.getAttribute("html", "data-intro")) === "off", "intro repeated in the same visit");
   await p.goto(`${BASE}/en/companies`);
@@ -688,8 +689,14 @@ await step("admin: edit a company and feature it on the homepage", async () => {
   await row.locator('input[name="featured"]').check();
   await row.locator("button:has-text('Save company')").click();
   await row.locator("p[role=status]").waitFor();
-  const ok = await eventually(page, `${BASE}/en`, async () => (await page.locator('section[aria-labelledby="co-h"]').textContent()).includes("Anti-infectives (edited)"));
-  assert(ok, "featured company not on homepage");
+  const edited = await eventually(page, `${BASE}/en/companies`, async () => (await page.textContent("main")).includes("Anti-infectives (edited)"));
+  assert(edited, "edited company details not on the companies page");
+  // featured companies lead the first moving row on the homepage
+  const ok = await eventually(page, `${BASE}/en`, async () => {
+    const first = await page.locator('section[aria-labelledby="co-h"] .marquee').first().locator("div").first().locator("span").allTextContents();
+    return first.slice(0, 20).some((n) => n.includes("Kopran"));
+  });
+  assert(ok, "featured company not at the front of the homepage row");
 });
 
 await step("first-party analytics: dashboard counts visits, WhatsApp taps and sources", async () => {

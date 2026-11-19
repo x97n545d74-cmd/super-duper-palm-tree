@@ -16,7 +16,7 @@ export function LegalPage({ ctx, title, path, updated, children }: { ctx: SiteCo
       <article className="mx-auto mt-10 max-w-3xl">
         <h1 className="text-h1">{title}</h1>
         <p className="mt-3 text-sm text-ink-2">{fmt(t.legal.updated, { date: updated })}</p>
-        {t.legal.englishOnly && <p className="mt-6 rounded-card bg-mint p-4 text-sm text-forest">{t.legal.englishOnly}</p>}
+        {t.legal.englishOnly && <p className="mt-6 rounded-card bg-mint p-4 text-sm text-ink">{t.legal.englishOnly}</p>}
         <div className="prose-legal mt-8" lang="en">
           {children}
         </div>

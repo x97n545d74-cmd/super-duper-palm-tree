@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/env";
 import { jsonLd } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { OfferAndClub, OfferTerms, Faq, offerVars } from "@/components/marketing/Sections";
-import { Split } from "@/components/v2/Split";
+import { Lines } from "@/components/v2/Lines";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/offers">) {
   const ctx = await siteContext((await params).locale);
@@ -31,9 +31,6 @@ export default async function OffersPage({ params }: PageProps<"/[locale]/offers
     : null;
   return (
     <div className="relative isolate pb-8 pt-10">
-      <div className="fields" aria-hidden="true">
-        <i />
-      </div>
       <div className="container-x relative z-10">
         <Breadcrumbs
           label={t.nav.breadcrumb}
@@ -45,8 +42,8 @@ export default async function OffersPage({ params }: PageProps<"/[locale]/offers
         <p data-rv className="eyebrow mt-10">
           {t.mkt.offer.badge}
         </p>
-        <h1 className="mt-4 max-w-4xl text-display">
-          <Split text={s.offer_enabled ? fmt(t.mkt.offer.title, v) : t.mkt.club.title} perWord={locale !== "en"} />
+        <h1 className="mt-4 max-w-5xl text-h1">
+          <Lines lines={s.offer_enabled ? fmt(t.mkt.offer.title, v) : t.mkt.club.title} />
         </h1>
       </div>
       <div className="relative z-10 -mt-8">

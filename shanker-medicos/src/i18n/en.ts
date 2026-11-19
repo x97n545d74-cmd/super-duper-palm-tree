@@ -378,6 +378,15 @@ const en = {
       closed: "Closed",
     },
   },
+  v3: {
+    intro: { words: ["Punjab", "Batala", "Dera Road", "Shanker"], coords: "31.81°N 75.20°E · locating the shop" },
+    hero: { lines: ["100+ companies.", "One *counter.*"], stats: "{n} companies · {k} kinds", sign: "ਅੰਗਰੇਜ਼ੀ ਦਵਾਈਆਂ ਦੀ ਦੁਕਾਨ" },
+    stock: { lines: ["What we", "*stock.*"], ask: "Ask on WhatsApp" },
+    order: { lines: ["Send.", "We check.", "You *collect.*"] },
+    offer: { lines: ["Bills above ₹{min}?", "*{percent}% off.*"] },
+    companies: { lines: ["{n}+", "*companies.*"] },
+    visit: { lines: ["Dera Road,", "*Batala.*"] },
+  },
   notFound: {
     title: "This page isn't here",
     body: "The link may be old. Try what we stock, or ask us on WhatsApp.",

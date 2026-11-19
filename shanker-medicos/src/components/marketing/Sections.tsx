@@ -37,7 +37,7 @@ export function OfferAndClub({ ctx, source, headingId = "offer-h" }: { ctx: Site
         {s.club_enabled && (
           <div data-rv className="panel relative overflow-hidden p-7 sm:p-9" id="club" style={{ ["--i" as string]: 1 }}>
             <p className="eyebrow">{c.eyebrow}</p>
-            <p className="mt-4 text-h2 font-bold" style={{ fontStretch: "88%" }}>{c.title}</p>
+            <p className="display mt-4 text-[clamp(1.9rem,1.2rem+1.8vw,2.8rem)] leading-[.95]">{c.title}</p>
             <p className="mt-3 text-ink-2">{s.club_extra_percent > 0 ? fmt(c.bodyPercent, v) : c.body}</p>
             {PUBLISH_ONLY ? (
               <div className="mt-6">

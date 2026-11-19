@@ -5,7 +5,7 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LocationDetails } from "@/components/site/LocationDetails";
 import { StoreVideo } from "@/components/home/StoreVideo";
 import { IconPhone, IconWhatsApp, IconInfo } from "@/components/ui/Icons";
-import { Split } from "@/components/v2/Split";
+import { Lines } from "@/components/v2/Lines";
 import { OpenStatus } from "@/components/v2/OpenStatus";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/contact">) {
@@ -30,7 +30,7 @@ export default async function Contact({ params }: PageProps<"/[locale]/contact">
       />
       <p data-rv className="eyebrow mt-10">{t.contact.eyebrow}</p>
       <h1 className="mt-4 text-display">
-        <Split text={t.v2.visit.title} perWord={locale !== "en"} />
+        <Lines lines={t.v2.visit.title} />
       </h1>
       <p data-rv style={{ ["--i" as string]: 4 }} className="mt-5 max-w-xl text-lg text-ink-2">{t.v2.visit.body} {t.contact.lead}</p>
       <div data-rv style={{ ["--i" as string]: 5 }} className="mt-5"><span className="chip !text-ink"><OpenStatus labels={t.v2.status} /></span></div>

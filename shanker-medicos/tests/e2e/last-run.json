@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-19T14:38:20.840Z",
+  "date": "2026-11-19T16:15:43.125Z",
   "passed": 64,
   "total": 64,
   "results": [
@@ -44,7 +44,7 @@
       "detail": ""
     },
     {
-      "name": "stock panel: tabs switch the detail card (panel morph)",
+      "name": "homepage stock index: 12 kinds, each a WhatsApp question in the visitor's language",
       "ok": true,
       "detail": ""
     },
@@ -86,7 +86,7 @@
     {
       "name": "Shanker Club: sign-up gives a member code and a WhatsApp save link",
       "ok": true,
-      "detail": "SM-5KR8R"
+      "detail": "SM-CZF5C"
     },
     {
       "name": "Shanker Club: joining again with the same number returns the same code",
@@ -276,7 +276,7 @@
     {
       "name": "no secrets in client JavaScript",
       "ok": true,
-      "detail": "35 static files scanned"
+      "detail": "36 static files scanned"
     },
     {
       "name": "login rate limiting",

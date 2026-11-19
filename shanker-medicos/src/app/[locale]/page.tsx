@@ -7,13 +7,11 @@ import { waLink } from "@/lib/whatsapp";
 import { telHref } from "@/lib/settings";
 import { STOCK } from "@/lib/stock";
 import { IconArrow, IconWhatsApp, IconPhone } from "@/components/ui/Icons";
-import { Faq, OfferAndClub } from "@/components/marketing/Sections";
+import { Faq, OfferAndClub, offerVars } from "@/components/marketing/Sections";
 import { IntroVideo } from "@/components/v2/IntroVideo";
-import { HeroVideo } from "@/components/v2/HeroVideo";
-import { Split, splitLength } from "@/components/v2/Split";
+import { Lines } from "@/components/v2/Lines";
 import { OpenStatus } from "@/components/v2/OpenStatus";
-import { StockPanel } from "@/components/v2/StockPanel";
-import { CompanyFinder } from "@/components/v2/CompanyFinder";
+import { FormGlyph } from "@/components/v2/FormGlyph";
 import { StoreVideo } from "@/components/home/StoreVideo";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]">) {
@@ -21,107 +19,121 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">) {
   return pageMeta({ locale, path: "/", title: t.meta.siteTitle, description: t.meta.siteDescription });
 }
 
-const indic = (l: string) => l !== "en";
-
 export default async function Home({ params }: PageProps<"/[locale]">) {
   const ctx = await siteContext((await params).locale);
   const { t, locale, settings: s } = ctx;
   const v = t.v2;
+  const w = t.v3;
   const companies = await catalogue.listCompanies();
-  const nCompanies = Math.floor(companies.length / 10) * 10;
+  const n = Math.floor(companies.length / 10) * 10;
   const rxPhoto = waLink(s.whatsapp, t.mkt.rx.msgPhoto);
   const rxList = waLink(s.whatsapp, t.mkt.rx.msgList);
-  const per = indic(locale);
-  const l1 = v.hero.line1;
-  const l2 = v.hero.word;
-  const status = v.status;
+  const ordered = [...companies.filter((c) => c.featured), ...companies.filter((c) => !c.featured)];
+  const half = Math.ceil(ordered.length / 2);
 
   return (
     <>
-      <IntroVideo labels={v.intro} />
+      <IntroVideo labels={{ skip: v.intro.skip, label: v.intro.label, words: w.intro.words, coords: w.intro.coords }} />
 
-      {/* HERO */}
-      <section className="relative isolate overflow-hidden" aria-labelledby="hero-h">
-        <div className="fields" aria-hidden="true">
-          <i />
+      {/* HERO: full-bleed storefront (the frame the entry video ends on) */}
+      <section className="relative isolate -mt-px flex min-h-[calc(100svh-7rem)] flex-col justify-end overflow-hidden" aria-labelledby="hero-h">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/media/batala-store-poster.jpg" alt={v.hero.videoAlt} width={1280} height={720} fetchPriority="high" className="parallax absolute inset-0 -z-20 h-full w-full object-cover" style={{ filter: "contrast(1.08) saturate(.85)" }} />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(0,0,0,.55)_0%,rgba(0,0,0,.2)_35%,rgba(0,0,0,.92)_100%)]" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,.7)_100%)]" />
+
+        <div className="container-x pointer-events-none absolute inset-x-0 top-6 flex items-start justify-between gap-6">
+          <p data-rv lang="pa" className="text-[1rem] font-black text-white/70 sm:text-[1.15rem]" style={{ fontFamily: "var(--font-guru)", fontStretch: "70%" }}>
+            {w.hero.sign}
+          </p>
+          <div data-rv style={{ ["--i" as string]: 2 }} className="shrink-0 text-right font-mono text-[0.68rem] uppercase leading-[2] tracking-[0.18em] text-white/65">
+            <span className="text-emerald">
+              <OpenStatus labels={v.status} />
+            </span>
+            <span className="hidden sm:inline">
+              <br />
+              {v.hero.cardSub}
+              <br />
+              {fmt(w.hero.stats, { n: companies.length, k: STOCK.length })}
+            </span>
+          </div>
         </div>
-        <div className="container-x relative z-10 grid grid-cols-1 gap-12 pb-8 pt-10 sm:pt-14 lg:grid-cols-12 lg:gap-10 lg:pb-16 lg:pt-20">
-          <div className="lg:col-span-7 lg:pt-6">
-            <div data-rv className="flex flex-wrap items-center gap-2">
-              <span className="chip">{v.hero.chip}</span>
-              <span className="chip !text-ink">
-                <OpenStatus labels={status} />
-              </span>
-            </div>
-            <h1 id="hero-h" className="mt-7 text-display">
-              <span className="block">
-                <Split text={l1} perWord={per} />
-              </span>
-              <span className="block text-emerald">
-                <Split text={l2} perWord={per} start={splitLength(l1, per)} />
-              </span>
-              <span className="block">
-                <Split text={v.hero.line2} perWord={per} start={splitLength(l1, per) + splitLength(l2, per)} />
-              </span>
-            </h1>
-            <p data-rv style={{ ["--i" as string]: 8 }} className="mt-7 max-w-[34rem] text-[1.1rem] leading-relaxed text-ink-2">
-              {v.hero.body}
-            </p>
-            <div data-rv style={{ ["--i" as string]: 10 }} className="mt-9 flex flex-wrap gap-3">
+
+        <div className="container-x grid grid-cols-1 items-end gap-10 pb-12 pt-40 lg:grid-cols-12 lg:pb-16">
+          <h1 id="hero-h" className="text-display text-white lg:col-span-9">
+            <Lines lines={w.hero.lines} />
+          </h1>
+          <div data-rv style={{ ["--i" as string]: 6 }} className="lg:col-span-3 lg:pb-3">
+            <p className="max-w-sm text-[1.02rem] leading-relaxed text-white/70">{v.hero.body}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
               {rxPhoto && (
-                <a href={rxPhoto} target="_blank" rel="noopener noreferrer" data-track-label="hero_rx" className="btn btn-wa h-13 px-6 text-[1rem]">
+                <a href={rxPhoto} target="_blank" rel="noopener noreferrer" data-track-label="hero_rx" className="btn btn-primary h-13 px-6">
                   <IconWhatsApp className="h-5 w-5" /> {v.hero.ctaRx}
                 </a>
               )}
-              <Link href={`/${locale}/products`} className="btn btn-ghost h-13 px-6 text-[1rem]">
-                {v.hero.ctaStock} <IconArrow />
+              <Link href={`/${locale}/products`} className="btn btn-ghost h-13 px-6">
+                {v.hero.ctaStock}
               </Link>
             </div>
-          </div>
-
-          <div className="relative lg:col-span-5 lg:pt-10">
-            {/* No entrance here: the entry video morphs onto this frame, so it must already be in place. */}
-            <HeroVideo alt={v.hero.videoAlt} replay={v.hero.replay} />
-            <HeroCard ctx={ctx} n={nCompanies} />
           </div>
         </div>
       </section>
 
-      {/* WHAT WE STOCK */}
+      {/* WHAT WE STOCK: an index of kinds, each a WhatsApp question */}
       <section className="container-x pt-section" aria-labelledby="stock-h" id="stock">
-        <Head eyebrow={v.stock.eyebrow} title={v.stock.title} body={v.stock.body} id="stock-h" per={per} link={{ href: `/${locale}/products`, label: v.stock.all }} />
-        <div data-rv className="mt-10">
-          <StockPanel
-            labels={{ ask: v.stock.ask, rx: v.stock.rx, pick: v.stock.pick, of: v.stock.of }}
-            items={STOCK.map((f) => ({ id: f.id, icon: f.icon, rx: f.rx, name: f.name[locale], line: f.line[locale], wa: waLink(s.whatsapp, fmt(v.stock.askMsg, { form: f.name[locale].toLowerCase() })) }))}
-          />
-        </div>
+        <Head eyebrow={v.stock.eyebrow} id="stock-h" lines={w.stock.lines} body={v.stock.body} link={{ href: `/${locale}/products`, label: v.stock.all }} />
+        <ol className="mt-14 border-t border-line">
+          {STOCK.map((f, i) => {
+            const name = f.name[locale];
+            const wa = waLink(s.whatsapp, fmt(v.stock.askMsg, { form: name.toLowerCase() }));
+            return (
+              <li key={f.id} id={`k-${f.id}`} data-rv style={{ ["--i" as string]: i % 6 }} className="border-b border-line">
+                <a href={wa || "#"} target="_blank" rel="noopener noreferrer" data-track-label={`stock_${f.id}`} className="group relative grid grid-cols-[2.5rem_1fr_auto] items-center gap-4 overflow-hidden py-5 sm:grid-cols-[4rem_1fr_1fr_auto] sm:py-6">
+                  <span aria-hidden="true" className="absolute inset-0 -z-10 origin-bottom scale-y-0 bg-emerald transition-transform duration-[420ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-y-100" />
+                  <span className="font-mono text-xs text-ink-2 transition-colors group-hover:text-black/70">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="display text-[clamp(1.9rem,1.2rem+3.2vw,4.4rem)] text-ink transition-[color,transform] duration-[420ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-2 group-hover:text-black">{name}</span>
+                  <span className="hidden text-[0.95rem] text-ink-2 transition-colors group-hover:text-black/75 sm:block">
+                    {f.line[locale]}
+                    {f.rx && <span className="ml-2 font-mono text-[0.66rem] uppercase tracking-[0.12em] text-coral group-hover:text-black">· {v.stock.rx}</span>}
+                  </span>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink transition-colors group-hover:border-black group-hover:bg-black group-hover:text-emerald">
+                    <FormGlyph icon={f.icon} className="h-5 w-5" />
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ol>
       </section>
 
       {/* ORDER ON WHATSAPP */}
       <section className="container-x pt-section" aria-labelledby="order-h">
-        <Head eyebrow={v.order.eyebrow} title={v.order.title} id="order-h" per={per} />
-        <ol className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-3">
+        <p data-rv className="eyebrow">
+          {v.order.eyebrow}
+        </p>
+        <h2 id="order-h" className="scrub mt-5 text-h1">
+          <Lines lines={w.order.lines} />
+        </h2>
+        <ol className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-[28px] border border-line bg-line md:grid-cols-3">
           {v.order.steps.map((st, i) => (
-            <li key={st.t} data-rv style={{ ["--i" as string]: i * 2 }} className="panel relative overflow-hidden p-7">
-              <span className="font-mono text-xs text-ink-2">{String(i + 1).padStart(2, "0")} / 03</span>
-              <p className="mt-10 text-h2 font-bold" style={{ fontStretch: "88%" }}>
-                {st.t}
-              </p>
+            <li key={st.t} data-rv style={{ ["--i" as string]: i * 2 }} className="bg-ivory p-8 sm:p-10">
+              <span aria-hidden="true" className="display outline block text-[6rem] leading-none sm:text-[8rem]">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <p className="mt-6 text-xl font-semibold">{st.t}</p>
               <p className="mt-2 text-ink-2">{st.b}</p>
-              {i < 2 && <span aria-hidden="true" className="absolute right-6 top-7 hidden text-ink-2 md:block">→</span>}
             </li>
           ))}
         </ol>
-        <div data-rv style={{ ["--i" as string]: 6 }} className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div data-rv className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-3">
             {rxPhoto && (
-              <a href={rxPhoto} target="_blank" rel="noopener noreferrer" data-track-label="rx_photo" className="btn btn-wa">
+              <a href={rxPhoto} target="_blank" rel="noopener noreferrer" data-track-label="rx_photo" className="btn btn-wa h-13 px-6">
                 <IconWhatsApp className="h-5 w-5" /> {v.order.photo}
               </a>
             )}
             {rxList && (
-              <a href={rxList} target="_blank" rel="noopener noreferrer" data-track-label="rx_list" className="btn btn-ghost">
+              <a href={rxList} target="_blank" rel="noopener noreferrer" data-track-label="rx_list" className="btn btn-ghost h-13 px-6">
                 {v.order.list}
               </a>
             )}
@@ -130,123 +142,78 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      {/* OFFER (receipt) + CLUB */}
+      {/* OFFER + CLUB */}
+      {s.offer_enabled && (
+        <section className="container-x pt-section" aria-labelledby="offer-big-h">
+          <h2 id="offer-big-h" className="scrub text-h1">
+            <Lines lines={w.offer.lines.map((l) => fmt(l, offerVars(ctx)))} />
+          </h2>
+        </section>
+      )}
       <OfferAndClub ctx={ctx} source="homepage" />
 
-      {/* COMPANIES */}
-      <section className="container-x pt-section" aria-labelledby="co-h">
-        <Head eyebrow={v.companies.eyebrow} title={v.companies.title} body={v.companies.body} id="co-h" per={per} link={{ href: `/${locale}/companies`, label: v.companies.more }} />
-        <div data-rv className="mt-10">
-          <CompanyFinder
-            limit={12}
-            askHref={ctx.waGeneral}
-            labels={{ search: v.companies.search, none: v.companies.none, indian: v.companies.indian, mnc: v.companies.mnc, ask: v.companies.ask, count: v.companies.count, all: v.companies.all }}
-            companies={[...companies.filter((c) => c.featured), ...companies.filter((c) => !c.featured)].map((c) => ({ id: c.id, name: c.name, known: c.known, kind: c.kind, logo: c.logo_url, wa: waLink(s.whatsapp, fmt(v.companies.askMsg, { name: c.name })) }))}
-          />
+      {/* COMPANIES: two rows of names in motion */}
+      <section className="pt-section" aria-labelledby="co-h">
+        <div className="container-x">
+          <Head eyebrow={v.companies.eyebrow} id="co-h" lines={w.companies.lines.map((l) => fmt(l, { n }))} body={v.companies.body} link={{ href: `/${locale}/companies`, label: v.companies.more }} />
         </div>
-        <div data-rv className="mt-6">
-          <Link href={`/${locale}/companies`} className="btn btn-ghost">
+        <div lang="en" className="mt-14 space-y-4" aria-label={v.companies.eyebrow}>
+          {[ordered.slice(0, half), ordered.slice(half)].map((row, r) => (
+            <div key={r} className={`marquee ${r ? "rev" : ""}`} style={{ ["--dur" as string]: r ? "90s" : "80s" }}>
+              {[0, 1].map((copy) => (
+                <div key={copy} aria-hidden={copy === 1 ? true : undefined}>
+                  {row.map((c, i) => (
+                    <span key={c.id} className={`display whitespace-nowrap text-[clamp(2.2rem,1.4rem+3vw,4.6rem)] ${(i + r) % 2 ? "outline" : "text-ink"}`}>
+                      {c.name.replace(/ (Ltd|Limited|Laboratories|Pharmaceuticals|Pharma India|India|Lifesciences|Healthcare)$/i, "")}
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="container-x mt-10">
+          <Link data-rv href={`/${locale}/companies`} className="btn btn-ghost h-13 px-6">
             {v.companies.more} <IconArrow />
           </Link>
         </div>
       </section>
 
-      {/* VISIT */}
-      <Visit ctx={ctx} per={per} />
+      <Visit ctx={ctx} />
 
       <Faq ctx={ctx} />
     </>
   );
 }
 
-/** Hero stats card: crop-in pull-out on "100+", then the cursor presses the WhatsApp pill and a toast lands. */
-function HeroCard({ ctx, n }: { ctx: SiteContext; n: number }) {
-  const { t, settings: s } = ctx;
-  const v = t.v2;
-  const wa = waLink(s.whatsapp, t.mkt.rx.msgPhoto);
+function Head({ eyebrow, lines, body, id, link }: { eyebrow: string; lines: string[]; body?: string; id: string; link?: { href: string; label: string } }) {
   return (
-    <div data-rv-group className="relative z-10 mx-3 -mt-14 sm:mx-8 lg:-ml-10 lg:mr-10 lg:-mt-20">
-      <div className="panel overflow-hidden">
-        <div className="croppull p-5 sm:p-6" style={{ ["--cx" as string]: "16%", ["--cy" as string]: "52%" }}>
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[0.95rem] font-bold">{v.hero.cardTitle}</p>
-              <p className="text-xs text-ink-2">{v.hero.cardSub}</p>
-            </div>
-            <span className="chip !h-7 !text-[0.66rem]">
-              <OpenStatus labels={v.status} />
-            </span>
-          </div>
-          <div className="mt-5 grid grid-cols-3 gap-3 border-t border-line pt-5">
-            <Stat value={`${n}+`} label={v.hero.companies} hero />
-            <Stat value={String(STOCK.length)} label={v.hero.kinds} />
-            {s.offer_enabled && <Stat value={`${s.offer_percent}%`} label={fmt(v.hero.offer, { min: s.offer_min_amount.toLocaleString("en-IN") })} />}
-          </div>
-          {wa && (
-            <a href={wa} target="_blank" rel="noopener noreferrer" data-track-label="hero_card_rx" className="relative mt-5 flex h-11 items-center justify-between rounded-[12px] bg-mint px-4 text-sm font-semibold text-forest transition-colors hover:bg-[#d8e6ef]">
-              <span className="flex items-center gap-2">
-                <IconWhatsApp className="h-4 w-4 text-wa" /> {v.hero.ctaRx}
-              </span>
-              <IconArrow className="h-4 w-4" />
-              {/* the AVRON cursor lands here */}
-              <span className="cursor left-[38%] top-[55%]" style={{ ["--fx" as string]: "140px", ["--fy" as string]: "-120px" }} aria-hidden="true">
-                <span className="ring" />
-                <svg viewBox="0 0 24 24">
-                  <path d="M4 2.5l15 8.2-6.6 1.6 3.9 6.9-2.7 1.5-3.9-6.9L5 18.6z" fill="#fff" stroke="#0b1220" strokeWidth="1.4" strokeLinejoin="round" />
-                </svg>
-                <span className="dot" />
-              </span>
-            </a>
-          )}
-        </div>
-      </div>
-      <div className="toast absolute -bottom-6 right-4 flex items-center gap-2 rounded-[14px] border border-line bg-white px-4 py-2.5 text-sm font-medium shadow-lift" style={{ ["--td" as string]: "3.3s" }}>
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-open text-[0.7rem] text-white" aria-hidden="true">
-          ✓
-        </span>
-        {v.hero.toast}
-      </div>
-    </div>
-  );
-}
-
-function Stat({ value, label, hero = false }: { value: string; label: string; hero?: boolean }) {
-  return (
-    <div className="min-w-0">
-      <p lang="en" className={`font-bold leading-none tracking-[-0.04em] ${hero ? "text-[2.4rem] text-emerald sm:text-[2.8rem]" : "text-[1.9rem] sm:text-[2.2rem]"}`} style={{ fontStretch: "80%" }}>
-        {value}
-      </p>
-      <p className="mt-1.5 text-[0.75rem] leading-snug text-ink-2">{label}</p>
-    </div>
-  );
-}
-
-function Head({ eyebrow, title, body, id, link, per }: { eyebrow: string; title: string; body?: string; id: string; link?: { href: string; label: string }; per: boolean }) {
-  return (
-    <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-      <div className="max-w-3xl">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-end">
+      <div className="lg:col-span-8">
         <p data-rv className="eyebrow">
           {eyebrow}
         </p>
-        <h2 id={id} className="mt-4 text-h1">
-          <Split text={title} perWord={per} />
+        <h2 id={id} className="scrub mt-5 text-h1">
+          <Lines lines={lines} />
         </h2>
+      </div>
+      <div className="lg:col-span-4">
         {body && (
-          <p data-rv style={{ ["--i" as string]: 4 }} className="mt-4 max-w-2xl text-lg text-ink-2">
+          <p data-rv style={{ ["--i" as string]: 3 }} className="text-lg leading-relaxed text-ink-2">
             {body}
           </p>
         )}
+        {link && (
+          <Link data-rv href={link.href} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-emerald hover:underline">
+            {link.label} <IconArrow />
+          </Link>
+        )}
       </div>
-      {link && (
-        <Link data-rv href={link.href} className="link-u inline-flex shrink-0 items-center gap-2 self-start text-sm font-semibold text-emerald md:self-auto">
-          {link.label} <IconArrow />
-        </Link>
-      )}
     </div>
   );
 }
 
-function Visit({ ctx, per }: { ctx: SiteContext; per: boolean }) {
+function Visit({ ctx }: { ctx: SiteContext }) {
   const { t, settings: s } = ctx;
   const v = t.v2;
   const tel = telHref(s.phone);
@@ -257,51 +224,47 @@ function Visit({ ctx, per }: { ctx: SiteContext; per: boolean }) {
   ];
   return (
     <section className="container-x pt-section" aria-labelledby="visit-h">
-      <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
-        <div className="lg:col-span-5">
-          <p data-rv className="eyebrow">
-            {v.visit.eyebrow}
-          </p>
-          <h2 id="visit-h" className="mt-4 text-h1">
-            <Split text={v.visit.title} perWord={per} />
-          </h2>
-          <p data-rv style={{ ["--i" as string]: 3 }} className="mt-4 text-lg text-ink-2">
-            {v.visit.body}
-          </p>
-          <div data-rv style={{ ["--i" as string]: 5 }} className="panel mt-8 p-6">
-            <div className="flex items-center justify-between">
-              <p className="font-semibold">{t.location.hours}</p>
-              <span className="chip !text-ink">
-                <OpenStatus labels={v.status} />
-              </span>
-            </div>
-            <dl className="mt-4 divide-y divide-line border-t border-line">
-              {rows.map((r) => (
-                <div key={r.k} className="flex items-center justify-between py-3 text-[0.95rem]">
-                  <dt className="text-ink-2">{r.k}</dt>
-                  <dd lang="en" className="font-mono text-[0.85rem]">
-                    {r.val}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-4 text-sm text-ink-2">{[s.address, s.city, s.state, s.postal_code].filter(Boolean).join(", ")}</p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {s.maps_url && (
-                <a href={s.maps_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                  {t.cta.directions} <IconArrow />
-                </a>
-              )}
-              {tel && (
-                <a href={tel} className="btn btn-ghost">
-                  <IconPhone /> {s.phone}
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-        <div data-rv style={{ ["--i" as string]: 2 }} className="lg:col-span-7">
+      <p data-rv className="eyebrow">
+        {v.visit.eyebrow}
+      </p>
+      <h2 id="visit-h" className="scrub mt-5 text-h1">
+        <Lines lines={t.v3.visit.lines} />
+      </h2>
+      <div className="mt-12 grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        <div data-rv className="lg:col-span-7">
           <StoreVideo caption={t.location.videoCaption} />
+        </div>
+        <div data-rv style={{ ["--i" as string]: 2 }} className="panel p-7 lg:col-span-5">
+          <p className="text-ink-2">{v.visit.body}</p>
+          <div className="mt-6 flex items-center justify-between">
+            <p className="font-semibold">{t.location.hours}</p>
+            <span className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-emerald">
+              <OpenStatus labels={v.status} />
+            </span>
+          </div>
+          <dl className="mt-3 divide-y divide-line border-y border-line">
+            {rows.map((r) => (
+              <div key={r.k} className="flex items-center justify-between py-3.5">
+                <dt className="text-ink-2">{r.k}</dt>
+                <dd lang="en" className="font-mono text-[0.85rem]">
+                  {r.val}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-5 text-sm text-ink-2">{[s.address, s.city, s.state, s.postal_code].filter(Boolean).join(", ")}</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            {s.maps_url && (
+              <a href={s.maps_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                {t.cta.directions} <IconArrow />
+              </a>
+            )}
+            {tel && (
+              <a href={tel} className="btn btn-ghost">
+                <IconPhone /> {s.phone}
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </section>

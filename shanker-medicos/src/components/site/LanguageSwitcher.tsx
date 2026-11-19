@@ -27,8 +27,8 @@ export function LanguageSwitcher({ locale, label, variant = "inline" }: { locale
           aria-current={l === locale ? "true" : undefined}
           className={
             variant === "stack"
-              ? `flex-1 rounded-control border px-3 py-2.5 text-center text-sm font-medium ${l === locale ? "border-forest bg-forest text-ivory" : "border-line text-ink"}`
-              : `rounded-full px-2.5 py-1 text-[0.8rem] font-medium transition ${l === locale ? "bg-mint text-forest" : "text-ink-2 hover:text-ink"}`
+              ? `flex-1 rounded-control border px-3 py-2.5 text-center text-sm font-medium ${l === locale ? "border-ink bg-ink text-ivory" : "border-line text-ink"}`
+              : `rounded-full px-2.5 py-1 text-[0.8rem] font-medium transition ${l === locale ? "bg-ink text-ivory" : "text-ink-2 hover:text-ink"}`
           }
         >
           {variant === "stack" ? LOCALE_META[l].label : LOCALE_META[l].short === "EN" ? "EN" : LOCALE_META[l].label}
