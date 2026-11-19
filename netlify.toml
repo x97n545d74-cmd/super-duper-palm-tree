@@ -9,6 +9,10 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Netlify's Next.js runtime: turns the Next.js build into a working website.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 # The home address "/" has no page of its own: send visitors to their language.
 # (The site's proxy does this too; these rules make sure it works on Netlify.)
 [[redirects]]
