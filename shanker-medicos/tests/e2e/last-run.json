@@ -1,7 +1,7 @@
 {
-  "date": "2026-11-19T10:41:13.911Z",
-  "passed": 69,
-  "total": 69,
+  "date": "2026-11-19T14:38:20.840Z",
+  "passed": 64,
+  "total": 64,
   "results": [
     {
       "name": "/ redirects to /en (default English)",
@@ -11,10 +11,10 @@
     {
       "name": "all required routes render in all three languages",
       "ok": true,
-      "detail": "36 pages"
+      "detail": "24 pages"
     },
     {
-      "name": "unknown pages and products return a localised 404",
+      "name": "unknown pages return a localised 404; old medicine pages redirect to What we stock",
       "ok": true,
       "detail": ""
     },
@@ -29,52 +29,32 @@
       "detail": ""
     },
     {
-      "name": "brand names are not translated",
+      "name": "company names are not translated",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "search suggestions appear while typing",
+      "name": "no medicine names on any public page (owner's rule)",
       "ok": true,
-      "detail": "2 suggestions"
+      "detail": "38 names × 24 pages"
     },
     {
-      "name": "keyboard: arrow + enter opens a suggestion",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "full search: case-insensitive, brand and generic-name search",
+      "name": "what we stock: 12 kinds, each with a WhatsApp question to the store",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "no-results experience with a WhatsApp fallback path",
+      "name": "stock panel: tabs switch the detail card (panel morph)",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "category filter (auto-submits) includes sub-categories",
+      "name": "company finder: instant search, Indian / multinational filter, WhatsApp ask",
       "ok": true,
-      "detail": ""
+      "detail": "107 companies (82 Indian, 25 multinational)"
     },
     {
-      "name": "brand filter and Z–A sorting",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "pagination",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "category tile on the homepage opens a working filtered page",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "store WhatsApp 98155 52404 is used for product enquiries",
+      "name": "entry video: plays once on the homepage, Skip lands it in the hero, not repeated",
       "ok": true,
       "detail": ""
     },
@@ -106,7 +86,7 @@
     {
       "name": "Shanker Club: sign-up gives a member code and a WhatsApp save link",
       "ok": true,
-      "detail": "SM-CH74C"
+      "detail": "SM-5KR8R"
     },
     {
       "name": "Shanker Club: joining again with the same number returns the same code",
@@ -124,12 +104,7 @@
       "detail": ""
     },
     {
-      "name": "conversion events reach the dataLayer (WhatsApp click, search, sign-up)",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "companies page lists the ethical brands A–Z and links to the catalogue",
+      "name": "conversion events reach the dataLayer (WhatsApp click)",
       "ok": true,
       "detail": ""
     },
@@ -164,7 +139,7 @@
       "detail": ""
     },
     {
-      "name": "WhatsApp: product message is generated, encoded and uses the configured number",
+      "name": "WhatsApp: messages are encoded and use the configured number",
       "ok": true,
       "detail": ""
     },
@@ -179,7 +154,7 @@
       "detail": ""
     },
     {
-      "name": "new product is live: searchable by generic name, image served",
+      "name": "new product is saved (admin only, not public); image served",
       "ok": true,
       "detail": ""
     },
@@ -194,7 +169,7 @@
       "detail": ""
     },
     {
-      "name": "unpublish hides the product publicly; publish restores it",
+      "name": "hide and publish a product",
       "ok": true,
       "detail": ""
     },
@@ -214,7 +189,7 @@
       "detail": ""
     },
     {
-      "name": "imported products are live with correct fields",
+      "name": "imported products are saved with correct fields",
       "ok": true,
       "detail": ""
     },
@@ -244,7 +219,7 @@
       "detail": ""
     },
     {
-      "name": "company logos appear on the companies page and on product pages",
+      "name": "company logos appear on the companies page",
       "ok": true,
       "detail": ""
     },
@@ -254,7 +229,7 @@
       "detail": ""
     },
     {
-      "name": "first-party analytics: dashboard counts visits, WhatsApp taps, sources and missed searches",
+      "name": "first-party analytics: dashboard counts visits, WhatsApp taps and sources",
       "ok": true,
       "detail": ""
     },
@@ -269,14 +244,14 @@
       "detail": ""
     },
     {
-      "name": "SEO: valid JSON-LD (Pharmacy, BreadcrumbList, Product) with no invented ratings",
+      "name": "SEO: valid JSON-LD (Pharmacy, BreadcrumbList, FAQPage, ItemList) with no invented ratings",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "SEO: sitemap.xml, robots.txt, filtered pages noindex",
+      "name": "SEO: sitemap.xml and robots.txt",
       "ok": true,
-      "detail": "198 sitemap URLs"
+      "detail": "24 sitemap URLs"
     },
     {
       "name": "all images have alt text; one h1 per page",
@@ -286,7 +261,7 @@
     {
       "name": "no broken internal links (crawl of every locale's pages)",
       "ok": true,
-      "detail": "510 unique links checked"
+      "detail": "24 unique links checked"
     },
     {
       "name": "security headers on public pages; admin is noindex",
@@ -334,7 +309,7 @@
       "detail": ""
     },
     {
-      "name": "mobile: drawer navigation and persistent search",
+      "name": "mobile: drawer navigation",
       "ok": true,
       "detail": ""
     },

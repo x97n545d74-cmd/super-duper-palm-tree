@@ -111,7 +111,7 @@ export function ClubForm({
         </div>
         {err?.errors?.phone && <p className="mt-1 text-sm text-danger">{err.errors.phone}</p>}
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor={`${id}-name`} className="label">
             {labels.name}

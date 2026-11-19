@@ -11,6 +11,7 @@ import { jsonLd, pharmacySchema } from "@/lib/seo";
 import { ClickTracker } from "@/components/marketing/ClickTracker";
 import { Analytics } from "@/components/marketing/Analytics";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
+import { MotionRoot } from "@/components/v2/Motion";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#123F2B",
+  themeColor: "#0B2A45",
   width: "device-width",
   initialScale: 1,
 };
@@ -29,6 +30,8 @@ export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }
 
+const INTRO_SCRIPT = `(function(){var d=document.documentElement;d.classList.remove('no-js');try{var p=location.pathname.replace(/\\/$/,'');var home=/^\\/(en|hi|pa)$/.test(p);var seen=sessionStorage.getItem('sm_intro');var rm=matchMedia('(prefers-reduced-motion: reduce)').matches;var bot=/bot|crawl|spider|slurp|lighthouse|headless|preview/i.test(navigator.userAgent);d.dataset.intro=(home&&!seen&&!rm&&!bot)?'on':'off';if(rm)d.dataset.motion='off'}catch(e){d.dataset.intro='off'}})()`;
+
 const CF_BEACON = process.env.NEXT_PUBLIC_CF_BEACON_TOKEN || "";
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
@@ -36,13 +39,16 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const ctx = await siteContext(locale);
   const lang = isLocale(locale) ? LOCALE_META[locale].htmlLang : "en-IN";
   return (
-    <html lang={lang} className={fontVars}>
+    <html lang={lang} className={`${fontVars} no-js`} suppressHydrationWarning>
       <body className="min-h-dvh">
+        {/* Before first paint: JS on, and whether the entry video plays (homepage, first visit this session, motion allowed, not a crawler). */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
         <Header ctx={ctx} />
         <main id="main">{children}</main>
         <Footer ctx={ctx} />
         <WhatsAppFloat href={ctx.waGeneral} label={ctx.t.whatsapp.float} />
         <ClickTracker />
+        <MotionRoot />
         <Analytics labels={ctx.t.mkt.consent} privacyHref={`/${ctx.locale}/privacy`} />
         {/* Vercel Web Analytics: cookieless visit counts in the Vercel dashboard (only on Vercel). */}
         {process.env.VERCEL === "1" && <VercelAnalytics />}

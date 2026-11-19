@@ -1,6 +1,6 @@
 # Shanker Medicos: digital pharmacy catalogue
 
-The website for **Shanker Medicos**, a retail pharmacy in Batala, Punjab. Customers browse and search the catalogue in English, Hindi or Punjabi, send prescriptions or medicine lists on WhatsApp (+91 98155 52404), reveal the store offer code, and join Shanker Club for an extra discount. Staff manage everything from `/admin`.
+The website for **Shanker Medicos**, a retail pharmacy in Batala, Punjab. Customers see what the shop stocks (12 kinds, from 100+ companies; no medicine names, by the owner's choice) in English, Hindi or Punjabi, send prescriptions or medicine lists on WhatsApp (+91 98155 52404), reveal the store offer code, and join Shanker Club for an extra discount. The homepage opens with the store's earth-to-shop video and uses the AVRON motion system (`src/app/globals.css`, `src/components/v2/`).
 
 It is a **catalogue and enquiry site, not an online pharmacy**: there is no cart, no payment, no prescription upload and no delivery.
 

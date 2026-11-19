@@ -12,7 +12,7 @@ export default function NotFound() {
   const t = getDictionary(locale);
   return (
     <div className="container-x flex min-h-[60vh] flex-col items-center justify-center py-24 text-center">
-      <LogoMark className="h-14 w-14 text-forest" />
+      <LogoMark className="h-16 w-16 text-[2.2rem]" />
       <p className="mt-8 font-mono text-sm text-ink-2">404</p>
       <h1 className="mt-3 text-h1">{t.notFound.title}</h1>
       <p className="mt-4 max-w-md text-ink-2">{t.notFound.body}</p>

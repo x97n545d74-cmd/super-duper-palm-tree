@@ -10,7 +10,7 @@ export function WhatsAppFloat({ href, label }: { href: string | null; label: str
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="group fixed bottom-5 right-5 z-50 inline-flex h-14 items-center gap-2 rounded-full bg-emerald pl-4 pr-4 text-white shadow-float transition hover:bg-[#066b41] md:bottom-7 md:right-7"
+      className="group fixed bottom-5 right-5 z-50 inline-flex h-14 items-center gap-2 rounded-full bg-wa pl-4 pr-4 text-white shadow-float transition hover:bg-[#156640] md:bottom-7 md:right-7"
     >
       <IconWhatsApp className="h-6 w-6" />
       <span className="hidden max-w-0 overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-300 group-hover:max-w-[16rem] md:inline">

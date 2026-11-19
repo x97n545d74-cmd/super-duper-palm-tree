@@ -13,8 +13,11 @@ export async function proxy(request: NextRequest) {
   const first = pathname.split("/")[1];
   if (isLocale(first)) {
     const res = NextResponse.next();
-    // Remember the chosen language for the next visit to "/".
-    if (request.cookies.get(LOCALE_COOKIE)?.value !== first) {
+    // Remember the chosen language for the next visit to "/". Only on real page
+    // loads: background prefetches of the previous language's pages can land
+    // after the switch and would otherwise reset the choice.
+    const background = request.headers.has("rsc") || request.headers.has("next-router-prefetch") || request.headers.get("purpose") === "prefetch";
+    if (!background && request.cookies.get(LOCALE_COOKIE)?.value !== first) {
       res.cookies.set(LOCALE_COOKIE, first, { path: "/", maxAge: YEAR, sameSite: "lax" });
     }
     return res;

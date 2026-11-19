@@ -1,64 +1,15 @@
-import Link from "next/link";
 import { fmt } from "@/i18n";
 import type { SiteContext } from "@/lib/site";
 import { waLink } from "@/lib/whatsapp";
 import { jsonLd } from "@/lib/seo";
-import { catalogue } from "@/lib/data";
 import { PUBLISH_ONLY } from "@/lib/env";
-import { CompanyLogo } from "@/components/site/CompanyLogo";
-import { IconArrow, IconWhatsApp, IconInfo } from "@/components/ui/Icons";
+import { IconWhatsApp } from "@/components/ui/Icons";
 import { OfferCard } from "./OfferCard";
 import { ClubForm } from "./ClubForm";
 
 export function offerVars(ctx: SiteContext) {
   const s = ctx.settings;
   return { percent: s.offer_percent, min: s.offer_min_amount.toLocaleString("en-IN"), code: s.offer_code, extra: s.club_extra_percent };
-}
-
-/** "Send your prescription / medicine list on WhatsApp" band. */
-export async function PrescriptionBand({ ctx }: { ctx: SiteContext }) {
-  const companyCount = (await catalogue.listCompanies()).length;
-  const { t, settings, locale } = ctx;
-  const r = t.mkt.rx;
-  const photo = waLink(settings.whatsapp, r.msgPhoto);
-  const list = waLink(settings.whatsapp, r.msgList);
-  if (!photo || !list) return null;
-  return (
-    <section className="container-x pt-section" aria-labelledby="rx-h">
-      <div className="grid gap-8 rounded-panel border border-line bg-white p-6 sm:p-10 lg:grid-cols-12 lg:items-center">
-        <div className="lg:col-span-5">
-          <p className="eyebrow">{r.eyebrow}</p>
-          <h2 id="rx-h" className="mt-3 text-h2">{r.title}</h2>
-          <p className="mt-3 text-ink-2">{r.body}</p>
-          <p className="mt-5 flex gap-2 text-sm text-ink-2">
-            <IconInfo className="mt-0.5 h-4 w-4 shrink-0 text-emerald" /> {r.note}
-          </p>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:col-span-7">
-          {[
-            { href: photo, title: r.photo, body: r.photoBody, track: "rx_photo" },
-            { href: list, title: r.list, body: r.listBody, track: "rx_list" },
-          ].map((c) => (
-            <a key={c.track} href={c.href} target="_blank" rel="noopener noreferrer" data-track-label={c.track} className="group flex flex-col justify-between gap-6 rounded-card bg-forest p-6 text-ivory transition hover:bg-forest-deep">
-              <IconWhatsApp className="h-7 w-7" />
-              <span>
-                <span className="block font-display text-lg font-semibold">{c.title}</span>
-                <span className="mt-1 block text-sm text-ivory/75">{c.body}</span>
-              </span>
-              <IconArrow className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </a>
-          ))}
-          <div className="rounded-card bg-mint p-5 sm:col-span-2">
-            <p className="font-semibold text-forest">{r.rangeTitle}</p>
-            <p className="mt-1 text-sm text-ink">{r.rangeBody}</p>
-            <Link href={`/${locale}/companies`} className="link-u mt-2 inline-flex items-center gap-1 text-sm font-semibold text-forest">
-              {fmt(t.mkt.companies.teaser, { n: Math.floor(companyCount / 10) * 10 })} <IconArrow />
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
 }
 
 /** Offer reveal + Shanker Club sign-up, side by side. */
@@ -84,9 +35,9 @@ export function OfferAndClub({ ctx, source, headingId = "offer-h" }: { ctx: Site
           />
         )}
         {s.club_enabled && (
-          <div className="rounded-panel border border-line bg-white p-7 sm:p-9" id="club">
+          <div data-rv className="panel relative overflow-hidden p-7 sm:p-9" id="club" style={{ ["--i" as string]: 1 }}>
             <p className="eyebrow">{c.eyebrow}</p>
-            <p className="mt-4 font-display text-h2 font-semibold">{c.title}</p>
+            <p className="mt-4 text-h2 font-bold" style={{ fontStretch: "88%" }}>{c.title}</p>
             <p className="mt-3 text-ink-2">{s.club_extra_percent > 0 ? fmt(c.bodyPercent, v) : c.body}</p>
             {PUBLISH_ONLY ? (
               <div className="mt-6">
@@ -120,7 +71,7 @@ export function OfferTerms({ ctx }: { ctx: SiteContext }) {
   const v = offerVars(ctx);
   const o = ctx.t.mkt.offer;
   return (
-    <div className="rounded-card border border-line bg-white p-6">
+    <div className="panel p-6">
       <h2 className="text-h3">{o.termsTitle}</h2>
       <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-ink">
         {o.terms
@@ -147,17 +98,17 @@ export function Faq({ ctx }: { ctx: SiteContext }) {
   };
   return (
     <section className="container-x pt-section" aria-labelledby="faq-h">
-      <div className="grid gap-10 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <p className="eyebrow">{f.eyebrow}</p>
           <h2 id="faq-h" className="mt-3 text-h2">{f.title}</h2>
         </div>
-        <div className="divide-y divide-line border-y border-line lg:col-span-8">
+        <div className="panel divide-y divide-line px-6 lg:col-span-8">
           {items.map((it) => (
             <details key={it.q} className="group py-1">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-medium">
                 {it.q}
-                <span aria-hidden="true" className="text-xl text-emerald transition-transform group-open:rotate-45">
+                <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-line bg-white text-lg text-emerald transition-transform duration-[420ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-open:rotate-45">
                   +
                 </span>
               </summary>
@@ -167,42 +118,6 @@ export function Faq({ ctx }: { ctx: SiteContext }) {
         </div>
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(schema)} />
-    </section>
-  );
-}
-
-/** Featured companies (logo or monogram) linking to their medicines. */
-export async function CompaniesTeaser({ ctx }: { ctx: SiteContext }) {
-  const { t, locale } = ctx;
-  const all = await catalogue.listCompanies();
-  const featured = all.filter((c) => c.featured).slice(0, 18);
-  const list = featured.length ? featured : all.slice(0, 18);
-  return (
-    <section className="container-x pt-section" aria-labelledby="co-h">
-      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
-          <p className="eyebrow">{t.mkt.companies.eyebrow}</p>
-          <h2 id="co-h" className="mt-3 text-h2">{fmt(t.mkt.companies.teaser, { n: Math.floor(all.length / 10) * 10 })}</h2>
-          <p className="mt-3 text-ink-2">{t.mkt.rx.rangeBody}</p>
-        </div>
-        <Link href={`/${locale}/companies`} className="link-u inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-forest">
-          {t.mkt.companies.viewAll} <IconArrow />
-        </Link>
-      </div>
-      <ul lang="en" className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
-        {list.map((c) => (
-          <li key={c.id} className="bg-white">
-            <Link
-              href={`/${locale}/products?q=${encodeURIComponent(c.search_q || c.name)}`}
-              aria-label={c.name}
-              className="flex h-full min-h-[104px] flex-col items-center justify-center gap-2 px-3 py-5 text-center transition hover:bg-ivory"
-            >
-              <CompanyLogo company={c} variant="badge" />
-              {c.logo_url && <span className="text-xs font-medium leading-snug text-ink-2">{c.name}</span>}
-            </Link>
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }

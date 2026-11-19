@@ -4,7 +4,8 @@ import { pageMeta } from "@/lib/seo";
 import { SITE_URL } from "@/lib/env";
 import { jsonLd } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
-import { OfferAndClub, OfferTerms, PrescriptionBand, Faq, offerVars } from "@/components/marketing/Sections";
+import { OfferAndClub, OfferTerms, Faq, offerVars } from "@/components/marketing/Sections";
+import { Split } from "@/components/v2/Split";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/offers">) {
   const ctx = await siteContext((await params).locale);
@@ -29,18 +30,26 @@ export default async function OffersPage({ params }: PageProps<"/[locale]/offers
       }
     : null;
   return (
-    <div className="pb-8 pt-10">
-      <div className="container-x">
+    <div className="relative isolate pb-8 pt-10">
+      <div className="fields" aria-hidden="true">
+        <i />
+      </div>
+      <div className="container-x relative z-10">
         <Breadcrumbs
           label={t.nav.breadcrumb}
           items={[
             { name: t.nav.home, href: `/${locale}` },
-            { name: t.mkt.navOffers, href: `/${locale}/offers` },
+            { name: t.v2.nav.offers, href: `/${locale}/offers` },
           ]}
         />
-        <h1 className="mt-8 max-w-3xl text-h1">{s.offer_enabled ? fmt(t.mkt.offer.title, v) : t.mkt.club.title}</h1>
+        <p data-rv className="eyebrow mt-10">
+          {t.mkt.offer.badge}
+        </p>
+        <h1 className="mt-4 max-w-4xl text-display">
+          <Split text={s.offer_enabled ? fmt(t.mkt.offer.title, v) : t.mkt.club.title} perWord={locale !== "en"} />
+        </h1>
       </div>
-      <div className="-mt-12">
+      <div className="relative z-10 -mt-8">
         <OfferAndClub ctx={ctx} source="offers_page" headingId="offers-cards-h" />
       </div>
       {s.offer_enabled && (
@@ -48,7 +57,6 @@ export default async function OffersPage({ params }: PageProps<"/[locale]/offers
           <OfferTerms ctx={ctx} />
         </div>
       )}
-      <PrescriptionBand ctx={ctx} />
       <Faq ctx={ctx} />
       {offerSchema && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(offerSchema)} />}
     </div>

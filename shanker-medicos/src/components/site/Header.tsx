@@ -1,48 +1,47 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { IconWhatsApp } from "@/components/ui/Icons";
-import { categoryName, fmt } from "@/i18n";
+import { fmt } from "@/i18n";
 import type { SiteContext } from "@/lib/site";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MobileNav } from "./MobileNav";
-import { SearchBox } from "./SearchBox";
 import { NavLinks } from "./NavLinks";
 
-export function Header({ ctx, showMobileSearch = true }: { ctx: SiteContext; showMobileSearch?: boolean }) {
-  const { t, locale, waGeneral, categories } = ctx;
-  const items = [
+export function navItems(ctx: SiteContext) {
+  const { t, locale } = ctx;
+  return [
     { href: `/${locale}`, label: t.nav.home },
-    { href: `/${locale}/categories`, label: t.nav.categories },
-    { href: `/${locale}/products`, label: t.nav.products },
-    { href: `/${locale}/companies`, label: t.mkt.navCompanies },
-    { href: `/${locale}/offers`, label: t.mkt.navOffers },
-    { href: `/${locale}/about`, label: t.nav.about },
-    { href: `/${locale}/contact`, label: t.nav.contact },
+    { href: `/${locale}/products`, label: t.v2.nav.stock },
+    { href: `/${locale}/companies`, label: t.v2.nav.companies },
+    { href: `/${locale}/offers`, label: t.v2.nav.offers },
+    { href: `/${locale}/about`, label: t.v2.nav.about },
+    { href: `/${locale}/contact`, label: t.v2.nav.visit },
   ];
-  const top = categories.filter((c) => !c.parent_id);
+}
+
+export function Header({ ctx }: { ctx: SiteContext; showMobileSearch?: boolean }) {
+  const { t, locale, waGeneral, settings: s } = ctx;
+  const items = navItems(ctx);
   return (
     <>
-      <a href="#main" className="sr-only z-[100] rounded bg-forest px-4 py-2 text-ivory focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+      <a href="#main" className="sr-only z-[100] rounded bg-forest px-4 py-2 text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
         {t.nav.skip}
       </a>
-      <div className="bg-forest text-ivory">
-        <p className="container-x flex flex-wrap items-center justify-center gap-x-3 py-2 text-center text-[0.78rem] text-ivory/85">
-          <span className={ctx.settings.offer_enabled ? "hidden md:inline" : ""}>{t.announce}</span>
-          {ctx.settings.offer_enabled && (
-            <>
-              <span aria-hidden="true" className="hidden text-ivory/40 md:inline">
-                ·
-              </span>
-              <Link href={`/${locale}/offers`} className="font-semibold text-ivory underline-offset-4 hover:underline">
-                {fmt(t.mkt.offer.announce, { percent: ctx.settings.offer_percent, min: ctx.settings.offer_min_amount.toLocaleString("en-IN") })} →
-              </Link>
-            </>
-          )}
-        </p>
-      </div>
-      <header className="sticky top-0 z-40 border-b border-line/80 bg-ivory/90 backdrop-blur-md supports-[backdrop-filter]:bg-ivory/75">
-        <div className="container-x flex h-[68px] items-center justify-between gap-6">
-          <Link href={`/${locale}`} aria-label={`${ctx.settings.business_name}, ${t.nav.home}`} className="shrink-0">
+      {s.offer_enabled && (
+        <div className="bg-forest text-white">
+          <p className="container-x flex items-center justify-center gap-3 py-2 text-center text-[0.8rem]">
+            <span className="hidden font-mono text-[0.68rem] uppercase tracking-[0.1em] text-white/60 sm:inline">{t.mkt.offer.badge}</span>
+            <Link href={`/${locale}/offers`} className="font-medium text-white underline-offset-4 hover:underline">
+              {fmt(t.mkt.offer.announce, { percent: s.offer_percent, min: s.offer_min_amount.toLocaleString("en-IN") })} →
+            </Link>
+          </p>
+        </div>
+      )}
+      <header className="sticky top-0 z-40 border-b border-line/70">
+        {/* Blur lives on its own layer: backdrop-filter on the header itself would trap the fixed mobile menu inside it. */}
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-ivory/80 backdrop-blur-xl" />
+        <div className="container-x flex h-[72px] items-center justify-between gap-6">
+          <Link href={`/${locale}`} aria-label={`${s.business_name}, ${t.nav.home}`} className="shrink-0">
             <Logo />
           </Link>
           <NavLinks items={items} />
@@ -55,20 +54,9 @@ export function Header({ ctx, showMobileSearch = true }: { ctx: SiteContext; sho
                 <IconWhatsApp className="h-4 w-4" /> {t.cta.whatsapp}
               </a>
             )}
-            <MobileNav
-              locale={locale}
-              items={items}
-              categories={top.map((c) => ({ slug: c.slug, name: categoryName(c, locale) }))}
-              labels={{ menu: t.nav.menu, close: t.nav.close, language: t.nav.language, categories: t.nav.categories, whatsapp: t.cta.whatsappUs }}
-              waHref={waGeneral}
-            />
+            <MobileNav locale={locale} items={items} labels={{ menu: t.nav.menu, close: t.nav.close, language: t.nav.language, whatsapp: t.cta.whatsappUs }} waHref={waGeneral} />
           </div>
         </div>
-        {showMobileSearch && (
-          <div className="container-x pb-3 xl:hidden">
-            <SearchBox locale={locale} labels={{ ...t.search, placeholder: t.search.short }} />
-          </div>
-        )}
       </header>
     </>
   );

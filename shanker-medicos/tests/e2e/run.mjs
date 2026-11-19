@@ -133,7 +133,7 @@ page.on("pageerror", (e) => consoleErrors.push(String(e)));
 page.on("console", (m) => m.type() === "error" && !/favicon|Failed to load resource: the server responded with a status of 404/.test(m.text()) && consoleErrors.push(m.text()));
 
 const LOCALES = ["en", "hi", "pa"];
-const PAGES = ["", "/offers", "/companies", "/products", "/categories", "/categories/medicines", "/categories/baby-care", "/products/dolo-650", "/about", "/contact", "/privacy", "/terms"];
+const PAGES = ["", "/offers", "/companies", "/products", "/about", "/contact", "/privacy", "/terms"];
 
 /* ================= Routing + i18n ================= */
 
@@ -152,11 +152,16 @@ await step("all required routes render in all three languages", async () => {
   return `${LOCALES.length * PAGES.length} pages`;
 });
 
-await step("unknown pages and products return a localised 404", async () => {
-  for (const p of ["/en/nope", "/hi/products/does-not-exist", "/pa/categories/nope"]) {
+await step("unknown pages return a localised 404; old medicine pages redirect to What we stock", async () => {
+  for (const p of ["/en/nope", "/hi/companies/nope", "/pa/nope/deeper"]) {
     const r = await get(p);
     assert(r.status === 404, `${p} ${r.status}`);
   }
+  for (const l of LOCALES)
+    for (const p of ["/products/dolo-650", "/categories", "/categories/medicines"]) {
+      const r = await get(`/${l}${p}`);
+      assert(r.status === 308 && r.headers.get("location").endsWith(`/${l}/products`), `${l}${p} ${r.status}`);
+    }
   await page.goto(`${BASE}/pa/nope`);
   assert(/[਀-੿]/.test(await page.textContent("h1")), "404 not in Punjabi");
 });
@@ -177,99 +182,109 @@ await step("html lang + script rendering for Hindi and Punjabi", async () => {
 });
 
 await step("language switcher keeps the page and persists the choice", async () => {
-  await page.goto(`${BASE}/en/products?q=dolo`);
+  await page.goto(`${BASE}/en/companies`);
   await page.click('header nav[aria-label="Language"] a[hreflang="pa-IN"]');
-  await page.waitForURL(/\/pa\/products\?q=dolo/);
+  await page.waitForURL(/\/pa\/companies$/);
   await page.goto(`${BASE}/`);
   assert(page.url().endsWith("/pa"), `remembered: ${page.url()}`);
   await page.goto(`${BASE}/en`); // reset cookie to English
 });
 
-await step("brand names are not translated", async () => {
-  await page.goto(`${BASE}/hi/products/shelcal-500`);
-  assert((await page.textContent("h1")).trim() === "Shelcal 500");
+await step("company names are not translated", async () => {
+  await page.goto(`${BASE}/hi/companies`);
+  const t = await page.textContent("main");
+  assert(t.includes("Cipla") && t.includes("Sun Pharma"), "company names missing on the Hindi page");
 });
 
 /* ================= Search + catalogue ================= */
 
-await step("search suggestions appear while typing", async () => {
-  await page.goto(`${BASE}/en`);
-  const box = page.locator('section[aria-labelledby="search-h"] input[type=search]');
-  await box.fill("dol");
-  await page.waitForSelector('section[aria-labelledby="search-h"] [role=option]');
-  const opts = await page.locator('section[aria-labelledby="search-h"] [role=option]').allTextContents();
-  assert(opts.some((t) => t.includes("Dolo 650")), opts.join(" | "));
-  return `${opts.length} suggestions`;
+/* ================= What we stock + companies ================= */
+
+await step("no medicine names on any public page (owner's rule)", async () => {
+  const seed = readFileSync(path.join(ROOT, "src/lib/data/seed.ts"), "utf8");
+  const blockStart = seed.indexOf("const PRODUCTS");
+  const names = [...seed.slice(blockStart, seed.indexOf("];", blockStart)).matchAll(/^\s*\["([^"]+)"/gm)].map((m) => m[1]);
+  assert(names.length > 30, `parsed ${names.length}`);
+  const hits = [];
+  for (const l of LOCALES) for (const p of PAGES) {
+    const html = await (await get(`/${l}${p}`)).text();
+    for (const n of names) if (html.includes(n)) hits.push(`${l}${p}:${n}`);
+  }
+  assert(!hits.length, hits.slice(0, 5).join(", "));
+  return `${names.length} names × ${LOCALES.length * PAGES.length} pages`;
 });
 
-await step("keyboard: arrow + enter opens a suggestion", async () => {
-  const box = page.locator('section[aria-labelledby="search-h"] input[type=search]');
-  await box.fill("omron");
-  await page.waitForSelector('section[aria-labelledby="search-h"] [role=option]');
-  await box.press("ArrowDown");
-  await box.press("Enter");
-  await page.waitForURL((u) => /\/en\/(products|categories)/.test(u.pathname + u.search) && u.pathname !== "/en");
-});
-
-await step("full search: case-insensitive, brand and generic-name search", async () => {
-  await page.goto(`${BASE}/en/products?q=PARACETAMOL`);
-  const names = await page.locator("article h3").allTextContents();
-  assert(names.length === 2 && names.includes("Dolo 650") && names.includes("Crocin Advance"), names.join(","));
-  await page.goto(`${BASE}/en/products?q=himalaya`);
-  assert((await page.locator("article").count()) === 3, "himalaya brand search");
-});
-
-await step("no-results experience with a WhatsApp fallback path", async () => {
-  await page.goto(`${BASE}/en/products?q=zzqqxx`);
-  assert((await page.textContent("main")).includes("Nothing matched"), "no-results text");
-});
-
-await step("category filter (auto-submits) includes sub-categories", async () => {
+await step("what we stock: 12 kinds, each with a WhatsApp question to the store", async () => {
   await page.goto(`${BASE}/en/products`);
-  await page.selectOption("#f-category", "medicines");
-  await page.waitForURL(/category=medicines/);
-  const count = await page.locator("article").count();
-  assert(count === 9, `medicines shows ${count}`);
-  assert(!page.url().includes("brand="), "empty params dropped from URL");
+  const links = await page.locator("main li[id] a[href*='wa.me']").evaluateAll((as) => as.map((a) => a.href));
+  assert(links.length === 12, `${links.length} kinds`);
+  assert(links.every((h) => h.includes("/919815552404")), "store number");
+  const texts = links.map((h) => new URL(h).searchParams.get("text"));
+  assert(texts.some((t) => t.includes("injectables")) && texts.some((t) => t.includes("ayurvedic & herbal")), texts.slice(0, 3).join(" | "));
+  assert((await page.textContent("#injectables")).includes("Prescription needed"), "injectables marked prescription");
+  await page.goto(`${BASE}/pa/products`);
+  assert(/[਀-੿]/.test(await page.textContent("#syrups h2")), "Punjabi kind names");
 });
 
-await step("brand filter and Z–A sorting", async () => {
-  await page.goto(`${BASE}/en/products?brand=Omron&sort=za`);
-  const names = await page.locator("article h3").allTextContents();
-  assert(names.length === 3 && names[0].startsWith("Omron NE") && names[2].startsWith("Omron HEM"), names.join(","));
-});
-
-await step("pagination", async () => {
-  await page.goto(`${BASE}/en/products`);
-  assert((await page.locator("article").count()) === 24, "page 1 has 24");
-  await page.click('nav[aria-label="Pagination"] a[rel=next]');
-  await page.waitForURL(/page=2/);
-  await page.waitForFunction(() => document.querySelectorAll("article").length === 14, null, { timeout: 8000 }).catch(() => {});
-  const n = await page.locator("article").count();
-  assert(n === 38 - 24, `page 2 shows ${n}`);
-  assert((await page.locator('nav[aria-label="Pagination"] [aria-current="page"]').textContent()) === "2", "current page marker");
-});
-
-await step("category tile on the homepage opens a working filtered page", async () => {
+await step("stock panel: tabs switch the detail card (panel morph)", async () => {
   await page.goto(`${BASE}/en`);
-  await page.click('section[aria-labelledby="cat-h"] a[href="/en/categories/baby-care"]');
-  await page.waitForURL(/categories\/baby-care/);
-  assert((await page.locator("article").count()) === 3);
+  assert((await page.textContent("#stock-detail")).includes("Tablets"), "first tab");
+  await page.click("button[role=tab]:has-text('Eye & ear drops')");
+  assert((await page.getAttribute("button[role=tab]:has-text('Eye & ear drops')", "aria-selected")) === "true", "aria-selected");
+  const detail = await page.textContent("#stock-detail");
+  assert(detail.includes("eye ointments"), detail.slice(0, 80));
+  const wa = await page.locator("#stock-detail a[href*='wa.me']").getAttribute("href");
+  assert(new URL(wa).searchParams.get("text").includes("eye & ear drops"), "message follows the tab");
 });
 
-await step("store WhatsApp 98155 52404 is used for product enquiries", async () => {
-  await page.goto(`${BASE}/en/products/dolo-650`);
-  const href = await page.locator('main a[data-wa="1"]').first().getAttribute("href");
-  const url = new URL(href);
-  assert(url.pathname === "/919815552404", url.pathname);
-  assert(url.searchParams.get("text").includes("Product: Dolo 650"), "message");
+await step("company finder: instant search, Indian / multinational filter, WhatsApp ask", async () => {
+  await page.goto(`${BASE}/en/companies`);
+  const cards = page.locator("main ul[lang=en] li");
+  const all = await cards.count();
+  assert(all >= 100, `${all} companies`);
+  await page.fill("input[type=search]", "sun ph");
+  assert((await cards.count()) === 1 && (await cards.first().textContent()).includes("Sun Pharma"), "search");
+  const msg = new URL(await cards.first().locator("a").getAttribute("href")).searchParams.get("text");
+  assert(msg.includes("Sun Pharma") && msg.startsWith("Hello Shanker Medicos"), msg);
+  await page.fill("input[type=search]", "zzqq");
+  assert((await page.textContent("main")).includes("No company matches"), "no-results text");
+  await page.fill("input[type=search]", "");
+  await page.click("button[aria-pressed]:has-text('Multinational')");
+  const mnc = await cards.count();
+  await page.click("button[aria-pressed]:has-text('Indian')");
+  const ind = await cards.count();
+  assert(mnc + ind === all && mnc > 5, `${mnc} + ${ind} != ${all}`);
+  return `${all} companies (${ind} Indian, ${mnc} multinational)`;
+});
+
+await step("entry video: plays once on the homepage, Skip lands it in the hero, not repeated", async () => {
+  const c = await browser.newContext({ viewport: { width: 1280, height: 800 }, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36" });
+  const p = await c.newPage();
+  await p.goto(`${BASE}/en`);
+  assert((await p.getAttribute("html", "data-intro")) === "on", "intro not started");
+  assert(await p.locator(".intro video").isVisible(), "video not visible");
+  await p.waitForTimeout(700);
+  await p.click(".intro button:has-text('Skip')");
+  await p.waitForFunction(() => document.documentElement.dataset.intro === "off", null, { timeout: 4000 });
+  assert(!(await p.locator(".intro").isVisible()), "overlay still visible");
+  await p.waitForFunction(() => document.querySelector("h1 .split")?.classList.contains("in"), null, { timeout: 4000 });
+  await p.goto(`${BASE}/en`);
+  assert((await p.getAttribute("html", "data-intro")) === "off", "intro repeated in the same visit");
+  await p.goto(`${BASE}/en/companies`);
+  assert((await p.getAttribute("html", "data-intro")) === "off", "intro on an inner page");
+  await c.close();
+  const rm = await browser.newContext({ reducedMotion: "reduce", userAgent: "Mozilla/5.0 Chrome/130.0" });
+  const q = await rm.newPage();
+  await q.goto(`${BASE}/en`);
+  assert((await q.getAttribute("html", "data-intro")) === "off", "intro ignores reduced motion");
+  await rm.close();
 });
 
 /* ================= Marketing ================= */
 
 await step("prescription on WhatsApp: photo and medicine-list buttons with prefilled text", async () => {
   await page.goto(`${BASE}/en`);
-  const links = await page.locator('section[aria-labelledby="rx-h"] a[href*="wa.me"]').evaluateAll((as) => as.map((a) => a.href));
+  const links = await page.locator('section[aria-labelledby="order-h"] a[href*="wa.me"]').evaluateAll((as) => as.map((a) => a.href));
   assert(links.length === 2, `${links.length} links`);
   const texts = links.map((h) => new URL(h).searchParams.get("text"));
   assert(texts[0].includes("prescription") && texts[1].includes("1. "), texts.join(" | "));
@@ -378,25 +393,17 @@ await step("consent banner: analytics only load after Accept", async () => {
   await c.close();
 });
 
-await step("conversion events reach the dataLayer (WhatsApp click, search, sign-up)", async () => {
+await step("conversion events reach the dataLayer (WhatsApp click)", async () => {
   const c = await browser.newContext();
   const p = await c.newPage();
   await p.addInitScript(() => localStorage.setItem("sm_consent", "denied"));
-  await p.goto(`${BASE}/en/products?q=dolo`);
-  await p.locator('article a[href*="wa.me"]').first().evaluate((a) => a.addEventListener("click", (e) => e.preventDefault()));
-  await p.locator('article a[href*="wa.me"]').first().click();
+  await p.goto(`${BASE}/en/companies`);
+  const a = p.locator('main ul[lang=en] a[href*="wa.me"]').first();
+  await a.evaluate((el) => el.addEventListener("click", (e) => e.preventDefault()));
+  await a.click();
   const events = await p.evaluate(() => (window.dataLayer || []).map((e) => e.event));
   await c.close();
-  assert(events.includes("search") && events.includes("whatsapp_click"), events.join(","));
-});
-
-await step("companies page lists the ethical brands A–Z and links to the catalogue", async () => {
-  await page.goto(`${BASE}/en/companies`);
-  const n = await page.locator('section[id^="letter-"] li').count();
-  assert(n >= 60, `${n} companies`);
-  await page.click('a:has-text("Micro Labs")');
-  await page.waitForURL(/products\?q=Micro/);
-  assert((await page.locator("article h3").allTextContents()).includes("Dolo 650"), "Micro Labs → Dolo 650");
+  assert(events.includes("whatsapp_click"), events.join(","));
 });
 
 /* ================= Admin ================= */
@@ -452,22 +459,20 @@ await step("business settings save and appear on the website", async () => {
   assert(ok, "address not shown on contact page");
 });
 
-await step("WhatsApp: product message is generated, encoded and uses the configured number", async () => {
-  await eventually(page, `${BASE}/en/products/dolo-650`, async () => (await page.locator('main a[href*="wa.me"]').count()) > 0);
-  const href = await page.locator('main a[data-wa="1"]').first().getAttribute("href");
+await step("WhatsApp: messages are encoded and use the configured number", async () => {
+  await eventually(page, `${BASE}/en/products`, async () => (await page.locator('#tablets a[href*="/919000012345"]').count()) === 1);
+  const href = await page.locator('#tablets a[href*="wa.me"]').getAttribute("href");
   const url = new URL(href);
   assert(url.hostname === "wa.me" && url.pathname === "/919000012345", url.pathname);
-  const text = url.searchParams.get("text");
-  assert(text.includes("Product: Dolo 650") && text.includes("Brand: Dolo") && text.includes("Pack Size: Strip of 15 tablets"), text);
+  assert(url.searchParams.get("text").includes("I need tablets"), url.searchParams.get("text"));
   assert(href.includes("%0A"), "newlines encoded");
-  assert((await page.locator('main a[data-wa="1"]').first().getAttribute("target")) === "_blank");
+  assert((await page.locator('#tablets a[href*="wa.me"]').getAttribute("target")) === "_blank");
 });
 
 await step("WhatsApp: Punjabi page builds a Punjabi message; floating button present", async () => {
-  await eventually(page, `${BASE}/pa/products/dolo-650`, async () => (await page.locator('a[data-wa="1"]').count()) > 0);
-  const href = await page.locator('main a[data-wa="1"]').first().getAttribute("href");
-  const text = new URL(href).searchParams.get("text");
-  assert(/[਀-੿]/.test(text) && text.includes("Dolo 650"), text);
+  await eventually(page, `${BASE}/pa/products`, async () => (await page.locator('#tablets a[href*="wa.me"]').count()) === 1);
+  const text = new URL(await page.locator('#tablets a[href*="wa.me"]').getAttribute("href")).searchParams.get("text");
+  assert(/[਀-੿]/.test(text) && text.includes("ਗੋਲੀਆਂ"), text);
   assert((await page.locator('a[aria-label="ਵਟਸਐਪ \'ਤੇ ਗੱਲ ਕਰੋ"]').count()) === 1, "float button");
 });
 
@@ -490,15 +495,14 @@ await step("create a product with an uploaded image", async () => {
   assert((await page.textContent("p[role=status]")).includes("Product added"));
 });
 
-await step("new product is live: searchable by generic name, image served", async () => {
-  const ok = await eventually(page, `${BASE}/en/products?q=testamol`, async () => (await page.locator("article h3").allTextContents()).includes("E2E Test Syrup"));
-  assert(ok, "not found in search");
-  await page.goto(`${BASE}/en/products/e2e-test-syrup-100-ml-bottle`);
-  const src = await page.locator("main img").first().getAttribute("src");
-  assert(src && src.startsWith("/api/media/"), `img ${src}`);
+await step("new product is saved (admin only, not public); image served", async () => {
+  await page.goto(`${BASE}/admin/products?q=e2e`);
+  assert((await page.textContent("main")).includes("E2E Test Syrup"), "not in admin list");
+  await page.goto(`${BASE}/admin/products/${createdId}`);
+  const src = await page.locator('main img[src^="/api/media/"]').first().getAttribute("src");
   const r = await get(src);
   assert(r.status === 200 && r.headers.get("content-type") === "image/png", `${r.status}`);
-  assert((await page.textContent("main")).includes("In stock"), "availability shown");
+  assert(!(await (await get("/en/products")).text()).includes("E2E Test Syrup"), "product name on a public page");
 });
 
 await step("duplicate product (same name + brand + pack) is blocked", async () => {
@@ -516,21 +520,18 @@ await step("edit a product", async () => {
   await page.fill("#pack_size", "200 ml bottle");
   await page.click("button[type=submit]:has-text('Save changes')");
   await page.waitForSelector("p[role=status]");
-  const ok = await eventually(page, `${BASE}/en/products/e2e-test-syrup-100-ml-bottle`, async () => (await page.textContent("main")).includes("200 ml bottle"));
-  assert(ok, "edit not visible");
+  await page.goto(`${BASE}/admin/products/${createdId}`);
+  assert((await page.inputValue("#pack_size")) === "200 ml bottle", "edit not saved");
 });
 
-await step("unpublish hides the product publicly; publish restores it", async () => {
+await step("hide and publish a product", async () => {
   await page.goto(`${BASE}/admin/products?q=e2e`);
   await page.click("button:has-text('Hide')");
   await page.waitForSelector("button:has-text('Publish')");
-  let r = await get("/en/products/e2e-test-syrup-100-ml-bottle");
-  assert(r.status === 404, `hidden status ${r.status}`);
-  assert(!(await (await get("/en/products?q=e2e")).text()).includes("E2E Test Syrup"), "hidden product still listed");
+  await page.goto(`${BASE}/admin/products?q=e2e`);
+  assert((await page.locator("button:has-text('Publish')").count()) === 1, "hidden state not saved");
   await page.click("button:has-text('Publish')");
   await page.waitForSelector("button:has-text('Hide')");
-  r = await get("/en/products/e2e-test-syrup-100-ml-bottle");
-  assert(r.status === 200, `published status ${r.status}`);
 });
 
 await step("categories: add (3 languages), reorder, delete", async () => {
@@ -541,9 +542,6 @@ await step("categories: add (3 languages), reorder, delete", async () => {
   await add.locator('input[name="name_pa"]').fill("ਆਯੁਰਵੇਦ");
   await add.locator("button[type=submit]").click();
   await add.locator("p[role=status]").waitFor();
-  const ok = await eventually(page, `${BASE}/pa/categories`, async () => (await page.textContent("main")).includes("ਆਯੁਰਵੇਦ"));
-  assert(ok, "new category not on public list");
-  assert((await get("/en/categories/e2e-ayurveda")).status === 200, "category page");
   // reorder: move it up one place
   await page.goto(`${BASE}/admin/categories`);
   const names = async () => (await page.locator("ul > li > details > summary span.font-medium").allTextContents()).filter((n) => !["Prescription Medicines", "OTC Products"].includes(n));
@@ -559,7 +557,6 @@ await step("categories: add (3 languages), reorder, delete", async () => {
   page.once("dialog", (d) => d.accept());
   await row.locator("button:has-text('Delete this category')").click();
   await page.locator("li:has(summary:has-text('E2E Ayurveda'))").waitFor({ state: "detached" });
-  assert((await get("/en/categories/e2e-ayurveda")).status === 404, "deleted category still public");
 });
 
 await step("category with products cannot be deleted", async () => {
@@ -606,12 +603,13 @@ await step("CSV import: mapping, validation, duplicate detection, preview, summa
   assert(report.includes("row,error") && report.includes("space-food"), "error report content");
 });
 
-await step("imported products are live with correct fields", async () => {
-  const ok = await eventually(page, `${BASE}/en/products?q=alphamol`, async () => (await page.locator("article h3").allTextContents()).includes("Import Alpha"));
-  assert(ok, "Import Alpha not searchable by generic name");
-  await page.goto(`${BASE}/en/products/import-gamma-1-unit`);
-  const main = await page.textContent("main");
-  assert(main.includes("Imp, Brand") && main.includes("Available on order"), "quoted CSV field / availability");
+await step("imported products are saved with correct fields", async () => {
+  await page.goto(`${BASE}/admin/products?q=import`);
+  const t = await page.textContent("main");
+  assert(t.includes("Import Alpha") && t.includes("Import Beta") && t.includes("Import Gamma"), "imported rows missing");
+  await page.click("a:has-text('Import Gamma')");
+  await page.waitForURL(/\/admin\/products\/[0-9a-f-]{36}/);
+  assert((await page.inputValue("#brand")) === "Imp, Brand" && (await page.inputValue("#availability")) === "on_order", "quoted CSV field / availability");
 });
 
 await step("delete a product", async () => {
@@ -619,7 +617,8 @@ await step("delete a product", async () => {
   page.once("dialog", (d) => d.accept());
   await page.click("aside button:has-text('Delete')");
   await page.waitForURL(/deleted=1/);
-  assert((await get("/en/products/e2e-test-syrup-100-ml-bottle")).status === 404);
+  await page.goto(`${BASE}/admin/products?q=e2e`);
+  assert(!(await page.textContent("main")).includes("E2E Test Syrup"), "still listed");
 });
 
 await step("server actions refuse unauthenticated calls", async () => {
@@ -674,12 +673,10 @@ await step("companies & logos: 100+ companies, bulk logo upload matched by file 
   assert(log.includes("micro-labs.png → Micro Labs") && log.includes("Cipla_logo.png → Cipla") && log.includes("No company matches"), log);
 });
 
-await step("company logos appear on the companies page and on product pages", async () => {
+await step("company logos appear on the companies page", async () => {
   const ok = await eventually(page, `${BASE}/en/companies`, async () => (await page.locator('img[alt="Micro Labs logo"]').count()) === 1);
   assert(ok, "logo not on companies page");
-  await eventually(page, `${BASE}/en/products/dolo-650`, async () => (await page.locator('main img[alt="Micro Labs logo"]').count()) === 1);
-  assert((await page.locator('main img[alt="Micro Labs logo"]').count()) === 1, "logo not on product page");
-  const src = await page.locator('main img[alt="Micro Labs logo"]').getAttribute("src");
+  const src = await page.locator('img[alt="Micro Labs logo"]').getAttribute("src");
   assert((await get(src)).status === 200, "logo file not served");
 });
 
@@ -691,19 +688,18 @@ await step("admin: edit a company and feature it on the homepage", async () => {
   await row.locator('input[name="featured"]').check();
   await row.locator("button:has-text('Save company')").click();
   await row.locator("p[role=status]").waitFor();
-  const ok = await eventually(page, `${BASE}/en`, async () => (await page.locator('section[aria-labelledby="co-h"]').textContent()).includes("Kopran"));
+  const ok = await eventually(page, `${BASE}/en`, async () => (await page.locator('section[aria-labelledby="co-h"]').textContent()).includes("Anti-infectives (edited)"));
   assert(ok, "featured company not on homepage");
 });
 
-await step("first-party analytics: dashboard counts visits, WhatsApp taps, sources and missed searches", async () => {
+await step("first-party analytics: dashboard counts visits, WhatsApp taps and sources", async () => {
   // a fresh visitor (own browser) arriving from a Google Ads link
   const c = await browser.newContext({ userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36 e2e-visitor" });
   const p = await c.newPage();
   await p.goto(`${BASE}/hi/offers?utm_source=google&utm_medium=cpc&utm_campaign=e2e_ads`, { waitUntil: "networkidle" });
   await p.waitForTimeout(400);
-  await p.goto(`${BASE}/hi/products?q=zzunknownmed`, { waitUntil: "networkidle" });
-  await p.goto(`${BASE}/hi/products/dolo-650`, { waitUntil: "networkidle" });
-  const wa = p.locator('main a[data-wa="1"]').first();
+  await p.goto(`${BASE}/hi/products`, { waitUntil: "networkidle" });
+  const wa = p.locator('#tablets a[href*="wa.me"]');
   await wa.evaluate((a) => a.addEventListener("click", (e) => e.preventDefault()));
   await wa.click();
   await p.waitForTimeout(800);
@@ -719,7 +715,6 @@ await step("first-party analytics: dashboard counts visits, WhatsApp taps, sourc
   const main = await page.textContent("main");
   assert(!main.includes("No visits recorded"), "no data on dashboard");
   assert(main.includes("e2e_ads"), "campaign missing from sources");
-  assert(main.includes("zzunknownmed"), "missed search missing");
   const wa7 = await page.locator("li:has(p:text-is('WhatsApp enquiries')) p.font-display").textContent();
   assert(Number(wa7.replace(/\D/g, "")) >= 1, `WhatsApp enquiries ${wa7}`);
   assert((await page.locator('[role=img][aria-label^="Visits"]').count()) === 1, "visits chart");
@@ -753,27 +748,29 @@ await step("SEO: unique titles, descriptions, canonical, hreflang, OG on every p
   assert(titles.size >= LOCALES.length * PAGES.length - 3, `only ${titles.size} unique titles`);
 });
 
-await step("SEO: valid JSON-LD (Pharmacy, BreadcrumbList, Product) with no invented ratings", async () => {
-  await page.goto(`${BASE}/en/products/dolo-650`);
+await step("SEO: valid JSON-LD (Pharmacy, BreadcrumbList, FAQPage, ItemList) with no invented ratings", async () => {
+  await page.goto(`${BASE}/en`);
+  const home = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((b) => JSON.parse(b)["@type"]);
+  assert(home.includes("Pharmacy") && home.includes("FAQPage"), home.join(","));
+  await page.goto(`${BASE}/en/companies`);
   const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
   const types = blocks.map((b) => JSON.parse(b)["@type"]);
-  assert(types.includes("Pharmacy") && types.includes("BreadcrumbList") && types.includes("Product"), types.join(","));
+  assert(types.includes("BreadcrumbList") && types.includes("ItemList"), types.join(","));
   assert(!blocks.join("").match(/aggregateRating|review/i), "ratings present");
 });
 
-await step("SEO: sitemap.xml, robots.txt, filtered pages noindex", async () => {
+await step("SEO: sitemap.xml and robots.txt", async () => {
   const sm = await (await get("/sitemap.xml")).text();
   const n = (sm.match(/<url>/g) || []).length;
-  assert(sm.includes("/pa/products/dolo-650") && sm.includes("hreflang") && n > 100, `${n} urls`);
+  assert(sm.includes("/pa/products") && sm.includes("hreflang") && n === LOCALES.length * PAGES.length, `${n} urls`);
+  assert(!sm.includes("/products/") && !sm.includes("/categories"), "medicine pages in sitemap");
   const rb = await (await get("/robots.txt")).text();
   assert(rb.includes("Disallow: /admin") && rb.includes("Sitemap:"), rb);
-  await page.goto(`${BASE}/en/products?q=dolo`);
-  assert((await page.getAttribute('meta[name="robots"]', "content")).includes("noindex"), "search page indexable");
   return `${n} sitemap URLs`;
 });
 
 await step("all images have alt text; one h1 per page", async () => {
-  for (const p of ["/en", "/en/products", "/en/products/dolo-650", "/hi/contact", "/en/offers", "/pa/companies"]) {
+  for (const p of ["/en", "/en/products", "/hi/contact", "/en/offers", "/pa/companies", "/en/about"]) {
     await page.goto(BASE + p);
     const noAlt = await page.locator("img:not([alt])").count();
     const h1 = await page.locator("h1").count();
@@ -852,7 +849,7 @@ for (const v of viewports) {
     const c = await browser.newContext(v.device);
     const p = await c.newPage();
     const over = [];
-    for (const u of ["/en", "/pa", "/en/products", "/en/products/dolo-650", "/hi/contact", "/en/about", "/en/offers", "/pa/companies", "/admin/login"]) {
+    for (const u of ["/en", "/pa", "/hi", "/en/products", "/pa/products", "/hi/contact", "/en/about", "/en/offers", "/pa/companies", "/hi/companies", "/admin/login"]) {
       await p.goto(BASE + u);
       // Compare with the real screen width: mobile emulation widens innerWidth to fit overflowing content.
       const bad = await p.evaluate(() => {
@@ -870,26 +867,22 @@ for (const v of viewports) {
   });
 }
 
-await step("mobile: drawer navigation and persistent search", async () => {
+await step("mobile: drawer navigation", async () => {
   const c = await browser.newContext(devices["iPhone 13"]);
   const p = await c.newPage();
   await p.goto(`${BASE}/en/about`);
-  assert(await p.locator("header input[type=search]").isVisible(), "mobile search hidden");
   await p.click('button[aria-controls="mobile-drawer"]');
   await p.waitForSelector("#mobile-drawer:not([inert])");
-  await p.click('#mobile-drawer a[href="/en/categories/first-aid"]');
-  await p.waitForURL(/first-aid/);
+  await p.click('#mobile-drawer a[href="/en/companies"]');
+  await p.waitForURL(/\/en\/companies$/);
   assert((await p.getAttribute("#mobile-drawer", "inert")) !== null, "drawer did not close after navigating");
-  await p.locator("header input[type=search]").fill("crocin");
-  await p.locator("header input[type=search]").press("Enter");
-  await p.waitForURL(/q=crocin/);
   await c.close();
 });
 
 await step("tap targets: primary buttons are at least 40px tall on mobile", async () => {
   const c = await browser.newContext(devices["Pixel 7"]);
   const p = await c.newPage();
-  await p.goto(`${BASE}/en/products/dolo-650`);
+  await p.goto(`${BASE}/en/products`);
   const h = await p.locator("main .btn").first().evaluate((el) => el.getBoundingClientRect().height);
   await c.close();
   assert(h >= 40, `${h}px`);

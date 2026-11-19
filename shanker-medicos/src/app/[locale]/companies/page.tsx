@@ -1,12 +1,12 @@
-import Link from "next/link";
 import { siteContext } from "@/lib/site";
 import { catalogue } from "@/lib/data";
 import { fmt } from "@/i18n";
-import { pageMeta } from "@/lib/seo";
-import { companiesByLetter } from "@/lib/companies";
+import { pageMeta, jsonLd } from "@/lib/seo";
+import { waLink } from "@/lib/whatsapp";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
-import { CompanyLogo } from "@/components/site/CompanyLogo";
-import { IconWhatsApp } from "@/components/ui/Icons";
+import { CompanyFinder } from "@/components/v2/CompanyFinder";
+import { Split } from "@/components/v2/Split";
+import { SITE_URL } from "@/lib/env";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/companies">) {
   const { locale, t } = await siteContext((await params).locale);
@@ -14,78 +14,50 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/companie
 }
 
 export default async function CompaniesPage({ params }: PageProps<"/[locale]/companies">) {
-  const { t, locale, waGeneral } = await siteContext((await params).locale);
+  const ctx = await siteContext((await params).locale);
+  const { t, locale, settings: s, waGeneral } = ctx;
+  const v = t.v2.companies;
   const companies = await catalogue.listCompanies();
-  const c = t.mkt.companies;
-  const groups = companiesByLetter(companies);
+  const list = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: v.title,
+    url: `${SITE_URL}/${locale}/companies`,
+    numberOfItems: companies.length,
+    itemListElement: companies.map((c, i) => ({ "@type": "ListItem", position: i + 1, item: { "@type": "Organization", name: c.name } })),
+  };
   return (
-    <div className="container-x pb-8 pt-10">
-      <Breadcrumbs
-        label={t.nav.breadcrumb}
-        items={[
-          { name: t.nav.home, href: `/${locale}` },
-          { name: t.mkt.navCompanies, href: `/${locale}/companies` },
-        ]}
-      />
-      <p className="eyebrow mt-8">{c.eyebrow}</p>
-      <h1 className="mt-3 max-w-3xl text-h1">{c.title}</h1>
-      <p className="mt-4 max-w-2xl text-lg text-ink-2">{c.body}</p>
-      <p className="mt-2 text-sm text-ink-2">{fmt(c.count, { n: companies.length })}</p>
-
-      <nav aria-label={c.jump} className="sticky top-[68px] z-10 -mx-1 mt-8 overflow-x-auto bg-ivory/95 py-3 backdrop-blur">
-        <ul lang="en" className="flex gap-1 px-1">
-          {groups.map(([letter]) => (
-            <li key={letter}>
-              <a href={`#letter-${letter}`} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-sm font-semibold hover:border-forest">
-                {letter}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <div className="mt-6 space-y-10">
-        {groups.map(([letter, list]) => (
-          <section key={letter} id={`letter-${letter}`} aria-labelledby={`h-${letter}`} className="scroll-mt-36">
-            <h2 id={`h-${letter}`} lang="en" className="border-b border-line pb-2 font-display text-2xl font-semibold text-forest">
-              {letter}
-            </h2>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {list.map((co) => (
-                <li key={co.id}>
-                  <Link
-                    href={`/${locale}/products?q=${encodeURIComponent(co.search_q || co.name)}`}
-                    className="flex h-full items-center gap-4 rounded-card border border-line bg-white p-4 transition hover:border-forest hover:shadow-lift"
-                  >
-                    <CompanyLogo company={co} size="sm" />
-                    <span className="min-w-0">
-                      <span lang="en" className="block font-display font-semibold tracking-tight">
-                        {co.name}
-                      </span>
-                      {co.known && (
-                        <span lang="en" className="mt-0.5 block text-sm text-ink-2">
-                          {co.known}
-                        </span>
-                      )}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+    <div className="relative isolate">
+      <div className="fields" aria-hidden="true">
+        <i />
       </div>
-
-      <p className="mt-10 text-xs text-ink-2">Company names and logos are trademarks of their owners and are shown only to identify the medicines we deal in.</p>
-
-      <div className="mt-6 flex flex-col items-start gap-4 rounded-panel bg-mint p-7 sm:flex-row sm:items-center sm:justify-between">
-        <p className="font-medium text-forest">{c.notListed}</p>
-        {waGeneral && (
-          <a href={waGeneral} target="_blank" rel="noopener noreferrer" data-track-label="companies_ask" className="btn btn-wa">
-            <IconWhatsApp className="h-5 w-5" /> {t.cta.whatsappUs}
-          </a>
-        )}
+      <div className="container-x relative z-10 pb-8 pt-10">
+        <Breadcrumbs
+          label={t.nav.breadcrumb}
+          items={[
+            { name: t.nav.home, href: `/${locale}` },
+            { name: t.v2.nav.companies, href: `/${locale}/companies` },
+          ]}
+        />
+        <p data-rv className="eyebrow mt-10">
+          {v.eyebrow}
+        </p>
+        <h1 className="mt-4 max-w-4xl text-display">
+          <Split text={v.title} perWord={locale !== "en"} />
+        </h1>
+        <p data-rv style={{ ["--i" as string]: 6 }} className="mt-6 max-w-2xl text-lg text-ink-2">
+          {v.body}
+        </p>
+        <div data-rv style={{ ["--i" as string]: 8 }} className="mt-12">
+          <CompanyFinder
+            askHref={waGeneral}
+            labels={{ search: v.search, none: v.none, indian: v.indian, mnc: v.mnc, ask: v.ask, count: v.count, all: v.all }}
+            companies={companies.map((c) => ({ id: c.id, name: c.name, known: c.known, kind: c.kind, logo: c.logo_url, wa: waLink(s.whatsapp, fmt(v.askMsg, { name: c.name })) }))}
+          />
+        </div>
+        <p className="mt-10 max-w-3xl text-xs text-ink-2">{v.trademark}</p>
       </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(list)} />
     </div>
   );
 }

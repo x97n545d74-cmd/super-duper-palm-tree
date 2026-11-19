@@ -5,6 +5,8 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { LocationDetails } from "@/components/site/LocationDetails";
 import { StoreVideo } from "@/components/home/StoreVideo";
 import { IconPhone, IconWhatsApp, IconInfo } from "@/components/ui/Icons";
+import { Split } from "@/components/v2/Split";
+import { OpenStatus } from "@/components/v2/OpenStatus";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/contact">) {
   const { locale, t } = await siteContext((await params).locale);
@@ -23,19 +25,22 @@ export default async function Contact({ params }: PageProps<"/[locale]/contact">
         label={t.nav.breadcrumb}
         items={[
           { name: t.nav.home, href: `/${locale}` },
-          { name: t.nav.contact, href: `/${locale}/contact` },
+          { name: t.v2.nav.visit, href: `/${locale}/contact` },
         ]}
       />
-      <p className="eyebrow mt-10">{t.contact.eyebrow}</p>
-      <h1 className="mt-4 text-h1">{t.contact.title}</h1>
-      <p className="mt-4 max-w-xl text-lg text-ink-2">{t.contact.lead}</p>
+      <p data-rv className="eyebrow mt-10">{t.contact.eyebrow}</p>
+      <h1 className="mt-4 text-display">
+        <Split text={t.v2.visit.title} perWord={locale !== "en"} />
+      </h1>
+      <p data-rv style={{ ["--i" as string]: 4 }} className="mt-5 max-w-xl text-lg text-ink-2">{t.v2.visit.body} {t.contact.lead}</p>
+      <div data-rv style={{ ["--i" as string]: 5 }} className="mt-5"><span className="chip !text-ink"><OpenStatus labels={t.v2.status} /></span></div>
 
-      <div className="mt-12 grid gap-4 md:grid-cols-2">
-        <div className="flex flex-col justify-between rounded-panel bg-forest p-8 text-ivory">
+      <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div data-rv className="flex flex-col justify-between rounded-panel bg-forest p-8 text-white shadow-float">
           <div>
             <IconWhatsApp className="h-7 w-7" />
             <h2 className="mt-6 text-h3">{t.contact.waTitle}</h2>
-            <p className="mt-2 text-ivory/70">{t.contact.waBody}</p>
+            <p className="mt-2 text-white/70">{t.contact.waBody}</p>
           </div>
           <div className="mt-8">
             {waGeneral ? (
@@ -43,11 +48,11 @@ export default async function Contact({ params }: PageProps<"/[locale]/contact">
                 {t.cta.whatsappUs}
               </a>
             ) : (
-              <p className="text-sm text-ivory/70">{t.cta.notConfigured}</p>
+              <p className="text-sm text-white/70">{t.cta.notConfigured}</p>
             )}
           </div>
         </div>
-        <div className="flex flex-col justify-between rounded-panel border border-line bg-white p-8">
+        <div data-rv style={{ ["--i" as string]: 2 }} className="panel flex flex-col justify-between p-8">
           <div>
             <IconPhone className="h-7 w-7 text-emerald" />
             <h2 className="mt-6 text-h3">{t.contact.callTitle}</h2>
@@ -65,11 +70,11 @@ export default async function Contact({ params }: PageProps<"/[locale]/contact">
         </div>
       </div>
 
-      <div className="mt-16 grid gap-12 lg:grid-cols-12">
+      <div className="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <h2 className="text-h2">{t.contact.visitTitle}</h2>
           <LocationDetails ctx={ctx} className="mt-6" />
-          <p className="mt-8 flex gap-3 rounded-card border border-line bg-white p-4 text-sm text-ink-2">
+          <p className="card mt-8 flex gap-3 p-4 text-sm text-ink-2">
             <IconInfo className="mt-0.5 h-4 w-4 shrink-0 text-emerald" />
             {t.contact.noPrescriptions}
           </p>
@@ -81,7 +86,7 @@ export default async function Contact({ params }: PageProps<"/[locale]/contact">
               src={mapSrc}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="aspect-[4/3] w-full rounded-panel border border-line"
+              className="aspect-[4/3] w-full rounded-panel border border-line shadow-lift"
             />
           )}
           <StoreVideo caption={t.location.videoCaption} />

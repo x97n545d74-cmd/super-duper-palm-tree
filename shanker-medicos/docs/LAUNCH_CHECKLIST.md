@@ -25,13 +25,13 @@ Items the build could not complete because they need the owner's information, ac
 - [ ] Clear the demo analytics data (Admin → Analytics → Clear demo data) if it was loaded; set `ANALYTICS_SALT` in production
 
 ## Catalogue
-- [ ] Review the ~40 starter products (`needs checking` filter in admin): confirm pack sizes, set prescription status (pharmacist), set availability only where checked, or delete.
+- [x] Medicine names: removed from the public site by the owner (19 Nov 2026). The starter products stay in admin only.
 - [ ] Real product list: not now (billing software export not available). The starter catalogue stays; "Searched but not found" in Analytics shows what to add.
 - [x] Product images: unlabelled illustrations by the owner's choice
-- [ ] Confirm the homepage "featured" products.
+- [ ] Confirm the 12 kinds on "What we stock" (`src/lib/stock.ts`) match what the shop carries.
 
 ## Content reviews
-- [ ] Native-speaker review of Hindi (`src/i18n/hi.ts`) and Punjabi (`src/i18n/pa.ts`) interface text and category names.
+- [ ] Native-speaker review of Hindi (`src/i18n/hi.ts`) and Punjabi (`src/i18n/pa.ts`) interface text, including the v2 block and the kind names in `src/lib/stock.ts`.
 - [ ] Lawyer review of the Privacy Policy and Terms of Use (Digital Personal Data Protection Act 2023; Drugs and Cosmetics Act 1940/Rules; jurisdiction).
 - [ ] Confirm the store is comfortable with the trust statements on the homepage (none claim awards, years, certifications or credentials).
 - [x] Storefront video: approved by the owner

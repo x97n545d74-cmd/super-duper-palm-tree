@@ -1,6 +1,6 @@
 # Testing report
 
-Date: 19 November 2026, updated 20 November 2026 (marketing release; companies & analytics release) · Build: Next.js 16.4.6 production build · Data mode: development (local store). Supabase was **not** available (no credentials were provided), so the Supabase code path was verified at the database level only (see §3).
+Date: 19 November 2026, updated 20 November 2026 (marketing release; companies & analytics release) and again 19 November 2026 (v2 redesign) · Build: Next.js 16.4.6 production build · Data mode: development (local store). Supabase was **not** available (no credentials were provided), so the Supabase code path was verified at the database level only (see §3).
 
 ## Summary
 
@@ -9,11 +9,21 @@ Date: 19 November 2026, updated 20 November 2026 (marketing release; companies &
 | Lint | `npm run lint` | clean |
 | Types | `npm run typecheck` | clean |
 | Unit tests | `npm run test:unit` | **38 / 38 passed** |
+| Publish-only mode (how it runs live) | `npm run test:publish` | **10 / 10 passed** |
 | Database (migration + RLS) | `npm run db:verify` | **52 / 52 checks passed** |
-| End-to-end, real browsers | `npm run test:e2e` | **69 / 69 passed** |
+| End-to-end, real browsers | `npm run test:e2e` | **64 / 64 passed** (v2; old catalogue tests replaced) |
 | Lighthouse (local, indicative) | see §5 | Accessibility, Best Practices, SEO: 100 on all pages tested; Performance 100 desktop, 89–93 mobile |
 
 Raw e2e results: `tests/e2e/last-run.json`.
+
+## 0c. v2 redesign (19 Nov 2026)
+
+The owner found the first design looked "AI slop" and asked for AVRON motion graphics with the entry video, and for no medicine names on the site.
+- **Look**: bright and clean product UI in the colours of the shop's own signboard (navy lettering, pale board); Archivo with a width axis (condensed headlines; Hindi and Punjabi condense the same way via the Noto width axis); new mark "ਸ਼" on a sign tile.
+- **Motion (AVRON brand §3)**: one set of curves, no bounce; entrances from scale .96, 6px blur, 24px low; per-character blur-to-sharp headlines (per word for Hindi and Punjabi); crop-in pull-out hero card; the AVRON cursor press with a toast; receipt highlighter on the offer; panel morph in "What we stock". Reduced-motion users get the final state.
+- **Entry video**: the earth-to-shop clip plays once per visit on the homepage with captions synced to its cuts, Skip, and a morph into the hero frame (e2e: plays, Skip lands it, not repeated, not on inner pages, off with reduced motion, off for crawlers).
+- **Content**: product and category pages removed (old links 308 to `/products`, now "What we stock": 12 kinds with a WhatsApp question each); company finder with search and an Indian/multinational filter. A test checks that none of the 38 starter medicine names appear on any public page in any language, and that the sitemap lists no medicine pages.
+- **Fixed during the redesign**: the header's backdrop blur trapped the fixed mobile menu and widened every phone page to 791px; grids without a mobile column rule let long company names push cards off-screen; background prefetches of the previous language could reset the remembered language after switching.
 
 ## 0b. Companies & analytics release (20 Nov 2026)
 

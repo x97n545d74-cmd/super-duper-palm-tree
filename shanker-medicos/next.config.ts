@@ -57,6 +57,15 @@ const nextConfig: NextConfig = {
     // Tailwind CSS is small and atomic; inlining it removes a render-blocking request for first-time visitors.
     inlineCss: true,
   },
+  // Medicine pages were removed (owner, 19 Nov 2026): old links go to "What we stock".
+  async redirects() {
+    const L = ":locale(en|hi|pa)";
+    return [
+      { source: `/${L}/products/:slug`, destination: "/:locale/products", permanent: true },
+      { source: `/${L}/categories`, destination: "/:locale/products", permanent: true },
+      { source: `/${L}/categories/:slug`, destination: "/:locale/products", permanent: true },
+    ];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
