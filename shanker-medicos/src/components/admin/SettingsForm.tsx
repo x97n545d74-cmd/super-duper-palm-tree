@@ -9,7 +9,7 @@ import { Field, Notice, SubmitButton } from "./ui";
 export function SettingsForm({ settings }: { settings: BusinessSettings }) {
   const [state, action, pending] = useActionState(saveSettingsAction, null);
   const e = state?.errors ?? {};
-  type TextKey = { [K in keyof BusinessSettings]: BusinessSettings[K] extends string ? K : never }[keyof BusinessSettings];
+  type TextKey = { [K in keyof BusinessSettings]-?: BusinessSettings[K] extends string ? K : never }[keyof BusinessSettings];
   const input = (name: TextKey, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
     <input id={name} name={name} defaultValue={settings[name]} className="field" aria-invalid={!!e[name]} {...props} />
   );

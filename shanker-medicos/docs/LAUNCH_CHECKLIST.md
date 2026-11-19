@@ -5,7 +5,8 @@
 Items the build could not complete because they need the owner's information, accounts or a professional review. Nothing here was guessed.
 
 ## Business information (enter in /admin → Business details)
-- [x] **Trading name: Shanker Medicos** (owner confirmed "Medicos"; wrote "Shankar" in chat, spelling kept as "Shanker" to match the sign, brief and logo; confirm). Earlier note: The brief says "Shanker Medicos"; the shop sign in the supplied video reads "Shanker Chemists & Druggists". Use the name on the drug licence and Google Business Profile everywhere. The name can be changed in Business details; the logo wordmark files in `public/brand/` would need regenerating for a different name.
+- [x] **Trading name: Shanker Medicos** (spelling confirmed by the GST ledger, 19 Nov 2026).
+- [x] GSTIN: 03AAWFS3612C1ZE (shown in the footer and on the contact page; `taxID` in structured data). Earlier note: The brief says "Shanker Medicos"; the shop sign in the supplied video reads "Shanker Chemists & Druggists". Use the name on the drug licence and Google Business Profile everywhere. The name can be changed in Business details; the logo wordmark files in `public/brand/` would need regenerating for a different name.
 - [x] Shop address: Dera Road, Batala (supplied 20 Nov 2026)
 - [x] PIN code: 143505
 - [x] Phone number: +91 98155 52404 (same as WhatsApp)

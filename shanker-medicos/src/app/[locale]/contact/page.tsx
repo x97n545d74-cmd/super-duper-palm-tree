@@ -74,6 +74,11 @@ export default async function Contact({ params }: PageProps<"/[locale]/contact">
         <div className="lg:col-span-5">
           <h2 className="text-h2">{t.contact.visitTitle}</h2>
           <LocationDetails ctx={ctx} className="mt-6" />
+          {ctx.settings.gstin && (
+            <p lang="en" className="mt-6 font-mono text-[0.75rem] uppercase tracking-[0.14em] text-ink-2">
+              GSTIN <span className="text-ink">{ctx.settings.gstin}</span>
+            </p>
+          )}
           <p className="card mt-8 flex gap-3 p-4 text-sm text-ink-2">
             <IconInfo className="mt-0.5 h-4 w-4 shrink-0 text-emerald" />
             {t.contact.noPrescriptions}

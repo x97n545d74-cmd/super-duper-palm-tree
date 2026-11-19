@@ -157,6 +157,7 @@ export const seedSettings: BusinessSettings = {
   facebook_url: "",
   offer_enabled: true,
   offer_percent: 10,
+  gstin: "03AAWFS3612C1ZE",
   offer_min_amount: 1000,
   offer_code: "SHANKER10",
   club_enabled: true,

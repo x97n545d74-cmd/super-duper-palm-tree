@@ -60,7 +60,10 @@ export function Footer({ ctx }: { ctx: SiteContext }) {
       <div className="border-t border-line">
         <div className="container-x flex flex-col gap-4 py-8 text-xs leading-relaxed text-ink-2 md:flex-row md:justify-between">
           <p className="max-w-3xl">{t.footer.disclaimer}</p>
-          <p className="shrink-0">{fmt(t.footer.rights, { year })}</p>
+          <p className="shrink-0">
+            {s.gstin && <span lang="en" className="mr-4 font-mono">GSTIN {s.gstin}</span>}
+            {fmt(t.footer.rights, { year })}
+          </p>
         </div>
       </div>
     </footer>
