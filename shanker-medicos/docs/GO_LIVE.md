@@ -9,7 +9,7 @@ It is hosted on **Netlify's free plan**, which allows business websites. You pay
 
 1. Go to **netlify.com** → **Sign up** → **Sign up with GitHub**. Choose the **Free** plan if asked.
 2. **Add new project → Import an existing project → GitHub**. Allow Netlify to see `super-duper-palm-tree` and pick it.
-3. **Base directory**: type `shanker-medicos`. Leave everything else as Netlify fills it in (it detects Next.js by itself).
+3. Leave all the build settings empty or as Netlify fills them in. The file `netlify.toml` in the repository tells Netlify to build the `shanker-medicos` folder.
 4. Press **Deploy**. After 3–5 minutes you get a link like `https://random-name-123.netlify.app`: that's your website.
 5. **Project configuration → Change project name** → type `shanker-medicos`. Your address becomes `https://shanker-medicos.netlify.app` (free, with the padlock/HTTPS).
 6. **Deploys → Trigger deploy → Deploy project** once more, so links inside the site (Google sitemap, sharing previews) use the new name.
