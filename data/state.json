@@ -1,5 +1,5 @@
 {
- "reddit_next": 1,
+ "reddit_next": 2,
  "youtube_ids": {
   "@CARachanaRanade": "UCe3qdG0A_gr-sEdat5y2twQ",
   "@pranjalkamra": "UCwAdQUuPT6laN-AQR17fe1g",
@@ -35,15 +35,12 @@
   "feeds|Financial Express business": 1,
   "feeds|Financial Express economy": 1,
   "feeds|Entrackr startups": 1,
-  "reddit|r/IndiaInvestments": 1,
+  "reddit|r/IndiaInvestments": 2,
   "reddit|r/IndianStreetBets": 1,
   "reddit|r/StockMarketIndia": 1,
   "reddit|r/DalalStreetTalks": 1,
   "reddit|r/IndianStocks": 1,
-  "feeds|Moneycontrol business": 2,
-  "feeds|Moneycontrol market reports": 2,
-  "feeds|Moneycontrol latest": 2,
-  "feeds|Moneycontrol economy": 2
+  "news|PLI scheme approved companies": 1
  },
  "paused_until": {}
 }
