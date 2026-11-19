@@ -55,6 +55,10 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Rules: read-only, no logins, no getting round blocks; Instagram/Facebook/LinkedIn are not collected. Posts are unverified chatter, never a source for a reel fact.
 - This cloud container blocks the social sites (only api.x.com is open; a request to open more was rejected), so only the X lane was tested live. The seed YouTube handles and Telegram channel are unverified until the first Actions run.
 
+## Shanker Medicos website (2026-11-19, client project, not AVRON)
+- A separate client website lives in `shanker-medicos/` (Next.js 16 + Supabase, catalogue + WhatsApp enquiry for a pharmacy in Batala, Punjab; en/hi/pa). AVRON brand rules don't apply to it. Start with its `README.md` and `docs/LAUNCH_CHECKLIST.md`.
+- Open question for the user: the shop sign in their video reads "Shanker Chemists & Druggists", the brief says "Shanker Medicos". Address/phone/WhatsApp/hours were not supplied and are left empty on purpose.
+
 ## Who and what
 - AVRON makes cinematic finance and explainer reels: 1080×1920, 30 fps, H.264/AAC, −14 LUFS.
 - The pipeline runs research → verification → script → storyboard → assets → animation → sound → render → QC → MP4.

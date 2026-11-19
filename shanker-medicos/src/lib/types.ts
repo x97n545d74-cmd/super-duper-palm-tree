@@ -1,0 +1,138 @@
+// Typed data models. These mirror supabase/migrations/0001_init.sql exactly.
+
+export const AVAILABILITY = ["unconfirmed", "in_stock", "limited", "on_order", "out_of_stock"] as const;
+export type Availability = (typeof AVAILABILITY)[number];
+
+/**
+ * Prescription classification.
+ * unverified = not yet confirmed by the pharmacist (default; nothing is claimed publicly)
+ * otc        = can be sold without prescription
+ * rx         = prescription required (Schedule H / H1 and similar)
+ */
+export const RX_CLASSES = ["unverified", "otc", "rx"] as const;
+export type RxClass = (typeof RX_CLASSES)[number];
+
+/** Shape used by the illustrated pack when no photo has been uploaded. */
+export const PACK_STYLES = ["bottle", "box", "tube", "strip", "jar", "device", "pump", "sachet", "pack"] as const;
+export type PackStyle = (typeof PACK_STYLES)[number];
+
+export interface Category {
+  id: string;
+  slug: string;
+  parent_id: string | null;
+  name_en: string;
+  name_hi: string;
+  name_pa: string;
+  image_url: string | null;
+  sort_order: number;
+  featured: boolean;
+  updated_at: string;
+}
+
+export interface Product {
+  id: string;
+  slug: string;
+  name: string;
+  brand: string;
+  manufacturer: string;
+  generic_name: string;
+  pack_size: string;
+  category_id: string | null;
+  description: string;
+  information: string;
+  image_url: string | null;
+  pack_style: PackStyle;
+  availability: Availability;
+  rx_class: RxClass;
+  published: boolean;
+  featured: boolean;
+  needs_review: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BusinessSettings {
+  business_name: string;
+  tagline: string;
+  address: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  opening_hours: string;
+  maps_url: string;
+  instagram_url: string;
+  facebook_url: string;
+  updated_at: string;
+}
+
+export type SortKey = "relevance" | "az" | "za" | "recent";
+
+export interface ProductQuery {
+  q?: string;
+  /** category slug; includes child categories */
+  category?: string;
+  brand?: string;
+  sort?: SortKey;
+  page?: number;
+  perPage?: number;
+  /** admin only: include unpublished */
+  includeUnpublished?: boolean;
+  /** admin only filter */
+  needsReview?: boolean;
+}
+
+export interface ProductPage {
+  items: Product[];
+  total: number;
+  page: number;
+  perPage: number;
+  pageCount: number;
+}
+
+export interface Suggestion {
+  type: "product" | "category" | "brand";
+  label: string;
+  sub?: string;
+  href: string;
+}
+
+export type ProductInput = Omit<Product, "id" | "created_at" | "updated_at" | "slug"> & {
+  id?: string;
+  slug?: string;
+};
+
+export type CategoryInput = Omit<Category, "id" | "updated_at" | "slug"> & { id?: string; slug?: string };
+
+export interface ImportRow {
+  name: string;
+  brand: string;
+  manufacturer: string;
+  generic_name: string;
+  pack_size: string;
+  category: string;
+  description: string;
+  information: string;
+  availability: Availability;
+  rx_class: RxClass;
+  published: boolean;
+  pack_style: PackStyle;
+}
+
+export interface ImportResult {
+  created: number;
+  updated: number;
+  skipped: number;
+  errors: { row: number; message: string }[];
+}
+
+export interface Stats {
+  activeProducts: number;
+  totalProducts: number;
+  categories: number;
+  needsReview: number;
+  recent: Product[];
+  missingSettings: (keyof BusinessSettings)[];
+}

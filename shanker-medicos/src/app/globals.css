@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+/*
+ * SHANKER MEDICOS design tokens.
+ * Colours, type, spacing, radius, shadow and breakpoints live here and only here.
+ * Components use the Tailwind utilities generated from these tokens
+ * (bg-forest, text-ink-2, rounded-card, shadow-lift, ...).
+ */
+@theme {
+  /* Colour */
+  --color-forest: #123f2b;
+  --color-forest-deep: #0c2f20;
+  --color-emerald: #087a4b;
+  --color-ivory: #fafbf8;
+  --color-surface: #ffffff;
+  --color-mint: #eaf3ec;
+  --color-ink: #1c2721;
+  --color-ink-2: #626e66; /* brief: #6D7971, darkened to pass WCAG AA (4.5:1) on ivory, white and mint */
+  --color-line: #e5ebe6;
+  --color-amber: #9a5b1c; /* glass bottle tone in illustrations only */
+  --color-warn: #8a5a00;
+  --color-danger: #b42318;
+
+  /* Type */
+  --font-display: var(--font-manrope), var(--font-deva), var(--font-guru), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), var(--font-deva), var(--font-guru), ui-sans-serif, system-ui, sans-serif;
+
+  --text-display: clamp(2.6rem, 1.4rem + 5.2vw, 5.4rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.035em;
+  --text-h1: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.03em;
+  --text-h2: clamp(1.6rem, 1.2rem + 1.5vw, 2.4rem);
+  --text-h2--line-height: 1.12;
+  --text-h2--letter-spacing: -0.025em;
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.01em;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.14em;
+
+  /* Radius: restrained, not bubbly */
+  --radius-chip: 999px;
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-panel: 22px;
+
+  /* Shadow */
+  --shadow-hair: 0 1px 0 rgba(18, 63, 43, 0.06);
+  --shadow-lift: 0 1px 2px rgba(18, 63, 43, 0.05), 0 12px 32px -12px rgba(18, 63, 43, 0.18);
+  --shadow-float: 0 30px 60px -24px rgba(12, 47, 32, 0.45);
+
+  /* Spacing scale extensions (Tailwind's 4px base stays) */
+  --spacing-gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --spacing-section: clamp(4rem, 2.5rem + 6vw, 8rem);
+
+  /* Breakpoints */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  :focus-visible {
+    outline: 2px solid var(--color-emerald);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  ::selection { background: var(--color-mint); color: var(--color-forest); }
+
+  /* Devanagari and Gurmukhi need more line height and no negative tracking */
+  :lang(hi) h1, :lang(hi) h2, :lang(hi) h3,
+  :lang(pa) h1, :lang(pa) h2, :lang(pa) h3 {
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+  :lang(hi) body, :lang(pa) body { line-height: 1.7; }
+}
+
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: 82rem;
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--text-eyebrow--letter-spacing);
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-emerald);
+  }
+  .eyebrow:lang(hi), .eyebrow:lang(pa) { letter-spacing: 0.02em; font-size: 0.85rem; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0 1.25rem;
+    border-radius: var(--radius-chip);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background-color .2s var(--ease-out-soft), color .2s, border-color .2s, transform .2s var(--ease-out-soft);
+    white-space: nowrap;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--color-forest); color: var(--color-ivory); }
+  .btn-primary:hover { background: var(--color-forest-deep); }
+  .btn-light { background: var(--color-ivory); color: var(--color-forest); }
+  .btn-light:hover { background: #fff; }
+  .btn-ghost { border: 1px solid var(--color-line); color: var(--color-ink); background: transparent; }
+  .btn-ghost:hover { border-color: var(--color-forest); }
+  .btn-ghost-dark { border: 1px solid rgba(250, 251, 248, .35); color: var(--color-ivory); }
+  .btn-ghost-dark:hover { border-color: var(--color-ivory); }
+  .btn-wa { background: var(--color-emerald); color: #fff; }
+  .btn-wa:hover { background: #066b41; }
+  .btn[aria-disabled="true"] { opacity: .55; pointer-events: none; }
+
+  .link-u {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size .3s var(--ease-out-soft);
+  }
+  .link-u:hover { background-size: 100% 1px; }
+
+  .field {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-control);
+    background: #fff;
+    padding: 0.6rem 0.85rem;
+    font-size: 1rem;
+    color: var(--color-ink);
+  }
+  .field:focus { outline: 2px solid var(--color-emerald); outline-offset: 0; border-color: transparent; }
+  .label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--color-ink); margin-bottom: 0.35rem; }
+  .hint { font-size: 0.8rem; color: var(--color-ink-2); margin-top: 0.3rem; }
+
+  .prose-legal h2 { font-size: 1.35rem; margin: 2.25rem 0 0.75rem; }
+  .prose-legal p, .prose-legal li { color: var(--color-ink); line-height: 1.75; margin-bottom: 0.9rem; }
+  .prose-legal ul { list-style: disc; padding-left: 1.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.rise { animation: rise .8s var(--ease-out-soft) both; }
+.rise-2 { animation: rise .8s .12s var(--ease-out-soft) both; }
+.rise-3 { animation: rise .8s .24s var(--ease-out-soft) both; }
+
+/* Indic scripts: tracking breaks conjuncts and matras. */
+[class*="tracking-"]:lang(hi), [class*="tracking-"]:lang(pa) { letter-spacing: 0 !important; }
+.uppercase:lang(hi), .uppercase:lang(pa) { text-transform: none; }

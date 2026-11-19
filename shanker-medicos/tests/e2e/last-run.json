@@ -1,0 +1,267 @@
+{
+  "date": "2026-11-19T08:22:27.177Z",
+  "passed": 52,
+  "total": 52,
+  "results": [
+    {
+      "name": "/ redirects to /en (default English)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all required routes render in all three languages (30 pages)",
+      "ok": true,
+      "detail": "30 pages"
+    },
+    {
+      "name": "unknown pages and products return a localised 404",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "html lang + script rendering for Hindi and Punjabi",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "language switcher keeps the page and persists the choice",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "brand names are not translated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "search suggestions appear while typing",
+      "ok": true,
+      "detail": "2 suggestions"
+    },
+    {
+      "name": "keyboard: arrow + enter opens a suggestion",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "full search: case-insensitive, brand and generic-name search",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no-results experience with a WhatsApp fallback path",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "category filter (auto-submits) includes sub-categories",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "brand filter and Z–A sorting",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "pagination",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "category tile on the homepage opens a working filtered page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no WhatsApp links while the number is not configured (no broken wa.me)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin requires login",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "wrong password is rejected",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin login works",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "session cookie is httpOnly, scoped to /admin and signed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "business settings: validation errors are shown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "business settings save and appear on the website",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "WhatsApp: product message is generated, encoded and uses the configured number",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "WhatsApp: Punjabi page builds a Punjabi message; floating button present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "create a product with an uploaded image",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "new product is live: searchable by generic name, image served",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "duplicate product (same name + brand + pack) is blocked",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "edit a product",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "unpublish hides the product publicly; publish restores it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "categories: add (3 languages), reorder, delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "category with products cannot be deleted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "CSV import: mapping, validation, duplicate detection, preview, summary",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "imported products are live with correct fields",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "delete a product",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "server actions refuse unauthenticated calls",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "logout",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "SEO: unique titles, descriptions, canonical, hreflang, OG on every page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "SEO: valid JSON-LD (Pharmacy, BreadcrumbList, Product) with no invented ratings",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "SEO: sitemap.xml, robots.txt, filtered pages noindex",
+      "ok": true,
+      "detail": "192 sitemap URLs"
+    },
+    {
+      "name": "all images have alt text; one h1 per page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no broken internal links (crawl of every locale's pages)",
+      "ok": true,
+      "detail": "183 unique links checked"
+    },
+    {
+      "name": "security headers on public pages; admin is noindex",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "media route rejects path traversal and odd names",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no secrets in client JavaScript",
+      "ok": true,
+      "detail": "31 static files scanned"
+    },
+    {
+      "name": "login rate limiting",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: Mobile Chrome (Pixel 7)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: iPhone 13 (Safari viewport)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: Tablet (iPad Mini)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: Desktop 1440",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: Small phone 320",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile: drawer navigation and persistent search",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tap targets: primary buttons are at least 40px tall on mobile",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no JavaScript errors in the browser console",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}
