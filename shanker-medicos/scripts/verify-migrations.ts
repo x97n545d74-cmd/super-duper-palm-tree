@@ -171,6 +171,19 @@ async function main() {
   const planText = plan.rows.map((x) => x["QUERY PLAN"]).join(" ");
   check("trigram index serves ILIKE search", /products_name_trgm/.test(planText), planText.slice(0, 80));
 
+  // The one-file setup used by the owner must apply cleanly to a fresh database, twice.
+  const fresh = new PGlite({ extensions: { pg_trgm } });
+  await fresh.exec(SUPABASE_STUBS);
+  try {
+    const all = readFileSync(new URL("../supabase/setup-all.sql", import.meta.url), "utf8");
+    await fresh.exec(all);
+    await fresh.exec(all);
+    const n = await fresh.query<{ p: number; c: number }>("select (select count(*) from products)::int p, (select count(*) from companies)::int c");
+    check("setup-all.sql (one-paste setup) applies to a fresh database, re-runnable", n.rows[0].p > 0 && n.rows[0].c >= 100, JSON.stringify(n.rows[0]));
+  } catch (e) {
+    check("setup-all.sql (one-paste setup) applies to a fresh database, re-runnable", false, (e as Error).message);
+  }
+
   console.log(failures ? `\n${failures} check(s) failed` : "\nAll database checks passed");
   process.exit(failures ? 1 : 0);
 }

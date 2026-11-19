@@ -14,7 +14,7 @@ npm run dev                      # http://localhost:3000  (admin: /admin)
 
 With no Supabase keys, the app runs in **development mode**: data lives in `data/store.json` (created from the starter catalogue on first run) and uploads in `data/uploads/`. `npm run reset:local` starts over.
 
-For production (Supabase + Vercel), follow **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
+For production (Supabase + Vercel): the owner's step-by-step guide is **[docs/GO_LIVE.md](docs/GO_LIVE.md)**; technical details are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). The whole database setup is one file: `supabase/setup-all.sql`.
 
 ## Stack
 

@@ -4,7 +4,7 @@ Target: **Supabase** (database, auth, image storage) + **Vercel** (hosting). Abo
 
 ## 1. Supabase 👤
 1. Create a project at supabase.com, region **Mumbai (ap-south-1)**. Save the database password somewhere safe.
-2. **SQL Editor → New query**: paste and run `supabase/migrations/20261119000001_init.sql`, then `supabase/migrations/20261119000002_marketing.sql`. They create the tables, indexes, Row Level Security policies, the public `product-images` bucket, the offer settings and the `members` table (Shanker Club) with its sign-up function. Both are safe to run again.
+2. **SQL Editor → New query**: paste and run `supabase/setup-all.sql` (everything below in one file), or run `supabase/migrations/20261119000001_init.sql`, then `supabase/migrations/20261119000002_marketing.sql`. They create the tables, indexes, Row Level Security policies, the public `product-images` bucket, the offer settings and the `members` table (Shanker Club) with its sign-up function. Both are safe to run again.
 3. Optional starter catalogue: run `supabase/seed.sql` (about 40 products, all flagged *needs checking*). Skip it to start empty and use CSV import.
 4. **Authentication → Providers → Email**: keep it enabled. **Authentication → Settings**: turn **off** "Allow new users to sign up" (only staff you invite should have accounts).
 5. **Authentication → Users → Add user**: create each staff account (email + strong password; tick "Auto confirm").
@@ -27,6 +27,7 @@ With the CLI instead: `supabase link --project-ref <ref>` then `supabase db push
    | `NEXT_PUBLIC_SUPABASE_URL` | from step 1.7 |
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | from step 1.7 |
    | `GOOGLE_SITE_VERIFICATION` | optional, see step 4 |
+   | `ANALYTICS_SALT` | 30+ random characters (built-in analytics) |
    | `NEXT_PUBLIC_GA4_ID` / `NEXT_PUBLIC_GTM_ID` / `NEXT_PUBLIC_META_PIXEL_ID` | optional, see docs/MARKETING.md |
    | `AUTOMATION_WEBHOOK_URL` / `AUTOMATION_WEBHOOK_SECRET` | optional, sign-up automation (docs/MARKETING.md) |
    Do **not** set `ADMIN_DEV_*` or `SESSION_SECRET` in production; they are only for development mode.
