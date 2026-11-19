@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 2,
+ "reddit_next": 3,
  "fails": {
   "reddit|r/StockMarketIndia": 9,
   "reddit|r/DalalStreetTalks": 9,
@@ -37,7 +37,7 @@
   "reddit|r/NSEbets": 4,
   "reddit|r/IndianStockMarket": 9,
   "reddit|r/IndiaInvestments": 9,
-  "reddit|r/IndianStreetBets": 8,
+  "reddit|r/IndianStreetBets": 9,
   "feeds|NSE announcements": 6,
   "feeds|NSE financial results": 6,
   "feeds|NSE insider trading": 6,
@@ -57,7 +57,7 @@
   "reddit|r/IndianStocks": 1795108122.800688,
   "reddit|r/IndianStockMarket": 1795109923.4941368,
   "reddit|r/IndiaInvestments": 1795111723.344884,
-  "reddit|r/IndianStreetBets": 1795084098.0462546,
+  "reddit|r/IndianStreetBets": 1795113522.7773716,
   "feeds|NSE announcements": 1795096985.0867004,
   "feeds|NSE financial results": 1795096985.0867004,
   "feeds|NSE insider trading": 1795096985.0867004,
