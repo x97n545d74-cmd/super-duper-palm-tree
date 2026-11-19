@@ -29,9 +29,9 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 3,
+ "reddit_next": 4,
  "fails": {
-  "reddit|r/StockMarketIndia": 8,
+  "reddit|r/StockMarketIndia": 9,
   "reddit|r/DalalStreetTalks": 8,
   "reddit|r/IndianStocks": 8,
   "reddit|r/NSEbets": 4,
@@ -49,12 +49,10 @@
   "feeds|NSE annual reports": 6,
   "feeds|NSE buybacks": 6,
   "feeds|NSE offer documents": 6,
-  "feeds|NSE pledge and encumbrance disclosures": 6,
-  "news|India GDP inflation IIP data": 1,
-  "news|India exports imports trade deficit": 1
+  "feeds|NSE pledge and encumbrance disclosures": 6
  },
  "paused_until": {
-  "reddit|r/StockMarketIndia": 1795075098.4929423,
+  "reddit|r/StockMarketIndia": 1795104523.1598945,
   "reddit|r/DalalStreetTalks": 1795076898.1402366,
   "reddit|r/IndianStocks": 1795078698.2626739,
   "reddit|r/IndianStockMarket": 1795080497.7960494,
