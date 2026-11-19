@@ -975,7 +975,15 @@ def build():
     (HERE / "dashboard.html").write_text(page.replace("/*DATA*/null", payload), encoding="utf-8")
     feed = public.build_feed(iso(now_utc()), signals, flows.summary(flows.load_history(DATA)),
                              decide.business_digest(items, limit=60), gov, cal, items)
-    scraped = export.build(items, signals, flows.load_history(DATA))
+    days = sorted((DATA / "market" / "days").glob("*.csv.gz"))
+    try:
+        day_prices = (days[-1].name[:10], market.load_day(days[-1])) if days else None
+    except (OSError, ValueError):
+        day_prices = None
+    scraped = export.build(items, signals, flows.load_history(DATA), prices=day_prices,
+                           universe=market.load_universe(DATA), holdings=fundamentals.load_holdings(DATA), calendar=cal,
+                           index_history=list(read_jsonl(DATA / "market" / "index_history.jsonl"))
+                           if (DATA / "market" / "index_history.jsonl").exists() else [])
     if export.check(scraped):
         print("scraped export NOT written: " + ", ".join(export.check(scraped)))
     else:
