@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 0,
+ "reddit_next": 1,
  "fails": {
   "reddit|r/StockMarketIndia": 9,
   "reddit|r/DalalStreetTalks": 9,
@@ -38,18 +38,7 @@
   "reddit|r/IndianStockMarket": 9,
   "reddit|r/IndiaInvestments": 9,
   "reddit|r/IndianStreetBets": 9,
-  "feeds|NSE announcements": 6,
-  "feeds|NSE financial results": 6,
-  "feeds|NSE insider trading": 6,
-  "feeds|NSE takeover disclosures": 6,
-  "feeds|NSE board meetings": 6,
-  "feeds|NSE corporate actions": 6,
-  "feeds|NSE shareholding patterns": 6,
-  "feeds|NSE voting results": 6,
-  "feeds|NSE annual reports": 6,
-  "feeds|NSE buybacks": 6,
-  "feeds|NSE offer documents": 6,
-  "feeds|NSE pledge and encumbrance disclosures": 6
+  "news|NSE smallcap order win": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795104523.1598945,
@@ -57,18 +46,6 @@
   "reddit|r/IndianStocks": 1795108122.800688,
   "reddit|r/IndianStockMarket": 1795109923.4941368,
   "reddit|r/IndiaInvestments": 1795111723.344884,
-  "reddit|r/IndianStreetBets": 1795113522.7773716,
-  "feeds|NSE announcements": 1795096985.0867004,
-  "feeds|NSE financial results": 1795096985.0867004,
-  "feeds|NSE insider trading": 1795096985.0867004,
-  "feeds|NSE takeover disclosures": 1795096985.0867004,
-  "feeds|NSE board meetings": 1795096985.0867004,
-  "feeds|NSE corporate actions": 1795096985.0867004,
-  "feeds|NSE shareholding patterns": 1795096985.0867004,
-  "feeds|NSE voting results": 1795096985.0867004,
-  "feeds|NSE annual reports": 1795096985.0867004,
-  "feeds|NSE buybacks": 1795096985.0867004,
-  "feeds|NSE offer documents": 1795096985.0867004,
-  "feeds|NSE pledge and encumbrance disclosures": 1795096985.0867004
+  "reddit|r/IndianStreetBets": 1795113522.7773716
  }
 }
