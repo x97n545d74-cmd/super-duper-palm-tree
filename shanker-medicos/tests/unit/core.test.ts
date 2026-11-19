@@ -253,7 +253,7 @@ test("offer defaults: 10% on selected medicines above ₹1,000 (SHANKER10); club
 test("offer, club and FAQ copy fill every placeholder in all languages", () => {
   for (const l of ["en", "hi", "pa"]) {
     const m = getDictionary(l).mkt;
-    const v = { percent: 12, min: "1,000", code: "SHANKER12", extra: 5 };
+    const v = { percent: 12, min: "1,000", code: "SHANKER12", extra: 5, gpercent: 30 };
     const all = [m.offer.title, m.offer.body, m.offer.announce, m.offer.waMessage, m.club.bodyPercent, ...m.offer.terms, ...m.faq.items.flatMap((i) => [i.q, i.a])].map((x) => fmt(x, v));
     for (const x of all) assert.ok(!/\{\w+\}/.test(x), `${l}: unfilled placeholder in "${x}"`);
     assert.ok(fmt(m.offer.title, v).includes("12%") && fmt(m.offer.title, v).includes("1,000"), l);

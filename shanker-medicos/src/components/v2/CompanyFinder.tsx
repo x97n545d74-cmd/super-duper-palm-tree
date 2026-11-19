@@ -3,16 +3,16 @@
 import { useMemo, useState } from "react";
 import { IconWhatsApp } from "@/components/ui/Icons";
 
-export type FinderCompany = { id: string; name: string; known: string; kind: "indian" | "multinational"; wa: string | null; logo?: string | null };
-type Labels = { search: string; none: string; indian: string; mnc: string; ask: string; count: string; all: string };
+export type FinderCompany = { id: string; name: string; known: string; kind: "indian" | "multinational"; wa: string | null; logo?: string | null; generic?: boolean };
+type Labels = { search: string; none: string; indian: string; mnc: string; ask: string; count: string; all: string; generics?: string };
 
 /** Instant company search with a filter by type. No medicine names anywhere. */
 export function CompanyFinder({ companies, labels, limit, askHref }: { companies: FinderCompany[]; labels: Labels; limit?: number; askHref: string | null }) {
   const [q, setQ] = useState("");
-  const [kind, setKind] = useState<"all" | "indian" | "multinational">("all");
+  const [kind, setKind] = useState<"all" | "indian" | "multinational" | "generic">("all");
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
-    return companies.filter((c) => (kind === "all" || c.kind === kind) && (!s || c.name.toLowerCase().includes(s) || c.known.toLowerCase().includes(s)));
+    return companies.filter((c) => (kind === "all" || (kind === "generic" ? c.generic : c.kind === kind)) && (!s || c.name.toLowerCase().includes(s) || c.known.toLowerCase().includes(s)));
   }, [q, kind, companies]);
   const shown = limit && !q ? list.slice(0, limit) : list;
   return (
@@ -26,8 +26,8 @@ export function CompanyFinder({ companies, labels, limit, askHref }: { companies
           </svg>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={labels.search} className="field h-14 rounded-[16px] pl-12 text-[1.02rem] shadow-hair" type="search" enterKeyHint="search" />
         </label>
-        <div className="flex gap-1 rounded-[16px] border border-line bg-surface p-1" role="group" aria-label={labels.search}>
-          {(["all", "indian", "multinational"] as const).map((k) => (
+        <div className="flex flex-wrap gap-1 rounded-[16px] border border-line bg-surface p-1" role="group" aria-label={labels.search}>
+          {(labels.generics ? (["all", "generic", "indian", "multinational"] as const) : (["all", "indian", "multinational"] as const)).map((k) => (
             <button
               key={k}
               type="button"
@@ -35,7 +35,7 @@ export function CompanyFinder({ companies, labels, limit, askHref }: { companies
               onClick={() => setKind(k)}
               className={`h-11 rounded-[12px] px-3.5 text-sm font-semibold transition-colors ${kind === k ? "bg-ink text-ivory" : "text-ink-2 hover:text-ink"}`}
             >
-              {k === "all" ? labels.all : k === "indian" ? labels.indian : labels.mnc}
+              {k === "all" ? labels.all : k === "generic" ? labels.generics : k === "indian" ? labels.indian : labels.mnc}
             </button>
           ))}
         </div>
@@ -64,7 +64,10 @@ export function CompanyFinder({ companies, labels, limit, askHref }: { companies
                   </span>
                 )}
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-semibold">{c.name}</span>
+                  <span className="flex items-center gap-2">
+                    <span className="truncate font-semibold">{c.name}</span>
+                    {c.generic && labels.generics && <span className="shrink-0 rounded-full bg-emerald px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.06em] text-black">{labels.generics}</span>}
+                  </span>
                   {c.known && <span className="mt-0.5 block truncate text-sm text-ink-2">{c.known}</span>}
                 </span>
                 <IconWhatsApp className="h-4 w-4 shrink-0 text-ink-2 opacity-0 transition-opacity group-hover:opacity-100" />

@@ -1,7 +1,7 @@
 {
-  "date": "2026-11-19T16:15:43.125Z",
-  "passed": 64,
-  "total": 64,
+  "date": "2026-11-19T16:32:19.017Z",
+  "passed": 65,
+  "total": 65,
   "results": [
     {
       "name": "/ redirects to /en (default English)",
@@ -49,9 +49,14 @@
       "detail": ""
     },
     {
+      "name": "generic medicines: 30% off selected generics, the owner's four makers first, WhatsApp asks",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "company finder: instant search, Indian / multinational filter, WhatsApp ask",
       "ok": true,
-      "detail": "107 companies (82 Indian, 25 multinational)"
+      "detail": "108 companies (83 Indian, 25 multinational)"
     },
     {
       "name": "entry video: plays once on the homepage, Skip lands it in the hero, not repeated",
@@ -86,7 +91,7 @@
     {
       "name": "Shanker Club: sign-up gives a member code and a WhatsApp save link",
       "ok": true,
-      "detail": "SM-CZF5C"
+      "detail": "SM-MQVUJ"
     },
     {
       "name": "Shanker Club: joining again with the same number returns the same code",

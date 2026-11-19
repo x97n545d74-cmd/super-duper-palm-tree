@@ -11,7 +11,6 @@ export type FormIcon =
 export interface StockForm {
   id: string;
   icon: FormIcon;
-  rx?: boolean;
   name: Record<Locale, string>;
   line: Record<Locale, string>;
 }
@@ -33,7 +32,7 @@ export const STOCK: StockForm[] = [
     line: { en: "For children and adults, including dry syrups.", hi: "बच्चों और बड़ों के लिए, ड्राई सिरप भी।", pa: "ਬੱਚਿਆਂ ਤੇ ਵੱਡਿਆਂ ਲਈ, ਡਰਾਈ ਸਿਰਪ ਵੀ।" },
   },
   {
-    id: "injectables", icon: "injection", rx: true,
+    id: "injectables", icon: "injection",
     name: { en: "Injectables", hi: "इंजेक्शन", pa: "ਟੀਕੇ (ਇੰਜੈਕਸ਼ਨ)" },
     line: { en: "Vials, ampoules and insulin.", hi: "वायल, एम्प्यूल और इंसुलिन।", pa: "ਵਾਇਲ, ਐਂਪਿਊਲ ਤੇ ਇਨਸੁਲਿਨ।" },
   },

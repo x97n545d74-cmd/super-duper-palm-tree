@@ -132,6 +132,7 @@ await step("what we stock and the company finder work", async () => {
   assert(mnc > 5 && mnc < all, `multinational ${mnc}`);
   await page.goto(`${BASE}/en`);
   assert((await page.locator("section#stock ol li a[href*='wa.me/919815552404']").count()) === 12, "homepage stock index");
+  assert((await page.textContent("#generics")).includes("30%"), "generics offer on the homepage");
   return `${all} companies, ${mnc} multinational`;
 });
 

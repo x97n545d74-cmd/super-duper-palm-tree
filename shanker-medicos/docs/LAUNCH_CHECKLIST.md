@@ -17,6 +17,7 @@ Items the build could not complete because they need the owner's information, ac
 ## Marketing (see docs/MARKETING.md)
 - [x] Shanker Club: extra 5% on the first purchase
 - [x] Offer: 10% off selected medicines (store's choice) on bills above ₹1,000, code SHANKER10, also on WhatsApp orders
+- [x] Generics offer: 30% off selected generic medicines (store's choice), no minimum stated by the owner; generic makers listed in `src/lib/generics.ts` (owner named Cipla, Leeford, Alkem, RP Biotech). Confirm the other 20 names and whether a minimum bill applies.
 - [ ] Confirm the companies list on `/companies` (107 companies) and the claim "branded and generic medicines from India's leading companies"
 - [ ] Create GA4 / Meta Pixel (and optionally GTM) and add the IDs
 - [ ] Set up the sign-up automation (webhook → Sheet / email / WhatsApp Business Platform)

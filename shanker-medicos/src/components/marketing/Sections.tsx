@@ -3,13 +3,14 @@ import type { SiteContext } from "@/lib/site";
 import { waLink } from "@/lib/whatsapp";
 import { jsonLd } from "@/lib/seo";
 import { PUBLISH_ONLY } from "@/lib/env";
+import { GENERIC_OFFER_PERCENT } from "@/lib/generics";
 import { IconWhatsApp } from "@/components/ui/Icons";
 import { OfferCard } from "./OfferCard";
 import { ClubForm } from "./ClubForm";
 
 export function offerVars(ctx: SiteContext) {
   const s = ctx.settings;
-  return { percent: s.offer_percent, min: s.offer_min_amount.toLocaleString("en-IN"), code: s.offer_code, extra: s.club_extra_percent };
+  return { percent: s.offer_percent, min: s.offer_min_amount.toLocaleString("en-IN"), code: s.offer_code, extra: s.club_extra_percent, gpercent: GENERIC_OFFER_PERCENT };
 }
 
 /** Offer reveal + Shanker Club sign-up, side by side. */

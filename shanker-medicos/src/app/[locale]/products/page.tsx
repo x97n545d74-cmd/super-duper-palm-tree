@@ -8,6 +8,7 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { FormGlyph } from "@/components/v2/FormGlyph";
 import { Lines } from "@/components/v2/Lines";
 import { IconArrow, IconWhatsApp } from "@/components/ui/Icons";
+import { Generics } from "@/components/v2/Generics";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/products">) {
   const { locale, t } = await siteContext((await params).locale);
@@ -63,7 +64,6 @@ export default async function StockPage({ params }: PageProps<"/[locale]/product
                     </div>
                     <h2 className="mt-6 text-h2">{name}</h2>
                     <p className="mt-2 text-ink-2">{f.line[locale]}</p>
-                    {f.rx && <p className="chip mt-4 !text-coral">{v.rx}</p>}
                   </div>
                   {wa && (
                     <a href={wa} target="_blank" rel="noopener noreferrer" data-track-label={`stock_${f.id}`} className="btn btn-ghost h-auto min-h-[46px] self-start whitespace-normal py-2.5 text-left">
@@ -85,8 +85,9 @@ export default async function StockPage({ params }: PageProps<"/[locale]/product
             {t.v2.companies.more} <IconArrow />
           </Link>
         </div>
-        <p className="mt-8 max-w-3xl text-xs text-ink-2">{t.mkt.rx.note}</p>
+        <p className="mt-8 max-w-3xl text-sm text-ink-2">{t.mkt.rx.note}</p>
       </div>
+      <Generics ctx={ctx} id="generics" />
     </div>
   );
 }

@@ -13,6 +13,8 @@ import { Lines } from "@/components/v2/Lines";
 import { OpenStatus } from "@/components/v2/OpenStatus";
 import { FormGlyph } from "@/components/v2/FormGlyph";
 import { StoreVideo } from "@/components/home/StoreVideo";
+import { Generics } from "@/components/v2/Generics";
+import { GENERIC_OFFER_PERCENT } from "@/lib/generics";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]">) {
   const { locale, t } = await siteContext((await params).locale);
@@ -61,6 +63,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
         <div className="container-x grid grid-cols-1 items-end gap-10 pb-12 pt-40 lg:grid-cols-12 lg:pb-16">
           <h1 id="hero-h" className="text-display text-white lg:col-span-9">
+            <a href="#generics" data-rv className="mb-6 inline-flex items-center gap-2 rounded-full bg-emerald px-4 py-2 font-sans text-sm font-semibold normal-case tracking-normal text-black hover:bg-[#2ad68f]">
+              {fmt(t.gen.pill, { percent: GENERIC_OFFER_PERCENT })} <IconArrow className="h-4 w-4" />
+            </a>
             <Lines lines={w.hero.lines} />
           </h1>
           <div data-rv style={{ ["--i" as string]: 6 }} className="lg:col-span-3 lg:pb-3">
@@ -94,7 +99,6 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
                   <span className="display text-[clamp(1.9rem,1.2rem+3.2vw,4.4rem)] text-ink transition-[color,transform] duration-[420ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-2 group-hover:text-black">{name}</span>
                   <span className="hidden text-[0.95rem] text-ink-2 transition-colors group-hover:text-black/75 sm:block">
                     {f.line[locale]}
-                    {f.rx && <span className="ml-2 font-mono text-[0.66rem] uppercase tracking-[0.12em] text-coral group-hover:text-black">· {v.stock.rx}</span>}
                   </span>
                   <span className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink transition-colors group-hover:border-black group-hover:bg-black group-hover:text-emerald">
                     <FormGlyph icon={f.icon} className="h-5 w-5" />
@@ -105,6 +109,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           })}
         </ol>
       </section>
+
+      {/* GENERIC MEDICINES: 30% off selected generics */}
+      <Generics ctx={ctx} />
 
       {/* ORDER ON WHATSAPP */}
       <section className="container-x pt-section" aria-labelledby="order-h">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { IconWhatsApp } from "@/components/ui/Icons";
 import { fmt } from "@/i18n";
+import { GENERIC_OFFER_PERCENT } from "@/lib/generics";
 import type { SiteContext } from "@/lib/site";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MobileNav } from "./MobileNav";
@@ -32,7 +33,8 @@ export function Header({ ctx }: { ctx: SiteContext; showMobileSearch?: boolean }
           <p className="container-x flex items-center justify-center gap-3 py-2 text-center text-[0.78rem]">
             <span className="hidden font-mono text-[0.66rem] uppercase tracking-[0.14em] text-emerald sm:inline">{t.mkt.offer.badge}</span>
             <Link href={`/${locale}/offers`} className="font-medium text-ink underline-offset-4 hover:underline">
-              {fmt(t.mkt.offer.announce, { percent: s.offer_percent, min: s.offer_min_amount.toLocaleString("en-IN") })} →
+              <span className="text-emerald">{fmt(t.gen.announce, { percent: GENERIC_OFFER_PERCENT })}</span>
+              <span className="hidden sm:inline"> · {fmt(t.mkt.offer.announce, { percent: s.offer_percent, min: s.offer_min_amount.toLocaleString("en-IN") })}</span> →
             </Link>
           </p>
         </div>

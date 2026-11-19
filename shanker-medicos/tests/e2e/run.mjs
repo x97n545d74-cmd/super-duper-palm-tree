@@ -221,7 +221,7 @@ await step("what we stock: 12 kinds, each with a WhatsApp question to the store"
   assert(links.every((h) => h.includes("/919815552404")), "store number");
   const texts = links.map((h) => new URL(h).searchParams.get("text"));
   assert(texts.some((t) => t.includes("injectables")) && texts.some((t) => t.includes("ayurvedic & herbal")), texts.slice(0, 3).join(" | "));
-  assert((await page.textContent("#injectables")).includes("Prescription needed"), "injectables marked prescription");
+  assert((await page.textContent("main")).includes("Prescription medicines are sold only against a valid prescription"), "one prescription rule for every kind");
   await page.goto(`${BASE}/pa/products`);
   assert(/[਀-੿]/.test(await page.textContent("#syrups h2")), "Punjabi kind names");
 });
@@ -232,10 +232,34 @@ await step("homepage stock index: 12 kinds, each a WhatsApp question in the visi
   assert((await rows.count()) === 12, `${await rows.count()} rows`);
   const eye = await page.locator("#k-drops a").getAttribute("href");
   assert(new URL(eye).searchParams.get("text").includes("eye & ear drops"), "message for eye & ear drops");
-  assert((await page.textContent("#k-injectables")).includes("Prescription needed"), "injectables flagged");
+  assert(!(await page.textContent("section#stock")).includes("Prescription needed"), "no single kind singled out as prescription-only");
   await page.goto(`${BASE}/hi`);
   const hi = new URL(await page.locator("#k-syrups a").getAttribute("href")).searchParams.get("text");
   assert(/[ऀ-ॿ]/.test(hi), hi);
+});
+
+await step("generic medicines: 30% off selected generics, the owner's four makers first, WhatsApp asks", async () => {
+  for (const l of LOCALES) {
+    await page.goto(`${BASE}/${l}`);
+    const sec = await page.textContent("#generics");
+    assert(sec.includes("30%"), `${l}: offer missing`);
+    const names = await page.locator("#generics ul li a").allTextContents();
+    assert(names.length === 24 && names.slice(0, 4).join("|") === "Cipla|Leeford|Alkem|RP Biotech", `${l}: ${names.slice(0, 5).join("|")}`);
+  }
+  await page.goto(`${BASE}/en`);
+  const ask = new URL(await page.locator("#generics a[data-track-label='generics_ask']").getAttribute("href")).searchParams.get("text");
+  assert(ask.includes("generic") && ask.includes("30%"), ask);
+  const lee = new URL(await page.locator("#generics ul li a:has-text('Leeford')").getAttribute("href")).searchParams.get("text");
+  assert(lee.includes("Leeford Healthcare (generic)"), lee);
+  assert((await page.locator('a[href="/en/offers"]').first().textContent()).includes("30% off selected generic medicines"), "top bar");
+  await page.goto(`${BASE}/en/offers`);
+  const offers = await page.textContent("#generic-offer");
+  assert(offers.includes("30% off selected generic medicines") && offers.includes("chosen by the store"), "offer card / terms");
+  await page.goto(`${BASE}/en/companies`);
+  await page.click("button[aria-pressed]:has-text('Generics')");
+  const gcount = await page.locator("main ul[lang=en] li").count();
+  assert(gcount === 24, `generics filter ${gcount}`);
+  assert((await page.textContent("main ul[lang=en]")).includes("RP Biotech"), "RP Biotech listed");
 });
 
 await step("company finder: instant search, Indian / multinational filter, WhatsApp ask", async () => {
@@ -663,7 +687,7 @@ await step("admin: change the offer to 15% and see it on the site", async () => 
 await step("companies & logos: 100+ companies, bulk logo upload matched by file name", async () => {
   const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "base64");
   await page.goto(`${BASE}/admin/companies`);
-  assert(/10\d companies/.test(await page.textContent("main")), "company count");
+  assert(/1\d\d companies/.test(await page.textContent("main")), "company count");
   await page.setInputFiles("#logos", [
     { name: "micro-labs.png", mimeType: "image/png", buffer: png },
     { name: "Cipla_logo.png", mimeType: "image/png", buffer: png },

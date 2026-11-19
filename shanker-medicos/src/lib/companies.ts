@@ -68,6 +68,7 @@ export const COMPANIES: Company[] = [
   { name: "Pfizer Ltd", q: "Pfizer", type: "multinational", known: "Anti-infectives, vitamins, vaccines" },
   { name: "Piramal Pharma", q: "Piramal", type: "indian", known: "Consumer health" },
   { name: "Procter & Gamble Health", q: "Procter", type: "multinational", known: "Vitamins, cold and cough" },
+  { name: "RP Biotech", q: "RP Biotech", type: "indian", known: "Generic medicines" },
   { name: "Reckitt", q: "Reckitt", type: "multinational", known: "Antiseptics, pain relief" },
   { name: "Roche Products (India)", q: "Roche", type: "multinational", known: "Oncology, diagnostics" },
   { name: "Sanofi India", q: "Sanofi", type: "multinational", known: "Diabetes, consumer health" },

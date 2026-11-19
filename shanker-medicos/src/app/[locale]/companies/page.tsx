@@ -3,6 +3,7 @@ import { catalogue } from "@/lib/data";
 import { fmt } from "@/i18n";
 import { pageMeta, jsonLd } from "@/lib/seo";
 import { waLink } from "@/lib/whatsapp";
+import { isGenericMaker } from "@/lib/generics";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { CompanyFinder } from "@/components/v2/CompanyFinder";
 import { Lines } from "@/components/v2/Lines";
@@ -48,8 +49,8 @@ export default async function CompaniesPage({ params }: PageProps<"/[locale]/com
         <div data-rv style={{ ["--i" as string]: 8 }} className="mt-12">
           <CompanyFinder
             askHref={waGeneral}
-            labels={{ search: v.search, none: v.none, indian: v.indian, mnc: v.mnc, ask: v.ask, count: v.count, all: v.all }}
-            companies={companies.map((c) => ({ id: c.id, name: c.name, known: c.known, kind: c.kind, logo: c.logo_url, wa: waLink(s.whatsapp, fmt(v.askMsg, { name: c.name })) }))}
+            labels={{ search: v.search, none: v.none, indian: v.indian, mnc: v.mnc, ask: v.ask, count: v.count, all: v.all, generics: t.gen.filter }}
+            companies={companies.map((c) => ({ id: c.id, name: c.name, known: c.known, kind: c.kind, logo: c.logo_url, generic: isGenericMaker(c.name), wa: waLink(s.whatsapp, fmt(v.askMsg, { name: c.name })) }))}
           />
         </div>
         <p className="mt-10 max-w-3xl text-xs text-ink-2">{v.trademark}</p>
