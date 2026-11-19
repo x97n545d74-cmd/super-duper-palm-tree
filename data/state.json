@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 4,
+ "reddit_next": 5,
  "fails": {
   "reddit|r/StockMarketIndia": 9,
   "reddit|r/DalalStreetTalks": 9,
@@ -49,7 +49,9 @@
   "feeds|NSE annual reports": 6,
   "feeds|NSE buybacks": 6,
   "feeds|NSE offer documents": 6,
-  "feeds|NSE pledge and encumbrance disclosures": 6
+  "feeds|NSE pledge and encumbrance disclosures": 6,
+  "news|India exports imports trade deficit": 1,
+  "news|startup funding round India crore": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795104523.1598945,
