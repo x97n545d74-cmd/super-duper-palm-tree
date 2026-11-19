@@ -1,5 +1,7 @@
 # Going live for free: step by step (for the shop owner)
 
+> **Live since 19 Nov 2026: https://shanker-medicos.netlify.app** (published by Claude to the Netlify account "Sahil Rampal's team"). The steps below are only needed to set it up again from scratch.
+
 The website runs in **publish-only mode**: no database, no logins, nothing to manage. It shows the catalogue, offer and shop details, and every enquiry goes to WhatsApp 98155 52404. To change something (offer, hours, products), message Claude.
 
 It is hosted on **Netlify's free plan**, which allows business websites. You pay nothing and need no card. Time needed: about 15 minutes. You need your GitHub login.
