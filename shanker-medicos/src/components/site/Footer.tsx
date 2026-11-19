@@ -5,6 +5,7 @@ import type { SiteContext } from "@/lib/site";
 import { telHref } from "@/lib/settings";
 import { STOCK } from "@/lib/stock";
 import { navItems } from "./Header";
+import { HoursList } from "@/components/v2/HoursList";
 
 export function Footer({ ctx }: { ctx: SiteContext }) {
   const { t, locale, settings: s, waGeneral } = ctx;
@@ -45,7 +46,9 @@ export function Footer({ ctx }: { ctx: SiteContext }) {
               </a>
             </li>
           )}
-          {s.opening_hours && <li className="whitespace-pre-line text-sm text-ink-2">{s.opening_hours}</li>}
+          <li>
+            <HoursList t={t} compact />
+          </li>
           <li className="pt-3">
             <span className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-ink-2">{t.footer.legal}</span>
           </li>

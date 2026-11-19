@@ -14,6 +14,7 @@ import { OpenStatus } from "@/components/v2/OpenStatus";
 import { FormGlyph } from "@/components/v2/FormGlyph";
 import { StoreVideo } from "@/components/home/StoreVideo";
 import { Generics } from "@/components/v2/Generics";
+import { HoursList } from "@/components/v2/HoursList";
 import { GENERIC_OFFER_PERCENT } from "@/lib/generics";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]">) {
@@ -224,11 +225,6 @@ function Visit({ ctx }: { ctx: SiteContext }) {
   const { t, settings: s } = ctx;
   const v = t.v2;
   const tel = telHref(s.phone);
-  const rows = [
-    { k: v.visit.summer, val: "9:00 am – 10:00 pm" },
-    { k: v.visit.winter, val: "9:30 am – 9:30 pm" },
-    { k: v.visit.sunday, val: v.visit.closed },
-  ];
   return (
     <section className="container-x pt-section" aria-labelledby="visit-h">
       <p data-rv className="eyebrow">
@@ -245,20 +241,13 @@ function Visit({ ctx }: { ctx: SiteContext }) {
           <p className="text-ink-2">{v.visit.body}</p>
           <div className="mt-6 flex items-center justify-between">
             <p className="font-semibold">{t.location.hours}</p>
-            <span className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-emerald">
+            <span className="text-right text-sm font-medium text-ink">
               <OpenStatus labels={v.status} />
             </span>
           </div>
-          <dl className="mt-3 divide-y divide-line border-y border-line">
-            {rows.map((r) => (
-              <div key={r.k} className="flex items-center justify-between py-3.5">
-                <dt className="text-ink-2">{r.k}</dt>
-                <dd lang="en" className="font-mono text-[0.85rem]">
-                  {r.val}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <div className="mt-4">
+            <HoursList t={t} />
+          </div>
           <p className="mt-5 text-sm text-ink-2">{[s.address, s.city, s.state, s.postal_code].filter(Boolean).join(", ")}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             {s.maps_url && (

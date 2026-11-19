@@ -40,9 +40,7 @@ export function Generics({ ctx, id = "generics" }: { ctx: SiteContext; id?: stri
           <span lang="en" className="display outline block text-[clamp(8rem,4rem+14vw,17rem)] leading-[.8]">
             {percent}%
           </span>
-          <span lang="en" className="display mt-2 block text-[clamp(2rem,1rem+3vw,3.6rem)] text-emerald">
-            Off · Generics
-          </span>
+          <span className="display mt-2 block text-[clamp(2rem,1rem+3vw,3.6rem)] text-emerald">{g.bigLabel}</span>
         </div>
       </div>
 

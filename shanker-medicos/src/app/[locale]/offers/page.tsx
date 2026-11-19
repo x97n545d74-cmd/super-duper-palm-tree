@@ -45,7 +45,7 @@ export default async function OffersPage({ params }: PageProps<"/[locale]/offers
           {t.mkt.offer.badge}
         </p>
         <h1 className="mt-4 max-w-5xl text-h1">
-          <Lines lines={s.offer_enabled ? fmt(t.mkt.offer.title, v) : t.mkt.club.title} />
+          <Lines lines={s.offer_enabled ? fmt(t.mkt.offer.title, v) : fmt(t.mkt.club.title, v)} />
         </h1>
       </div>
       <div className="container-x relative z-10 mt-10">

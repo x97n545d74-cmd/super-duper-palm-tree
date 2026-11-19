@@ -10,6 +10,7 @@ import { memberCode } from "../../src/lib/data/repo";
 import { randomBytes } from "node:crypto";
 import { COMPANIES, companiesByLetter, matchCompany, matchLogoFile, monogram } from "../../src/lib/companies";
 import { seedCompanies } from "../../src/lib/data/seed";
+import { statusAt, seasonAt } from "../../src/lib/hours";
 import { productKey } from "../../src/lib/data/repo";
 import { getDictionary, fmt } from "../../src/i18n";
 import en from "../../src/i18n/en";
@@ -346,4 +347,25 @@ test("company badges use a clean short name", async () => {
   assert.equal(shortName("Cipla"), "Cipla");
   assert.equal(shortName("Colgate-Palmolive (India)"), "Colgate-Palmolive");
   assert.equal(shortName("Johnson & Johnson / Kenvue"), "Kenvue");
+});
+
+test("live open/closed sign follows India time, Monday–Saturday hours and the season", () => {
+  // IST = UTC + 5:30
+  const ist = (date: string, hh: number, mm: number) => new Date(Date.parse(`${date}T00:00:00Z`) + ((hh * 60 + mm) - 330) * 60_000);
+  // winter (November), Wednesday
+  assert.equal(seasonAt(ist("2026-11-18", 12, 0)), "winter");
+  assert.deepEqual(statusAt(ist("2026-11-18", 9, 15)), { state: "opens-today", at: "9:30 am" });
+  assert.deepEqual(statusAt(ist("2026-11-18", 9, 30)), { state: "open", until: "9:30 pm" });
+  assert.deepEqual(statusAt(ist("2026-11-18", 21, 29)), { state: "open", until: "9:30 pm" });
+  assert.deepEqual(statusAt(ist("2026-11-18", 21, 30)), { state: "opens-tomorrow", at: "9:30 am" });
+  // Saturday is a working day; after closing it opens Monday
+  assert.deepEqual(statusAt(ist("2026-11-21", 18, 0)), { state: "open", until: "9:30 pm" });
+  assert.deepEqual(statusAt(ist("2026-11-21", 22, 30)), { state: "opens-monday", at: "9:30 am", sunday: false });
+  // Sunday closed all day
+  assert.deepEqual(statusAt(ist("2026-11-22", 12, 0)), { state: "opens-monday", at: "9:30 am", sunday: true });
+  // summer (June), Tuesday: 9 am – 10 pm
+  assert.equal(seasonAt(ist("2026-06-16", 12, 0)), "summer");
+  assert.deepEqual(statusAt(ist("2026-06-16", 9, 15)), { state: "open", until: "10:00 pm" });
+  assert.deepEqual(statusAt(ist("2026-06-16", 21, 45)), { state: "open", until: "10:00 pm" });
+  assert.deepEqual(statusAt(ist("2026-06-16", 22, 0)), { state: "opens-tomorrow", at: "9:00 am" });
 });

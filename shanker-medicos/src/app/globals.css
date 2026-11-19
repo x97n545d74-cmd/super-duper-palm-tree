@@ -265,6 +265,8 @@
 
 /* Line mask reveal: each .ln slides up out of its own mask */
 .ln { display: block; overflow: hidden; padding-bottom: .04em; margin-bottom: -.04em; }
+/* Hindi and Punjabi carry vowel marks above (ਿ ੀ ੰ, ि ी ं) and below (ੁ ੂ, ु ू) the line: give the mask room both ways without moving the text. */
+:lang(hi) .ln, :lang(pa) .ln { padding-top: .14em; margin-top: -.14em; padding-bottom: .26em; margin-bottom: -.26em; }
 .ln > span { display: inline-block; transform: translate3d(0, 105%, 0); }
 .in .ln > span, .ln.in > span { transform: none; transition: transform 1s var(--ease-enter); transition-delay: calc(var(--d0, 0s) + var(--li, 0) * .09s); }
 html.no-js .ln > span, html[data-motion="off"] .ln > span { transform: none; }

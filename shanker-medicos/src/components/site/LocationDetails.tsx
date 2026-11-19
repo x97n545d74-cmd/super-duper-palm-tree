@@ -1,4 +1,5 @@
 import type { SiteContext } from "@/lib/site";
+import { HoursList } from "@/components/v2/HoursList";
 import { telHref } from "@/lib/settings";
 import { IconClock, IconMail, IconPhone, IconPin, IconWhatsApp, IconArrow } from "@/components/ui/Icons";
 
@@ -26,7 +27,7 @@ export function LocationDetails({ ctx, className = "" }: { ctx: SiteContext; cla
           )}
         </Row>
         <Row icon={<IconClock />} label={t.location.hours}>
-          {s.opening_hours ? <span className="whitespace-pre-line">{s.opening_hours}</span> : pending}
+          <HoursList t={t} compact />
         </Row>
         {s.email && (
           <Row icon={<IconMail />} label={t.location.email}>

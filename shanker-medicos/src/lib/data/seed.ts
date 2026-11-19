@@ -151,7 +151,7 @@ export const seedSettings: BusinessSettings = {
   phone: "+91 98155 52404",
   whatsapp: "+91 98155 52404",
   email: "",
-  opening_hours: "Summer: 9:00 am – 10:00 pm\nWinter: 9:30 am – 9:30 pm\nSunday: Closed",
+  opening_hours: "Monday to Saturday\nSummer (April–September): 9:00 am – 10:00 pm\nWinter (October–March): 9:30 am – 9:30 pm\nSunday: Closed",
   maps_url: "https://maps.app.goo.gl/jgHwJrpiNSSzED4q9",
   instagram_url: "",
   facebook_url: "",

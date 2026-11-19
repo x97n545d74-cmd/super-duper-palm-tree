@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SITE_URL } from "./env";
 import { LOCALES, LOCALE_META, DEFAULT_LOCALE, type Locale } from "@/i18n/config";
 import type { BusinessSettings } from "./types";
+import { HOURS, seasonAt } from "./hours";
 
 /** Canonical + hreflang alternates for a path without the locale prefix (e.g. "/products"). */
 export function alternates(locale: Locale, path: string): Metadata["alternates"] {
@@ -65,6 +66,12 @@ export function pharmacySchema(s: BusinessSettings, locale: Locale) {
   if (s.phone) data.telephone = s.phone;
   if (s.email) data.email = s.email;
   if (s.gstin) data.taxID = s.gstin;
+  // Hours for Google (current season, Monday–Saturday; src/lib/hours.ts)
+  const h = HOURS[seasonAt()];
+  const hhmm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+  data.openingHoursSpecification = [
+    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], opens: hhmm(h.open), closes: hhmm(h.close) },
+  ];
   if (s.maps_url) data.hasMap = s.maps_url;
   const same = [s.instagram_url, s.facebook_url].filter(Boolean);
   if (same.length) data.sameAs = same;
