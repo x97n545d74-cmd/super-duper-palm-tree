@@ -36,10 +36,10 @@ Install **WhatsApp Business** on the shop phone with 98155 52404.
 ### 2. Google Business Profile (free; brings "medical store near me" searches)
 At **business.google.com**: claim or create *Shanker Medicos*.
 - Primary category **Pharmacy**; add **Drug store** and **Medical supply store**.
-- Address *Dera Road, Batala, Punjab 143505*; phone and WhatsApp *+91 98155 52404*; website = your domain (once live).
+- Address *Dera Road, Batala, Punjab 143505*; phone and WhatsApp *+91 98155 52404* (the only number to list); website *https://shanker-medicos.netlify.app*.
 - Hours: winter 9:30 am – 9:30 pm Mon–Sat; Sunday closed. When summer starts, change to 9 am – 10 pm.
 - Description:
-  > Shanker Medicos is a pharmacy on Dera Road, Batala. We keep branded and generic medicines, personal care, baby care, vitamins and medical devices. Send your prescription on WhatsApp to 98155 52404 to check availability and price before you visit.
+  > Shanker Medicos, Chemists & Druggists on Dera Road, Batala (wholesale and retail). We keep medicines from more than 100 companies, including a wide range of generic medicines from Cipla, Leeford, Alkem and RP Biotech, with 30% off selected generics. Send your prescription on WhatsApp to 98155 52404 and we'll tell you what we have and the price before you visit.
 - Photos: shop front, counter, shelves (real photos from your phone), plus the logo.
 - Every week add one **Update** using a post image and its caption below.
 - Ask happy customers for a Google review (use the "Ask for reviews" link). Never buy or write reviews yourself.
