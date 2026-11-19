@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { currentAdmin, localAdminConfigured } from "@/lib/auth";
-import { DATA_MODE } from "@/lib/env";
+import { DATA_MODE, PUBLISH_ONLY } from "@/lib/env";
 import { Logo } from "@/components/brand/Logo";
 import { LoginForm } from "@/components/admin/LoginForm";
 
@@ -28,14 +28,18 @@ export default async function LoginPage() {
           </div>
           <h1 className="mt-10 text-h2 lg:mt-0">Sign in</h1>
           <p className="mt-2 text-sm text-ink-2">For Shanker Medicos staff only.</p>
-          {notConfigured ? (
+          {PUBLISH_ONLY ? (
+            <p className="mt-8 rounded-control bg-mint p-4 text-sm text-forest">
+              Admin is switched off on this website (publish-only mode). The catalogue, offer and shop details are updated in the code. To turn admin on, connect Supabase (see docs/DEPLOYMENT.md).
+            </p>
+          ) : notConfigured ? (
             <p className="mt-8 rounded-control bg-[#FFF4E5] p-4 text-sm text-warn">
               Admin sign-in is not set up yet. Add ADMIN_DEV_EMAIL, ADMIN_DEV_PASSWORD and SESSION_SECRET to the environment (development mode), or connect Supabase (see docs/DEPLOYMENT.md).
             </p>
           ) : (
             <LoginForm />
           )}
-          {DATA_MODE === "local" && <p className="mt-8 text-xs text-ink-2">Development mode: data is stored in a local file, not Supabase.</p>}
+          {DATA_MODE === "local" && !PUBLISH_ONLY && <p className="mt-8 text-xs text-ink-2">Development mode: data is stored in a local file, not Supabase.</p>}
         </div>
       </div>
     </div>

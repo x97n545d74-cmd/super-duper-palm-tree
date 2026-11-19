@@ -1,3 +1,5 @@
+import { track as vercelTrack } from "@vercel/analytics";
+
 // Browser-side conversion tracking. Sends each event to Google Tag Manager's
 // dataLayer, GA4 (gtag) and Meta Pixel (fbq) when those are loaded, which only
 // happens after the visitor accepts the cookie banner. Without consent, or with
@@ -58,6 +60,12 @@ export function collect(event: string, params: Params = {}) {
 export function track(event: string, params: Params = {}) {
   if (typeof window === "undefined") return;
   collect(event, params);
+  // Vercel Web Analytics custom events (shown in the Vercel dashboard; no-op elsewhere).
+  try {
+    const vp: Record<string, string | number> = {};
+    for (const k of ["placement", "item_name", "search_term", "page"]) if (params[k] !== undefined) vp[k] = String(params[k]).slice(0, 100);
+    if (event !== "pageview") vercelTrack(event, vp);
+  } catch {}
   const attr = getAttribution();
   const payload = { ...params, ...(attr.utm_source ? { utm_source: attr.utm_source, utm_campaign: attr.utm_campaign } : {}) };
   (window.dataLayer ??= []).push({ event, ...payload });

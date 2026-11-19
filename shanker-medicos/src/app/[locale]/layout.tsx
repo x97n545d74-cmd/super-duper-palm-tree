@@ -10,6 +10,7 @@ import { SITE_URL } from "@/lib/env";
 import { jsonLd, pharmacySchema } from "@/lib/seo";
 import { ClickTracker } from "@/components/marketing/ClickTracker";
 import { Analytics } from "@/components/marketing/Analytics";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -41,6 +42,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <WhatsAppFloat href={ctx.waGeneral} label={ctx.t.whatsapp.float} />
         <ClickTracker />
         <Analytics labels={ctx.t.mkt.consent} privacyHref={`/${ctx.locale}/privacy`} />
+        {/* Vercel Web Analytics: cookieless visit counts in the Vercel dashboard (only on Vercel). */}
+        {process.env.VERCEL === "1" && <VercelAnalytics />}
         <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(pharmacySchema(ctx.settings, ctx.locale))} />
       </body>
     </html>

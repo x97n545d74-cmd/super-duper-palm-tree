@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-19T10:04:49.316Z",
+  "date": "2026-11-19T10:21:01.944Z",
   "passed": 69,
   "total": 69,
   "results": [
@@ -106,7 +106,7 @@
     {
       "name": "Shanker Club: sign-up gives a member code and a WhatsApp save link",
       "ok": true,
-      "detail": "SM-QATRM"
+      "detail": "SM-KP6QG"
     },
     {
       "name": "Shanker Club: joining again with the same number returns the same code",

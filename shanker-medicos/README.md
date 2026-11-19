@@ -14,7 +14,7 @@ npm run dev                      # http://localhost:3000  (admin: /admin)
 
 With no Supabase keys, the app runs in **development mode**: data lives in `data/store.json` (created from the starter catalogue on first run) and uploads in `data/uploads/`. `npm run reset:local` starts over.
 
-For production (Supabase + Vercel): the owner's step-by-step guide is **[docs/GO_LIVE.md](docs/GO_LIVE.md)**; technical details are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). The whole database setup is one file: `supabase/setup-all.sql`.
+**Publishing:** the site runs on Vercel in publish-only mode (no database, nothing to manage); the owner's steps are in **[docs/GO_LIVE.md](docs/GO_LIVE.md)** and the marketing kit is in **[marketing/](marketing/README.md)**. For the optional Supabase setup (admin, sign-ups, built-in analytics): technical details are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). The whole database setup is one file: `supabase/setup-all.sql`.
 
 ## Stack
 
@@ -28,6 +28,7 @@ Next.js 16 (App Router, TypeScript) · Tailwind CSS 4 · Supabase (PostgreSQL, A
 | `npm run build` / `npm start` | Production build / server |
 | `npm run lint` · `npm run typecheck` | ESLint · TypeScript |
 | `npm run test:unit` | Unit tests (search, WhatsApp, validation, i18n, club, offer) |
+| `npm run test:publish` | Browser tests of publish-only mode (how it runs on Vercel without a database) |
 | `npm run test:e2e` | Browser tests against a fresh production build (builds first) |
 | `npm run db:verify` | Applies the migrations to an in-process PostgreSQL and checks every RLS rule |
 | `npm run db:seed-sql` | Regenerates `supabase/seed.sql` from the starter catalogue |

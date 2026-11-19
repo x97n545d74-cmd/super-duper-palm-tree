@@ -239,6 +239,9 @@ const en = {
       ],
     },
     club: {
+      waJoin: "Join on WhatsApp",
+      waJoinBody: "Send us a WhatsApp message to join. Show our reply at the counter on your first purchase. The website doesn't store your details.",
+      waJoinMessage: "JOIN\n\nHello Shanker Medicos, I would like to join Shanker Club.",
       eyebrow: "Shanker Club",
       title: "Unlock an extra discount",
       body: "Join free with your mobile number. You get a personal member code for an extra discount at the counter, plus offers on WhatsApp.",
@@ -290,7 +293,7 @@ const en = {
         { q: "Can I send my prescription on WhatsApp?", a: "Yes. Send a clear photo of your prescription on WhatsApp. A pharmacist checks it before any medicine is given and may ask to see the original." },
         { q: "Do you have generic medicines?", a: "Yes. We keep both branded and generic medicines. Ask us on WhatsApp about the options for your medicine." },
         { q: "How do I get {percent}% off?", a: "Spend more than ₹{min} on one bill and show the code {code} at the counter, or mention it in your WhatsApp order. The discount applies to selected medicines; we will tell you which ones." },
-        { q: "What is Shanker Club?", a: "A free membership. Join with your mobile number to get a personal code for an extra discount on your first purchase, plus offers on WhatsApp. You can stop messages at any time by replying STOP." },
+        { q: "What is Shanker Club?", a: "A free membership. Join on WhatsApp to get an extra discount on your first purchase, plus offers on WhatsApp. You can stop messages at any time by replying STOP." },
         { q: "Where is the store?", a: "Shanker Medicos is on Dera Road, Batala, Punjab (143505). Tap “Get directions” to open the store in Google Maps." },
         { q: "Can you advise me on dosage online?", a: "No. This website and our WhatsApp are for orders and availability. For dosage and medical advice, please talk to your doctor or to our pharmacist in person." },
       ],

@@ -2,7 +2,7 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { DATA_MODE, isProduction } from "./env";
+import { DATA_MODE, PUBLISH_ONLY, isProduction } from "./env";
 import { sessionClient } from "./supabase/clients";
 
 // Two modes:
@@ -40,6 +40,7 @@ export function localAdminConfigured() {
 
 /** Returns an error message, or null on success. */
 export async function signIn(email: string, password: string): Promise<string | null> {
+  if (PUBLISH_ONLY) return "Admin is switched off on this website (publish-only mode).";
   if (DATA_MODE === "supabase") {
     const sb = await sessionClient();
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
@@ -75,6 +76,7 @@ export async function signOut() {
 }
 
 export async function currentAdmin(): Promise<AdminUser | null> {
+  if (PUBLISH_ONLY) return null;
   if (DATA_MODE === "supabase") {
     const sb = await sessionClient();
     const { data } = await sb.auth.getUser();

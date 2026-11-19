@@ -4,6 +4,7 @@ import type { SiteContext } from "@/lib/site";
 import { waLink } from "@/lib/whatsapp";
 import { jsonLd } from "@/lib/seo";
 import { catalogue } from "@/lib/data";
+import { PUBLISH_ONLY } from "@/lib/env";
 import { CompanyLogo } from "@/components/site/CompanyLogo";
 import { IconArrow, IconWhatsApp, IconInfo } from "@/components/ui/Icons";
 import { OfferCard } from "./OfferCard";
@@ -87,7 +88,17 @@ export function OfferAndClub({ ctx, source, headingId = "offer-h" }: { ctx: Site
             <p className="eyebrow">{c.eyebrow}</p>
             <p className="mt-4 font-display text-h2 font-semibold">{c.title}</p>
             <p className="mt-3 text-ink-2">{s.club_extra_percent > 0 ? fmt(c.bodyPercent, v) : c.body}</p>
-            <div className="mt-6">
+            {PUBLISH_ONLY ? (
+              <div className="mt-6">
+                <p className="text-sm text-ink-2">{c.waJoinBody}</p>
+                {waLink(s.whatsapp, c.waJoinMessage) && (
+                  <a href={waLink(s.whatsapp, c.waJoinMessage)!} target="_blank" rel="noopener noreferrer" data-track-label="club_join_whatsapp" className="btn btn-wa mt-5 h-12 px-6">
+                    <IconWhatsApp className="h-5 w-5" /> {c.waJoin}
+                  </a>
+                )}
+              </div>
+            ) : (
+              <div className="mt-6">
               <ClubForm
                 locale={locale}
                 labels={c}
@@ -97,6 +108,7 @@ export function OfferAndClub({ ctx, source, headingId = "offer-h" }: { ctx: Site
                 policyLabel={t.footer.privacy}
               />
             </div>
+            )}
           </div>
         )}
       </div>

@@ -25,6 +25,7 @@ import { seedCategories, seedCompanies, seedProducts, seedSettings } from "./see
 import { slugify, uniqueSlug } from "../text";
 import { readImage } from "./images";
 import { missingSettings } from "../settings";
+import { PUBLISH_ONLY } from "../env";
 
 // Development mode store: one JSON file. Not for production (serverless
 // file systems are read-only); production uses Supabase.
@@ -46,6 +47,8 @@ let writing: Promise<unknown> = Promise.resolve();
 let seeding: Promise<void> | null = null;
 
 async function load(): Promise<DB> {
+  // Publish-only: serve the built-in data, never touch the file system.
+  if (PUBLISH_ONLY) return { categories: seedCategories, products: seedProducts, settings: seedSettings, companies: seedCompanies };
   try {
     return JSON.parse(await fs.readFile(DB_FILE, "utf8")) as DB;
   } catch (e) {
@@ -66,6 +69,7 @@ async function save(db: DB) {
 
 /** Serialise read-modify-write cycles so concurrent admin saves cannot clobber each other. */
 function mutate<T>(fn: (db: DB) => T | Promise<T>): Promise<T> {
+  if (PUBLISH_ONLY) return Promise.reject(new RepoError("This site is in publish-only mode: changes are made in the code, not in admin.", "forbidden"));
   const run = writing.then(async () => {
     const db = await load();
     const result = await fn(db);
@@ -386,6 +390,7 @@ async function readEvents(pred: (e: AnalyticsEvent) => boolean): Promise<Analyti
 /** Append-only log; one JSON object per line. */
 export const localEvents: EventsRepo = {
   async log(e) {
+    if (PUBLISH_ONLY) return; // counted by Vercel Web Analytics instead
     await fs.mkdir(DATA_DIR, { recursive: true });
     await fs.appendFile(EVENTS_FILE, JSON.stringify(e) + "\n");
   },

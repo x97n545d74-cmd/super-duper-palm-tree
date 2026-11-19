@@ -2,6 +2,7 @@ import Link from "next/link";
 import { siteContext } from "@/lib/site";
 import { pageMeta } from "@/lib/seo";
 import { LegalPage, contactLine } from "@/components/site/LegalPage";
+import { PUBLISH_ONLY } from "@/lib/env";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/privacy">) {
   const { locale, t } = await siteContext((await params).locale);
@@ -24,19 +25,36 @@ export default async function Privacy({ params }: PageProps<"/[locale]/privacy">
         <li>The website does not collect prescriptions, medical reports or health information. Prescriptions are sent only on WhatsApp (see below).</li>
         <li>We do not sell personal data.</li>
       </ul>
-      <h2>Shanker Club (offers sign-up)</h2>
-      <p>
+      {PUBLISH_ONLY ? (
+        <>
+          <h2>Shanker Club</h2>
+          <p>
+            You join Shanker Club by sending us a message on WhatsApp. The website itself does not collect your name, number or email. We use your WhatsApp number only to
+            give you your member code and offers, and you can stop messages at any time by replying STOP.
+          </p>
+          <h2>Visit statistics</h2>
+          <p>
+            We use Vercel Web Analytics to count visits and taps on buttons such as WhatsApp. It does not use cookies and does not identify you; we only see totals (for
+            example, how many people visited this week and which pages they opened).
+          </p>
+        </>
+      ) : (
+        <>
+          <h2>Shanker Club (offers sign-up)</h2>
+          <p>
         If you join Shanker Club, we collect your mobile number and, if you choose, your name and email, together with the wording of the consent you gave, the date, your
         language and how you found us (for example a Facebook or Google ad). We use this only to give you your member code and discounts and to send you offers and reminders
         about {name} on WhatsApp, SMS or email. You can stop messages at any time by replying STOP, and ask us to delete your details using the contact details below. We
         may use an automation or messaging service to send these messages on our behalf; it receives only what is needed to do so.
-      </p>
-      <h2>Our own visit statistics</h2>
-      <p>
+          </p>
+          <h2>Our own visit statistics</h2>
+          <p>
         To understand how the website is used, it records anonymous events such as page views, searches and taps on WhatsApp, call or directions buttons, with the page,
         language, device type and the ad or site that brought you. It does not use cookies and does not store your name, phone number, email or IP address; visits are
         grouped with a code that changes every day and cannot identify you.
-      </p>
+          </p>
+        </>
+      )}
       <h2>Cookies and advertising measurement</h2>
       <p>
         With your permission (the cookie banner), we use Google Analytics, Google Tag Manager and the Meta (Facebook) Pixel to count visits and measure which ads bring
