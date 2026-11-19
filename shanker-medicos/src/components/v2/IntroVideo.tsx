@@ -92,14 +92,13 @@ export function IntroVideo({ labels }: { labels: Labels }) {
         })}
       </div>
       <div className="vign" />
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 px-5 pb-5 sm:px-10 sm:pb-8">
-        <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-white/60">
-          <span className="text-[#19c37d]">●</span> {labels.coords}
-        </p>
-        <button type="button" onClick={skip} className="rounded-full border border-white/30 px-4 py-2 text-sm font-medium text-white backdrop-blur hover:border-white">
-          {labels.skip}
-        </button>
-      </div>
+      {/* Skip sits top-right: the host's badge can cover the bottom corners */}
+      <button type="button" onClick={skip} className="absolute right-5 top-5 rounded-full border border-white/30 px-4 py-2 text-sm font-medium text-white backdrop-blur hover:border-white sm:right-10 sm:top-8">
+        {labels.skip}
+      </button>
+      <p className="absolute left-5 top-6 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-white/60 sm:left-10 sm:top-9">
+        <span className="text-[#19c37d]">●</span> {labels.coords}
+      </p>
       <div className="absolute inset-x-0 bottom-0 h-[2px] bg-white/10">
         <div className="h-full bg-[#19c37d]" style={{ width: `${progress * 100}%`, transition: "width .25s linear" }} />
       </div>
