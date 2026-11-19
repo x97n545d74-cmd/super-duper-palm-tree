@@ -59,3 +59,8 @@ The logo mark is a capsule split by an S-curve (pharmacy + the S of Shanker). `p
 - **Automation**: `src/lib/automation.ts` POSTs signed JSON (`X-Shanker-Signature`, HMAC-SHA256) to `AUTOMATION_WEBHOOK_URL`.
 - **Tracking**: `src/components/marketing/ClickTracker.tsx` records clicks on WhatsApp/phone/Maps links and `data-track` elements, plus first-touch UTM attribution in `localStorage`. `Analytics.tsx` shows the cookie banner and loads GTM/GA4/Meta Pixel only after consent. Event names are listed in docs/MARKETING.md.
 - **Forms keep their values on errors**: React 19 resets `<form action>` after every submission, so all forms submit through `keepValues()` (`src/lib/use-keep-form.ts`) instead.
+
+## Companies and analytics (added 20 Nov 2026)
+
+- **Companies** (`companies` table, migration `…0003`): 107 seeded, editable in Admin → Companies & logos. Logos are uploaded by the store (bulk uploader matches files to companies by name: `matchLogoFile()` in `src/lib/companies.ts`); products are linked to a company by `matchCompany()` (manufacturer/brand contains the company's search word).
+- **Analytics**: `track()` / `collect()` in `src/lib/analytics.ts` beacon events to `src/app/api/collect/route.ts` (validated, bot-filtered, rate-limited, daily-rotating visitor hash, no PII) → `events` table or `data/events.ndjson`. `src/lib/analytics-report.ts` builds the report (pure, unit-tested); `src/app/admin/(panel)/analytics/page.tsx` renders it with `src/components/admin/charts.tsx`. Chart colours live in `src/lib/chart-colors.ts` (server components cannot read plain objects exported from "use client" files).

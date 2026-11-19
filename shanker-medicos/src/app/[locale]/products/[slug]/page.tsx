@@ -13,6 +13,8 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { WaButton } from "@/components/site/WhatsApp";
 import { IconInfo, IconPhone, IconWhatsApp } from "@/components/ui/Icons";
 import { TrackView } from "@/components/marketing/ClickTracker";
+import { CompanyLogo } from "@/components/site/CompanyLogo";
+import { matchCompany } from "@/lib/companies";
 import { fmt as f2 } from "@/i18n";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/products/[slug]">) {
@@ -42,6 +44,7 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
     ? (await catalogue.searchProducts({ category: category.slug, perPage: 9 })).items.filter((p) => p.id !== product.id).slice(0, 4)
     : [];
   const wa = waLink(settings.whatsapp, productMessage(locale, product));
+  const company = matchCompany(await catalogue.listCompanies(), product.manufacturer, product.brand);
   const tel = telHref(settings.phone);
   const rxNote = t.product.rxNote[product.rx_class];
   // Medicines that need (or may need) a prescription: offer to send it on WhatsApp.
@@ -157,6 +160,17 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
               <h2 className="text-h3">{t.product.about}</h2>
               <p className="mt-3 leading-relaxed text-ink">{product.description}</p>
             </section>
+          )}
+          {company && (
+            <Link href={`/${locale}/products?q=${encodeURIComponent(company.search_q)}`} className="mt-8 flex items-center gap-4 rounded-card border border-line bg-white p-4 transition hover:border-forest">
+              <CompanyLogo company={company} size="sm" />
+              <span>
+                <span className="block text-xs text-ink-2">{t.product.manufacturer}</span>
+                <span lang="en" className="font-semibold text-ink">
+                  {company.name}
+                </span>
+              </span>
+            </Link>
           )}
           {product.information && (
             <section className="mt-8">

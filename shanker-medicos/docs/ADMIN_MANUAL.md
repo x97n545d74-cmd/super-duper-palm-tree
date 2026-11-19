@@ -19,6 +19,12 @@ In **Business details**:
 
 **Club members** in the menu lists everyone who joined: their member code (e.g. `SM-7KQ2P`), mobile, name, email, language and which ad or page they came from. Search a code to check it at the counter. **Download CSV** exports the list for messaging tools. If someone asks to be removed, **Delete** them. If they reply STOP, stop messaging them.
 
+## Analytics
+**Analytics** shows visits, WhatsApp taps, calls, directions, Club sign-ups and which ads or sites brought people, for the last 7, 30 or 90 days. Check **Searched but not found** every week: these are medicines customers looked for that aren't in the catalogue. See docs/ANALYTICS.md.
+
+## Companies & logos
+**Companies & logos** lists 100+ pharma companies shown on the website. To add logos, collect the official logo files (ask the company's representative or your distributor; only use logos you're allowed to use), name each file after the company (`sun-pharma.png`, `cipla.png`, `Mankind Pharma.webp`), then choose them all at once under **Upload logos in bulk**. The result list shows which file went to which company. You can also edit a company, upload a single logo, tick **Show on the homepage**, or add/remove companies. Without a logo, a monogram (e.g. "SP") is shown.
+
 ## Prescriptions on WhatsApp
 Customers can send a prescription photo or a typed medicine list to the store's WhatsApp (+91 98155 52404). The pharmacist must check every prescription before dispensing; prescription medicines are given only against a valid prescription. Don't forward prescriptions to anyone else.
 

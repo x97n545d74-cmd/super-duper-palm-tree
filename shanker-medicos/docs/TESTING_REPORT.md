@@ -1,6 +1,6 @@
 # Testing report
 
-Date: 19 November 2026, updated 20 November 2026 (marketing release) · Build: Next.js 16.4.6 production build · Data mode: development (local store). Supabase was **not** available (no credentials were provided), so the Supabase code path was verified at the database level only (see §3).
+Date: 19 November 2026, updated 20 November 2026 (marketing release; companies & analytics release) · Build: Next.js 16.4.6 production build · Data mode: development (local store). Supabase was **not** available (no credentials were provided), so the Supabase code path was verified at the database level only (see §3).
 
 ## Summary
 
@@ -8,12 +8,19 @@ Date: 19 November 2026, updated 20 November 2026 (marketing release) · Build: N
 |---|---|---|
 | Lint | `npm run lint` | clean |
 | Types | `npm run typecheck` | clean |
-| Unit tests | `npm run test:unit` | **33 / 33 passed** |
-| Database (migration + RLS) | `npm run db:verify` | **38 / 38 checks passed** |
-| End-to-end, real browsers | `npm run test:e2e` | **64 / 64 passed** |
+| Unit tests | `npm run test:unit` | **37 / 37 passed** |
+| Database (migration + RLS) | `npm run db:verify` | **49 / 49 checks passed** |
+| End-to-end, real browsers | `npm run test:e2e` | **68 / 68 passed** |
 | Lighthouse (local, indicative) | see §5 | Accessibility, Best Practices, SEO: 100 on all pages tested; Performance 100 desktop, 89–93 mobile |
 
 Raw e2e results: `tests/e2e/last-run.json`.
+
+## 0b. Companies & analytics release (20 Nov 2026)
+
+- **Companies & logos**: 107 companies seeded; bulk logo upload matches `micro-labs.png` → Micro Labs and `Cipla_logo.png` → Cipla and reports an unmatched file; logos appear on the companies page and the matching product page and are served; editing a company and featuring it puts it on the homepage (e2e). File-name matching (apostrophes, suffixes like `_logo`), product → company matching and monograms (unit). Public can read companies; only admins can change logos (DB).
+- **Analytics**: a fresh visitor from a Google Ads link appears on the dashboard under its campaign; a search with no results appears under "Searched but not found"; a WhatsApp tap is counted; bots, `/admin` paths and unknown event types are rejected; the dashboard requires login (e2e). Report maths, IST day boundaries, attribution and funnel (unit). Public can only add events through `log_event()`; only admins can read them; unknown types rejected (DB).
+- **Responsive check strengthened**: overflow is now measured against the real screen width (phone emulation widens the layout viewport to fit oversized content, which hid problems). It found and we fixed an analytics card that was too wide on phones.
+- **Fixed**: bar columns sized with percentage padding made the chart 6,000px wide; chart colours exported from a client file reached the server page as undefined; analytics rate limit keyed on IP alone would drop real visits behind Indian mobile carrier NAT (now IP + browser, 300/min, dropped silently).
 
 ## 0. Marketing release (20 Nov 2026)
 
@@ -31,7 +38,7 @@ Bugs found and fixed in this round: React 19 cleared every form after a validati
 ## 1. Unit tests
 WhatsApp links (number normalisation, URL encoding, the exact message template from the brief, Hindi/Punjabi messages keep brand names), search (case-insensitive, product/brand/generic-name, multi-word, ranking, category filter including sub-categories, brand filter, A–Z/Z–A, pagination and page clamping, unpublished items never returned), suggestions, slugs, PostgREST-safe queries, duplicate keys, zod validation of products/settings/CSV rows, dictionary completeness (every English key exists in Hindi and Punjabi, correct scripts), category names in three languages, and the seed catalogue's honesty (no stock or prescription claims).
 
-## 2. End-to-end tests (64)
+## 2. End-to-end tests (68)
 Run against a fresh production build with a throwaway data folder, in headless Chromium.
 
 **Routing and languages**: `/` → `/en`; all 10 page types × 3 languages return 200 (30 pages); localised 404s; `<html lang>` = en-IN / hi-IN / pa-IN; Devanagari and Gurmukhi render with the Noto fonts actually loaded; the language switcher keeps the current page and query, and the choice is remembered on the next visit; brand names stay untranslated.
@@ -50,7 +57,7 @@ Run against a fresh production build with a throwaway data folder, in headless C
 
 Issues found and fixed during testing: a race when two requests created the local store at once; `<dl>` markup and heading order flagged by accessibility audits; text contrast (see §5); a component defined during render and two state updates inside effects (lint); file tracing that would have bundled the whole project into the server output; ISR state from a previous run leaking into tests (the suite now always rebuilds).
 
-## 3. Database (38 checks, real PostgreSQL via PGlite)
+## 3. Database (49 checks, real PostgreSQL via PGlite)
 The migration applies cleanly and is re-runnable; `seed.sql` loads. As **anon**: sees only published products, reads categories and settings, cannot insert/update anything or list admins. As a **signed-in non-admin**: cannot insert, update or delete products/categories, cannot make themselves admin, cannot upload images. As an **admin**: sees unpublished products, can insert, update settings and upload images. Constraints: duplicate name+brand+pack rejected (case-insensitive), invalid enum values rejected, categories with children/products cannot be deleted. The trigram index serves `ILIKE` search.
 
 Supabase's `auth` and `storage` schemas were represented by minimal stand-ins (`auth.uid()` from the JWT claim, `storage.objects` with RLS), matching how Supabase evaluates policies.

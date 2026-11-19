@@ -3,7 +3,8 @@ import { fmt } from "@/i18n";
 import type { SiteContext } from "@/lib/site";
 import { waLink } from "@/lib/whatsapp";
 import { jsonLd } from "@/lib/seo";
-import { COMPANIES } from "@/lib/companies";
+import { catalogue } from "@/lib/data";
+import { CompanyLogo } from "@/components/site/CompanyLogo";
 import { IconArrow, IconWhatsApp, IconInfo } from "@/components/ui/Icons";
 import { OfferCard } from "./OfferCard";
 import { ClubForm } from "./ClubForm";
@@ -14,7 +15,8 @@ export function offerVars(ctx: SiteContext) {
 }
 
 /** "Send your prescription / medicine list on WhatsApp" band. */
-export function PrescriptionBand({ ctx }: { ctx: SiteContext }) {
+export async function PrescriptionBand({ ctx }: { ctx: SiteContext }) {
+  const companyCount = (await catalogue.listCompanies()).length;
   const { t, settings, locale } = ctx;
   const r = t.mkt.rx;
   const photo = waLink(settings.whatsapp, r.msgPhoto);
@@ -49,7 +51,7 @@ export function PrescriptionBand({ ctx }: { ctx: SiteContext }) {
             <p className="font-semibold text-forest">{r.rangeTitle}</p>
             <p className="mt-1 text-sm text-ink">{r.rangeBody}</p>
             <Link href={`/${locale}/companies`} className="link-u mt-2 inline-flex items-center gap-1 text-sm font-semibold text-forest">
-              {fmt(t.mkt.companies.teaser, { n: COMPANIES.length })} <IconArrow />
+              {fmt(t.mkt.companies.teaser, { n: Math.floor(companyCount / 10) * 10 })} <IconArrow />
             </Link>
           </div>
         </div>
@@ -155,33 +157,33 @@ export function Faq({ ctx }: { ctx: SiteContext }) {
   );
 }
 
-/** Strip of company names linking to the companies page. */
-export function CompaniesTeaser({ ctx }: { ctx: SiteContext }) {
+/** Featured companies (logo or monogram) linking to their medicines. */
+export async function CompaniesTeaser({ ctx }: { ctx: SiteContext }) {
   const { t, locale } = ctx;
-  const names = ["Sun Pharmaceutical Industries", "Cipla", "Mankind Pharma", "Abbott India", "Dr. Reddy's Laboratories", "Lupin", "Alkem Laboratories", "Torrent Pharmaceuticals", "Zydus Lifesciences", "Intas Pharmaceuticals", "Glenmark Pharmaceuticals", "Pfizer Ltd", "GSK Pharmaceuticals", "Sanofi India", "Micro Labs", "Novo Nordisk India"];
+  const all = await catalogue.listCompanies();
+  const featured = all.filter((c) => c.featured).slice(0, 18);
+  const list = featured.length ? featured : all.slice(0, 18);
   return (
     <section className="container-x pt-section" aria-labelledby="co-h">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
           <p className="eyebrow">{t.mkt.companies.eyebrow}</p>
-          <h2 id="co-h" className="mt-3 text-h2">{fmt(t.mkt.companies.teaser, { n: COMPANIES.length })}</h2>
+          <h2 id="co-h" className="mt-3 text-h2">{fmt(t.mkt.companies.teaser, { n: Math.floor(all.length / 10) * 10 })}</h2>
           <p className="mt-3 text-ink-2">{t.mkt.rx.rangeBody}</p>
         </div>
         <Link href={`/${locale}/companies`} className="link-u inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-forest">
           {t.mkt.companies.viewAll} <IconArrow />
         </Link>
       </div>
-      <ul lang="en" className="mt-8 flex flex-wrap gap-2">
-        {names.map((n) => {
-          const c = COMPANIES.find((x) => x.name === n)!;
-          return (
-            <li key={n}>
-              <Link href={`/${locale}/products?q=${encodeURIComponent(c.q)}`} className="inline-block rounded-full border border-line bg-white px-4 py-2 text-sm text-ink transition hover:border-forest">
-                {n}
-              </Link>
-            </li>
-          );
-        })}
+      <ul lang="en" className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
+        {list.map((c) => (
+          <li key={c.id} className="bg-white">
+            <Link href={`/${locale}/products?q=${encodeURIComponent(c.search_q || c.name)}`} className="flex h-full flex-col items-center justify-center gap-3 px-3 py-5 text-center transition hover:bg-ivory">
+              <CompanyLogo company={c} size="md" />
+              <span className="text-xs font-medium leading-snug text-ink">{c.name}</span>
+            </Link>
+          </li>
+        ))}
       </ul>
     </section>
   );

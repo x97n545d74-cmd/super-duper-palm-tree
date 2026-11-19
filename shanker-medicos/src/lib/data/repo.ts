@@ -1,4 +1,7 @@
 import type {
+  AnalyticsEvent,
+  Company,
+  CompanyInput,
   Member,
   MemberInput,
   BusinessSettings,
@@ -21,6 +24,7 @@ export interface PublicRepo {
   getProductBySlug(slug: string): Promise<Product | null>;
   listBrands(): Promise<string[]>;
   /** all published products, light fields, for suggestions + sitemap */
+  listCompanies(): Promise<Company[]>;
   listPublishedForIndex(): Promise<Pick<Product, "id" | "slug" | "name" | "brand" | "generic_name" | "manufacturer" | "pack_size" | "category_id" | "published" | "updated_at">[]>;
 }
 
@@ -45,8 +49,19 @@ export interface AdminRepo {
   importProducts(rows: ImportRow[], mode: "skip" | "update"): Promise<ImportResult>;
   uploadImage(file: File): Promise<string>;
   listMembers(q: { q?: string; page?: number; perPage?: number }): Promise<MemberPage>;
+  listCompanies(): Promise<Company[]>;
+  saveCompany(input: CompanyInput): Promise<Company>;
+  deleteCompany(id: string): Promise<void>;
+  setCompanyLogo(id: string, logoUrl: string | null): Promise<void>;
+  listEvents(fromIso: string, toIso: string): Promise<AnalyticsEvent[]>;
+  clearDemoEvents(): Promise<number>;
   allMembers(): Promise<Member[]>;
   deleteMember(id: string): Promise<void>;
+}
+
+/** Anonymous analytics events (written by /api/collect). */
+export interface EventsRepo {
+  log(e: AnalyticsEvent): Promise<void>;
 }
 
 /** Public sign-up for Shanker Club. Signing up again with the same phone returns the same code. */

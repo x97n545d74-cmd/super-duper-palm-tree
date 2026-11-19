@@ -648,6 +648,72 @@ await step("admin: change the offer to 15% and see it on the site", async () => 
   await page.waitForSelector("p[role=status]");
 });
 
+await step("companies & logos: 100+ companies, bulk logo upload matched by file name", async () => {
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "base64");
+  await page.goto(`${BASE}/admin/companies`);
+  assert(/10\d companies/.test(await page.textContent("main")), "company count");
+  await page.setInputFiles("#logos", [
+    { name: "micro-labs.png", mimeType: "image/png", buffer: png },
+    { name: "Cipla_logo.png", mimeType: "image/png", buffer: png },
+    { name: "unknown-company.png", mimeType: "image/png", buffer: png },
+  ]);
+  await page.waitForSelector("text=2 of 3 logos uploaded.");
+  const log = await page.textContent("section:has(h2:has-text('Upload logos in bulk'))");
+  assert(log.includes("micro-labs.png → Micro Labs") && log.includes("Cipla_logo.png → Cipla") && log.includes("No company matches"), log);
+});
+
+await step("company logos appear on the companies page and on product pages", async () => {
+  const ok = await eventually(page, `${BASE}/en/companies`, async () => (await page.locator('img[alt="Micro Labs logo"]').count()) === 1);
+  assert(ok, "logo not on companies page");
+  await eventually(page, `${BASE}/en/products/dolo-650`, async () => (await page.locator('main img[alt="Micro Labs logo"]').count()) === 1);
+  assert((await page.locator('main img[alt="Micro Labs logo"]').count()) === 1, "logo not on product page");
+  const src = await page.locator('main img[alt="Micro Labs logo"]').getAttribute("src");
+  assert((await get(src)).status === 200, "logo file not served");
+});
+
+await step("admin: edit a company and feature it on the homepage", async () => {
+  await page.goto(`${BASE}/admin/companies`);
+  const row = page.locator("li:has(summary:has-text('Kopran'))");
+  await row.locator("summary").click();
+  await row.locator('input[name="known"]').fill("Anti-infectives (edited)");
+  await row.locator('input[name="featured"]').check();
+  await row.locator("button:has-text('Save company')").click();
+  await row.locator("p[role=status]").waitFor();
+  const ok = await eventually(page, `${BASE}/en`, async () => (await page.locator('section[aria-labelledby="co-h"]').textContent()).includes("Kopran"));
+  assert(ok, "featured company not on homepage");
+});
+
+await step("first-party analytics: dashboard counts visits, WhatsApp taps, sources and missed searches", async () => {
+  // a fresh visitor (own browser) arriving from a Google Ads link
+  const c = await browser.newContext({ userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36 e2e-visitor" });
+  const p = await c.newPage();
+  await p.goto(`${BASE}/hi/offers?utm_source=google&utm_medium=cpc&utm_campaign=e2e_ads`, { waitUntil: "networkidle" });
+  await p.waitForTimeout(400);
+  await p.goto(`${BASE}/hi/products?q=zzunknownmed`, { waitUntil: "networkidle" });
+  await p.goto(`${BASE}/hi/products/dolo-650`, { waitUntil: "networkidle" });
+  const wa = p.locator('main a[data-wa="1"]').first();
+  await wa.evaluate((a) => a.addEventListener("click", (e) => e.preventDefault()));
+  await wa.click();
+  await p.waitForTimeout(800);
+  await c.close();
+  // bots and admin paths are not counted
+  const bot = await fetch(`${BASE}/api/collect`, { method: "POST", headers: { "user-agent": "Googlebot/2.1" }, body: JSON.stringify({ t: "pageview", p: "/en" }) });
+  assert(bot.status === 204, `bot ${bot.status}`);
+  const adm = await fetch(`${BASE}/api/collect`, { method: "POST", headers: { "user-agent": "Mozilla/5.0" }, body: JSON.stringify({ t: "pageview", p: "/admin" }) });
+  assert(adm.status === 400, `admin path ${adm.status}`);
+  const junk = await fetch(`${BASE}/api/collect`, { method: "POST", headers: { "user-agent": "Mozilla/5.0" }, body: JSON.stringify({ t: "drop_table", p: "/en" }) });
+  assert(junk.status === 400, `junk ${junk.status}`);
+  await page.goto(`${BASE}/admin/analytics?range=7`);
+  const main = await page.textContent("main");
+  assert(!main.includes("No visits recorded"), "no data on dashboard");
+  assert(main.includes("e2e_ads"), "campaign missing from sources");
+  assert(main.includes("zzunknownmed"), "missed search missing");
+  const wa7 = await page.locator("li:has(p:text-is('WhatsApp enquiries')) p.font-display").textContent();
+  assert(Number(wa7.replace(/\D/g, "")) >= 1, `WhatsApp enquiries ${wa7}`);
+  assert((await page.locator('[role=img][aria-label^="Visits"]').count()) === 1, "visits chart");
+  assert((await get("/admin/analytics")).status === 307, "dashboard not protected");
+});
+
 await step("logout", async () => {
   await page.goto(`${BASE}/admin`);
   await page.locator("aside form button:has-text('Sign out'):visible").click();
@@ -774,10 +840,18 @@ for (const v of viewports) {
     const c = await browser.newContext(v.device);
     const p = await c.newPage();
     const over = [];
-    for (const u of ["/en", "/pa", "/en/products", "/en/products/dolo-650", "/hi/contact", "/en/about", "/admin/login"]) {
+    for (const u of ["/en", "/pa", "/en/products", "/en/products/dolo-650", "/hi/contact", "/en/about", "/en/offers", "/pa/companies", "/admin/login"]) {
       await p.goto(BASE + u);
-      const w = await p.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
-      if (w[0] > w[1] + 1) over.push(`${u} ${w[0]}>${w[1]}`);
+      // Compare with the real screen width: mobile emulation widens innerWidth to fit overflowing content.
+      const bad = await p.evaluate(() => {
+        const W = Math.min(window.innerWidth, screen.width);
+        const clipped = (el) => { for (let a = el.parentElement; a; a = a.parentElement) { const cs = getComputedStyle(a); if (cs.overflowX !== "visible" || cs.position === "fixed") return true; } return false; };
+        return [...document.body.querySelectorAll("*")]
+          .filter((el) => getComputedStyle(el).position !== "fixed" && el.getBoundingClientRect().right > W + 1 && !clipped(el))
+          .slice(0, 2)
+          .map((el) => `${el.tagName}.${String(el.className).slice(0, 40)}`);
+      });
+      if (bad.length) over.push(`${u}: ${bad.join(", ")}`);
     }
     await c.close();
     assert(!over.length, over.join(", "));

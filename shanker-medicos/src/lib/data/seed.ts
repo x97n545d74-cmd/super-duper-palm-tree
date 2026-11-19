@@ -7,7 +7,8 @@
 // before launch. Descriptions are deliberately limited to factual identity
 // (what the product is, strength, pack) with no therapeutic claims.
 
-import type { BusinessSettings, Category, PackStyle, Product, RxClass } from "../types";
+import type { BusinessSettings, Category, Company, PackStyle, Product, RxClass } from "../types";
+import { COMPANIES, FEATURED_COMPANIES } from "../companies";
 
 const T = "2026-11-19T00:00:00.000Z";
 const cid = (n: number) => `c0000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
@@ -162,3 +163,21 @@ export const seedSettings: BusinessSettings = {
   club_extra_percent: 0,
   updated_at: T,
 };
+
+const coid = (n: number) => `b0000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+
+/** Pharma companies (no logos: the store uploads official logo files in admin). */
+export const seedCompanies: Company[] = [...COMPANIES]
+  .sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }))
+  .map((c, i) => ({
+    id: coid(i + 1),
+    slug: slug(c.name),
+    name: c.name,
+    search_q: c.q,
+    known: c.known ?? "",
+    kind: c.type,
+    logo_url: null,
+    featured: FEATURED_COMPANIES.includes(c.name),
+    sort_order: i + 1,
+    updated_at: T,
+  }));

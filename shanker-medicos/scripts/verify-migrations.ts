@@ -143,6 +143,26 @@ async function main() {
   r = await as(db, "authenticated", ADMIN, "update business_settings set offer_percent = 90");
   check("offer percent above 50 is rejected", !!r.error);
 
+  // companies + analytics events
+  r = await as(db, "anon", null, "select count(*)::int n from companies");
+  check("anon can read companies (100+ seeded)", (r.rows[0]?.n as number) >= 100, String(r.rows[0]?.n));
+  r = await as(db, "anon", null, "update companies set logo_url = 'x'");
+  check("anon cannot change company logos", !!r.error || r.affected === 0);
+  r = await as(db, "authenticated", USER, "update companies set logo_url = 'https://x/y.png' where slug = 'cipla'");
+  check("non-admin cannot change company logos", r.affected === 0);
+  r = await as(db, "authenticated", ADMIN, "update companies set logo_url = 'https://x/y.png' where slug = 'cipla'");
+  check("admin can set a company logo", r.affected === 1, r.error ?? "");
+  r = await as(db, "anon", null, `select public.log_event('pageview','/en','en','google.com','google','cpc','test','mobile','abc123','{"x":1}'::jsonb)`);
+  check("anon can log an analytics event through log_event()", !r.error, r.error ?? "");
+  r = await as(db, "anon", null, `select public.log_event('steal_data','/en','en','','','','','mobile','v','{}'::jsonb)`);
+  check("unknown event type is rejected", !!r.error);
+  r = await as(db, "anon", null, "select * from events");
+  check("anon cannot read analytics events", !!r.error || r.rows.length === 0);
+  r = await as(db, "authenticated", USER, "select * from events");
+  check("non-admin cannot read analytics events", r.rows.length === 0);
+  r = await as(db, "authenticated", ADMIN, "select type, device, utm_source from events");
+  check("admin can read analytics events", r.rows.length === 1 && r.rows[0].utm_source === "google", JSON.stringify(r.rows[0]));
+
   // search index is usable
   await db.exec("set enable_seqscan = off");
   const plan = await db.query<{ "QUERY PLAN": string }>("explain select * from products where name ilike '%dolo%'");

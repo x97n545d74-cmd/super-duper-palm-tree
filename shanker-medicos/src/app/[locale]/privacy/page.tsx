@@ -31,6 +31,12 @@ export default async function Privacy({ params }: PageProps<"/[locale]/privacy">
         about {name} on WhatsApp, SMS or email. You can stop messages at any time by replying STOP, and ask us to delete your details using the contact details below. We
         may use an automation or messaging service to send these messages on our behalf; it receives only what is needed to do so.
       </p>
+      <h2>Our own visit statistics</h2>
+      <p>
+        To understand how the website is used, it records anonymous events such as page views, searches and taps on WhatsApp, call or directions buttons, with the page,
+        language, device type and the ad or site that brought you. It does not use cookies and does not store your name, phone number, email or IP address; visits are
+        grouped with a code that changes every day and cannot identify you.
+      </p>
       <h2>Cookies and advertising measurement</h2>
       <p>
         With your permission (the cookie banner), we use Google Analytics, Google Tag Manager and the Meta (Facebook) Pixel to count visits and measure which ads bring

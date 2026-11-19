@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { captureAttribution, track } from "@/lib/analytics";
+import { captureAttribution, collect, track } from "@/lib/analytics";
 
 /**
  * One listener for the whole site. Tracks:
@@ -13,6 +13,11 @@ import { captureAttribution, track } from "@/lib/analytics";
 export function ClickTracker() {
   const pathname = usePathname();
   useEffect(() => captureAttribution(), []);
+  // One pageview per route (attribution is captured first on the landing page).
+  useEffect(() => {
+    captureAttribution();
+    collect("pageview");
+  }, [pathname]);
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement | null)?.closest<HTMLElement>("a,button,[data-track]");

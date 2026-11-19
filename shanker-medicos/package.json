@@ -12,7 +12,8 @@
     "test:e2e": "node tests/e2e/run.mjs",
     "db:seed-sql": "tsx scripts/generate-seed-sql.ts",
     "db:verify": "tsx scripts/verify-migrations.ts",
-    "reset:local": "node scripts/reset-local.mjs"
+    "reset:local": "node scripts/reset-local.mjs",
+    "demo:analytics": "tsx scripts/demo-analytics.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

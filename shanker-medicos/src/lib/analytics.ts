@@ -24,8 +24,40 @@ const META: Record<string, string> = {
   view_item: "ViewContent",
 };
 
+const FIRST_PARTY = new Set(["pageview", "whatsapp_click", "call_click", "directions_click", "offer_reveal", "sign_up", "search", "view_item"]);
+const PROP_KEYS = ["search_term", "results", "item_name", "item_brand", "placement", "promotion_name", "method", "source"];
+
+/** Our own cookieless analytics (admin → Analytics). Always on; stores nothing personal. */
+export function collect(event: string, params: Params = {}) {
+  if (typeof window === "undefined" || !FIRST_PARTY.has(event)) return;
+  try {
+    const a = getAttribution();
+    const d: Record<string, string | number> = {};
+    for (const k of PROP_KEYS) {
+      const v = params[k];
+      if (v !== undefined && v !== "") d[k] = typeof v === "number" ? v : String(v).slice(0, 100);
+    }
+    const body = JSON.stringify({
+      t: event,
+      p: location.pathname.slice(0, 200),
+      l: document.documentElement.lang.slice(0, 2),
+      r: (a.referrer || "").slice(0, 120),
+      us: a.utm_source || "",
+      um: a.utm_medium || "",
+      uc: a.utm_campaign || "",
+      d,
+    });
+    if (!navigator.sendBeacon?.("/api/collect", new Blob([body], { type: "text/plain" }))) {
+      fetch("/api/collect", { method: "POST", body, keepalive: true }).catch(() => {});
+    }
+  } catch {
+    /* analytics must never break the page */
+  }
+}
+
 export function track(event: string, params: Params = {}) {
   if (typeof window === "undefined") return;
+  collect(event, params);
   const attr = getAttribution();
   const payload = { ...params, ...(attr.utm_source ? { utm_source: attr.utm_source, utm_campaign: attr.utm_campaign } : {}) };
   (window.dataLayer ??= []).push({ event, ...payload });

@@ -10,7 +10,7 @@ What the site already does, what you switch on with IDs, and what's ready for th
 | **Tap-to-reveal code** (`SHANKER12`) | Homepage, `/offers` | The "clue": customers reveal it, show it at the counter or send it on WhatsApp. Reveals are tracked. |
 | **Shanker Club** sign-up | Homepage, `/offers` | Collects mobile number (required), name and email (optional), with explicit consent. Gives a personal member code (e.g. `SM-7KQ2P`) for the extra discount. |
 | **Send prescription / medicine list on WhatsApp** | Homepage, product pages for medicines, `/offers` | Opens WhatsApp to **+91 98155 52404** with a ready-written message; the customer attaches the photo |
-| **Companies page** `/companies` | Nav, footer, homepage strip | 66 leading Indian and multinational pharma companies, each linked to a catalogue search. Strong for "<company> medicine Batala" searches. |
+| **Companies page** `/companies` | Nav, footer, homepage strip, product pages | 107 Indian and multinational pharma companies with logo slots (bulk upload in admin), each linked to a catalogue search. Strong for "<company> medicine Batala" searches. |
 | **FAQ** with FAQPage schema | Homepage, `/offers` | Answers common questions; can appear as rich results in Google |
 | **Get directions** | Homepage, contact, footer | Opens your Google Maps listing (`maps.app.goo.gl/jgHwJrpiNSSzED4q9`) |
 
@@ -28,7 +28,11 @@ https://your-domain/en?utm_source=instagram&utm_medium=bio&utm_campaign=profile
 
 The site remembers the **first** source of each visitor (UTM tags, or Google/Facebook click IDs, or the referring site) and saves it with their Shanker Club sign-up. **Admin → Club members** shows which campaign each member came from.
 
-## 3. Tracking (GA4, Google Tag Manager, Meta Pixel)
+## 3. Built-in analytics
+
+**Admin → Analytics** works without any accounts: visits, enquiries by type, sources and campaigns with enquiry rates, missed searches, top products and buttons. Cookieless and anonymous. Details: docs/ANALYTICS.md.
+
+## 3b. Tracking for ad platforms (GA4, Google Tag Manager, Meta Pixel)
 
 Set any of these in Vercel → Environment Variables and redeploy:
 

@@ -1,7 +1,7 @@
 // Writes supabase/seed.sql from src/lib/data/seed.ts so both data modes start identical.
 // Run: npm run db:seed-sql
 import { writeFileSync } from "node:fs";
-import { seedCategories, seedProducts } from "../src/lib/data/seed";
+import { seedCategories, seedCompanies, seedProducts } from "../src/lib/data/seed";
 
 const q = (v: unknown) => (v === null || v === undefined ? "null" : typeof v === "boolean" || typeof v === "number" ? String(v) : `'${String(v).replace(/'/g, "''")}'`);
 
@@ -23,6 +23,10 @@ const prodCols = [
 for (const p of seedProducts) {
   lines.push(`insert into public.products (${prodCols.join(", ")}) values (${prodCols.map((k) => q(p[k])).join(", ")}) on conflict (id) do nothing;`);
 }
+const coCols = ["id", "slug", "name", "search_q", "known", "kind", "logo_url", "featured", "sort_order"] as const;
+for (const c of seedCompanies) {
+  lines.push(`insert into public.companies (${coCols.join(", ")}) values (${coCols.map((k) => q(c[k])).join(", ")}) on conflict (id) do nothing;`);
+}
 lines.push("commit;", "");
 writeFileSync(new URL("../supabase/seed.sql", import.meta.url), lines.join("\n"));
-console.log(`supabase/seed.sql: ${cats.length} categories, ${seedProducts.length} products`);
+console.log(`supabase/seed.sql: ${cats.length} categories, ${seedProducts.length} products, ${seedCompanies.length} companies`);

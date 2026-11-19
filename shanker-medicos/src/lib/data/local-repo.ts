@@ -3,6 +3,9 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomBytes, randomUUID } from "node:crypto";
 import type {
+  AnalyticsEvent,
+  Company,
+  CompanyInput,
   Member,
   MemberInput,
   BusinessSettings,
@@ -16,9 +19,9 @@ import type {
   Stats,
 } from "../types";
 import { brandsOf, queryProducts } from "./query";
-import { memberCode, productKey, RepoError, type AdminRepo, type ClubRepo, type PublicRepo } from "./repo";
+import { memberCode, productKey, RepoError, type AdminRepo, type ClubRepo, type EventsRepo, type PublicRepo } from "./repo";
 import { norm } from "../text";
-import { seedCategories, seedProducts, seedSettings } from "./seed";
+import { seedCategories, seedCompanies, seedProducts, seedSettings } from "./seed";
 import { slugify, uniqueSlug } from "../text";
 import { readImage } from "./images";
 import { missingSettings } from "../settings";
@@ -31,11 +34,13 @@ interface DB {
   products: Product[];
   settings: BusinessSettings;
   members?: Member[];
+  companies?: Company[];
 }
 
 const DATA_DIR = path.resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.LOCAL_DATA_DIR || "data");
 const DB_FILE = path.join(DATA_DIR, "store.json");
 export const UPLOAD_DIR = path.join(DATA_DIR, "uploads");
+const EVENTS_FILE = path.join(DATA_DIR, "events.ndjson");
 
 let writing: Promise<unknown> = Promise.resolve();
 let seeding: Promise<void> | null = null;
@@ -90,6 +95,9 @@ export const localPublic: PublicRepo = {
   },
   async listBrands() {
     return brandsOf((await load()).products);
+  },
+  async listCompanies() {
+    return ((await load()).companies ?? seedCompanies).slice().sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
   },
   async listPublishedForIndex() {
     return (await load()).products.filter((p) => p.published);
@@ -280,6 +288,56 @@ export const localAdmin: AdminRepo = {
       db.members = (db.members ?? []).filter((m) => m.id !== id);
     });
   },
+  async listCompanies() {
+    return localPublic.listCompanies();
+  },
+  saveCompany(input: CompanyInput) {
+    return mutate((db) => {
+      db.companies ??= structuredClone(seedCompanies);
+      const others = db.companies.filter((c) => c.id !== input.id);
+      if (others.some((c) => c.name.toLowerCase() === input.name.toLowerCase())) throw new RepoError("A company with this name already exists.", "conflict");
+      const taken = new Set(others.map((c) => c.slug));
+      if (input.id) {
+        const c = db.companies.find((x) => x.id === input.id);
+        if (!c) throw new RepoError("Company not found.", "not_found");
+        Object.assign(c, { ...input, id: c.id, slug: input.slug ? uniqueSlug(input.slug, taken) : c.slug, updated_at: now() });
+        return c;
+      }
+      const c: Company = {
+        ...input,
+        id: randomUUID(),
+        slug: uniqueSlug(input.slug || input.name, taken),
+        sort_order: Math.max(0, ...db.companies.map((x) => x.sort_order)) + 1,
+        updated_at: now(),
+      };
+      db.companies.push(c);
+      return c;
+    });
+  },
+  deleteCompany(id) {
+    return mutate((db) => {
+      db.companies = (db.companies ?? structuredClone(seedCompanies)).filter((c) => c.id !== id);
+    });
+  },
+  setCompanyLogo(id, logoUrl) {
+    return mutate((db) => {
+      db.companies ??= structuredClone(seedCompanies);
+      const c = db.companies.find((x) => x.id === id);
+      if (!c) throw new RepoError("Company not found.", "not_found");
+      c.logo_url = logoUrl;
+      c.updated_at = now();
+    });
+  },
+  async listEvents(fromIso, toIso) {
+    return readEvents((e) => e.ts >= fromIso && e.ts <= toIso);
+  },
+  async clearDemoEvents() {
+    const all = await readEvents(() => true);
+    const keep = all.filter((e) => !e.props?.demo);
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    await fs.writeFile(EVENTS_FILE, keep.map((e) => JSON.stringify(e)).join("\n") + (keep.length ? "\n" : ""));
+    return all.length - keep.length;
+  },
 };
 
 export const localClub: ClubRepo = {
@@ -304,3 +362,31 @@ export const localClub: ClubRepo = {
   },
 };
 
+
+async function readEvents(pred: (e: AnalyticsEvent) => boolean): Promise<AnalyticsEvent[]> {
+  let raw = "";
+  try {
+    raw = await fs.readFile(EVENTS_FILE, "utf8");
+  } catch {
+    return [];
+  }
+  const out: AnalyticsEvent[] = [];
+  for (const line of raw.split("\n")) {
+    if (!line) continue;
+    try {
+      const e = JSON.parse(line) as AnalyticsEvent;
+      if (pred(e)) out.push(e);
+    } catch {
+      /* skip a partially written line */
+    }
+  }
+  return out;
+}
+
+/** Append-only log; one JSON object per line. */
+export const localEvents: EventsRepo = {
+  async log(e) {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    await fs.appendFile(EVENTS_FILE, JSON.stringify(e) + "\n");
+  },
+};

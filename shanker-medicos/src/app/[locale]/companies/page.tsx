@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { siteContext } from "@/lib/site";
+import { catalogue } from "@/lib/data";
 import { fmt } from "@/i18n";
 import { pageMeta } from "@/lib/seo";
-import { COMPANIES, companiesByLetter } from "@/lib/companies";
+import { companiesByLetter } from "@/lib/companies";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { CompanyLogo } from "@/components/site/CompanyLogo";
 import { IconWhatsApp } from "@/components/ui/Icons";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/companies">) {
@@ -13,8 +15,9 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/companie
 
 export default async function CompaniesPage({ params }: PageProps<"/[locale]/companies">) {
   const { t, locale, waGeneral } = await siteContext((await params).locale);
+  const companies = await catalogue.listCompanies();
   const c = t.mkt.companies;
-  const groups = companiesByLetter();
+  const groups = companiesByLetter(companies);
   return (
     <div className="container-x pb-8 pt-10">
       <Breadcrumbs
@@ -27,9 +30,9 @@ export default async function CompaniesPage({ params }: PageProps<"/[locale]/com
       <p className="eyebrow mt-8">{c.eyebrow}</p>
       <h1 className="mt-3 max-w-3xl text-h1">{c.title}</h1>
       <p className="mt-4 max-w-2xl text-lg text-ink-2">{c.body}</p>
-      <p className="mt-2 text-sm text-ink-2">{fmt(c.count, { n: COMPANIES.length })}</p>
+      <p className="mt-2 text-sm text-ink-2">{fmt(c.count, { n: companies.length })}</p>
 
-      <nav aria-label={c.jump} className="sticky top-[68px] z-10 -mx-1 mt-8 overflow-x-auto bg-ivory/95 py-3 backdrop-blur lg:top-[68px]">
+      <nav aria-label={c.jump} className="sticky top-[68px] z-10 -mx-1 mt-8 overflow-x-auto bg-ivory/95 py-3 backdrop-blur">
         <ul lang="en" className="flex gap-1 px-1">
           {groups.map(([letter]) => (
             <li key={letter}>
@@ -49,19 +52,22 @@ export default async function CompaniesPage({ params }: PageProps<"/[locale]/com
             </h2>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {list.map((co) => (
-                <li key={co.name}>
+                <li key={co.id}>
                   <Link
-                    href={`/${locale}/products?q=${encodeURIComponent(co.q)}`}
-                    className="block h-full rounded-card border border-line bg-white p-4 transition hover:border-forest hover:shadow-lift"
+                    href={`/${locale}/products?q=${encodeURIComponent(co.search_q || co.name)}`}
+                    className="flex h-full items-center gap-4 rounded-card border border-line bg-white p-4 transition hover:border-forest hover:shadow-lift"
                   >
-                    <span lang="en" className="block font-display font-semibold tracking-tight">
-                      {co.name}
-                    </span>
-                    {co.known && (
-                      <span lang="en" className="mt-1 block text-sm text-ink-2">
-                        {co.known}
+                    <CompanyLogo company={co} size="sm" />
+                    <span className="min-w-0">
+                      <span lang="en" className="block font-display font-semibold tracking-tight">
+                        {co.name}
                       </span>
-                    )}
+                      {co.known && (
+                        <span lang="en" className="mt-0.5 block text-sm text-ink-2">
+                          {co.known}
+                        </span>
+                      )}
+                    </span>
                   </Link>
                 </li>
               ))}
@@ -70,7 +76,9 @@ export default async function CompaniesPage({ params }: PageProps<"/[locale]/com
         ))}
       </div>
 
-      <div className="mt-14 flex flex-col items-start gap-4 rounded-panel bg-mint p-7 sm:flex-row sm:items-center sm:justify-between">
+      <p className="mt-10 text-xs text-ink-2">Company names and logos are trademarks of their owners and are shown only to identify the medicines we deal in.</p>
+
+      <div className="mt-6 flex flex-col items-start gap-4 rounded-panel bg-mint p-7 sm:flex-row sm:items-center sm:justify-between">
         <p className="font-medium text-forest">{c.notListed}</p>
         {waGeneral && (
           <a href={waGeneral} target="_blank" rel="noopener noreferrer" data-track-label="companies_ask" className="btn btn-wa">

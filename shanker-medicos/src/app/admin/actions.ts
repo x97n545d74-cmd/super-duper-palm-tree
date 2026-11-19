@@ -8,8 +8,9 @@ import { adminRepo, CATALOGUE_TAG } from "@/lib/data";
 import { RepoError } from "@/lib/data/repo";
 import { assertAdmin, signIn, signOut } from "@/lib/auth";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
-import { categorySchema, fieldErrors, firstError, importRowSchema, MAX_IMPORT_ROWS, productSchema, settingsSchema } from "@/lib/validation";
+import { companySchema, categorySchema, fieldErrors, firstError, importRowSchema, MAX_IMPORT_ROWS, productSchema, settingsSchema } from "@/lib/validation";
 import type { ImportResult, ImportRow } from "@/lib/types";
+import { matchLogoFile } from "@/lib/companies";
 
 export type ActionState = { ok: boolean; message?: string; errors?: Record<string, string> } | null;
 
@@ -219,4 +220,70 @@ export async function deleteMemberAction(fd: FormData) {
   revalidatePath("/admin/members");
   const back = str(fd, "back");
   redirect(back.startsWith("/admin/members") ? back : "/admin/members");
+}
+
+/* ---------------- companies & logos ---------------- */
+
+export async function saveCompanyAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  try {
+    await assertAdmin();
+    let logo_url: string | null = str(fd, "logo_url") || null;
+    if (str(fd, "remove_logo") === "on") logo_url = null;
+    const file = fd.get("logo");
+    if (file instanceof File && file.size > 0) logo_url = await adminRepo.uploadImage(file);
+    const parsed = companySchema.safeParse({
+      id: str(fd, "id"),
+      name: str(fd, "name"),
+      search_q: str(fd, "search_q"),
+      known: str(fd, "known"),
+      kind: str(fd, "kind") || "indian",
+      featured: str(fd, "featured"),
+      logo_url,
+    });
+    if (!parsed.success) return { ok: false, message: "Please fix the highlighted fields.", errors: fieldErrors(parsed.error) };
+    await adminRepo.saveCompany({ ...parsed.data, search_q: parsed.data.search_q || parsed.data.name });
+    invalidate();
+    return { ok: true, message: parsed.data.id ? "Company saved." : "Company added." };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function deleteCompanyAction(fd: FormData) {
+  await assertAdmin();
+  await adminRepo.deleteCompany(z.string().uuid().parse(str(fd, "id")));
+  invalidate();
+  revalidatePath("/admin/companies");
+}
+
+/** One logo file per call (the bulk uploader calls this in a loop). Matched to a company by file name. */
+export async function uploadLogoAction(fd: FormData): Promise<{ ok: boolean; file: string; company?: string; message?: string }> {
+  const file = fd.get("logo");
+  const name = file instanceof File ? file.name : "";
+  try {
+    await assertAdmin();
+    if (!(file instanceof File) || file.size === 0) return { ok: false, file: name, message: "Empty file." };
+    const companies = await adminRepo.listCompanies();
+    const target = str(fd, "company_id") ? companies.find((c) => c.id === str(fd, "company_id")) : matchLogoFile(name, companies);
+    if (!target) return { ok: false, file: name, message: "No company matches this file name." };
+    const url = await adminRepo.uploadImage(file);
+    await adminRepo.setCompanyLogo(target.id, url);
+    return { ok: true, file: name, company: target.name };
+  } catch (e) {
+    return { ok: false, file: name, message: fail(e)?.message };
+  }
+}
+
+export async function finishLogoUploadAction() {
+  await assertAdmin();
+  invalidate();
+  revalidatePath("/admin/companies");
+}
+
+/* ---------------- analytics ---------------- */
+
+export async function clearDemoEventsAction() {
+  await assertAdmin();
+  await adminRepo.clearDemoEvents();
+  revalidatePath("/admin/analytics");
 }

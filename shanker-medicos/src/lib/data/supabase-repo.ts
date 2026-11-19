@@ -2,6 +2,9 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
+  AnalyticsEvent,
+  Company,
+  CompanyInput,
   Member,
   MemberInput,
   BusinessSettings,
@@ -17,7 +20,7 @@ import type {
 } from "../types";
 import { publicClient, sessionClient } from "../supabase/clients";
 import { categoryScope, DEFAULT_PER_PAGE, queryProducts } from "./query";
-import { productKey, RepoError, type AdminRepo, type ClubRepo, type PublicRepo } from "./repo";
+import { productKey, RepoError, type AdminRepo, type ClubRepo, type EventsRepo, type PublicRepo } from "./repo";
 import { safeQuery, slugify, uniqueSlug } from "../text";
 import { readImage } from "./images";
 import { seedSettings } from "./seed";
@@ -90,6 +93,9 @@ export const supabasePublic: PublicRepo = {
     const rows = check(await publicClient().from("products").select("brand").eq("published", true)) as { brand: string }[];
     const m = new Map(rows.filter((r) => r.brand).map((r) => [r.brand.toLowerCase(), r.brand]));
     return [...m.values()].sort((a, b) => a.localeCompare(b));
+  },
+  async listCompanies() {
+    return check(await publicClient().from("companies").select("*").order("name")) as Company[];
   },
   async listPublishedForIndex() {
     return check(
@@ -281,6 +287,52 @@ export const supabaseAdmin: AdminRepo = {
     const sb = await sessionClient();
     check(await sb.from("members").delete().eq("id", id));
   },
+  async listCompanies() {
+    const sb = await sessionClient();
+    return check(await sb.from("companies").select("*").order("name")) as Company[];
+  },
+  async saveCompany(input: CompanyInput) {
+    const sb = await sessionClient();
+    const all = check(await sb.from("companies").select("id,slug,name,sort_order")) as Company[];
+    const others = all.filter((c) => c.id !== input.id);
+    if (others.some((c) => c.name.toLowerCase() === input.name.toLowerCase())) throw new RepoError("A company with this name already exists.", "conflict");
+    const taken = new Set(others.map((c) => c.slug));
+    if (input.id) {
+      const { id, ...rest } = input;
+      const cur = all.find((c) => c.id === id);
+      if (!cur) throw new RepoError("Company not found.", "not_found");
+      return check(await sb.from("companies").update({ ...rest, slug: input.slug ? uniqueSlug(input.slug, taken) : cur.slug, updated_at: now() }).eq("id", id).select().single()) as Company;
+    }
+    const sort_order = Math.max(0, ...all.map((c) => c.sort_order)) + 1;
+    return check(await sb.from("companies").insert({ ...input, slug: uniqueSlug(input.slug || input.name, taken), sort_order }).select().single()) as Company;
+  },
+  async deleteCompany(id) {
+    const sb = await sessionClient();
+    check(await sb.from("companies").delete().eq("id", id));
+  },
+  async setCompanyLogo(id, logoUrl) {
+    const sb = await sessionClient();
+    check(await sb.from("companies").update({ logo_url: logoUrl, updated_at: now() }).eq("id", id));
+  },
+  async listEvents(fromIso, toIso) {
+    const sb = await sessionClient();
+    const out: AnalyticsEvent[] = [];
+    // Page through up to 200k rows; aggregate in the app (see docs/ANALYTICS.md for SQL rollups at scale).
+    for (let from = 0; from < 200000; from += 10000) {
+      const rows = check(
+        await sb.from("events").select("ts,type,path,locale,referrer,utm_source,utm_medium,utm_campaign,device,visitor,props").gte("ts", fromIso).lte("ts", toIso).order("ts").range(from, from + 9999),
+      ) as AnalyticsEvent[];
+      out.push(...rows);
+      if (rows.length < 10000) break;
+    }
+    return out;
+  },
+  async clearDemoEvents() {
+    const sb = await sessionClient();
+    const res = await sb.from("events").delete({ count: "exact" }).eq("props->>demo", "1");
+    check(res);
+    return res.count ?? 0;
+  },
 };
 
 /** Sign-ups go through a SECURITY DEFINER function: the public can add themselves but never read the table. */
@@ -303,3 +355,22 @@ export const supabaseClub: ClubRepo = {
   },
 };
 
+
+/** Events are inserted through log_event() so the public can write but never read them. */
+export const supabaseEvents: EventsRepo = {
+  async log(e) {
+    const res = await publicClient().rpc("log_event", {
+      p_type: e.type,
+      p_path: e.path,
+      p_locale: e.locale,
+      p_referrer: e.referrer,
+      p_utm_source: e.utm_source,
+      p_utm_medium: e.utm_medium,
+      p_utm_campaign: e.utm_campaign,
+      p_device: e.device,
+      p_visitor: e.visitor,
+      p_props: e.props,
+    });
+    if (res.error) console.error("[events]", res.error.message);
+  },
+};

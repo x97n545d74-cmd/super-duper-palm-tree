@@ -156,3 +156,13 @@ export function fieldErrors(err: z.ZodError): Record<string, string> {
   }
   return out;
 }
+
+export const companySchema = z.object({
+  id: z.string().uuid().optional().or(z.literal("").transform(() => undefined)),
+  name: required(120, "Company name"),
+  search_q: text(80).default(""),
+  known: text(200).default(""),
+  kind: z.enum(["indian", "multinational"]).default("indian"),
+  featured: bool,
+  logo_url: z.string().max(600).nullable(),
+});

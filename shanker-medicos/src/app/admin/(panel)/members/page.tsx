@@ -23,7 +23,6 @@ export default async function MembersPage({ searchParams }: PageProps<"/admin/me
           </p>
         </div>
         {/* A plain link on purpose: client-side navigation to a file download confuses the router. */}
-        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a href="/admin/members-export" download className="btn btn-primary">
           Download CSV
         </a>

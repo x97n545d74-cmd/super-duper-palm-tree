@@ -164,3 +164,48 @@ export interface Stats {
   members: number;
   membersThisWeek: number;
 }
+
+export interface Company {
+  id: string;
+  slug: string;
+  name: string;
+  /** catalogue search term (matches product manufacturer/brand) */
+  search_q: string;
+  known: string;
+  kind: "indian" | "multinational";
+  logo_url: string | null;
+  featured: boolean;
+  sort_order: number;
+  updated_at: string;
+}
+
+export type CompanyInput = Omit<Company, "id" | "updated_at" | "slug" | "sort_order"> & { id?: string; slug?: string };
+
+export const EVENT_TYPES = [
+  "pageview",
+  "whatsapp_click",
+  "call_click",
+  "directions_click",
+  "offer_reveal",
+  "sign_up",
+  "generate_lead",
+  "search",
+  "view_item",
+] as const;
+export type EventType = (typeof EVENT_TYPES)[number];
+
+/** One anonymous analytics event. No names, numbers, emails or IP addresses are stored. */
+export interface AnalyticsEvent {
+  ts: string;
+  type: EventType;
+  path: string;
+  locale: string;
+  referrer: string;
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+  device: "mobile" | "tablet" | "desktop";
+  /** daily-rotating hash, cannot be linked across days or to a person */
+  visitor: string;
+  props: Record<string, string | number>;
+}

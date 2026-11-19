@@ -5,8 +5,10 @@ import { usePathname } from "next/navigation";
 
 const ITEMS = [
   { href: "/admin", label: "Overview" },
+  { href: "/admin/analytics", label: "Analytics" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/categories", label: "Categories" },
+  { href: "/admin/companies", label: "Companies & logos" },
   { href: "/admin/import", label: "Bulk import" },
   { href: "/admin/members", label: "Club members" },
   { href: "/admin/settings", label: "Business details" },

@@ -1,7 +1,7 @@
 {
-  "date": "2026-11-19T09:09:20.699Z",
-  "passed": 64,
-  "total": 64,
+  "date": "2026-11-19T09:31:32.379Z",
+  "passed": 68,
+  "total": 68,
   "results": [
     {
       "name": "/ redirects to /en (default English)",
@@ -101,7 +101,7 @@
     {
       "name": "Shanker Club: sign-up gives a member code and a WhatsApp save link",
       "ok": true,
-      "detail": "SM-MSKE4"
+      "detail": "SM-KDK5P"
     },
     {
       "name": "Shanker Club: joining again with the same number returns the same code",
@@ -234,6 +234,26 @@
       "detail": ""
     },
     {
+      "name": "companies & logos: 100+ companies, bulk logo upload matched by file name",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "company logos appear on the companies page and on product pages",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin: edit a company and feature it on the homepage",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "first-party analytics: dashboard counts visits, WhatsApp taps, sources and missed searches",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "logout",
       "ok": true,
       "detail": ""
@@ -261,7 +281,7 @@
     {
       "name": "no broken internal links (crawl of every locale's pages)",
       "ok": true,
-      "detail": "387 unique links checked"
+      "detail": "510 unique links checked"
     },
     {
       "name": "security headers on public pages; admin is noindex",
@@ -276,7 +296,7 @@
     {
       "name": "no secrets in client JavaScript",
       "ok": true,
-      "detail": "33 static files scanned"
+      "detail": "35 static files scanned"
     },
     {
       "name": "login rate limiting",

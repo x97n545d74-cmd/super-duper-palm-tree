@@ -31,11 +31,13 @@ Next.js 16 (App Router, TypeScript) · Tailwind CSS 4 · Supabase (PostgreSQL, A
 | `npm run test:e2e` | Browser tests against a fresh production build (builds first) |
 | `npm run db:verify` | Applies the migrations to an in-process PostgreSQL and checks every RLS rule |
 | `npm run db:seed-sql` | Regenerates `supabase/seed.sql` from the starter catalogue |
+| `npm run demo:analytics` | Development only: fills Admin → Analytics with 60 days of labelled demo data |
 
 ## Documents
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): how the code is organised and why
 - [docs/ADMIN_MANUAL.md](docs/ADMIN_MANUAL.md): guide for pharmacy staff
+- [docs/ANALYTICS.md](docs/ANALYTICS.md): the built-in analytics dashboard
 - [docs/MARKETING.md](docs/MARKETING.md): offer, Shanker Club, tracking (GA4/GTM/Meta), automation webhook, SEO, next steps
 - [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md): Supabase, Vercel, domain, Google setup
 - [docs/TESTING_REPORT.md](docs/TESTING_REPORT.md): what was tested and the results

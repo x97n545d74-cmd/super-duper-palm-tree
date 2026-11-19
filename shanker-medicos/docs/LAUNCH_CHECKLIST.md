@@ -15,9 +15,12 @@ Items the build could not complete because they need the owner's information, ac
 ## Marketing (see docs/MARKETING.md)
 - [ ] Decide the extra Shanker Club member discount % (currently not stated: "extra discount")
 - [ ] Confirm the offer terms on `/offers` (12% above ₹1,000, code SHANKER12, applies to WhatsApp orders, stacks with member discount)
-- [ ] Confirm the companies list on `/companies` (66 companies) and the claim "branded and generic medicines from India's leading companies"
+- [ ] Confirm the companies list on `/companies` (107 companies) and the claim "branded and generic medicines from India's leading companies"
 - [ ] Create GA4 / Meta Pixel (and optionally GTM) and add the IDs
 - [ ] Set up the sign-up automation (webhook → Sheet / email / WhatsApp Business Platform)
+
+- [ ] Collect official logo files **with permission** (company reps / distributors) and upload them in Admin → Companies & logos
+- [ ] Clear the demo analytics data (Admin → Analytics → Clear demo data) if it was loaded; set `ANALYTICS_SALT` in production
 
 ## Catalogue
 - [ ] Review the ~40 starter products (`needs checking` filter in admin): confirm pack sizes, set prescription status (pharmacist), set availability only where checked, or delete.

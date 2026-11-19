@@ -80,13 +80,95 @@ export const COMPANIES: Company[] = [
   { name: "Viatris (Mylan)", q: "Viatris", type: "multinational", known: "Generics" },
   { name: "Wockhardt", q: "Wockhardt", type: "indian", known: "Anti-infectives, diabetes" },
   { name: "Zydus Lifesciences", q: "Zydus", type: "indian", known: "Cardiology, diabetes, women's health" },
+  // --- more companies whose medicines and healthcare products are sold in India
+  { name: "Akumentis Healthcare", q: "Akumentis", type: "indian", known: "Pain, neurology" },
+  { name: "Baidyanath", q: "Baidyanath", type: "indian", known: "Ayurveda" },
+  { name: "Becton Dickinson India", q: "Becton", type: "multinational", known: "Syringes, needles, diagnostics" },
+  { name: "Beiersdorf India", q: "Beiersdorf", type: "multinational", known: "Skin care, first aid (Nivea, Hansaplast)" },
+  { name: "Bharat Serums and Vaccines", q: "Bharat Serums", type: "indian", known: "Women's health, critical care" },
+  { name: "Biological E", q: "Biological E", type: "indian", known: "Vaccines" },
+  { name: "BPL Medical Technologies", q: "BPL", type: "indian", known: "Medical devices" },
+  { name: "Cachet Pharmaceuticals", q: "Cachet", type: "indian", known: "General medicines" },
+  { name: "Charak Pharma", q: "Charak", type: "indian", known: "Ayurveda" },
+  { name: "Colgate-Palmolive (India)", q: "Colgate", type: "multinational", known: "Oral care" },
+  { name: "Dr. Willmar Schwabe India", q: "Schwabe", type: "multinational", known: "Homoeopathy" },
+  { name: "Emami", q: "Emami", type: "indian", known: "Ayurveda, consumer health" },
+  { name: "Entod Pharmaceuticals", q: "Entod", type: "indian", known: "Ophthalmology, ENT" },
+  { name: "Hegde & Hegde Pharmaceutica", q: "Hegde", type: "indian", known: "General medicines" },
+  { name: "Hindustan Unilever", q: "Hindustan Unilever", type: "indian", known: "Nutrition drinks, personal care" },
+  { name: "Jagsonpal Pharmaceuticals", q: "Jagsonpal", type: "indian", known: "Women's health, pain" },
+  { name: "Kopran", q: "Kopran", type: "indian", known: "Anti-infectives" },
+  { name: "Laborate Pharmaceuticals India", q: "Laborate", type: "indian", known: "General medicines" },
+  { name: "Marksans Pharma", q: "Marksans", type: "indian", known: "OTC, generics" },
+  { name: "Medopharm", q: "Medopharm", type: "indian", known: "General medicines" },
+  { name: "Meyer Organics", q: "Meyer", type: "indian", known: "Nutrition, pain" },
+  { name: "Nestlé India", q: "Nestlé", type: "multinational", known: "Infant nutrition" },
+  { name: "Nureca (Dr Trust)", q: "Dr Trust", type: "indian", known: "Home medical devices" },
+  { name: "Overseas Healthcare", q: "Overseas", type: "indian", known: "General medicines" },
+  { name: "Panacea Biotec", q: "Panacea", type: "indian", known: "Vaccines, transplant" },
+  { name: "Procter & Gamble Hygiene and Health Care", q: "Procter & Gamble", type: "multinational", known: "Cold care, hygiene (Vicks, Whisper)" },
+  { name: "Psychotropics India", q: "Psychotropics", type: "indian", known: "Psychiatry, neurology" },
+  { name: "Raptakos, Brett & Co", q: "Raptakos", type: "indian", known: "Nutrition" },
+  { name: "Romsons Scientific & Surgical", q: "Romsons", type: "indian", known: "Surgical disposables" },
+  { name: "SBL", q: "SBL", type: "indian", known: "Homoeopathy" },
+  { name: "Shreya Life Sciences", q: "Shreya", type: "indian", known: "General medicines" },
+  { name: "Steris Healthcare", q: "Steris", type: "indian", known: "General medicines" },
+  { name: "Systopic Laboratories", q: "Systopic", type: "indian", known: "Ophthalmology, dermatology" },
+  { name: "Tablets (India)", q: "Tablets (India)", type: "indian", known: "Gastro, nutrition" },
+  { name: "3M India", q: "3M", type: "multinational", known: "Surgical tapes, first aid" },
+  { name: "Troikaa Pharmaceuticals", q: "Troikaa", type: "indian", known: "Pain, critical care" },
+  { name: "Unimarck Healthcare", q: "Unimarck", type: "indian", known: "General medicines" },
+  { name: "Wallace Pharmaceuticals", q: "Wallace", type: "indian", known: "General medicines" },
+  { name: "Walter Bushnell", q: "Walter Bushnell", type: "indian", known: "Diabetes, cardiology" },
+  { name: "Win-Medicare", q: "Win-Medicare", type: "indian", known: "Nutrition, dermatology" },
+  { name: "Zuventus Healthcare", q: "Zuventus", type: "indian", known: "Respiratory, gastro" },
 ];
 
-export function companiesByLetter(list: Company[] = COMPANIES) {
-  const groups = new Map<string, Company[]>();
+/** Shown in the homepage strip until the store chooses its own featured companies in admin. */
+export const FEATURED_COMPANIES = [
+  "Sun Pharmaceutical Industries", "Cipla", "Mankind Pharma", "Abbott India", "Dr. Reddy's Laboratories", "Lupin",
+  "Alkem Laboratories", "Torrent Pharmaceuticals", "Zydus Lifesciences", "Intas Pharmaceuticals", "Glenmark Pharmaceuticals",
+  "Pfizer Ltd", "GSK Pharmaceuticals", "Sanofi India", "Micro Labs", "Novo Nordisk India",
+];
+
+export function companiesByLetter<T extends { name: string }>(list: T[]): [string, T[]][] {
+  const groups = new Map<string, T[]>();
   for (const c of [...list].sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }))) {
     const k = c.name[0].toUpperCase();
     groups.set(k, [...(groups.get(k) ?? []), c]);
   }
   return [...groups.entries()];
+}
+
+/** Initials for the logo placeholder tile, e.g. "Sun Pharmaceutical Industries" → "SP". */
+export function monogram(name: string): string {
+  const words = name.replace(/[^A-Za-z0-9 &.]/g, " ").split(/\s+/).filter((w) => w && !/^(and|&|of|the|ltd|pvt|india)$/i.test(w));
+  return (words.length >= 2 ? words[0][0] + words[1][0] : (words[0] ?? name).slice(0, 2)).toUpperCase();
+}
+
+/** Company whose search term appears in a product's manufacturer or brand. */
+export function matchCompany<T extends { search_q: string }>(companies: T[], manufacturer: string, brand = ""): T | undefined {
+  const hay = ` ${manufacturer} ${brand} `.toLowerCase();
+  return companies
+    .filter((c) => c.search_q && hay.includes(c.search_q.toLowerCase()))
+    .sort((a, b) => b.search_q.length - a.search_q.length)[0];
+}
+
+const slugish = (v: string) =>
+  v.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/['’]/g, "").toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+/**
+ * Match an uploaded logo file to a company by its file name, e.g.
+ * "sun-pharma.png", "Sun Pharmaceutical Industries.png", "cipla_logo.webp".
+ */
+export function matchLogoFile<T extends { slug: string; name: string; search_q: string }>(fileName: string, companies: T[]): T | undefined {
+  const base = slugish(fileName.replace(/\.[a-z0-9]+$/i, "").replace(/[-_ ]?(logo|official|png|hd)$/i, ""));
+  if (!base) return undefined;
+  const keys = (c: T) => [c.slug, slugish(c.name), slugish(c.search_q)].filter(Boolean);
+  return (
+    companies.find((c) => keys(c).includes(base)) ??
+    companies
+      .filter((c) => keys(c).some((k) => k.startsWith(base + "-") || base.startsWith(k + "-")))
+      .sort((a, b) => b.search_q.length - a.search_q.length)[0]
+  );
 }

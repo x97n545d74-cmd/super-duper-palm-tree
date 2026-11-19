@@ -8,7 +8,8 @@ import { slugify, safeQuery, uniqueSlug } from "../../src/lib/text";
 import { importRowSchema, productSchema, settingsSchema, memberSchema } from "../../src/lib/validation";
 import { memberCode } from "../../src/lib/data/repo";
 import { randomBytes } from "node:crypto";
-import { COMPANIES, companiesByLetter } from "../../src/lib/companies";
+import { COMPANIES, companiesByLetter, matchCompany, matchLogoFile, monogram } from "../../src/lib/companies";
+import { seedCompanies } from "../../src/lib/data/seed";
 import { productKey } from "../../src/lib/data/repo";
 import { getDictionary, fmt } from "../../src/i18n";
 import en from "../../src/i18n/en";
@@ -259,7 +260,76 @@ test("offer, club and FAQ copy fill every placeholder in all languages", () => {
 test("companies list: no duplicates, grouped A–Z", () => {
   const names = COMPANIES.map((c) => c.name.toLowerCase());
   assert.equal(new Set(names).size, names.length);
-  assert.ok(COMPANIES.length >= 60);
-  const letters = companiesByLetter().map(([l]) => l);
+  assert.ok(COMPANIES.length >= 100, `${COMPANIES.length} companies`);
+  const letters = companiesByLetter(COMPANIES).map(([l]) => l);
   assert.deepEqual(letters, [...letters].sort());
+});
+
+test("logo files are matched to companies by file name", () => {
+  const m = (f: string) => matchLogoFile(f, seedCompanies)?.name;
+  assert.equal(m("sun-pharma.png"), "Sun Pharmaceutical Industries");
+  assert.equal(m("Cipla.PNG"), "Cipla");
+  assert.equal(m("cipla_logo.webp"), "Cipla");
+  assert.equal(m("Mankind Pharma.webp"), "Mankind Pharma");
+  assert.equal(m("dr-reddys-laboratories.png"), "Dr. Reddy's Laboratories");
+  assert.equal(m("abbott.png"), "Abbott India");
+  assert.equal(m("random-file.png"), undefined);
+});
+
+test("products are linked to their company; monograms are 2 letters", () => {
+  assert.equal(matchCompany(seedCompanies, "Micro Labs Ltd", "Dolo")?.name, "Micro Labs");
+  assert.equal(matchCompany(seedCompanies, "Sun Pharmaceutical Industries Ltd")?.name, "Sun Pharmaceutical Industries");
+  assert.equal(monogram("Sun Pharmaceutical Industries"), "SP");
+  assert.equal(monogram("Cipla"), "CI");
+  assert.equal(monogram("3M India"), "3M");
+});
+
+/* ---------- analytics report ---------- */
+import { buildReport, change, istDay } from "../../src/lib/analytics-report";
+import type { AnalyticsEvent } from "../../src/lib/types";
+
+const ev = (over: Partial<AnalyticsEvent>): AnalyticsEvent => ({
+  ts: "2026-11-10T06:00:00.000Z", type: "pageview", path: "/en", locale: "en", referrer: "", utm_source: "", utm_medium: "", utm_campaign: "",
+  device: "mobile", visitor: "v1", props: {}, ...over,
+});
+
+test("analytics report: visits, enquiries, rate, sources, searches, funnel", () => {
+  const events: AnalyticsEvent[] = [
+    // visitor 1 from a Facebook campaign: views a product, WhatsApps, joins
+    ev({ visitor: "a", utm_source: "facebook", utm_medium: "paid", utm_campaign: "diwali", path: "/pa/offers", locale: "pa" }),
+    ev({ visitor: "a", type: "view_item", props: { item_name: "Dolo 650" }, utm_source: "facebook", utm_medium: "paid", utm_campaign: "diwali" }),
+    ev({ visitor: "a", type: "whatsapp_click", props: { item_name: "Dolo 650", placement: "Enquire" } }),
+    ev({ visitor: "a", type: "sign_up" }),
+    // visitor 2 from Google search: searches (one with no results), calls
+    ev({ visitor: "b", referrer: "google.com", device: "desktop" }),
+    ev({ visitor: "b", type: "search", props: { search_term: "Ecosprin", results: 0 } }),
+    ev({ visitor: "b", type: "search", props: { search_term: "dolo", results: 1 } }),
+    ev({ visitor: "b", type: "call_click" }),
+    // visitor 3 direct, next day, bounces
+    ev({ visitor: "c", ts: "2026-11-11T05:00:00.000Z" }),
+  ];
+  const r = buildReport(events, null, "2026-11-09T18:30:00.000Z", "2026-11-11T18:29:59.000Z");
+  assert.equal(r.kpis.visits, 3);
+  assert.equal(r.kpis.enquiries, 2);
+  assert.equal(r.kpis.signups, 1);
+  assert.ok(Math.abs(r.kpis.enquiryRate - 2 / 3) < 1e-9);
+  assert.equal(r.daily.length, 2, "two IST days, zero-filled");
+  assert.deepEqual(r.daily.map((d) => d.visits), [2, 1]);
+  const fb = r.sources.find((s) => s.source === "facebook")!;
+  assert.deepEqual([fb.medium, fb.campaign, fb.visits, fb.enquiries, fb.signups, fb.rate], ["paid", "diwali", 1, 1, 1, 1]);
+  assert.ok(r.sources.some((s) => s.source === "google.com" && s.medium === "referral"));
+  assert.ok(r.sources.some((s) => s.source === "direct" && s.rate === 0));
+  assert.deepEqual(r.zeroSearches, [{ term: "ecosprin", count: 1 }], "searches with no results = stock demand");
+  assert.deepEqual(r.funnel.map((f) => f.value), [3, 1, 2, 1]);
+  assert.deepEqual(r.products[0], { name: "Dolo 650", views: 1, enquiries: 1 });
+  assert.deepEqual(r.languages.map((l) => l.name).sort(), ["en", "pa"]);
+  assert.ok(r.pages.some((p) => p.name === "/offers"), "locale prefix stripped from pages");
+  assert.equal(r.hasDemo, false);
+});
+
+test("analytics: IST day boundaries and % change", () => {
+  assert.equal(istDay("2026-11-10T18:29:00.000Z"), "2026-11-10");
+  assert.equal(istDay("2026-11-10T18:31:00.000Z"), "2026-11-11");
+  assert.equal(change(120, 100), 0.2);
+  assert.equal(change(5, 0), null);
 });
