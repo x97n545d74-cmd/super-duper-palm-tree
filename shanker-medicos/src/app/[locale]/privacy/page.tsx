@@ -34,7 +34,7 @@ export default async function Privacy({ params }: PageProps<"/[locale]/privacy">
           </p>
           <h2>Visit statistics</h2>
           <p>
-            We use Vercel Web Analytics to count visits and taps on buttons such as WhatsApp. It does not use cookies and does not identify you; we only see totals (for
+            We use a cookieless visitor counter (Vercel Web Analytics or Cloudflare Web Analytics, depending on where the site is hosted) to count visits and taps on buttons such as WhatsApp. It does not use cookies and does not identify you; we only see totals (for
             example, how many people visited this week and which pages they opened).
           </p>
         </>

@@ -4,6 +4,8 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
   // On Vercel, fall back to the project's production address (system variable).
   (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "") ||
+  // On Netlify, the site's address (set at build time in next.config.ts).
+  process.env.HOST_SITE_URL ||
   "http://localhost:3000"
 ).replace(/\/$/, "");
 
@@ -20,7 +22,7 @@ export function isProduction() {
 /**
  * Publish-only mode: no database at all. The site is served from the built-in
  * catalogue and settings (src/lib/data/seed.ts); nothing is written, admin is
- * off, Shanker Club joins happen on WhatsApp and visits are counted by Vercel
- * Web Analytics. On by default on Vercel when Supabase isn't configured.
+ * off and Shanker Club joins happen on WhatsApp. On by default on Vercel and
+ * Netlify when Supabase isn't configured. Decided at build time (next.config.ts).
  */
-export const PUBLISH_ONLY = DATA_MODE === "local" && (process.env.VERCEL === "1" || process.env.PUBLISH_ONLY === "1");
+export const PUBLISH_ONLY = DATA_MODE === "local" && process.env.PUBLISH_ONLY === "1";

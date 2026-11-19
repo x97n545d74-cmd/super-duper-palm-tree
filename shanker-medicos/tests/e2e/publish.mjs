@@ -1,4 +1,4 @@
-// Publish-only mode (how the site runs on Vercel without a database).
+// Publish-only mode (how the site runs on Netlify/Vercel without a database).
 // Builds and starts the site with PUBLISH_ONLY=1, then checks that every page
 // works, the club is joined on WhatsApp, admin is off, and nothing is written
 // to disk. Run: npm run test:publish

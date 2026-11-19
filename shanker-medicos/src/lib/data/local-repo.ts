@@ -390,7 +390,7 @@ async function readEvents(pred: (e: AnalyticsEvent) => boolean): Promise<Analyti
 /** Append-only log; one JSON object per line. */
 export const localEvents: EventsRepo = {
   async log(e) {
-    if (PUBLISH_ONLY) return; // counted by Vercel Web Analytics instead
+    if (PUBLISH_ONLY) return; // counted by the host's cookieless analytics instead
     await fs.mkdir(DATA_DIR, { recursive: true });
     await fs.appendFile(EVENTS_FILE, JSON.stringify(e) + "\n");
   },

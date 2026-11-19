@@ -1,0 +1,8 @@
+# Netlify (free plan): Next.js is detected automatically. The site runs in
+# publish-only mode (no database) unless Supabase keys are added.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"

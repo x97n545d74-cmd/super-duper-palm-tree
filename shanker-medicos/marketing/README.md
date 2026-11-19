@@ -90,7 +90,7 @@ Google Business Profile does most of the work for free. If you want ads, use **G
 
 | Where | What to look at, every Monday |
 |---|---|
-| Vercel → your project → **Analytics** | Visitors, top pages, and the **whatsapp_click** event (taps on WhatsApp buttons) |
+| Cloudflare → **Web Analytics** (if set up, see docs/GO_LIVE.md step 2) | Visitors and top pages |
 | WhatsApp Business | Number of new chats; how many have the *Came from ad* / *Club member* labels |
 | Google Business Profile → **Performance** | Calls, direction requests, website clicks, searches that found you |
 | Meta Ads Manager | Cost per messaging conversation |
@@ -100,8 +100,8 @@ Google Business Profile does most of the work for free. If you want ads, use **G
 
 | Item | Cost |
 |---|---|
-| Website hosting (Vercel Pro) | ~₹1,700 |
-| Domain | ~₹100 (≈ ₹1,000/year) |
+| Website hosting (Netlify free plan) | Free |
+| Own domain (optional; `shanker-medicos.netlify.app` is free) | ~₹60 (≈ ₹500–900/year) |
 | Meta ads (optional) | ₹4,500–7,500 |
 | Google ads (optional) | ~₹4,500 |
 | WhatsApp Business, Google Business Profile, Instagram, Facebook | Free |

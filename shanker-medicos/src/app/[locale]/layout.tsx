@@ -29,6 +29,8 @@ export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }
 
+const CF_BEACON = process.env.NEXT_PUBLIC_CF_BEACON_TOKEN || "";
+
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   const ctx = await siteContext(locale);
@@ -44,6 +46,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <Analytics labels={ctx.t.mkt.consent} privacyHref={`/${ctx.locale}/privacy`} />
         {/* Vercel Web Analytics: cookieless visit counts in the Vercel dashboard (only on Vercel). */}
         {process.env.VERCEL === "1" && <VercelAnalytics />}
+        {/* Cloudflare Web Analytics: free cookieless visit counts on any host, when a token is set. */}
+        {CF_BEACON && <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: CF_BEACON })} />}
         <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(pharmacySchema(ctx.settings, ctx.locale))} />
       </body>
     </html>

@@ -38,7 +38,7 @@ Items the build could not complete because they need the owner's information, ac
 
 ## Accounts and deployment (see docs/DEPLOYMENT.md)
 - [ ] Supabase project, migration run, sign-ups disabled, staff accounts created and added to `admin_users`
-- [ ] Vercel project with environment variables
+- [ ] Netlify project (free plan, base directory `shanker-medicos`); optional `NEXT_PUBLIC_CF_BEACON_TOKEN` for visit counts
 - [ ] Domain and DNS; `NEXT_PUBLIC_SITE_URL` updated
 - [ ] Search Console verified, sitemap submitted
 - [ ] Google Business Profile claimed with identical name, address and phone
