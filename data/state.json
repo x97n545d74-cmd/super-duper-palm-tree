@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 4,
+ "reddit_next": 5,
  "fails": {
   "reddit|r/StockMarketIndia": 8,
   "reddit|r/DalalStreetTalks": 8,
@@ -38,18 +38,18 @@
   "reddit|r/IndianStockMarket": 8,
   "reddit|r/IndiaInvestments": 8,
   "reddit|r/IndianStreetBets": 8,
-  "feeds|NSE announcements": 5,
-  "feeds|NSE financial results": 5,
-  "feeds|NSE insider trading": 5,
-  "feeds|NSE takeover disclosures": 5,
-  "feeds|NSE board meetings": 5,
-  "feeds|NSE corporate actions": 5,
-  "feeds|NSE shareholding patterns": 5,
-  "feeds|NSE voting results": 5,
-  "feeds|NSE annual reports": 5,
-  "feeds|NSE buybacks": 5,
-  "feeds|NSE offer documents": 5,
-  "feeds|NSE pledge and encumbrance disclosures": 5
+  "feeds|NSE announcements": 6,
+  "feeds|NSE financial results": 6,
+  "feeds|NSE insider trading": 6,
+  "feeds|NSE takeover disclosures": 6,
+  "feeds|NSE board meetings": 6,
+  "feeds|NSE corporate actions": 6,
+  "feeds|NSE shareholding patterns": 6,
+  "feeds|NSE voting results": 6,
+  "feeds|NSE annual reports": 6,
+  "feeds|NSE buybacks": 6,
+  "feeds|NSE offer documents": 6,
+  "feeds|NSE pledge and encumbrance disclosures": 6
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795075098.4929423,
@@ -57,6 +57,18 @@
   "reddit|r/IndianStocks": 1795078698.2626739,
   "reddit|r/IndianStockMarket": 1795080497.7960494,
   "reddit|r/IndiaInvestments": 1795082297.6781542,
-  "reddit|r/IndianStreetBets": 1795084098.0462546
+  "reddit|r/IndianStreetBets": 1795084098.0462546,
+  "feeds|NSE announcements": 1795096985.0867004,
+  "feeds|NSE financial results": 1795096985.0867004,
+  "feeds|NSE insider trading": 1795096985.0867004,
+  "feeds|NSE takeover disclosures": 1795096985.0867004,
+  "feeds|NSE board meetings": 1795096985.0867004,
+  "feeds|NSE corporate actions": 1795096985.0867004,
+  "feeds|NSE shareholding patterns": 1795096985.0867004,
+  "feeds|NSE voting results": 1795096985.0867004,
+  "feeds|NSE annual reports": 1795096985.0867004,
+  "feeds|NSE buybacks": 1795096985.0867004,
+  "feeds|NSE offer documents": 1795096985.0867004,
+  "feeds|NSE pledge and encumbrance disclosures": 1795096985.0867004
  }
 }
