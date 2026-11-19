@@ -128,7 +128,7 @@ export const COMPANIES: Company[] = [
 export const FEATURED_COMPANIES = [
   "Sun Pharmaceutical Industries", "Cipla", "Mankind Pharma", "Abbott India", "Dr. Reddy's Laboratories", "Lupin",
   "Alkem Laboratories", "Torrent Pharmaceuticals", "Zydus Lifesciences", "Intas Pharmaceuticals", "Glenmark Pharmaceuticals",
-  "Pfizer Ltd", "GSK Pharmaceuticals", "Sanofi India", "Micro Labs", "Novo Nordisk India",
+  "Pfizer Ltd", "GSK Pharmaceuticals", "Sanofi India", "Micro Labs", "Novo Nordisk India", "Biocon", "Emcure Pharmaceuticals",
 ];
 
 export function companiesByLetter<T extends { name: string }>(list: T[]): [string, T[]][] {
@@ -171,4 +171,35 @@ export function matchLogoFile<T extends { slug: string; name: string; search_q: 
       .filter((c) => keys(c).some((k) => k.startsWith(base + "-") || base.startsWith(k + "-")))
       .sort((a, b) => b.search_q.length - a.search_q.length)[0]
   );
+}
+
+/** Short display name for badges, e.g. "Sun Pharmaceutical Industries" → "Sun Pharma", "Abbott India" → "Abbott". */
+export function shortName(name: string): string {
+  const special: Record<string, string> = {
+    "Johnson & Johnson / Kenvue": "Kenvue",
+    "Procter & Gamble Hygiene and Health Care": "P&G Health Care",
+    "Procter & Gamble Health": "P&G Health",
+    "Romsons Scientific & Surgical": "Romsons",
+    "Hegde & Hegde Pharmaceutica": "Hegde & Hegde",
+    "Eli Lilly and Company (India)": "Eli Lilly",
+    "Nureca (Dr Trust)": "Dr Trust",
+    "Viatris (Mylan)": "Viatris",
+    "Raptakos, Brett & Co": "Raptakos Brett",
+  };
+  if (special[name]) return special[name];
+  const out = name
+    .replace(/\bPharmaceuticals?\b/g, "Pharma")
+    .replace(/\b(Industries|Laboratories|Ltd|Limited|Pvt|Products|Works)\b\.?/g, "")
+    .replace(/\(India\)|\bIndia\b/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  return out || name;
+}
+
+const BADGE_ACCENTS = ["#123F2B", "#087A4B", "#2F6B5B", "#8B5A2B", "#36566E", "#6B4E71", "#4F6B2F"];
+/** Stable accent colour per company for the badge's top rule. */
+export function badgeAccent(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+  return BADGE_ACCENTS[Math.abs(h) % BADGE_ACCENTS.length];
 }

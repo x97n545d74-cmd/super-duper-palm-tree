@@ -6,8 +6,8 @@ What the site already does, what you switch on with IDs, and what's ready for th
 
 | Element | Where | Purpose |
 |---|---|---|
-| **Offer bar** "12% off bills above ₹1,000. Tap for your code →" | Top of every page | Drives traffic to the offer page |
-| **Tap-to-reveal code** (`SHANKER12`) | Homepage, `/offers` | The "clue": customers reveal it, show it at the counter or send it on WhatsApp. Reveals are tracked. |
+| **Offer bar** "10% off selected medicines on bills above ₹1,000. Tap for your code →" | Top of every page | Drives traffic to the offer page |
+| **Tap-to-reveal code** (`SHANKER10`) | Homepage, `/offers` | The "clue": customers reveal it, show it at the counter or send it on WhatsApp. Reveals are tracked. |
 | **Shanker Club** sign-up | Homepage, `/offers` | Collects mobile number (required), name and email (optional), with explicit consent. Gives a personal member code (e.g. `SM-7KQ2P`) for the extra discount. |
 | **Send prescription / medicine list on WhatsApp** | Homepage, product pages for medicines, `/offers` | Opens WhatsApp to **+91 98155 52404** with a ready-written message; the customer attaches the photo |
 | **Companies page** `/companies` | Nav, footer, homepage strip, product pages | 107 Indian and multinational pharma companies with logo slots (bulk upload in admin), each linked to a catalogue search. Strong for "<company> medicine Batala" searches. |
@@ -21,7 +21,7 @@ Change the offer (%, minimum bill, code, on/off) and the extra member % in **Adm
 Send ads to **`/en/offers`**, **`/hi/offers`** or **`/pa/offers`** (match the ad's language), with UTM tags:
 
 ```
-https://your-domain/pa/offers?utm_source=facebook&utm_medium=paid&utm_campaign=diwali_12pc
+https://your-domain/pa/offers?utm_source=facebook&utm_medium=paid&utm_campaign=diwali_10pc
 https://your-domain/hi/offers?utm_source=google&utm_medium=cpc&utm_campaign=batala_pharmacy
 https://your-domain/en?utm_source=instagram&utm_medium=bio&utm_campaign=profile
 ```
@@ -69,7 +69,7 @@ Set `AUTOMATION_WEBHOOK_URL` (https) and `AUTOMATION_WEBHOOK_SECRET`. Every sign
   "data": {
     "code": "SM-7KQ2P", "name": "Asha", "phone": "+919815500001", "email": "asha@example.com",
     "locale": "pa", "source": "offers_page",
-    "utm_source": "facebook", "utm_medium": "paid", "utm_campaign": "diwali_12pc",
+    "utm_source": "facebook", "utm_medium": "paid", "utm_campaign": "diwali_10pc",
     "club_extra_percent": 0
   }
 }

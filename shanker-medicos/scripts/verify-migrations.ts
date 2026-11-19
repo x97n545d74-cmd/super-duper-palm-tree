@@ -61,8 +61,10 @@ async function main() {
     }
   }
   await db.exec(readFileSync(new URL("../supabase/seed.sql", import.meta.url), "utf8"));
-  const wa = await db.query<{ whatsapp: string; maps_url: string }>("select whatsapp, maps_url from business_settings");
-  check("migration sets the store WhatsApp and Maps link", wa.rows[0].whatsapp === "+91 98155 52404" && wa.rows[0].maps_url.startsWith("https://maps.app.goo.gl/"), JSON.stringify(wa.rows[0]));
+  const wa = await db.query<{ whatsapp: string; maps_url: string; address: string; postal_code: string; phone: string; opening_hours: string; club_extra_percent: number }>("select * from business_settings");
+  const w = wa.rows[0];
+  check("migrations set the store WhatsApp and Maps link", w.whatsapp === "+91 98155 52404" && w.maps_url.startsWith("https://maps.app.goo.gl/"), JSON.stringify(w));
+  check("migrations set address, PIN, phone, hours, 5% club discount", w.address === "Dera Road" && w.postal_code === "143505" && w.phone === "+91 98155 52404" && w.opening_hours.includes("Sunday: Closed") && w.club_extra_percent === 5, JSON.stringify(w));
   const counts = await db.query<{ c: number; p: number }>("select (select count(*) from categories)::int c, (select count(*) from products)::int p");
   check("seed.sql loads", counts.rows[0].c > 0 && counts.rows[0].p > 0, `${counts.rows[0].c} categories, ${counts.rows[0].p} products`);
 
@@ -139,7 +141,7 @@ async function main() {
   r = await as(db, "authenticated", ADMIN, "delete from members where phone = '9815500001'");
   check("admin can delete a member (erasure request)", r.affected === 1, r.error ?? "");
   const st = await db.query<{ whatsapp: string; offer_percent: number; offer_code: string }>("select whatsapp, offer_percent, offer_code from business_settings");
-  check("12% offer defaults are set",  st.rows[0].offer_percent === 12 && st.rows[0].offer_code === "SHANKER12", JSON.stringify(st.rows[0]));
+  check("10% offer (SHANKER10) set from the owner details", st.rows[0].offer_percent === 10 && st.rows[0].offer_code === "SHANKER10", JSON.stringify(st.rows[0]));
   r = await as(db, "authenticated", ADMIN, "update business_settings set offer_percent = 90");
   check("offer percent above 50 is rejected", !!r.error);
 

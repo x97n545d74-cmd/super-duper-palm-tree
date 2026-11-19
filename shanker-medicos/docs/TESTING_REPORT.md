@@ -8,9 +8,9 @@ Date: 19 November 2026, updated 20 November 2026 (marketing release; companies &
 |---|---|---|
 | Lint | `npm run lint` | clean |
 | Types | `npm run typecheck` | clean |
-| Unit tests | `npm run test:unit` | **37 / 37 passed** |
-| Database (migration + RLS) | `npm run db:verify` | **49 / 49 checks passed** |
-| End-to-end, real browsers | `npm run test:e2e` | **68 / 68 passed** |
+| Unit tests | `npm run test:unit` | **38 / 38 passed** |
+| Database (migration + RLS) | `npm run db:verify` | **52 / 52 checks passed** |
+| End-to-end, real browsers | `npm run test:e2e` | **69 / 69 passed** |
 | Lighthouse (local, indicative) | see §5 | Accessibility, Best Practices, SEO: 100 on all pages tested; Performance 100 desktop, 89–93 mobile |
 
 Raw e2e results: `tests/e2e/last-run.json`.
@@ -26,7 +26,7 @@ Raw e2e results: `tests/e2e/last-run.json`.
 
 New and changed, all covered by the suites above:
 - **WhatsApp +91 98155 52404** used for every enquiry link; prescription-photo and medicine-list buttons open WhatsApp with prefilled text (e2e).
-- **Offer**: announcement bar, tap-to-reveal code `SHANKER12`, code included in the WhatsApp message, `/offers` page in Punjabi with Offer + FAQPage structured data, admin change to 15% shows on the site (e2e).
+- **Offer**: announcement bar, tap-to-reveal code `SHANKER10`, code included in the WhatsApp message, `/offers` page in Punjabi with Offer + FAQPage structured data, admin change to 15% shows on the site (e2e).
 - **Shanker Club**: invalid mobile and missing consent rejected **without wiping what was typed**; sign-up returns an `SM-XXXXX` code and a WhatsApp link with the code; joining again with the same number (in another language) returns the same code (e2e). Member codes, phone normalisation, consent and email rules (unit). Database: anon can join only through `join_club()`, cannot read or insert members directly; non-admins see nothing; admins read, export and delete; invalid phone/consent rejected (DB).
 - **Automation**: the webhook receives `member.joined` and `member.rejoined` with a valid HMAC signature and the UTM attribution from the landing URL (e2e).
 - **Admin**: Club members list with attribution, CSV export (admins only; 401 without login), delete (e2e).

@@ -58,7 +58,10 @@ test("normalizePhone handles common Indian formats", () => {
 });
 
 test("missingSettings flags only what the store has not supplied yet", () => {
-  assert.deepEqual(missingSettings(seedSettings), ["address", "phone", "opening_hours"]);
+  assert.deepEqual(missingSettings(seedSettings), [], "address, phone, WhatsApp, hours and Maps link are all supplied");
+  assert.equal(seedSettings.address, "Dera Road");
+  assert.equal(seedSettings.postal_code, "143505");
+  assert.ok(seedSettings.opening_hours.includes("Sunday: Closed"));
 });
 
 test("store WhatsApp 98155 52404 produces a valid wa.me link", () => {
@@ -240,10 +243,11 @@ test("member codes look like SM-XXXXX without ambiguous characters", () => {
   assert.ok(codes.size > 490, "codes are effectively unique");
 });
 
-test("offer defaults: 12% above ₹1,000 with code SHANKER12", () => {
-  assert.equal(seedSettings.offer_percent, 12);
+test("offer defaults: 10% on selected medicines above ₹1,000 (SHANKER10); club +5% first purchase", () => {
+  assert.equal(seedSettings.offer_percent, 10);
   assert.equal(seedSettings.offer_min_amount, 1000);
-  assert.equal(seedSettings.offer_code, "SHANKER12");
+  assert.equal(seedSettings.offer_code, "SHANKER10");
+  assert.equal(seedSettings.club_extra_percent, 5);
 });
 
 test("offer, club and FAQ copy fill every placeholder in all languages", () => {
@@ -332,4 +336,14 @@ test("analytics: IST day boundaries and % change", () => {
   assert.equal(istDay("2026-11-10T18:31:00.000Z"), "2026-11-11");
   assert.equal(change(120, 100), 0.2);
   assert.equal(change(5, 0), null);
+});
+
+test("company badges use a clean short name", async () => {
+  const { shortName } = await import("../../src/lib/companies");
+  assert.equal(shortName("Sun Pharmaceutical Industries"), "Sun Pharma");
+  assert.equal(shortName("Abbott India"), "Abbott");
+  assert.equal(shortName("Dr. Reddy's Laboratories"), "Dr. Reddy's");
+  assert.equal(shortName("Cipla"), "Cipla");
+  assert.equal(shortName("Colgate-Palmolive (India)"), "Colgate-Palmolive");
+  assert.equal(shortName("Johnson & Johnson / Kenvue"), "Kenvue");
 });

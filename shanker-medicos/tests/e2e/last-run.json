@@ -1,7 +1,7 @@
 {
-  "date": "2026-11-19T09:31:32.379Z",
-  "passed": 68,
-  "total": 68,
+  "date": "2026-11-19T10:04:49.316Z",
+  "passed": 69,
+  "total": 69,
   "results": [
     {
       "name": "/ redirects to /en (default English)",
@@ -89,6 +89,11 @@
       "detail": ""
     },
     {
+      "name": "store details: Dera Road address, PIN, hours, map and 5% first-purchase club offer",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "offer page in Punjabi: terms, FAQ schema, Offer schema",
       "ok": true,
       "detail": ""
@@ -101,7 +106,7 @@
     {
       "name": "Shanker Club: sign-up gives a member code and a WhatsApp save link",
       "ok": true,
-      "detail": "SM-KDK5P"
+      "detail": "SM-QATRM"
     },
     {
       "name": "Shanker Club: joining again with the same number returns the same code",

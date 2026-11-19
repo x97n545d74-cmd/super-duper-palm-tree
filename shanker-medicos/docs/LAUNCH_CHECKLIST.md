@@ -4,35 +4,35 @@ Items the build could not complete because they need the owner's information, ac
 
 ## Business information (enter in /admin → Business details)
 - [ ] **Confirm the trading name.** The brief says "Shanker Medicos"; the shop sign in the supplied video reads "Shanker Chemists & Druggists". Use the name on the drug licence and Google Business Profile everywhere. The name can be changed in Business details; the logo wordmark files in `public/brand/` would need regenerating for a different name.
-- [ ] Shop address (the video shows a "Dera Road" label but this was **not** used as the address). Needed for the embedded map and Google data.
-- [ ] PIN code
-- [ ] Phone number (calls)
+- [x] Shop address: Dera Road, Batala (supplied 20 Nov 2026)
+- [x] PIN code: 143505
+- [x] Phone number: +91 98155 52404 (same as WhatsApp)
 - [x] WhatsApp number: +91 98155 52404 (supplied 20 Nov 2026)
-- [ ] Opening hours
+- [x] Opening hours: summer 9 am–10 pm, winter 9:30 am–9:30 pm, Sunday closed (summer closing time read as 10 pm; confirm)
 - [x] Google Maps link: maps.app.goo.gl/jgHwJrpiNSSzED4q9 (supplied 20 Nov 2026)
-- [ ] Email, Instagram, Facebook (optional)
+- [x] Email, Instagram, Facebook: none for now
 
 ## Marketing (see docs/MARKETING.md)
-- [ ] Decide the extra Shanker Club member discount % (currently not stated: "extra discount")
-- [ ] Confirm the offer terms on `/offers` (12% above ₹1,000, code SHANKER12, applies to WhatsApp orders, stacks with member discount)
+- [x] Shanker Club: extra 5% on the first purchase
+- [x] Offer: 10% off selected medicines (store's choice) on bills above ₹1,000, code SHANKER10, also on WhatsApp orders
 - [ ] Confirm the companies list on `/companies` (107 companies) and the claim "branded and generic medicines from India's leading companies"
 - [ ] Create GA4 / Meta Pixel (and optionally GTM) and add the IDs
 - [ ] Set up the sign-up automation (webhook → Sheet / email / WhatsApp Business Platform)
 
-- [ ] Collect official logo files **with permission** (company reps / distributors) and upload them in Admin → Companies & logos
+- [x] Logos: the owner chose house-style name badges instead of collecting official logos (official logos can still be uploaded later with permission)
 - [ ] Clear the demo analytics data (Admin → Analytics → Clear demo data) if it was loaded; set `ANALYTICS_SALT` in production
 
 ## Catalogue
 - [ ] Review the ~40 starter products (`needs checking` filter in admin): confirm pack sizes, set prescription status (pharmacist), set availability only where checked, or delete.
-- [ ] Import the store's real product list with the CSV template.
-- [ ] Replace illustrations with real product photos where possible.
+- [ ] Real product list: not now (billing software export not available). The starter catalogue stays; "Searched but not found" in Analytics shows what to add.
+- [x] Product images: unlabelled illustrations by the owner's choice
 - [ ] Confirm the homepage "featured" products.
 
 ## Content reviews
 - [ ] Native-speaker review of Hindi (`src/i18n/hi.ts`) and Punjabi (`src/i18n/pa.ts`) interface text and category names.
 - [ ] Lawyer review of the Privacy Policy and Terms of Use (Digital Personal Data Protection Act 2023; Drugs and Cosmetics Act 1940/Rules; jurisdiction).
 - [ ] Confirm the store is comfortable with the trust statements on the homepage (none claim awards, years, certifications or credentials).
-- [ ] Confirm permission to use the storefront video on the website (it is the file supplied for this project).
+- [x] Storefront video: approved by the owner
 
 ## Accounts and deployment (see docs/DEPLOYMENT.md)
 - [ ] Supabase project, migration run, sign-ups disabled, staff accounts created and added to `admin_users`

@@ -111,9 +111,11 @@ export function OfferTerms({ ctx }: { ctx: SiteContext }) {
     <div className="rounded-card border border-line bg-white p-6">
       <h2 className="text-h3">{o.termsTitle}</h2>
       <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-ink">
-        {o.terms.map((x) => (
-          <li key={x}>{fmt(x, v)}</li>
-        ))}
+        {o.terms
+          .filter((x) => !(x.includes("{extra}") && (!ctx.settings.club_enabled || !ctx.settings.club_extra_percent)))
+          .map((x) => (
+            <li key={x}>{fmt(x, v)}</li>
+          ))}
       </ul>
     </div>
   );
@@ -178,9 +180,13 @@ export async function CompaniesTeaser({ ctx }: { ctx: SiteContext }) {
       <ul lang="en" className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
         {list.map((c) => (
           <li key={c.id} className="bg-white">
-            <Link href={`/${locale}/products?q=${encodeURIComponent(c.search_q || c.name)}`} className="flex h-full flex-col items-center justify-center gap-3 px-3 py-5 text-center transition hover:bg-ivory">
-              <CompanyLogo company={c} size="md" />
-              <span className="text-xs font-medium leading-snug text-ink">{c.name}</span>
+            <Link
+              href={`/${locale}/products?q=${encodeURIComponent(c.search_q || c.name)}`}
+              aria-label={c.name}
+              className="flex h-full min-h-[104px] flex-col items-center justify-center gap-2 px-3 py-5 text-center transition hover:bg-ivory"
+            >
+              <CompanyLogo company={c} variant="badge" />
+              {c.logo_url && <span className="text-xs font-medium leading-snug text-ink-2">{c.name}</span>}
             </Link>
           </li>
         ))}

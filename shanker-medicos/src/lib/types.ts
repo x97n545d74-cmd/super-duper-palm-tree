@@ -65,7 +65,7 @@ export interface BusinessSettings {
   maps_url: string;
   instagram_url: string;
   facebook_url: string;
-  /** Store-wide bill offer, e.g. 12% off bills above ₹1,000. */
+  /** Store-wide bill offer, e.g. 10% off selected medicines above ₹1,000. */
   offer_enabled: boolean;
   offer_percent: number;
   offer_min_amount: number;

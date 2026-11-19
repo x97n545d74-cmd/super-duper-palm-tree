@@ -64,7 +64,7 @@ export const settingsSchema = z.object({
   offer_min_amount: z.coerce.number().int().min(0).max(100000),
   offer_code: text(20)
     .transform((v) => v.toUpperCase())
-    .refine((v) => /^[A-Z0-9-]{3,20}$/.test(v), "Use 3–20 letters or numbers, e.g. SHANKER12."),
+    .refine((v) => /^[A-Z0-9-]{3,20}$/.test(v), "Use 3–20 letters or numbers, e.g. SHANKER10."),
   club_enabled: bool,
   club_extra_percent: z.coerce.number().int().min(0).max(50).default(0),
 });

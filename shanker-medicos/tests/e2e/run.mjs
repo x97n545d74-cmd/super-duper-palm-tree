@@ -279,17 +279,29 @@ await step("prescription on WhatsApp: photo and medicine-list buttons with prefi
 await step("offer: announcement bar, tap-to-reveal code, WhatsApp with code", async () => {
   await page.goto(`${BASE}/en`);
   const bar = await page.locator('a[href="/en/offers"]').first().textContent();
-  assert(bar.includes("12% off bills above ₹1,000"), bar);
+  assert(bar.includes("10% off selected medicines above ₹1,000"), bar);
   assert((await page.locator('[data-testid="offer-code"]').count()) === 0, "code visible before tap");
   await page.click("button:has-text('Tap to reveal your code')");
-  assert((await page.textContent('[data-testid="offer-code"]')).trim() === "SHANKER12", "code");
+  assert((await page.textContent('[data-testid="offer-code"]')).trim() === "SHANKER10", "code");
   const wa = await page.locator('#offer a[href*="wa.me"]').first().getAttribute("href");
-  assert(new URL(wa).searchParams.get("text").includes("SHANKER12"), "code in WhatsApp message");
+  assert(new URL(wa).searchParams.get("text").includes("SHANKER10"), "code in WhatsApp message");
+});
+
+await step("store details: Dera Road address, PIN, hours, map and 5% first-purchase club offer", async () => {
+  await page.goto(`${BASE}/en/contact`);
+  const main = await page.textContent("main");
+  assert(main.includes("Dera Road, Batala, Punjab, 143505") && main.includes("Sunday: Closed") && main.includes("+91 98155 52404"), "contact details");
+  assert((await page.locator('iframe[src*="google.com/maps"]').count()) === 1, "map embed");
+  assert((await page.locator('a[href^="tel:+919815552404"]').count()) >= 1, "call link");
+  await page.goto(`${BASE}/en/offers`);
+  const offers = await page.textContent("main");
+  assert(offers.includes("selected medicines chosen by the store") && offers.includes("extra 5% off their first purchase"), "offer terms");
+  assert((await page.textContent("#club")).includes("extra 5% off your first purchase"), "club copy");
 });
 
 await step("offer page in Punjabi: terms, FAQ schema, Offer schema", async () => {
   await page.goto(`${BASE}/pa/offers`);
-  assert(/12%/.test(await page.textContent("h1")) && /[\u0A00-\u0A7F]/.test(await page.textContent("h1")), "pa headline");
+  assert(/10%/.test(await page.textContent("h1")) && /[\u0A00-\u0A7F]/.test(await page.textContent("h1")), "pa headline");
   const types = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((b) => JSON.parse(b)["@type"]);
   assert(types.includes("FAQPage") && types.includes("Offer"), types.join(","));
 });
@@ -404,7 +416,7 @@ await step("admin login works", async () => {
   await login(page);
   await page.waitForURL(`${BASE}/admin`);
   assert((await page.textContent("h1")) === "Overview");
-  assert((await page.textContent("main")).includes("Business details missing"), "missing-settings warning");
+  assert(!(await page.textContent("main")).includes("Business details missing"), "store details are complete");
 });
 
 await step("session cookie is httpOnly, scoped to /admin and signed", async () => {
@@ -643,7 +655,7 @@ await step("admin: change the offer to 15% and see it on the site", async () => 
   const ok = await eventually(page, `${BASE}/en/offers`, async () => (await page.textContent("h1")).includes("15%"));
   assert(ok, "15% not shown");
   await page.goto(`${BASE}/admin/settings`);
-  await page.fill("#offer_percent", "12");
+  await page.fill("#offer_percent", "10");
   await page.click("button[type=submit]");
   await page.waitForSelector("p[role=status]");
 });
