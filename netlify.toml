@@ -8,3 +8,22 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# The home address "/" has no page of its own: send visitors to their language.
+# (The site's proxy does this too; these rules make sure it works on Netlify.)
+[[redirects]]
+  from = "/"
+  to = "/pa"
+  status = 302
+  conditions = { Language = ["pa"] }
+
+[[redirects]]
+  from = "/"
+  to = "/hi"
+  status = 302
+  conditions = { Language = ["hi"] }
+
+[[redirects]]
+  from = "/"
+  to = "/en"
+  status = 302
