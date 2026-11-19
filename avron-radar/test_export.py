@@ -35,6 +35,32 @@ class Export(unittest.TestCase):
         self.assertEqual(f["flows"][0]["fpi"]["equity_net_cr"], 11265.68)
         self.assertEqual(export.check(f), [])
 
+    def test_prices_holdings_calendar_and_index_history(self):
+        hold = [{"key": "a|2026-06-30", "company": "ABC Ltd", "symbol": "ABC", "as_on": "2026-06-30", "promoter_pct": 60.0,
+                 "url": "u1", "detail": {"promoters": 60.0}},
+                {"key": "a|2026-09-30", "company": "ABC Ltd", "symbol": "ABC", "as_on": "2026-09-30", "promoter_pct": 58.5,
+                 "url": "u2", "detail": {"promoters": 58.5, "named_public_holders": [{"name": "Fund", "kind": "mutual fund", "pct": 1.2}]},
+                 "tries": 1}]
+        f = export.build(ITEMS, SIG, [], NOW,
+                         prices=("2026-11-18", {"ABC": {"prev": 10.0, "close": 11.0, "high": 11.5, "low": 9.8, "volume": 1000.0,
+                                                        "turnover": 1.1, "deliv": 48.2}}),
+                         universe={"ABC": {"name": "ABC Limited", "industry": "", "index": ""}}, holdings=hold,
+                         calendar=[{"date": "2026-11-20", "kind": "board meeting", "company": "ABC Ltd", "symbol": "ABC",
+                                    "what": "results", "score": 3}],
+                         index_history=[{"date": "2026-11-18", "indices": {}}, {"date": "2026-11-17", "indices": {}}])
+        self.assertEqual(f["version"], 2)
+        self.assertEqual(f["prices"]["stocks"][0], {"symbol": "ABC", "name": "ABC Limited", "prev_close": 10.0, "close": 11.0,
+                                                    "high": 11.5, "low": 9.8, "volume": 1000.0, "turnover_lakh": 1.1,
+                                                    "delivery_pct": 48.2})
+        self.assertEqual(len(f["holdings"]), 1)                                       # latest file per company only
+        self.assertEqual((f["holdings"][0]["as_on"], f["holdings"][0]["source"]), ("2026-09-30", "u2"))
+        self.assertNotIn("tries", f["holdings"][0])
+        self.assertNotIn("score", f["calendar"][0])
+        self.assertEqual([r["date"] for r in f["index_history"]], ["2026-11-17", "2026-11-18"])
+        self.assertEqual(export.check(f), [])
+        empty = export.build([], None, [], NOW)
+        self.assertEqual((empty["prices"], empty["holdings"], empty["calendar"]), (None, [], []))
+
     def test_check_catches_anything_that_is_not_scraped(self):
         self.assertEqual(export.check({"items": [{"tags": {}}], "x": {"scorecard": 1}}), ["scorecard", "tags"])
 

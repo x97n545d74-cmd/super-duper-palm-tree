@@ -693,7 +693,7 @@
     ]
   },
   "private_data": {
-    "_note": "Where scraped.json goes for the user's personal dashboard. Needs the repo secret PRIVATE_DATA_TOKEN (fine-grained, Contents read and write, this repository only). The dashboard reads it with a separate read-only token.",
+    "_note": "Where the scraped data goes for the user's personal dashboard: scraped.json (main radar, every 30 minutes) and live.json (live lane, every 3 minutes), pushed by private.py. Needs the repo secret PRIVATE_DATA_TOKEN (fine-grained, Contents read and write, the private repository only). The dashboard reads them with a separate read-only token.",
     "repo": "AvronMarket/avron-radar-private",
     "branch": "main",
     "test_branch": "test"

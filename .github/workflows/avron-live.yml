@@ -3,7 +3,8 @@ name: Avron Live
 # The website's live news lane. One run does a round every 3 minutes from 6 AM to midnight India time
 # (every 15 minutes overnight) for about 5.5 hours, then starts the next run, so it is always on.
 # Each round reads the news feeds, NSE's announcements and the X desk's posts (avron-radar/live.py, no
-# model, no cost) and publishes live.json to the avron-radar-live branch, where any website can read it.
+# model, no cost) and publishes live.json to the avron-radar-live branch, where any website can read it,
+# and, when the PRIVATE_DATA_TOKEN secret exists, to the private repository for the personal dashboard.
 # It also checks the main Avron Radar chain and restarts it if it has stopped, and the main chain does
 # the same for this one. The hourly timer is only a backup.
 # A run started by hand from another branch does the rounds asked for (default 1) and writes to
@@ -39,12 +40,15 @@ jobs:
         env:
           ROUNDS: ${{ inputs.rounds }}
           GH_TOKEN: ${{ github.token }}
+          PRIVATE_DATA_TOKEN: ${{ secrets.PRIVATE_DATA_TOKEN }}
         run: |
           git config user.name "avron-live"
           git config user.email "avron-live@users.noreply.github.com"
           if [ "$LIVE" = "true" ]; then BRANCH=avron-radar-live; MAX=${ROUNDS:-0}; else BRANCH=avron-radar-live-test; MAX=${ROUNDS:-1}; fi
           mkdir -p ../live-state
           if git fetch -q --depth 1 origin "$BRANCH" 2>/dev/null; then git show FETCH_HEAD:live.json > ../live-state/live.json || true; fi
+          PRIVATE_OK=""
+          if [ -n "$PRIVATE_DATA_TOKEN" ] && python3 avron-radar/private.py check; then PRIVATE_OK=1; fi   # the personal dashboard's copy
           end=$(( $(date +%s) + 19800 ))      # 5 hours 30 minutes
           round=0
           while [ "$(date +%s)" -lt "$end" ]; do
@@ -62,6 +66,7 @@ jobs:
               cp ../live-state/live.json ../live-pub/
               ( cd ../live-pub && git add -A && git commit -q -m "Live $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST" \
                 && git push -q --force origin "HEAD:$BRANCH" ) || echo "live push failed this round"
+              if [ -n "$PRIVATE_OK" ]; then python3 avron-radar/private.py push ../live-state/live.json || true; fi
             fi
 
             if [ "$LIVE" = "true" ] && [ $((round % 10)) -eq 0 ]; then      # watchdog: is the main radar chain alive?

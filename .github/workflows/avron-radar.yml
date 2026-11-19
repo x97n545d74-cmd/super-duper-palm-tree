@@ -94,16 +94,7 @@ jobs:
           fi
           PRIVATE_OK=""
           if [ -n "$PRIVATE_DATA_TOKEN" ] && [ -z "$QUESTION" ]; then      # check the private-data key once and say plainly what is wrong
-            PKEY=$(printf '%s' "$PRIVATE_DATA_TOKEN" | tr -d '[:space:]')
-            echo "::add-mask::$PKEY"
-            PREPO=$(python3 -c "import json;print(json.load(open('avron-radar/config.json'))['private_data']['repo'])")
-            code=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $PKEY" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$PREPO")
-            case "$code" in
-              200) PRIVATE_OK=1; echo "private data key: works and can see $PREPO" ;;
-              401) echo "::warning::Private data key refused by GitHub (wrong, expired or revoked; GitHub revokes any key committed to a public repository). Make a new key and save it only as the PRIVATE_DATA_TOKEN secret." ;;
-              403|404) echo "::warning::Private data key works but cannot see $PREPO. Edit the key: Repository access, Only select repositories, $PREPO." ;;
-              *) PRIVATE_OK=1; echo "::warning::Private data key check: GitHub answered $code; trying the push anyway" ;;
-            esac
+            if python3 avron-radar/private.py check; then PRIVATE_OK=1; fi
           fi
           round=0
           while [ "$round" -lt "$ROUNDS" ]; do
@@ -175,13 +166,7 @@ jobs:
               )
             fi
             if [ -n "$PRIVATE_OK" ] && [ -f avron-radar/scraped.json ]; then   # the private scraped-data file
-              PBRANCH=$(python3 -c "import json;d=json.load(open('avron-radar/config.json'))['private_data'];print(d['branch'] if '$LIVE'=='true' else d['test_branch'])")
-              rm -rf ../private && mkdir ../private && cp avron-radar/scraped.json ../private/
-              (
-                cd ../private && git init -q -b "$PBRANCH" && git add -A \
-                  && git -c user.name=avron-radar -c user.email=avron-radar@users.noreply.github.com commit -q -m "Scraped data $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M') IST" \
-                  && git push -q --force "https://x-access-token:${PKEY}@github.com/${PREPO}.git" "HEAD:${PBRANCH}"
-              ) || echo "::warning::Private data push failed this round. If the key check passed, the key needs Contents: Read and write."
+              python3 avron-radar/private.py push avron-radar/scraped.json || true
             fi
 
             if [ "$LIVE" = "true" ] && [ -z "$QUESTION" ]; then      # watchdog: is the live news lane alive?

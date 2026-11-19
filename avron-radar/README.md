@@ -58,6 +58,8 @@ Not collected: Instagram, Facebook, LinkedIn (login walls and terms that forbid 
 | `ask.py` | answers a question from what the radar holds |
 | `flows.py` | foreign-investor flows, derivatives positioning, the F&O ban list, the rupee |
 | `policy.py` | government policy notes by sector, companies linked on evidence, the election watch |
+| `export.py` | the scraped-data-only file for the personal dashboard |
+| `private.py` | copies the scraped data to the private repository |
 | `ANALYST.md` | how the analyst thinks: edit this to change its judgement |
 | `config.json` | sources, watchlist, daily limits |
 | `REPORT.md` | the audit and upgrade report |
@@ -74,7 +76,7 @@ Not collected: Instagram, Facebook, LinkedIn (login walls and terms that forbid 
 ```
 python3 avron-radar/radar.py run        # everything
 python3 avron-radar/radar.py collect    # or one step: collect, market, tag, analyse, build
-cd avron-radar && python3 -m unittest   # 114 tests, no network
+cd avron-radar && python3 -m unittest   # 125 tests, no network
 ```
 
 Starting the workflow by hand from a branch other than the default does one round, does not restart itself, and writes to `avron-radar-data-test` and `avron-radar-dashboard-test`, so live data is untouched.
@@ -119,14 +121,22 @@ Everything that reads sources uses Claude Haiku 5.5: labelling posts, triaging a
 
 ## Scraped data for the personal dashboard (private, key-only)
 
-`export.py` builds `scraped.json` every round with the scraped data only: posts and news (headline, link, source, time, a 300-character excerpt), exchange filings, the X desk's items, NSE's end-of-day summary, bulk and block deals, and foreign-investor flows. Nothing the radar or Claude produced (labels, reads, briefs, scores, screens, copied results, policy notes), no personal lists or settings, no run logs. `export.check` refuses a file that carries any of them.
+Everything the radar scrapes is copied to the private repository named in `config.json` (`private_data`), branch `main`, as soon as it is collected. Runs started from other branches use `test`. Two files, each replaced in place (the branch keeps no history):
 
-Save the writer key only as the Actions secret (Settings > Secrets and variables > Actions), never as a file in this repository: the repository is public, and GitHub revokes any key committed to a public repository. Each run checks the key first and puts a warning on the run page if GitHub refuses it, it cannot see the private repository, or it cannot write.
+| File | Updated | What it holds |
+|---|---|---|
+| `live.json` | every 3 minutes from 6 AM to midnight India time, every 15 minutes overnight (the live news lane) | the past 24 hours of headlines, one entry per story, newest first: headline, source, link, how many outlets carried it, NSE's one-line description for filings |
+| `scraped.json` | every 30 minutes (the main radar) | every post, news story, filing and X desk item from the past 48 hours (headline, link, source, time, 300-character excerpt); NSE's end-of-day summary, index valuations for the past 30 days, bulk and block deals; every stock's end-of-day prices (close, previous close, high, low, volume, turnover in rupees lakh, delivery percentage); the latest shareholding file per company (holder categories and named holders above 1%); board meetings and ex-dates for the next two weeks; foreign-investor flows and positions |
 
-When the repository secret `PRIVATE_DATA_TOKEN` exists, the workflow force-pushes `scraped.json` to the private repository named in `config.json` (`private_data`), branch `main` (runs from other branches use `test`). The dashboard reads it with a separate read-only token:
+Nothing the radar or Claude produced (labels, reads, briefs, scores, screens, copied results, policy notes), no personal lists or settings, no run logs. `export.check` refuses a `scraped.json` that carries any of them.
+
+`private.py` does the copying through GitHub's API: each push replaces only its own file, so the two chains never overwrite each other, and an unchanged file is not pushed. It needs the repository secret `PRIVATE_DATA_TOKEN` (fine-grained, the private repository only, Contents: Read and write). Save that key only as the Actions secret (Settings > Secrets and variables > Actions), never as a file in this repository: the repository is public, and GitHub revokes any key committed to a public repository. Each run checks the key first and puts a warning on the run page if GitHub refuses it, it cannot see the private repository, or a push fails.
+
+The dashboard reads the files with a separate read-only key:
 
 ```
+GET https://api.github.com/repos/AvronMarket/avron-radar-private/contents/live.json?ref=main
 GET https://api.github.com/repos/AvronMarket/avron-radar-private/contents/scraped.json?ref=main
-Authorization: Bearer <read-only token>
+Authorization: Bearer <read-only key>
 Accept: application/vnd.github.raw+json
 ```
