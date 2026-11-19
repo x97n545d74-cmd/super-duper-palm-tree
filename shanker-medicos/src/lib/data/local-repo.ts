@@ -1,8 +1,10 @@
 import "server-only";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import type {
+  Member,
+  MemberInput,
   BusinessSettings,
   Category,
   CategoryInput,
@@ -14,7 +16,8 @@ import type {
   Stats,
 } from "../types";
 import { brandsOf, queryProducts } from "./query";
-import { productKey, RepoError, type AdminRepo, type PublicRepo } from "./repo";
+import { memberCode, productKey, RepoError, type AdminRepo, type ClubRepo, type PublicRepo } from "./repo";
+import { norm } from "../text";
 import { seedCategories, seedProducts, seedSettings } from "./seed";
 import { slugify, uniqueSlug } from "../text";
 import { readImage } from "./images";
@@ -27,6 +30,7 @@ interface DB {
   categories: Category[];
   products: Product[];
   settings: BusinessSettings;
+  members?: Member[];
 }
 
 const DATA_DIR = path.resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.LOCAL_DATA_DIR || "data");
@@ -101,7 +105,9 @@ export const localAdmin: AdminRepo = {
       categories: db.categories.length,
       needsReview: db.products.filter((p) => p.needs_review).length,
       recent: db.products.slice().sort((a, b) => b.updated_at.localeCompare(a.updated_at)).slice(0, 6),
-      missingSettings: missingSettings(db.settings),
+      missingSettings: missingSettings({ ...seedSettings, ...db.settings }),
+      members: (db.members ?? []).length,
+      membersThisWeek: (db.members ?? []).filter((m) => Date.now() - Date.parse(m.created_at) < 7 * 86400_000).length,
     };
   },
   async searchProducts(q: ProductQuery) {
@@ -258,4 +264,43 @@ export const localAdmin: AdminRepo = {
     await fs.writeFile(path.join(UPLOAD_DIR, name), bytes);
     return `/api/media/${name}`;
   },
+  async listMembers({ q = "", page = 1, perPage = 50 }) {
+    const all = ((await load()).members ?? []).slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
+    const nq = norm(q);
+    const list = nq ? all.filter((m) => [m.name, m.phone, m.email, m.code].some((v) => norm(v).includes(nq))) : all;
+    const pageCount = Math.max(1, Math.ceil(list.length / perPage));
+    const p = Math.min(Math.max(1, page), pageCount);
+    return { items: list.slice((p - 1) * perPage, p * perPage), total: list.length, page: p, pageCount };
+  },
+  async allMembers() {
+    return ((await load()).members ?? []).slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  },
+  deleteMember(id) {
+    return mutate((db) => {
+      db.members = (db.members ?? []).filter((m) => m.id !== id);
+    });
+  },
 };
+
+export const localClub: ClubRepo = {
+  join(input: MemberInput) {
+    return mutate((db) => {
+      db.members ??= [];
+      const existing = db.members.find((m) => m.phone === input.phone);
+      if (existing) {
+        // Keep the original code; fill in an email/name given later; refresh consent.
+        if (input.email && !existing.email) existing.email = input.email;
+        if (input.name && !existing.name) existing.name = input.name;
+        existing.consent_marketing = input.consent_marketing;
+        existing.consent_text = input.consent_text;
+        return { code: existing.code, isNew: false };
+      }
+      const taken = new Set(db.members.map((m) => m.code));
+      let code = memberCode(randomBytes);
+      while (taken.has(code)) code = memberCode(randomBytes);
+      db.members.push({ ...input, id: randomUUID(), code, created_at: now() });
+      return { code, isNew: true };
+    });
+  },
+};
+

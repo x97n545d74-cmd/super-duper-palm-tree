@@ -5,7 +5,10 @@ import { normalizePhone, missingSettings } from "../../src/lib/settings";
 import { queryProducts, buildSuggestions, score, categoryScope } from "../../src/lib/data/query";
 import { seedCategories, seedProducts, seedSettings } from "../../src/lib/data/seed";
 import { slugify, safeQuery, uniqueSlug } from "../../src/lib/text";
-import { importRowSchema, productSchema, settingsSchema } from "../../src/lib/validation";
+import { importRowSchema, productSchema, settingsSchema, memberSchema } from "../../src/lib/validation";
+import { memberCode } from "../../src/lib/data/repo";
+import { randomBytes } from "node:crypto";
+import { COMPANIES, companiesByLetter } from "../../src/lib/companies";
 import { productKey } from "../../src/lib/data/repo";
 import { getDictionary, fmt } from "../../src/i18n";
 import en from "../../src/i18n/en";
@@ -53,8 +56,12 @@ test("normalizePhone handles common Indian formats", () => {
   assert.equal(normalizePhone("abc"), "");
 });
 
-test("missingSettings flags empty business fields (seed has none filled in)", () => {
-  assert.deepEqual(missingSettings(seedSettings), ["address", "phone", "whatsapp", "opening_hours", "maps_url"]);
+test("missingSettings flags only what the store has not supplied yet", () => {
+  assert.deepEqual(missingSettings(seedSettings), ["address", "phone", "opening_hours"]);
+});
+
+test("store WhatsApp 98155 52404 produces a valid wa.me link", () => {
+  assert.equal(waLink(seedSettings.whatsapp, "hi"), "https://wa.me/919815552404?text=hi");
 });
 
 /* ---------- Search ---------- */
@@ -148,7 +155,13 @@ test("productSchema rejects missing required fields and bad enums", () => {
 });
 
 test("settingsSchema validates phone, PIN, email and https links", () => {
-  const base = { business_name: "Shanker Medicos", city: "Batala", state: "Punjab", phone: "", whatsapp: "" };
+  const base = { business_name: "Shanker Medicos", city: "Batala", state: "Punjab", phone: "", whatsapp: "", offer_percent: "12", offer_min_amount: "1000", offer_code: "shanker12", offer_enabled: "on" };
+  const ok = settingsSchema.parse(base);
+  assert.equal(ok.offer_code, "SHANKER12", "offer code upper-cased");
+  assert.equal(ok.offer_enabled, true);
+  assert.equal(ok.club_enabled, false, "unticked checkbox = false");
+  assert.equal(settingsSchema.safeParse({ ...base, offer_percent: "80" }).success, false);
+  assert.equal(settingsSchema.safeParse({ ...base, offer_code: "12% off!" }).success, false);
   assert.equal(settingsSchema.safeParse({ ...base, postal_code: "143505" }).success, true);
   assert.equal(settingsSchema.safeParse({ ...base, postal_code: "12345" }).success, false);
   assert.equal(settingsSchema.safeParse({ ...base, whatsapp: "call me" }).success, false);
@@ -204,4 +217,49 @@ test("every category has names in all three languages", () => {
 test("seed catalogue is honest: nothing claims stock, everything flagged for review", () => {
   assert.ok(seedProducts.every((p) => p.availability === "unconfirmed" && p.needs_review));
   assert.ok(!seedProducts.some((p) => p.rx_class === "rx"), "no prescription status asserted before pharmacist review");
+});
+
+/* ---------- Shanker Club ---------- */
+
+test("memberSchema normalises Indian mobile numbers and requires consent", () => {
+  const base = { consent_marketing: true, locale: "pa" };
+  for (const raw of ["98155 52404", "+91 98155-52404", "09815552404", "919815552404"]) {
+    assert.equal(memberSchema.parse({ ...base, phone: raw }).phone, "9815552404", raw);
+  }
+  assert.equal(memberSchema.safeParse({ ...base, phone: "12345" }).success, false);
+  assert.equal(memberSchema.safeParse({ ...base, phone: "5815552404" }).success, false, "Indian mobiles start 6-9");
+  assert.equal(memberSchema.safeParse({ phone: "9815552404", consent_marketing: false }).success, false, "consent must be ticked");
+  assert.equal(memberSchema.safeParse({ ...base, phone: "9815552404", email: "not-an-email" }).success, false);
+  assert.equal(memberSchema.parse({ ...base, phone: "9815552404", email: "A@Example.COM" }).email, "a@example.com");
+});
+
+test("member codes look like SM-XXXXX without ambiguous characters", () => {
+  const codes = new Set(Array.from({ length: 500 }, () => memberCode(randomBytes)));
+  for (const c of codes) assert.match(c, /^SM-[A-HJ-NP-Z2-9]{5}$/);
+  assert.ok(codes.size > 490, "codes are effectively unique");
+});
+
+test("offer defaults: 12% above ₹1,000 with code SHANKER12", () => {
+  assert.equal(seedSettings.offer_percent, 12);
+  assert.equal(seedSettings.offer_min_amount, 1000);
+  assert.equal(seedSettings.offer_code, "SHANKER12");
+});
+
+test("offer, club and FAQ copy fill every placeholder in all languages", () => {
+  for (const l of ["en", "hi", "pa"]) {
+    const m = getDictionary(l).mkt;
+    const v = { percent: 12, min: "1,000", code: "SHANKER12", extra: 5 };
+    const all = [m.offer.title, m.offer.body, m.offer.announce, m.offer.waMessage, m.club.bodyPercent, ...m.offer.terms, ...m.faq.items.flatMap((i) => [i.q, i.a])].map((x) => fmt(x, v));
+    for (const x of all) assert.ok(!/\{\w+\}/.test(x), `${l}: unfilled placeholder in "${x}"`);
+    assert.ok(fmt(m.offer.title, v).includes("12%") && fmt(m.offer.title, v).includes("1,000"), l);
+    assert.ok(fmt(m.club.waMessage, { code: "SM-ABCDE" }).includes("SM-ABCDE"), l);
+  }
+});
+
+test("companies list: no duplicates, grouped A–Z", () => {
+  const names = COMPANIES.map((c) => c.name.toLowerCase());
+  assert.equal(new Set(names).size, names.length);
+  assert.ok(COMPANIES.length >= 60);
+  const letters = companiesByLetter().map(([l]) => l);
+  assert.deepEqual(letters, [...letters].sort());
 });

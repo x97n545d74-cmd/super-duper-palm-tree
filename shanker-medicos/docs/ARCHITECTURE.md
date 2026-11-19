@@ -51,3 +51,11 @@ supabase/seed.sql          starter catalogue (generated)
 Tokens live only in `src/app/globals.css` (`@theme`): colours (forest `#123F2B`, emerald `#087A4B`, ivory `#FAFBF8`, mint `#EAF3EC`, ink `#1C2721`/`#6D7971`, line `#E5EBE6`), a fluid type scale (`text-display`, `text-h1`–`h3`, `eyebrow`), radii (control 10, card 14, panel 22, chip), shadows (hair, lift, float), spacing (`gutter`, `section`) and breakpoints. Components use these utilities only. Indic scripts get extra line height and no letter-spacing.
 
 The logo mark is a capsule split by an S-curve (pharmacy + the S of Shanker). `public/brand/logo.svg` has the wordmark converted to outlines, so it renders the same everywhere.
+
+## Marketing layer (added 20 Nov 2026)
+
+- **Offer and Shanker Club settings** live in `business_settings` (migration `…0002_marketing.sql`) and are edited in Admin → Business details.
+- **Members** (`members` table): the public can only add themselves through the `join_club()` SECURITY DEFINER function (validated phone, consent text required, same phone → same code). Only admins can read, export or delete. The server action `src/app/[locale]/actions.ts` adds a honeypot and rate limit, stores the exact consent wording with a timestamp, and fires the webhook after the response (`after()`), so a slow automation never delays the visitor.
+- **Automation**: `src/lib/automation.ts` POSTs signed JSON (`X-Shanker-Signature`, HMAC-SHA256) to `AUTOMATION_WEBHOOK_URL`.
+- **Tracking**: `src/components/marketing/ClickTracker.tsx` records clicks on WhatsApp/phone/Maps links and `data-track` elements, plus first-touch UTM attribution in `localStorage`. `Analytics.tsx` shows the cookie banner and loads GTM/GA4/Meta Pixel only after consent. Event names are listed in docs/MARKETING.md.
+- **Forms keep their values on errors**: React 19 resets `<form action>` after every submission, so all forms submit through `keepValues()` (`src/lib/use-keep-form.ts`) instead.

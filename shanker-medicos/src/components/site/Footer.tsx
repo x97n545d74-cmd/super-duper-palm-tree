@@ -22,6 +22,8 @@ export function Footer({ ctx }: { ctx: SiteContext }) {
           <FLink href={`/${locale}`}>{t.nav.home}</FLink>
           <FLink href={`/${locale}/products`}>{t.nav.products}</FLink>
           <FLink href={`/${locale}/categories`}>{t.nav.categories}</FLink>
+          <FLink href={`/${locale}/companies`}>{t.mkt.navCompanies}</FLink>
+          <FLink href={`/${locale}/offers`}>{t.mkt.navOffers}</FLink>
           <FLink href={`/${locale}/about`}>{t.nav.about}</FLink>
           <FLink href={`/${locale}/contact`}>{t.nav.contact}</FLink>
         </FooterCol>

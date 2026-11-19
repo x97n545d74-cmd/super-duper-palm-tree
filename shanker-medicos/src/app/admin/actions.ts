@@ -210,3 +210,13 @@ export async function importAction(rows: unknown, mode: "skip" | "update"): Prom
     return { error: s?.message ?? "Import failed." };
   }
 }
+
+/* ---------------- members ---------------- */
+
+export async function deleteMemberAction(fd: FormData) {
+  await assertAdmin();
+  await adminRepo.deleteMember(z.string().uuid().parse(str(fd, "id")));
+  revalidatePath("/admin/members");
+  const back = str(fd, "back");
+  redirect(back.startsWith("/admin/members") ? back : "/admin/members");
+}

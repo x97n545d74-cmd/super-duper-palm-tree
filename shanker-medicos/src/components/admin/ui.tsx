@@ -2,8 +2,9 @@
 
 import { useFormStatus } from "react-dom";
 
-export function SubmitButton({ children, pendingText = "Saving…", className = "btn btn-primary", ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & { pendingText?: string }) {
-  const { pending } = useFormStatus();
+export function SubmitButton({ children, pendingText = "Saving…", className = "btn btn-primary", pending: pendingProp, ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & { pendingText?: string; pending?: boolean }) {
+  const status = useFormStatus();
+  const pending = pendingProp ?? status.pending;
   return (
     <button type="submit" disabled={pending} aria-disabled={pending} className={`${className} disabled:opacity-60`} {...rest}>
       {pending ? pendingText : children}

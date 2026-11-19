@@ -1,4 +1,6 @@
 import type {
+  Member,
+  MemberInput,
   BusinessSettings,
   Category,
   CategoryInput,
@@ -42,6 +44,21 @@ export interface AdminRepo {
   duplicateKeys(): Promise<Map<string, string>>;
   importProducts(rows: ImportRow[], mode: "skip" | "update"): Promise<ImportResult>;
   uploadImage(file: File): Promise<string>;
+  listMembers(q: { q?: string; page?: number; perPage?: number }): Promise<MemberPage>;
+  allMembers(): Promise<Member[]>;
+  deleteMember(id: string): Promise<void>;
+}
+
+/** Public sign-up for Shanker Club. Signing up again with the same phone returns the same code. */
+export interface ClubRepo {
+  join(input: MemberInput): Promise<{ code: string; isNew: boolean }>;
+}
+
+export interface MemberPage {
+  items: Member[];
+  total: number;
+  page: number;
+  pageCount: number;
 }
 
 export class RepoError extends Error {
@@ -53,4 +70,12 @@ export class RepoError extends Error {
 /** Duplicate key: same name + brand + pack size (case and spacing insensitive). */
 export function productKey(p: { name: string; brand: string; pack_size: string }) {
   return [p.name, p.brand, p.pack_size].map((s) => s.toLowerCase().replace(/\s+/g, " ").trim()).join("|");
+}
+
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O, 1/I
+
+/** Member code shown at the counter, e.g. SM-7KQ2P. */
+export function memberCode(random: (n: number) => Uint8Array): string {
+  const bytes = random(5);
+  return "SM-" + [...bytes].map((b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join("");
 }

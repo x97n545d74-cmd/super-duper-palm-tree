@@ -3,6 +3,8 @@
 // .next would otherwise carry state from earlier runs), drives Chromium with
 // Playwright, and writes tests/e2e/last-run.json. Run: npm run test:e2e
 import { spawn, execSync } from "node:child_process";
+import { createServer } from "node:http";
+import { createHmac } from "node:crypto";
 import { mkdtempSync, writeFileSync, readFileSync, readdirSync, statSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -14,6 +16,18 @@ const BASE = `http://localhost:${PORT}`;
 const DATA = mkdtempSync(path.join(tmpdir(), "shanker-e2e-"));
 const ADMIN = { email: "staff@example.com", password: "e2e-Only-Password-9" };
 const SECRET = "e2e-session-secret-0123456789-abcdefghijklmnopqrstuvwxyz";
+const HOOK_SECRET = "e2e-webhook-secret-abcdefghijklmnop";
+const HOOK_PORT = 3199;
+const GA4 = "G-E2ETEST01";
+const hooks = []; // received webhook calls
+const hookServer = createServer((req, res) => {
+  let body = "";
+  req.on("data", (c) => (body += c));
+  req.on("end", () => {
+    hooks.push({ body, sig: req.headers["x-shanker-signature"] });
+    res.end("ok");
+  });
+}).listen(HOOK_PORT);
 const WA = "+91 90000 12345"; // test number, not the store's
 const results = [];
 
@@ -51,6 +65,9 @@ async function startServer() {
       ADMIN_DEV_PASSWORD: ADMIN.password,
       SESSION_SECRET: SECRET,
       NEXT_PUBLIC_SITE_URL: BASE,
+      NEXT_PUBLIC_GA4_ID: GA4,
+      AUTOMATION_WEBHOOK_URL: `http://localhost:${HOOK_PORT}/hook`,
+      AUTOMATION_WEBHOOK_SECRET: HOOK_SECRET,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -90,7 +107,7 @@ async function eventually(page, url, pred, tries = 4) {
 
 console.log("building (fresh .next)…");
 rmSync(path.join(ROOT, ".next"), { recursive: true, force: true });
-execSync("npx next build", { cwd: ROOT, stdio: "ignore", env: { ...process.env, LOCAL_DATA_DIR: DATA, NEXT_PUBLIC_SITE_URL: BASE } });
+execSync("npx next build", { cwd: ROOT, stdio: "ignore", env: { ...process.env, LOCAL_DATA_DIR: DATA, NEXT_PUBLIC_SITE_URL: BASE, NEXT_PUBLIC_GA4_ID: GA4 } });
 const server = await startServer();
 const stopServer = () => {
   try {
@@ -101,6 +118,14 @@ process.on("exit", stopServer);
 process.on("SIGINT", () => process.exit(130));
 process.on("SIGTERM", () => process.exit(143));
 const browser = await chromium.launch();
+// Every test browser starts with the cookie choice made (the banner is tested separately).
+const _newContext = browser.newContext.bind(browser);
+browser.newContext = async (opts = {}) => {
+  const { keepBanner, ...rest } = opts;
+  const c = await _newContext(rest);
+  if (!keepBanner) await c.addInitScript(() => { try { localStorage.setItem("sm_consent", "denied"); } catch {} });
+  return c;
+};
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await ctx.newPage();
 const consoleErrors = [];
@@ -108,7 +133,7 @@ page.on("pageerror", (e) => consoleErrors.push(String(e)));
 page.on("console", (m) => m.type() === "error" && !/favicon|Failed to load resource: the server responded with a status of 404/.test(m.text()) && consoleErrors.push(m.text()));
 
 const LOCALES = ["en", "hi", "pa"];
-const PAGES = ["", "/products", "/categories", "/categories/medicines", "/categories/baby-care", "/products/dolo-650", "/about", "/contact", "/privacy", "/terms"];
+const PAGES = ["", "/offers", "/companies", "/products", "/categories", "/categories/medicines", "/categories/baby-care", "/products/dolo-650", "/about", "/contact", "/privacy", "/terms"];
 
 /* ================= Routing + i18n ================= */
 
@@ -117,7 +142,7 @@ await step("/ redirects to /en (default English)", async () => {
   assert(r.status === 307 && r.headers.get("location").endsWith("/en"), `${r.status} ${r.headers.get("location")}`);
 });
 
-await step("all required routes render in all three languages (30 pages)", async () => {
+await step("all required routes render in all three languages", async () => {
   const bad = [];
   for (const l of LOCALES) for (const p of PAGES) {
     const r = await get(`/${l}${p}`);
@@ -232,9 +257,134 @@ await step("category tile on the homepage opens a working filtered page", async 
   assert((await page.locator("article").count()) === 3);
 });
 
-await step("no WhatsApp links while the number is not configured (no broken wa.me)", async () => {
+await step("store WhatsApp 98155 52404 is used for product enquiries", async () => {
   await page.goto(`${BASE}/en/products/dolo-650`);
-  assert((await page.locator('a[href*="wa.me"]').count()) === 0, "wa.me present");
+  const href = await page.locator('main a[data-wa="1"]').first().getAttribute("href");
+  const url = new URL(href);
+  assert(url.pathname === "/919815552404", url.pathname);
+  assert(url.searchParams.get("text").includes("Product: Dolo 650"), "message");
+});
+
+/* ================= Marketing ================= */
+
+await step("prescription on WhatsApp: photo and medicine-list buttons with prefilled text", async () => {
+  await page.goto(`${BASE}/en`);
+  const links = await page.locator('section[aria-labelledby="rx-h"] a[href*="wa.me"]').evaluateAll((as) => as.map((a) => a.href));
+  assert(links.length === 2, `${links.length} links`);
+  const texts = links.map((h) => new URL(h).searchParams.get("text"));
+  assert(texts[0].includes("prescription") && texts[1].includes("1. "), texts.join(" | "));
+  assert(links.every((h) => h.includes("/919815552404")), "number");
+});
+
+await step("offer: announcement bar, tap-to-reveal code, WhatsApp with code", async () => {
+  await page.goto(`${BASE}/en`);
+  const bar = await page.locator('a[href="/en/offers"]').first().textContent();
+  assert(bar.includes("12% off bills above ₹1,000"), bar);
+  assert((await page.locator('[data-testid="offer-code"]').count()) === 0, "code visible before tap");
+  await page.click("button:has-text('Tap to reveal your code')");
+  assert((await page.textContent('[data-testid="offer-code"]')).trim() === "SHANKER12", "code");
+  const wa = await page.locator('#offer a[href*="wa.me"]').first().getAttribute("href");
+  assert(new URL(wa).searchParams.get("text").includes("SHANKER12"), "code in WhatsApp message");
+});
+
+await step("offer page in Punjabi: terms, FAQ schema, Offer schema", async () => {
+  await page.goto(`${BASE}/pa/offers`);
+  assert(/12%/.test(await page.textContent("h1")) && /[\u0A00-\u0A7F]/.test(await page.textContent("h1")), "pa headline");
+  const types = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((b) => JSON.parse(b)["@type"]);
+  assert(types.includes("FAQPage") && types.includes("Offer"), types.join(","));
+});
+
+let memberCodeSeen = "";
+await step("Shanker Club: validation (bad mobile, no consent)", async () => {
+  await page.goto(`${BASE}/en?utm_source=facebook&utm_medium=paid&utm_campaign=e2e_launch`);
+  await page.evaluate(() => localStorage.removeItem("sm_attr"));
+  await page.goto(`${BASE}/en?utm_source=facebook&utm_medium=paid&utm_campaign=e2e_launch`);
+  const club = page.locator("#club");
+  await club.locator('input[name="phone"]').fill("12345");
+  await club.locator('input[type="checkbox"]').check();
+  await club.locator("button[type=submit]").click();
+  await club.locator("text=10-digit Indian mobile").waitFor();
+  await club.locator('input[name="phone"]').fill("98140 00001");
+  await club.locator('input[type="checkbox"]').uncheck();
+  await club.locator("button[type=submit]").click();
+  await club.locator("text=Please tick the box").waitFor();
+  assert((await club.locator('input[name="phone"]').inputValue()) === "98140 00001", "mobile number wiped after error");
+});
+
+await step("Shanker Club: sign-up gives a member code and a WhatsApp save link", async () => {
+  const club = page.locator("#club");
+  await club.locator('input[name="name"]').fill("E2E Tester");
+  await club.locator('input[name="email"]').fill("Tester@Example.com");
+  await club.locator('input[type="checkbox"]').check();
+  await club.locator("button[type=submit]").click();
+  await page.waitForSelector('[data-testid="member-code"]');
+  memberCodeSeen = (await page.textContent('[data-testid="member-code"]')).trim();
+  assert(/^SM-[A-Z0-9]{5}$/.test(memberCodeSeen), memberCodeSeen);
+  const wa = await page.locator('#club a[href*="wa.me"]').getAttribute("href");
+  assert(new URL(wa).searchParams.get("text").includes(memberCodeSeen), "code in WhatsApp text");
+  return memberCodeSeen;
+});
+
+await step("Shanker Club: joining again with the same number returns the same code", async () => {
+  await page.goto(`${BASE}/hi`);
+  const club = page.locator("#club");
+  await club.locator('input[name="phone"]').fill("+91 9814000001");
+  await club.locator('input[type="checkbox"]').check();
+  await club.locator("button[type=submit]").click();
+  await page.waitForSelector('[data-testid="member-code"]');
+  assert((await page.textContent('[data-testid="member-code"]')).trim() === memberCodeSeen, "different code");
+  assert((await page.textContent("#club")).includes("फिर से स्वागत"), "welcome-back text in Hindi");
+});
+
+await step("automation webhook receives the sign-up, signed with HMAC", async () => {
+  for (let i = 0; i < 20 && hooks.length < 2; i++) await new Promise((r) => setTimeout(r, 250));
+  assert(hooks.length >= 1, "no webhook received");
+  const h = hooks[0];
+  const expected = "sha256=" + createHmac("sha256", HOOK_SECRET).update(h.body).digest("hex");
+  assert(h.sig === expected, "bad signature");
+  const payload = JSON.parse(h.body);
+  assert(payload.event === "member.joined" && payload.data.phone === "+919814000001" && payload.data.code === memberCodeSeen, h.body);
+  assert(payload.data.utm_source === "facebook" && payload.data.utm_campaign === "e2e_launch", "UTM attribution missing");
+  assert(hooks.some((x) => JSON.parse(x.body).event === "member.rejoined"), "rejoin event");
+});
+
+await step("consent banner: analytics only load after Accept", async () => {
+  const c = await browser.newContext({ keepBanner: true });
+  const p = await c.newPage();
+  const requested = [];
+  p.on("request", (r) => /googletagmanager\.com/.test(r.url()) && requested.push(r.url()));
+  await p.route(/googletagmanager\.com/, (r) => r.fulfill({ status: 200, contentType: "text/javascript", body: "" }));
+  await p.goto(`${BASE}/en`);
+  await p.waitForSelector('[role="dialog"][aria-label="Cookies"]');
+  await p.waitForTimeout(500);
+  assert(requested.length === 0, "loaded before consent");
+  await p.click("button:has-text('Accept')");
+  await p.waitForTimeout(1200);
+  assert(requested.some((u) => u.includes(GA4)), "GA4 not loaded after consent");
+  await p.reload();
+  assert((await p.locator('[aria-label="Cookies"]').count()) === 0, "banner shown again after choosing");
+  await c.close();
+});
+
+await step("conversion events reach the dataLayer (WhatsApp click, search, sign-up)", async () => {
+  const c = await browser.newContext();
+  const p = await c.newPage();
+  await p.addInitScript(() => localStorage.setItem("sm_consent", "denied"));
+  await p.goto(`${BASE}/en/products?q=dolo`);
+  await p.locator('article a[href*="wa.me"]').first().evaluate((a) => a.addEventListener("click", (e) => e.preventDefault()));
+  await p.locator('article a[href*="wa.me"]').first().click();
+  const events = await p.evaluate(() => (window.dataLayer || []).map((e) => e.event));
+  await c.close();
+  assert(events.includes("search") && events.includes("whatsapp_click"), events.join(","));
+});
+
+await step("companies page lists the ethical brands A–Z and links to the catalogue", async () => {
+  await page.goto(`${BASE}/en/companies`);
+  const n = await page.locator('section[id^="letter-"] li').count();
+  assert(n >= 60, `${n} companies`);
+  await page.click('a:has-text("Micro Labs")');
+  await page.waitForURL(/products\?q=Micro/);
+  assert((await page.locator("article h3").allTextContents()).includes("Dolo 650"), "Micro Labs → Dolo 650");
 });
 
 /* ================= Admin ================= */
@@ -268,10 +418,12 @@ await step("session cookie is httpOnly, scoped to /admin and signed", async () =
 
 await step("business settings: validation errors are shown", async () => {
   await page.goto(`${BASE}/admin/settings`);
+  await page.fill("#address", "Typed before the error");
   await page.fill("#postal_code", "12");
   await page.click("button[type=submit]");
   await page.waitForSelector("p[role=alert]");
   assert((await page.textContent("main")).includes("6-digit PIN"), "PIN error");
+  assert((await page.inputValue("#address")) === "Typed before the error", "form was wiped after a validation error");
 });
 
 await step("business settings save and appear on the website", async () => {
@@ -466,6 +618,36 @@ await step("server actions refuse unauthenticated calls", async () => {
   await anon.close();
 });
 
+await step("admin: club members list shows attribution; CSV export; delete", async () => {
+  await page.goto(`${BASE}/admin`);
+  assert((await page.textContent("main")).includes("Shanker Club members"), "overview stat");
+  await page.goto(`${BASE}/admin/members?q=${memberCodeSeen}`);
+  const row = await page.locator("tbody tr").first().textContent();
+  assert(row.includes("9814000001") && row.includes("facebook / paid / e2e_launch") && row.includes("tester@example.com"), row);
+  const dl = page.waitForEvent("download");
+  await page.click("a:has-text('Download CSV')");
+  const csv = readFileSync(await (await dl).path(), "utf8");
+  assert(csv.includes("+919814000001") && csv.includes(memberCodeSeen) && csv.includes("consent_text"), "csv content");
+  page.once("dialog", (d) => d.accept());
+  await page.click("tbody button:has-text('Delete')");
+  await page.waitForSelector("text=No members match");
+  const anon = await fetch(`${BASE}/admin/members-export`);
+  assert(anon.status === 401, `export without login: ${anon.status}`);
+});
+
+await step("admin: change the offer to 15% and see it on the site", async () => {
+  await page.goto(`${BASE}/admin/settings`);
+  await page.fill("#offer_percent", "15");
+  await page.click("button[type=submit]");
+  await page.waitForSelector("p[role=status]");
+  const ok = await eventually(page, `${BASE}/en/offers`, async () => (await page.textContent("h1")).includes("15%"));
+  assert(ok, "15% not shown");
+  await page.goto(`${BASE}/admin/settings`);
+  await page.fill("#offer_percent", "12");
+  await page.click("button[type=submit]");
+  await page.waitForSelector("p[role=status]");
+});
+
 await step("logout", async () => {
   await page.goto(`${BASE}/admin`);
   await page.locator("aside form button:has-text('Sign out'):visible").click();
@@ -513,7 +695,7 @@ await step("SEO: sitemap.xml, robots.txt, filtered pages noindex", async () => {
 });
 
 await step("all images have alt text; one h1 per page", async () => {
-  for (const p of ["/en", "/en/products", "/en/products/dolo-650", "/hi/contact"]) {
+  for (const p of ["/en", "/en/products", "/en/products/dolo-650", "/hi/contact", "/en/offers", "/pa/companies"]) {
     await page.goto(BASE + p);
     const noAlt = await page.locator("img:not([alt])").count();
     const h1 = await page.locator("h1").count();
@@ -559,7 +741,7 @@ await step("no secrets in client JavaScript", async () => {
   const walk = (d) => readdirSync(d).forEach((f) => (statSync(path.join(d, f)).isDirectory() ? walk(path.join(d, f)) : files.push(path.join(d, f))));
   walk(dir);
   const env = readFileSync(path.join(ROOT, ".env.local"), "utf8").match(/^(SESSION_SECRET|ADMIN_DEV_PASSWORD)=(.+)$/gm) || [];
-  const needles = [SECRET, ADMIN.password, ...env.map((l) => l.split("=")[1])].filter((s) => s.length > 6);
+  const needles = [SECRET, HOOK_SECRET, ADMIN.password, ...env.map((l) => l.split("=")[1])].filter((s) => s.length > 6);
   const leaks = files.filter((f) => /\.(js|css|html|json)$/.test(f) && needles.some((n) => readFileSync(f, "utf8").includes(n)));
   assert(!leaks.length, leaks.join(","));
   return `${files.length} static files scanned`;
@@ -632,6 +814,7 @@ await step("no JavaScript errors in the browser console", async () => {
 });
 
 await browser.close();
+hookServer.close();
 stopServer();
 rmSync(DATA, { recursive: true, force: true });
 

@@ -2,6 +2,8 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
+  Member,
+  MemberInput,
   BusinessSettings,
   Category,
   CategoryInput,
@@ -15,7 +17,7 @@ import type {
 } from "../types";
 import { publicClient, sessionClient } from "../supabase/clients";
 import { categoryScope, DEFAULT_PER_PAGE, queryProducts } from "./query";
-import { productKey, RepoError, type AdminRepo, type PublicRepo } from "./repo";
+import { productKey, RepoError, type AdminRepo, type ClubRepo, type PublicRepo } from "./repo";
 import { safeQuery, slugify, uniqueSlug } from "../text";
 import { readImage } from "./images";
 import { seedSettings } from "./seed";
@@ -122,6 +124,9 @@ export const supabaseAdmin: AdminRepo = {
       categories: cats.count ?? 0,
       recent: check(recent) as Product[],
       missingSettings: missingSettings(s),
+      members: (await sb.from("members").select("id", { count: "exact", head: true })).count ?? 0,
+      membersThisWeek:
+        (await sb.from("members").select("id", { count: "exact", head: true }).gte("created_at", new Date(Date.now() - 7 * 86400_000).toISOString())).count ?? 0,
     };
   },
   async searchProducts(q) {
@@ -257,4 +262,44 @@ export const supabaseAdmin: AdminRepo = {
     if (up.error) throw new RepoError(`Image upload failed: ${up.error.message}`, "internal");
     return sb.storage.from(BUCKET).getPublicUrl(key).data.publicUrl;
   },
+  async listMembers({ q = "", page = 1, perPage = 50 }) {
+    const sb = await sessionClient();
+    let req = sb.from("members").select("*", { count: "exact" }).order("created_at", { ascending: false });
+    const t = safeQuery(q);
+    if (t) req = req.or(`name.ilike.%${t}%,phone.ilike.%${t}%,email.ilike.%${t}%,code.ilike.%${t}%`);
+    const p = Math.max(1, page);
+    const res = await req.range((p - 1) * perPage, p * perPage - 1);
+    const items = check(res) as Member[];
+    const total = res.count ?? items.length;
+    return { items, total, page: p, pageCount: Math.max(1, Math.ceil(total / perPage)) };
+  },
+  async allMembers() {
+    const sb = await sessionClient();
+    return check(await sb.from("members").select("*").order("created_at", { ascending: false }).limit(50000)) as Member[];
+  },
+  async deleteMember(id) {
+    const sb = await sessionClient();
+    check(await sb.from("members").delete().eq("id", id));
+  },
 };
+
+/** Sign-ups go through a SECURITY DEFINER function: the public can add themselves but never read the table. */
+export const supabaseClub: ClubRepo = {
+  async join(input: MemberInput) {
+    const res = await publicClient().rpc("join_club", {
+      p_name: input.name,
+      p_phone: input.phone,
+      p_email: input.email,
+      p_locale: input.locale,
+      p_consent_text: input.consent_text,
+      p_source: input.source,
+      p_utm_source: input.utm_source,
+      p_utm_medium: input.utm_medium,
+      p_utm_campaign: input.utm_campaign,
+    });
+    const row = (check(res) as { code: string; is_new: boolean }[])[0];
+    if (!row) throw new RepoError("Sign-up failed. Please try again.");
+    return { code: row.code, isNew: row.is_new };
+  },
+};
+

@@ -139,7 +139,7 @@ export const seedProducts: Product[] = PRODUCTS.map(
   }),
 );
 
-/** Only facts we know. Everything else is left empty for the store to fill in. */
+/** Facts supplied by the store (WhatsApp, Maps link, offer). Everything else is left empty for the store to fill in. */
 export const seedSettings: BusinessSettings = {
   business_name: "Shanker Medicos",
   tagline: "Your Health. Our Priority.",
@@ -148,11 +148,17 @@ export const seedSettings: BusinessSettings = {
   state: "Punjab",
   postal_code: "",
   phone: "",
-  whatsapp: "",
+  whatsapp: "+91 98155 52404",
   email: "",
   opening_hours: "",
-  maps_url: "",
+  maps_url: "https://maps.app.goo.gl/jgHwJrpiNSSzED4q9",
   instagram_url: "",
   facebook_url: "",
+  offer_enabled: true,
+  offer_percent: 12,
+  offer_min_amount: 1000,
+  offer_code: "SHANKER12",
+  club_enabled: true,
+  club_extra_percent: 0,
   updated_at: T,
 };

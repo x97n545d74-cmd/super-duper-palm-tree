@@ -1,6 +1,6 @@
 # Testing report
 
-Date: 19 November 2026 · Build: Next.js 16.4.6 production build · Data mode: development (local store). Supabase was **not** available (no credentials were provided), so the Supabase code path was verified at the database level only (see §3).
+Date: 19 November 2026, updated 20 November 2026 (marketing release) · Build: Next.js 16.4.6 production build · Data mode: development (local store). Supabase was **not** available (no credentials were provided), so the Supabase code path was verified at the database level only (see §3).
 
 ## Summary
 
@@ -8,17 +8,30 @@ Date: 19 November 2026 · Build: Next.js 16.4.6 production build · Data mode: d
 |---|---|---|
 | Lint | `npm run lint` | clean |
 | Types | `npm run typecheck` | clean |
-| Unit tests | `npm run test:unit` | **27 / 27 passed** |
-| Database (migration + RLS) | `npm run db:verify` | **24 / 24 checks passed** |
-| End-to-end, real browsers | `npm run test:e2e` | **52 / 52 passed** |
+| Unit tests | `npm run test:unit` | **33 / 33 passed** |
+| Database (migration + RLS) | `npm run db:verify` | **38 / 38 checks passed** |
+| End-to-end, real browsers | `npm run test:e2e` | **64 / 64 passed** |
 | Lighthouse (local, indicative) | see §5 | Accessibility, Best Practices, SEO: 100 on all pages tested; Performance 100 desktop, 89–93 mobile |
 
 Raw e2e results: `tests/e2e/last-run.json`.
 
-## 1. Unit tests (27)
+## 0. Marketing release (20 Nov 2026)
+
+New and changed, all covered by the suites above:
+- **WhatsApp +91 98155 52404** used for every enquiry link; prescription-photo and medicine-list buttons open WhatsApp with prefilled text (e2e).
+- **Offer**: announcement bar, tap-to-reveal code `SHANKER12`, code included in the WhatsApp message, `/offers` page in Punjabi with Offer + FAQPage structured data, admin change to 15% shows on the site (e2e).
+- **Shanker Club**: invalid mobile and missing consent rejected **without wiping what was typed**; sign-up returns an `SM-XXXXX` code and a WhatsApp link with the code; joining again with the same number (in another language) returns the same code (e2e). Member codes, phone normalisation, consent and email rules (unit). Database: anon can join only through `join_club()`, cannot read or insert members directly; non-admins see nothing; admins read, export and delete; invalid phone/consent rejected (DB).
+- **Automation**: the webhook receives `member.joined` and `member.rejoined` with a valid HMAC signature and the UTM attribution from the landing URL (e2e).
+- **Admin**: Club members list with attribution, CSV export (admins only; 401 without login), delete (e2e).
+- **Tracking**: GA4 loads only after Accept on the cookie banner, the banner doesn't return once answered, and `search` / `whatsapp_click` events reach the dataLayer (e2e).
+- **Companies page**: 66 companies A–Z, each linking to a working catalogue search (e2e, unit).
+
+Bugs found and fixed in this round: React 19 cleared every form after a validation error (club form and all admin forms); a client-side link to the CSV download made the next admin form post to the wrong URL; the decorative "12%" watermark was flagged for contrast.
+
+## 1. Unit tests
 WhatsApp links (number normalisation, URL encoding, the exact message template from the brief, Hindi/Punjabi messages keep brand names), search (case-insensitive, product/brand/generic-name, multi-word, ranking, category filter including sub-categories, brand filter, A–Z/Z–A, pagination and page clamping, unpublished items never returned), suggestions, slugs, PostgREST-safe queries, duplicate keys, zod validation of products/settings/CSV rows, dictionary completeness (every English key exists in Hindi and Punjabi, correct scripts), category names in three languages, and the seed catalogue's honesty (no stock or prescription claims).
 
-## 2. End-to-end tests (52)
+## 2. End-to-end tests (64)
 Run against a fresh production build with a throwaway data folder, in headless Chromium.
 
 **Routing and languages**: `/` → `/en`; all 10 page types × 3 languages return 200 (30 pages); localised 404s; `<html lang>` = en-IN / hi-IN / pa-IN; Devanagari and Gurmukhi render with the Noto fonts actually loaded; the language switcher keeps the current page and query, and the choice is remembered on the next visit; brand names stay untranslated.
@@ -37,7 +50,7 @@ Run against a fresh production build with a throwaway data folder, in headless C
 
 Issues found and fixed during testing: a race when two requests created the local store at once; `<dl>` markup and heading order flagged by accessibility audits; text contrast (see §5); a component defined during render and two state updates inside effects (lint); file tracing that would have bundled the whole project into the server output; ISR state from a previous run leaking into tests (the suite now always rebuilds).
 
-## 3. Database (24 checks, real PostgreSQL via PGlite)
+## 3. Database (38 checks, real PostgreSQL via PGlite)
 The migration applies cleanly and is re-runnable; `seed.sql` loads. As **anon**: sees only published products, reads categories and settings, cannot insert/update anything or list admins. As a **signed-in non-admin**: cannot insert, update or delete products/categories, cannot make themselves admin, cannot upload images. As an **admin**: sees unpublished products, can insert, update settings and upload images. Constraints: duplicate name+brand+pack rejected (case-insensitive), invalid enum values rejected, categories with children/products cannot be deleted. The trigram index serves `ILIKE` search.
 
 Supabase's `auth` and `storage` schemas were represented by minimal stand-ins (`auth.uid()` from the JWT claim, `storage.objects` with RLS), matching how Supabase evaluates policies.
@@ -49,18 +62,15 @@ Supabase's `auth` and `storage` schemas were represented by minimal stand-ins (`
 - Lighthouse on the deployed domain over a real network.
 
 ## 5. Lighthouse (local, indicative only)
-Lighthouse 12.8 against `next start` on this machine. Mobile uses Lighthouse's simulated slow 4G and 4× CPU slowdown. These are **not production results**; re-measure on the live domain.
+Lighthouse 12.8 against `next start` on this machine, after the marketing release. Mobile uses Lighthouse's simulated slow 4G and 4× CPU slowdown. These are **not production results**; re-measure on the live domain.
 
 | Page | Mobile (P / A / BP / SEO) | Desktop (P / A / BP / SEO) |
 |---|---|---|
-| /en | 89 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| /pa | 91 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| /en | 90 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| /pa/offers | 90 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| /en/companies | 89 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
 | /en/products | 93 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| /en/products/dolo-650 | 92 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| /en/categories/medicines | 92 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| /hi/contact | 90 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| /en/products/dolo-650 | 90 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| /hi/contact | 89 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
 
-Targets: Performance 90+, Accessibility 95+, Best Practices 95+, SEO 95+. All targets are met on desktop. On simulated mobile, the homepage measured 89 Performance (one point under target); every other page met all four.
-
-
-Fixes made from these audits: text contrast (the brief's secondary text `#6D7971` measured 4.37:1 on ivory, below WCAG AA; it is now `#626E66`, 5.1:1, visually almost identical); the decorative hero wordmark is drawn as SVG paths so it doesn't wait for the web font; CSS is inlined to remove a render-blocking request; the hero headline no longer fades in. The remaining mobile LCP time is the headline waiting for its web font under simulated throttling.
+Targets: Performance 90+, Accessibility 95+, Best Practices 95+, SEO 95+. Desktop meets every target on every page. On simulated mobile, Performance is 89–93 (two pages at 89, one point under target); Accessibility, Best Practices and SEO are 100 everywhere. The remaining mobile time is the headline waiting for its web font under simulated throttling.

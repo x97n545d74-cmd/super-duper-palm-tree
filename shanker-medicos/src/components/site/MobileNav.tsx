@@ -48,13 +48,13 @@ export function MobileNav({
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls="mobile-drawer"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink lg:hidden"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink xl:hidden"
       >
         <IconMenu />
         <span className="sr-only">{labels.menu}</span>
       </button>
       <div
-        className={`fixed inset-0 z-[60] bg-forest-deep/40 backdrop-blur-[2px] transition-opacity lg:hidden ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        className={`fixed inset-0 z-[60] bg-forest-deep/40 backdrop-blur-[2px] transition-opacity xl:hidden ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
         onClick={() => setOpen(false)}
         aria-hidden="true"
       />
@@ -64,7 +64,7 @@ export function MobileNav({
         aria-modal="true"
         aria-label={labels.menu}
         inert={!open}
-        className={`fixed inset-y-0 right-0 z-[70] flex w-[min(92vw,380px)] flex-col bg-ivory shadow-float transition-transform duration-300 ease-out-soft lg:hidden ${open ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed inset-y-0 right-0 z-[70] flex w-[min(92vw,380px)] flex-col bg-ivory shadow-float transition-transform duration-300 ease-out-soft xl:hidden ${open ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <Logo />

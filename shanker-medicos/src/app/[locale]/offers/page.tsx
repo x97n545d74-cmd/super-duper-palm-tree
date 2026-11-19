@@ -1,0 +1,56 @@
+import { siteContext } from "@/lib/site";
+import { fmt } from "@/i18n";
+import { pageMeta } from "@/lib/seo";
+import { SITE_URL } from "@/lib/env";
+import { jsonLd } from "@/lib/seo";
+import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { OfferAndClub, OfferTerms, PrescriptionBand, Faq, offerVars } from "@/components/marketing/Sections";
+
+export async function generateMetadata({ params }: PageProps<"/[locale]/offers">) {
+  const ctx = await siteContext((await params).locale);
+  const v = offerVars(ctx);
+  return pageMeta({ locale: ctx.locale, path: "/offers", title: fmt(ctx.t.mkt.offersMetaTitle, v), description: fmt(ctx.t.mkt.offersMetaDescription, v) });
+}
+
+/** Landing page for ads and social posts: offer, club sign-up, prescription on WhatsApp, FAQ. */
+export default async function OffersPage({ params }: PageProps<"/[locale]/offers">) {
+  const ctx = await siteContext((await params).locale);
+  const { t, locale, settings: s } = ctx;
+  const v = offerVars(ctx);
+  const offerSchema = s.offer_enabled
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Offer",
+        name: fmt(t.mkt.offer.title, v),
+        description: fmt(t.mkt.offer.body, v),
+        url: `${SITE_URL}/${locale}/offers`,
+        offeredBy: { "@id": `${SITE_URL}/#pharmacy` },
+        eligibleTransactionVolume: { "@type": "PriceSpecification", minPrice: s.offer_min_amount, priceCurrency: "INR" },
+      }
+    : null;
+  return (
+    <div className="pb-8 pt-10">
+      <div className="container-x">
+        <Breadcrumbs
+          label={t.nav.breadcrumb}
+          items={[
+            { name: t.nav.home, href: `/${locale}` },
+            { name: t.mkt.navOffers, href: `/${locale}/offers` },
+          ]}
+        />
+        <h1 className="mt-8 max-w-3xl text-h1">{s.offer_enabled ? fmt(t.mkt.offer.title, v) : t.mkt.club.title}</h1>
+      </div>
+      <div className="-mt-12">
+        <OfferAndClub ctx={ctx} source="offers_page" headingId="offers-cards-h" />
+      </div>
+      {s.offer_enabled && (
+        <div className="container-x mt-6">
+          <OfferTerms ctx={ctx} />
+        </div>
+      )}
+      <PrescriptionBand ctx={ctx} />
+      <Faq ctx={ctx} />
+      {offerSchema && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(offerSchema)} />}
+    </div>
+  );
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import { keepValues } from "@/lib/use-keep-form";
 import { useActionState, useState } from "react";
 import { saveProductAction, deleteProductAction } from "@/app/admin/actions";
 import type { Category, Product } from "@/lib/types";
@@ -16,7 +17,7 @@ const AVAIL_LABEL: Record<string, string> = {
 };
 
 export function ProductForm({ product, categories, created }: { product: Product | null; categories: Category[]; created?: boolean }) {
-  const [state, action] = useActionState(saveProductAction, created ? { ok: true, message: "Product added. It is live on the website if “Show on website” is ticked." } : null);
+  const [state, action, pending] = useActionState(saveProductAction, created ? { ok: true, message: "Product added. It is live on the website if “Show on website” is ticked." } : null);
   const [style, setStyle] = useState(product?.pack_style ?? "box");
   const [preview, setPreview] = useState<string | null>(product?.image_url ?? null);
   const e = state?.errors ?? {};
@@ -25,7 +26,7 @@ export function ProductForm({ product, categories, created }: { product: Product
 
   return (
     <div className="grid gap-10 xl:grid-cols-[1fr_300px]">
-      <form action={action} className="space-y-8" encType="multipart/form-data">
+      <form onSubmit={keepValues(action)} className="space-y-8" encType="multipart/form-data">
         <input type="hidden" name="id" value={product?.id ?? ""} />
         <input type="hidden" name="image_url" value={product?.image_url ?? ""} />
         <Notice state={state} />
@@ -167,7 +168,7 @@ export function ProductForm({ product, categories, created }: { product: Product
         </fieldset>
 
         <div className="flex flex-wrap items-center gap-3">
-          <SubmitButton className="btn btn-primary h-12 px-8">{product ? "Save changes" : "Add product"}</SubmitButton>
+          <SubmitButton pending={pending} className="btn btn-primary h-12 px-8">{product ? "Save changes" : "Add product"}</SubmitButton>
           {product && (
             <a href={`/en/products/${product.slug}`} target="_blank" rel="noopener" className="btn btn-ghost h-12">
               View on website ↗

@@ -22,6 +22,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...entry("", undefined, 1),
     ...entry("/products", undefined, 0.9),
     ...entry("/categories", undefined, 0.8),
+    ...entry("/companies", undefined, 0.7),
+    ...entry("/offers", undefined, 0.8),
     ...entry("/about", undefined, 0.5),
     ...entry("/contact", undefined, 0.8),
     ...entry("/privacy", undefined, 0.2),

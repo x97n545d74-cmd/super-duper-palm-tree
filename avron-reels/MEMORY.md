@@ -57,7 +57,8 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 
 ## Shanker Medicos website (2026-11-19, client project, not AVRON)
 - A separate client website lives in `shanker-medicos/` (Next.js 16 + Supabase, catalogue + WhatsApp enquiry for a pharmacy in Batala, Punjab; en/hi/pa). AVRON brand rules don't apply to it. Start with its `README.md` and `docs/LAUNCH_CHECKLIST.md`.
-- Open question for the user: the shop sign in their video reads "Shanker Chemists & Druggists", the brief says "Shanker Medicos". Address/phone/WhatsApp/hours were not supplied and are left empty on purpose.
+- Open question for the user: the shop sign in their video reads "Shanker Chemists & Druggists", the brief says "Shanker Medicos". Address, call phone and hours were not supplied and are left empty on purpose.
+- Store facts from the user (2026-11-20): WhatsApp +91 98155 52404; Maps link https://maps.app.goo.gl/jgHwJrpiNSSzED4q9; offer 12% off bills above ₹1,000 (code SHANKER12, shown as a tap-to-reveal "clue"); prescriptions/medicine lists are taken on WhatsApp only; Shanker Club collects mobile + email with consent for an extra member discount (% not yet decided). Marketing details: `shanker-medicos/docs/MARKETING.md`.
 
 ## Who and what
 - AVRON makes cinematic finance and explainer reels: 1080×1920, 30 fps, H.264/AAC, −14 LUFS.

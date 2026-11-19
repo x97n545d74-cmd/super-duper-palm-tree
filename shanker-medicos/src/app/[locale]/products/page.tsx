@@ -6,6 +6,7 @@ import { parseCatalogueParams } from "@/lib/params";
 import { Catalogue } from "@/components/site/Catalogue";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { SearchBox } from "@/components/site/SearchBox";
+import { TrackView } from "@/components/marketing/ClickTracker";
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/[locale]/products">) {
   const { locale, t } = await siteContext((await params).locale);
@@ -48,6 +49,7 @@ export default async function ProductsPage({ params, searchParams }: PageProps<"
         </div>
       </div>
       <Catalogue ctx={ctx} params={p} result={result} brands={brands} basePath={`/${locale}/products`} />
+      {p.q && <TrackView event="search" params={{ search_term: p.q, results: result.total }} />}
     </div>
   );
 }

@@ -1,18 +1,20 @@
 "use client";
 
+import { keepValues } from "@/lib/use-keep-form";
 import { useActionState } from "react";
 import { saveSettingsAction } from "@/app/admin/actions";
 import type { BusinessSettings } from "@/lib/types";
 import { Field, Notice, SubmitButton } from "./ui";
 
 export function SettingsForm({ settings }: { settings: BusinessSettings }) {
-  const [state, action] = useActionState(saveSettingsAction, null);
+  const [state, action, pending] = useActionState(saveSettingsAction, null);
   const e = state?.errors ?? {};
-  const input = (name: keyof BusinessSettings, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
+  type TextKey = { [K in keyof BusinessSettings]: BusinessSettings[K] extends string ? K : never }[keyof BusinessSettings];
+  const input = (name: TextKey, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
     <input id={name} name={name} defaultValue={settings[name]} className="field" aria-invalid={!!e[name]} {...props} />
   );
   return (
-    <form action={action} className="space-y-8">
+    <form onSubmit={keepValues(action)} className="space-y-8">
       <fieldset className="space-y-5 rounded-card border border-line bg-white p-6">
         <legend className="px-1 font-display text-lg font-semibold">Store</legend>
         <div className="grid gap-5 sm:grid-cols-2">
@@ -72,8 +74,44 @@ export function SettingsForm({ settings }: { settings: BusinessSettings }) {
         </div>
       </fieldset>
 
+      <fieldset className="space-y-5 rounded-card border border-line bg-white p-6">
+        <legend className="px-1 font-display text-lg font-semibold">Store offer</legend>
+        <label className="flex items-start gap-3">
+          <input type="checkbox" name="offer_enabled" defaultChecked={settings.offer_enabled} className="mt-1 h-4 w-4 accent-forest" />
+          <span>
+            <span className="font-medium">Show the offer on the website</span>
+            <span className="block text-sm text-ink-2">Announcement bar, homepage, product pages and the Offers page.</span>
+          </span>
+        </label>
+        <div className="grid gap-5 sm:grid-cols-3">
+          <Field label="Discount %" name="offer_percent" error={e.offer_percent}>
+            <input id="offer_percent" name="offer_percent" type="number" min={1} max={50} defaultValue={settings.offer_percent} className="field" />
+          </Field>
+          <Field label="Minimum bill (₹)" name="offer_min_amount" error={e.offer_min_amount}>
+            <input id="offer_min_amount" name="offer_min_amount" type="number" min={0} step={50} defaultValue={settings.offer_min_amount} className="field" />
+          </Field>
+          <Field label="Offer code" name="offer_code" error={e.offer_code} hint="Customers reveal this code and show it at the counter.">
+            <input id="offer_code" name="offer_code" defaultValue={settings.offer_code} className="field uppercase" maxLength={20} />
+          </Field>
+        </div>
+      </fieldset>
+
+      <fieldset className="space-y-5 rounded-card border border-line bg-white p-6">
+        <legend className="px-1 font-display text-lg font-semibold">Shanker Club (customer sign-ups)</legend>
+        <label className="flex items-start gap-3">
+          <input type="checkbox" name="club_enabled" defaultChecked={settings.club_enabled} className="mt-1 h-4 w-4 accent-forest" />
+          <span>
+            <span className="font-medium">Collect sign-ups (mobile + optional email)</span>
+            <span className="block text-sm text-ink-2">Each member gets a personal code (e.g. SM-7KQ2P) to show at the counter.</span>
+          </span>
+        </label>
+        <Field label="Extra member discount %" name="club_extra_percent" error={e.club_extra_percent} hint="0 = don't state a number on the website (it says “extra discount”).">
+          <input id="club_extra_percent" name="club_extra_percent" type="number" min={0} max={50} defaultValue={settings.club_extra_percent} className="field max-w-[10rem]" />
+        </Field>
+      </fieldset>
+
       <Notice state={state} />
-      <SubmitButton className="btn btn-primary h-12 px-8">Save business details</SubmitButton>
+      <SubmitButton pending={pending} className="btn btn-primary h-12 px-8">Save business details</SubmitButton>
     </form>
   );
 }

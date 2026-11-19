@@ -1,7 +1,7 @@
 {
-  "date": "2026-11-19T08:27:46.782Z",
-  "passed": 52,
-  "total": 52,
+  "date": "2026-11-19T09:09:20.699Z",
+  "passed": 64,
+  "total": 64,
   "results": [
     {
       "name": "/ redirects to /en (default English)",
@@ -9,9 +9,9 @@
       "detail": ""
     },
     {
-      "name": "all required routes render in all three languages (30 pages)",
+      "name": "all required routes render in all three languages",
       "ok": true,
-      "detail": "30 pages"
+      "detail": "36 pages"
     },
     {
       "name": "unknown pages and products return a localised 404",
@@ -74,7 +74,57 @@
       "detail": ""
     },
     {
-      "name": "no WhatsApp links while the number is not configured (no broken wa.me)",
+      "name": "store WhatsApp 98155 52404 is used for product enquiries",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "prescription on WhatsApp: photo and medicine-list buttons with prefilled text",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "offer: announcement bar, tap-to-reveal code, WhatsApp with code",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "offer page in Punjabi: terms, FAQ schema, Offer schema",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Shanker Club: validation (bad mobile, no consent)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Shanker Club: sign-up gives a member code and a WhatsApp save link",
+      "ok": true,
+      "detail": "SM-MSKE4"
+    },
+    {
+      "name": "Shanker Club: joining again with the same number returns the same code",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "automation webhook receives the sign-up, signed with HMAC",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "consent banner: analytics only load after Accept",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "conversion events reach the dataLayer (WhatsApp click, search, sign-up)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "companies page lists the ethical brands A–Z and links to the catalogue",
       "ok": true,
       "detail": ""
     },
@@ -174,6 +224,16 @@
       "detail": ""
     },
     {
+      "name": "admin: club members list shows attribution; CSV export; delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin: change the offer to 15% and see it on the site",
+      "ok": true,
+      "detail": ""
+    },
+    {
       "name": "logout",
       "ok": true,
       "detail": ""
@@ -191,7 +251,7 @@
     {
       "name": "SEO: sitemap.xml, robots.txt, filtered pages noindex",
       "ok": true,
-      "detail": "192 sitemap URLs"
+      "detail": "198 sitemap URLs"
     },
     {
       "name": "all images have alt text; one h1 per page",
@@ -201,7 +261,7 @@
     {
       "name": "no broken internal links (crawl of every locale's pages)",
       "ok": true,
-      "detail": "183 unique links checked"
+      "detail": "387 unique links checked"
     },
     {
       "name": "security headers on public pages; admin is noindex",
@@ -216,7 +276,7 @@
     {
       "name": "no secrets in client JavaScript",
       "ok": true,
-      "detail": "31 static files scanned"
+      "detail": "33 static files scanned"
     },
     {
       "name": "login rate limiting",

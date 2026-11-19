@@ -1,6 +1,6 @@
 # Shanker Medicos: digital pharmacy catalogue
 
-The website for **Shanker Medicos**, a retail pharmacy in Batala, Punjab. Customers browse and search the catalogue in English, Hindi or Punjabi and ask the store about a product on WhatsApp. Staff manage everything from `/admin`.
+The website for **Shanker Medicos**, a retail pharmacy in Batala, Punjab. Customers browse and search the catalogue in English, Hindi or Punjabi, send prescriptions or medicine lists on WhatsApp (+91 98155 52404), reveal the store offer code, and join Shanker Club for an extra discount. Staff manage everything from `/admin`.
 
 It is a **catalogue and enquiry site, not an online pharmacy**: there is no cart, no payment, no prescription upload and no delivery.
 
@@ -27,8 +27,8 @@ Next.js 16 (App Router, TypeScript) · Tailwind CSS 4 · Supabase (PostgreSQL, A
 | `npm run dev` | Development server |
 | `npm run build` / `npm start` | Production build / server |
 | `npm run lint` · `npm run typecheck` | ESLint · TypeScript |
-| `npm run test:unit` | 27 unit tests (search, WhatsApp, validation, i18n) |
-| `npm run test:e2e` | 52 browser tests against the production build (run `npm run build` first) |
+| `npm run test:unit` | Unit tests (search, WhatsApp, validation, i18n, club, offer) |
+| `npm run test:e2e` | Browser tests against a fresh production build (builds first) |
 | `npm run db:verify` | Applies the migrations to an in-process PostgreSQL and checks every RLS rule |
 | `npm run db:seed-sql` | Regenerates `supabase/seed.sql` from the starter catalogue |
 
@@ -36,6 +36,7 @@ Next.js 16 (App Router, TypeScript) · Tailwind CSS 4 · Supabase (PostgreSQL, A
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): how the code is organised and why
 - [docs/ADMIN_MANUAL.md](docs/ADMIN_MANUAL.md): guide for pharmacy staff
+- [docs/MARKETING.md](docs/MARKETING.md): offer, Shanker Club, tracking (GA4/GTM/Meta), automation webhook, SEO, next steps
 - [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md): Supabase, Vercel, domain, Google setup
 - [docs/TESTING_REPORT.md](docs/TESTING_REPORT.md): what was tested and the results
 - [docs/COSTS.md](docs/COSTS.md): recurring costs

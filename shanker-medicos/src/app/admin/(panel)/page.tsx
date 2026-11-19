@@ -18,6 +18,8 @@ export default async function Overview() {
     { label: "All products (incl. hidden)", value: s.totalProducts, href: "/admin/products?status=all" },
     { label: "Categories", value: s.categories, href: "/admin/categories" },
     { label: "Need information checked", value: s.needsReview, href: "/admin/products?review=1", warn: s.needsReview > 0 },
+    { label: "Shanker Club members", value: s.members, href: "/admin/members" },
+    { label: "New members this week", value: s.membersThisWeek, href: "/admin/members" },
   ];
   return (
     <div className="max-w-5xl">
@@ -37,7 +39,7 @@ export default async function Overview() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
           <Link key={c.label} href={c.href} className={`rounded-card border bg-white p-5 transition hover:shadow-lift ${c.warn ? "border-[#F2D7A6]" : "border-line"}`}>
             <p className="font-display text-4xl font-semibold tracking-tight">{c.value}</p>

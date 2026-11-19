@@ -61,6 +61,8 @@ async function main() {
     }
   }
   await db.exec(readFileSync(new URL("../supabase/seed.sql", import.meta.url), "utf8"));
+  const wa = await db.query<{ whatsapp: string; maps_url: string }>("select whatsapp, maps_url from business_settings");
+  check("migration sets the store WhatsApp and Maps link", wa.rows[0].whatsapp === "+91 98155 52404" && wa.rows[0].maps_url.startsWith("https://maps.app.goo.gl/"), JSON.stringify(wa.rows[0]));
   const counts = await db.query<{ c: number; p: number }>("select (select count(*) from categories)::int c, (select count(*) from products)::int p");
   check("seed.sql loads", counts.rows[0].c > 0 && counts.rows[0].p > 0, `${counts.rows[0].c} categories, ${counts.rows[0].p} products`);
 
@@ -113,6 +115,33 @@ async function main() {
   check("invalid availability value is rejected", !!r.error);
   r = await as(db, "authenticated", ADMIN, "delete from categories where slug = 'medicines'");
   check("category with sub-categories/products cannot be deleted", !!r.error);
+
+  // members / Shanker Club
+  const join = (phone: string) =>
+    `select * from public.join_club('Asha', '${phone}', 'asha@example.com', 'pa', 'I agree to receive offers', 'homepage', 'facebook', 'paid', 'diwali')`;
+  r = await as(db, "anon", null, join("9815500001"));
+  const code1 = r.rows[0]?.code as string;
+  check("anon can join the club and gets a member code", !r.error && /^SM-[A-Z0-9]{5}$/.test(code1) && r.rows[0]?.is_new === true, r.error ?? code1);
+  r = await as(db, "anon", null, join("+919815500001".slice(3)));
+  check("joining again with the same phone returns the same code", r.rows[0]?.code === code1 && r.rows[0]?.is_new === false, String(r.rows[0]?.code));
+  r = await as(db, "anon", null, join("12345"));
+  check("invalid phone is rejected", !!r.error);
+  r = await as(db, "anon", null, "select * from public.join_club('A','9815500002','','en','','','','','')");
+  check("sign-up without consent text is rejected", !!r.error);
+  r = await as(db, "anon", null, "select * from members");
+  check("anon cannot read members", !!r.error || r.rows.length === 0, r.error ?? `${r.rows.length} rows`);
+  r = await as(db, "anon", null, "insert into members (code, phone, consent_marketing, consent_text) values ('SM-AAAAA','9815500003',true,'x')");
+  check("anon cannot insert members directly", !!r.error);
+  r = await as(db, "authenticated", USER, "select * from members");
+  check("non-admin cannot read members", r.rows.length === 0);
+  r = await as(db, "authenticated", ADMIN, "select phone, utm_source, locale from members");
+  check("admin can read members with attribution", r.rows.length === 1 && r.rows[0].utm_source === "facebook" && r.rows[0].locale === "pa", JSON.stringify(r.rows[0]));
+  r = await as(db, "authenticated", ADMIN, "delete from members where phone = '9815500001'");
+  check("admin can delete a member (erasure request)", r.affected === 1, r.error ?? "");
+  const st = await db.query<{ whatsapp: string; offer_percent: number; offer_code: string }>("select whatsapp, offer_percent, offer_code from business_settings");
+  check("12% offer defaults are set",  st.rows[0].offer_percent === 12 && st.rows[0].offer_code === "SHANKER12", JSON.stringify(st.rows[0]));
+  r = await as(db, "authenticated", ADMIN, "update business_settings set offer_percent = 90");
+  check("offer percent above 50 is rejected", !!r.error);
 
   // search index is usable
   await db.exec("set enable_seqscan = off");

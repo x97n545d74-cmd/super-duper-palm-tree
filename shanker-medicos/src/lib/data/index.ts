@@ -1,10 +1,10 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
 import { DATA_MODE } from "../env";
-import type { AdminRepo, PublicRepo } from "./repo";
+import type { AdminRepo, ClubRepo, PublicRepo } from "./repo";
 import type { ProductQuery } from "../types";
-import { localAdmin, localPublic } from "./local-repo";
-import { supabaseAdmin, supabasePublic } from "./supabase-repo";
+import { localAdmin, localClub, localPublic } from "./local-repo";
+import { supabaseAdmin, supabaseClub, supabasePublic } from "./supabase-repo";
 
 /** Cache tag cleared by every admin write. */
 export const CATALOGUE_TAG = "catalogue";
@@ -28,3 +28,6 @@ export const catalogue: PublicRepo = {
 
 /** Never call without requireAdmin() first. */
 export const adminRepo: AdminRepo = DATA_MODE === "supabase" ? supabaseAdmin : localAdmin;
+
+/** Public Shanker Club sign-up (validated + rate-limited in the server action). */
+export const club: ClubRepo = DATA_MODE === "supabase" ? supabaseClub : localClub;

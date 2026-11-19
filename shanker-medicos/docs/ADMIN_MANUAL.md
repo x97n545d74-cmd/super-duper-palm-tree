@@ -12,6 +12,16 @@ The first screen shows how many products are on the website, how many categories
 - **Google Maps link**: open the shop in Google Maps → Share → Copy link → paste.
 - Press **Save business details**. The website updates straight away.
 
+## Store offer and Shanker Club
+In **Business details**:
+- **Store offer**: on/off, discount % (default 12), minimum bill (default ₹1,000) and the code customers reveal (default `SHANKER12`). When a customer shows the code or mentions it on WhatsApp, apply the discount if the bill is above the minimum.
+- **Shanker Club**: on/off and the extra member discount %. Leave it at 0 until you decide the number; the website then just says "extra discount".
+
+**Club members** in the menu lists everyone who joined: their member code (e.g. `SM-7KQ2P`), mobile, name, email, language and which ad or page they came from. Search a code to check it at the counter. **Download CSV** exports the list for messaging tools. If someone asks to be removed, **Delete** them. If they reply STOP, stop messaging them.
+
+## Prescriptions on WhatsApp
+Customers can send a prescription photo or a typed medicine list to the store's WhatsApp (+91 98155 52404). The pharmacist must check every prescription before dispensing; prescription medicines are given only against a valid prescription. Don't forward prescriptions to anyone else.
+
 ## Products
 **Products** lists everything, including hidden items. Search by name, brand or generic name. Tick *Only products that need checking* to see the ones still to verify.
 

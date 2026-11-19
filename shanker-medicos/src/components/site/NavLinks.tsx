@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 export function NavLinks({ items }: { items: { href: string; label: string }[] }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Primary" className="hidden lg:block">
-      <ul className="flex items-center gap-7">
+    <nav aria-label="Primary" className="hidden xl:block">
+      <ul className="flex items-center gap-5 xl:gap-7">
         {items.map((it, i) => {
           const active = i === 0 ? pathname === it.href : pathname.startsWith(it.href);
           return (

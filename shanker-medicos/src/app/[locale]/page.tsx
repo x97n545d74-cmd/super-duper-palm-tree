@@ -10,6 +10,7 @@ import { SearchBox } from "@/components/site/SearchBox";
 import { ProductCard } from "@/components/site/ProductCard";
 import { LocationDetails } from "@/components/site/LocationDetails";
 import { IconArrow, IconWhatsApp, CategoryGlyph } from "@/components/ui/Icons";
+import { CompaniesTeaser, Faq, OfferAndClub, PrescriptionBand } from "@/components/marketing/Sections";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]">) {
   const { locale, t } = await siteContext((await params).locale);
@@ -86,6 +87,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
+      {/* Order on WhatsApp: prescription photo or medicine list */}
+      <PrescriptionBand ctx={ctx} />
+
       {/* D. SEARCH */}
       <section className="container-x pt-section" aria-labelledby="search-h">
         <div className="mx-auto max-w-3xl text-center">
@@ -107,6 +111,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           )}
         </div>
       </section>
+
+      {/* Offer reveal + Shanker Club sign-up */}
+      <OfferAndClub ctx={ctx} source="homepage" />
 
       {/* E. CATEGORIES */}
       <section className="container-x pt-section" aria-labelledby="cat-h">
@@ -146,6 +153,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           <p className="mt-6 text-xs text-ink-2">{t.catalogue.note}</p>
         </section>
       )}
+
+      {/* Ethical brands */}
+      <CompaniesTeaser ctx={ctx} />
 
       {/* G. TRUST */}
       <section className="pt-section" aria-labelledby="trust-h">
@@ -192,6 +202,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           )}
         </div>
       </section>
+
+      <Faq ctx={ctx} />
 
       {/* I. LOCATION */}
       <section className="container-x pt-section" aria-labelledby="loc-h">

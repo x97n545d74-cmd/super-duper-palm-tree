@@ -11,7 +11,9 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { ProductImage } from "@/components/site/ProductImage";
 import { ProductCard } from "@/components/site/ProductCard";
 import { WaButton } from "@/components/site/WhatsApp";
-import { IconInfo, IconPhone } from "@/components/ui/Icons";
+import { IconInfo, IconPhone, IconWhatsApp } from "@/components/ui/Icons";
+import { TrackView } from "@/components/marketing/ClickTracker";
+import { fmt as f2 } from "@/i18n";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/products/[slug]">) {
   const { locale: raw, slug } = await params;
@@ -42,6 +44,11 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
   const wa = waLink(settings.whatsapp, productMessage(locale, product));
   const tel = telHref(settings.phone);
   const rxNote = t.product.rxNote[product.rx_class];
+  // Medicines that need (or may need) a prescription: offer to send it on WhatsApp.
+  const rxWa =
+    product.rx_class !== "otc"
+      ? waLink(settings.whatsapp, `${t.mkt.rx.msgPhoto}\n\n${product.name} (${product.brand}, ${product.pack_size})`)
+      : null;
 
   const specs: [string, string][] = (
     [
@@ -109,6 +116,26 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
           </div>
           <p className="mt-3 text-sm text-ink-2">{t.product.enquiryNote}</p>
 
+          {rxWa && (
+            <a href={rxWa} target="_blank" rel="noopener noreferrer" data-track-label="product_rx_photo" data-track-item={product.name} className="mt-4 flex items-center gap-3 rounded-card border border-line bg-white p-4 text-sm transition hover:border-forest">
+              <IconWhatsApp className="h-5 w-5 shrink-0 text-emerald" />
+              <span>
+                <span className="block font-semibold text-forest">{t.mkt.rx.photo}</span>
+                <span className="text-ink-2">{t.mkt.rx.photoBody}</span>
+              </span>
+            </a>
+          )}
+
+          {settings.offer_enabled && (
+            <Link href={`/${locale}/offers`} className="mt-4 flex items-center justify-between gap-3 rounded-card bg-forest px-4 py-3 text-sm text-ivory">
+              <span>
+                <span className="font-semibold">{f2(t.mkt.offer.title, { percent: settings.offer_percent, min: settings.offer_min_amount.toLocaleString("en-IN") })}</span>
+                <span className="block text-ivory/75">{t.mkt.offer.reveal}</span>
+              </span>
+              <span aria-hidden="true">→</span>
+            </Link>
+          )}
+
           {rxNote && (
             <div className="mt-6 flex gap-3 rounded-card border border-line bg-white p-4 text-sm">
               <IconInfo className="mt-0.5 h-4 w-4 shrink-0 text-emerald" />
@@ -159,6 +186,7 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
         </section>
       )}
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(schema)} />
+      <TrackView event="view_item" params={{ item_name: product.name, item_brand: product.brand }} />
     </div>
   );
 }

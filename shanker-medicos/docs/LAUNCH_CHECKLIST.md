@@ -4,13 +4,20 @@ Items the build could not complete because they need the owner's information, ac
 
 ## Business information (enter in /admin → Business details)
 - [ ] **Confirm the trading name.** The brief says "Shanker Medicos"; the shop sign in the supplied video reads "Shanker Chemists & Druggists". Use the name on the drug licence and Google Business Profile everywhere. The name can be changed in Business details; the logo wordmark files in `public/brand/` would need regenerating for a different name.
-- [ ] Shop address (the video shows a "Dera Road" label but this was **not** used as the address)
+- [ ] Shop address (the video shows a "Dera Road" label but this was **not** used as the address). Needed for the embedded map and Google data.
 - [ ] PIN code
-- [ ] Phone number
-- [ ] WhatsApp number (until set, Enquire buttons go to the contact page)
+- [ ] Phone number (calls)
+- [x] WhatsApp number: +91 98155 52404 (supplied 20 Nov 2026)
 - [ ] Opening hours
-- [ ] Google Maps share link
+- [x] Google Maps link: maps.app.goo.gl/jgHwJrpiNSSzED4q9 (supplied 20 Nov 2026)
 - [ ] Email, Instagram, Facebook (optional)
+
+## Marketing (see docs/MARKETING.md)
+- [ ] Decide the extra Shanker Club member discount % (currently not stated: "extra discount")
+- [ ] Confirm the offer terms on `/offers` (12% above ₹1,000, code SHANKER12, applies to WhatsApp orders, stacks with member discount)
+- [ ] Confirm the companies list on `/companies` (66 companies) and the claim "branded and generic medicines from India's leading companies"
+- [ ] Create GA4 / Meta Pixel (and optionally GTM) and add the IDs
+- [ ] Set up the sign-up automation (webhook → Sheet / email / WhatsApp Business Platform)
 
 ## Catalogue
 - [ ] Review the ~40 starter products (`needs checking` filter in admin): confirm pack sizes, set prescription status (pharmacist), set availability only where checked, or delete.

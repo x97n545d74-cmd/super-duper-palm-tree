@@ -1,5 +1,6 @@
 "use client";
 
+import { keepValues } from "@/lib/use-keep-form";
 import { useActionState, useEffect, useRef } from "react";
 import { saveCategoryAction, deleteCategoryAction } from "@/app/admin/actions";
 import type { Category } from "@/lib/types";
@@ -7,7 +8,7 @@ import { Field, Notice, SubmitButton } from "./ui";
 
 /** Add/edit form for one category. With `category` = null it adds a new one. */
 export function CategoryEditor({ category, parents }: { category: Category | null; parents: Category[] }) {
-  const [state, action] = useActionState(saveCategoryAction, null);
+  const [state, action, pending] = useActionState(saveCategoryAction, null);
   const [delState, delAction] = useActionState(deleteCategoryAction, null);
   const form = useRef<HTMLFormElement>(null);
   const e = state?.errors ?? {};
@@ -18,7 +19,7 @@ export function CategoryEditor({ category, parents }: { category: Category | nul
 
   return (
     <div className="space-y-4">
-      <form ref={form} action={action} className="space-y-4" encType="multipart/form-data">
+      <form ref={form} onSubmit={keepValues(action)} className="space-y-4" encType="multipart/form-data">
         <input type="hidden" name="id" value={category?.id ?? ""} />
         <input type="hidden" name="image_url" value={category?.image_url ?? ""} />
         <input type="hidden" name="sort_order" value={category?.sort_order ?? 0} />
@@ -64,7 +65,7 @@ export function CategoryEditor({ category, parents }: { category: Category | nul
           )}
         </div>
         <Notice state={state} />
-        <SubmitButton className="btn btn-primary h-10 min-h-0 text-sm">{category ? "Save category" : "Add category"}</SubmitButton>
+        <SubmitButton pending={pending} className="btn btn-primary h-10 min-h-0 text-sm">{category ? "Save category" : "Add category"}</SubmitButton>
       </form>
       {category && (
         <form

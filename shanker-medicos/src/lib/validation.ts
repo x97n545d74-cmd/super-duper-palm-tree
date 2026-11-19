@@ -59,6 +59,36 @@ export const settingsSchema = z.object({
   maps_url: optionalUrl.default(""),
   instagram_url: optionalUrl.default(""),
   facebook_url: optionalUrl.default(""),
+  offer_enabled: bool,
+  offer_percent: z.coerce.number().int().min(1, "Use 1–50%.").max(50, "Use 1–50%."),
+  offer_min_amount: z.coerce.number().int().min(0).max(100000),
+  offer_code: text(20)
+    .transform((v) => v.toUpperCase())
+    .refine((v) => /^[A-Z0-9-]{3,20}$/.test(v), "Use 3–20 letters or numbers, e.g. SHANKER12."),
+  club_enabled: bool,
+  club_extra_percent: z.coerce.number().int().min(0).max(50).default(0),
+});
+
+const indianMobile = z
+  .string()
+  .trim()
+  .transform((v) => v.replace(/[\s()-]/g, "").replace(/^(\+?91|0)(?=\d{10}$)/, ""))
+  .refine((v) => /^[6-9]\d{9}$/.test(v), "Enter a 10-digit Indian mobile number.");
+
+/** Shanker Club sign-up. Consent must be explicitly ticked (DPDP Act 2023). */
+export const memberSchema = z.object({
+  name: text(80).default(""),
+  phone: indianMobile,
+  email: text(120)
+    .toLowerCase()
+    .refine((v) => !v || z.string().email().safeParse(v).success, "Enter a valid email address.")
+    .default(""),
+  locale: z.enum(["en", "hi", "pa"]).default("en"),
+  consent_marketing: z.literal(true, { message: "Please tick the box to agree." }),
+  source: text(60).default(""),
+  utm_source: text(80).default(""),
+  utm_medium: text(80).default(""),
+  utm_campaign: text(120).default(""),
 });
 
 /** One CSV row after column mapping. Category is matched by slug or English name on the server. */

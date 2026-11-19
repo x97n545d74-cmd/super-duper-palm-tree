@@ -5,17 +5,19 @@ const supabaseHost = supabaseUrl ? new URL(supabaseUrl).hostname : undefined;
 const isDev = process.env.NODE_ENV !== "production";
 
 // Content Security Policy. Inline styles are needed by Next/React; inline
-// scripts are needed for JSON-LD and Next's bootstrap. No third-party scripts
-// are loaded by the site.
+// scripts are needed for JSON-LD and Next's bootstrap. Google Tag Manager,
+// GA4 and Meta Pixel are allowed but only load after cookie consent and only
+// when their IDs are configured.
+const ANALYTICS = "https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://connect.facebook.net https://www.facebook.com";
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob:${supabaseHost ? ` https://${supabaseHost}` : ""}`,
+  `img-src 'self' data: blob: ${ANALYTICS} https://www.google.co.in${supabaseHost ? ` https://${supabaseHost}` : ""}`,
   "font-src 'self'",
-  `connect-src 'self'${supabaseHost ? ` https://${supabaseHost} wss://${supabaseHost}` : ""}`,
+  `connect-src 'self' ${ANALYTICS}${supabaseHost ? ` https://${supabaseHost} wss://${supabaseHost}` : ""}`,
   "media-src 'self'",
-  "frame-src https://www.google.com https://maps.google.com",
+  "frame-src https://www.google.com https://maps.google.com https://www.googletagmanager.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

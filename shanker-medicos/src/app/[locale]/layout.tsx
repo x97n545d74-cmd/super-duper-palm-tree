@@ -8,6 +8,8 @@ import { Footer } from "@/components/site/Footer";
 import { WhatsAppFloat } from "@/components/site/WhatsApp";
 import { SITE_URL } from "@/lib/env";
 import { jsonLd, pharmacySchema } from "@/lib/seo";
+import { ClickTracker } from "@/components/marketing/ClickTracker";
+import { Analytics } from "@/components/marketing/Analytics";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -37,6 +39,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <main id="main">{children}</main>
         <Footer ctx={ctx} />
         <WhatsAppFloat href={ctx.waGeneral} label={ctx.t.whatsapp.float} />
+        <ClickTracker />
+        <Analytics labels={ctx.t.mkt.consent} privacyHref={`/${ctx.locale}/privacy`} />
         <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(pharmacySchema(ctx.settings, ctx.locale))} />
       </body>
     </html>

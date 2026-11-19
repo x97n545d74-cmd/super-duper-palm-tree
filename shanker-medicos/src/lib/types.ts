@@ -65,8 +65,34 @@ export interface BusinessSettings {
   maps_url: string;
   instagram_url: string;
   facebook_url: string;
+  /** Store-wide bill offer, e.g. 12% off bills above ₹1,000. */
+  offer_enabled: boolean;
+  offer_percent: number;
+  offer_min_amount: number;
+  offer_code: string;
+  /** Shanker Club (phone/email sign-up) and its extra member discount. 0 = not stated publicly. */
+  club_enabled: boolean;
+  club_extra_percent: number;
   updated_at: string;
 }
+
+export interface Member {
+  id: string;
+  code: string;
+  name: string;
+  phone: string;
+  email: string;
+  locale: string;
+  consent_marketing: boolean;
+  consent_text: string;
+  source: string;
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+  created_at: string;
+}
+
+export type MemberInput = Omit<Member, "id" | "code" | "created_at">;
 
 export type SortKey = "relevance" | "az" | "za" | "recent";
 
@@ -135,4 +161,6 @@ export interface Stats {
   needsReview: number;
   recent: Product[];
   missingSettings: (keyof BusinessSettings)[];
+  members: number;
+  membersThisWeek: number;
 }
