@@ -21,7 +21,7 @@ export const SCHEMA = {
     period_to: { type: 'string', description: 'YYYY-MM-DD, or empty.' },
     opening_balance: balance,
     closing_balance: balance,
-    printed_total_debit: { type: 'number', description: 'The debit column total printed at the foot of the paper, for the transactions only (if a total with the opening balance is also printed, give the one without it). 0 if no total is printed.' },
+    printed_total_debit: { type: 'number', description: 'The debit column total printed at the foot of the paper, for the transactions only (if a total with the opening balance is also printed, give the one without it; if only one total is printed, give it as printed). 0 if no total is printed.' },
     printed_total_credit: { type: 'number', description: 'The credit column total printed at the foot of the paper, transactions only. 0 if no total is printed.' },
     entries: {
       type: 'array',

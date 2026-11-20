@@ -220,3 +220,12 @@ test('whereAndWhat names the short side and a next step', () => {
   assert.deepEqual(whereAndWhat('onlyOurs', { type: 'payment', date: '2026-11-14' }, '2026-11-17'), { where: 'theirs', act: 'actPayOursRecent' });
   assert.equal(whereAndWhat('onlyOurs', { type: 'invoice', date: '2026-05-01' }, '2026-11-17').act, 'actBillOurs');
 });
+
+test('paperCheck: totals printed with the opening balance included are understood', () => {
+  const d = { ...doc(bal(500, 'debit'), bal(1000, 'debit'), [E('2026-09-01', '3-1/1', 1500, 0), E('2026-09-03', 'NEFT', 0, 1000, 'payment')]),
+    printed_total_debit: 2000, printed_total_credit: 1000 };
+  const p = paperCheck(d);
+  assert.equal(p.checks.arithmetic.state, 'ok');
+  assert.equal(p.checks.totals.state, 'ok');
+  assert.equal(p.allOk, true);
+});

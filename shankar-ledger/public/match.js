@@ -371,7 +371,13 @@ export function paperCheck(doc) {
   const sc = selfCheck(doc);
   const open = signedBalance(doc.opening_balance);
   const close = signedBalance(doc.closing_balance);
-  const pDr = round2(doc.printed_total_debit), pCr = round2(doc.printed_total_credit);
+  let pDr = round2(doc.printed_total_debit), pCr = round2(doc.printed_total_credit);
+  // Some software prints column totals that already include the opening balance
+  // (totals give the closing directly). Take the opening out so both styles check the same way.
+  if (open && close != null && (pDr > 0 || pCr > 0)
+    && Math.abs(round2(open + pDr - pCr) - close) >= 1 && Math.abs(round2(pDr - pCr) - close) < 1) {
+    if (open > 0) pDr = round2(pDr - open); else pCr = round2(pCr + open);
+  }
   const sumDr = round2(entries.reduce((t, e) => t + (Number(e.debit) || 0), 0));
   const sumCr = round2(entries.reduce((t, e) => t + (Number(e.credit) || 0), 0));
   const hasTotals = pDr > 0 || pCr > 0;
