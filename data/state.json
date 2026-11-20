@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 0,
+ "reddit_next": 1,
  "fails": {
   "reddit|r/StockMarketIndia": 12,
   "reddit|r/DalalStreetTalks": 12,
@@ -38,7 +38,7 @@
   "reddit|r/IndianStockMarket": 12,
   "reddit|r/IndiaInvestments": 12,
   "reddit|r/IndianStreetBets": 12,
-  "news|Cabinet approves scheme crore": 1
+  "news|state election manifesto promises": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795194287.0604854,
