@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 0,
+ "reddit_next": 1,
  "fails": {
   "reddit|r/StockMarketIndia": 12,
   "reddit|r/DalalStreetTalks": 12,
@@ -37,10 +37,7 @@
   "reddit|r/NSEbets": 4,
   "reddit|r/IndianStockMarket": 12,
   "reddit|r/IndiaInvestments": 12,
-  "reddit|r/IndianStreetBets": 12,
-  "news|SME IPO listing NSE Emerge": 1,
-  "news|rupee dollar RBI intervention": 1,
-  "news|US Federal Reserve rate decision markets": 1
+  "reddit|r/IndianStreetBets": 12
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795194287.0604854,
