@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 1,
+ "reddit_next": 2,
  "fails": {
   "reddit|r/StockMarketIndia": 11,
   "reddit|r/DalalStreetTalks": 11,
@@ -38,8 +38,9 @@
   "reddit|r/IndianStockMarket": 11,
   "reddit|r/IndiaInvestments": 11,
   "reddit|r/IndianStreetBets": 11,
-  "news|merger acquisition India company deal crore": 1,
-  "news|India GST collections": 1
+  "news|Brent crude oil price today": 1,
+  "news|rupee dollar RBI intervention": 1,
+  "news|state election manifesto promises": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795164822.4502895,
