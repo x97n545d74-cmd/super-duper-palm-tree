@@ -1,7 +1,7 @@
 {
-  "date": "2026-11-19T17:31:56.274Z",
-  "passed": 65,
-  "total": 65,
+  "date": "2026-11-20T21:18:45.789Z",
+  "passed": 66,
+  "total": 66,
   "results": [
     {
       "name": "/ redirects to /en (default English)",
@@ -11,7 +11,7 @@
     {
       "name": "all required routes render in all three languages",
       "ok": true,
-      "detail": "24 pages"
+      "detail": "27 pages"
     },
     {
       "name": "unknown pages return a localised 404; old medicine pages redirect to What we stock",
@@ -36,7 +36,7 @@
     {
       "name": "no medicine names on any public page (owner's rule)",
       "ok": true,
-      "detail": "38 names × 24 pages"
+      "detail": "38 names × 27 pages"
     },
     {
       "name": "what we stock: 12 kinds, each with a WhatsApp question to the store",
@@ -79,7 +79,7 @@
       "detail": ""
     },
     {
-      "name": "offer page in Punjabi: terms, FAQ schema, Offer schema",
+      "name": "offer page in Punjabi: terms, visible FAQ, Offer schema (FAQ schema lives on /faq)",
       "ok": true,
       "detail": ""
     },
@@ -91,7 +91,7 @@
     {
       "name": "Shanker Club: sign-up gives a member code and a WhatsApp save link",
       "ok": true,
-      "detail": "SM-6E88B"
+      "detail": "SM-ZY9JN"
     },
     {
       "name": "Shanker Club: joining again with the same number returns the same code",
@@ -249,14 +249,19 @@
       "detail": ""
     },
     {
-      "name": "SEO: valid JSON-LD (Pharmacy, BreadcrumbList, FAQPage, ItemList) with no invented ratings",
+      "name": "SEO: valid JSON-LD (Pharmacy with hours, offers and catalogue; WebSite; FAQPage; ItemList) with no invented ratings",
       "ok": true,
       "detail": ""
     },
     {
+      "name": "GEO: llms.txt fact sheet and AI crawlers allowed",
+      "ok": true,
+      "detail": "55 lines"
+    },
+    {
       "name": "SEO: sitemap.xml and robots.txt",
       "ok": true,
-      "detail": "24 sitemap URLs"
+      "detail": "27 sitemap URLs"
     },
     {
       "name": "all images have alt text; one h1 per page",
@@ -266,7 +271,7 @@
     {
       "name": "no broken internal links (crawl of every locale's pages)",
       "ok": true,
-      "detail": "24 unique links checked"
+      "detail": "27 unique links checked"
     },
     {
       "name": "security headers on public pages; admin is noindex",

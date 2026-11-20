@@ -254,6 +254,8 @@
 /* Display type: Anton, uppercase, tight. Hindi / Punjabi use the narrowest, heaviest Noto. */
 .night h1, .night h2, .night .display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.005em; text-transform: uppercase; line-height: .9; }
 .night h3 { font-family: var(--font-sans); font-weight: 650; letter-spacing: -0.02em; text-transform: none; }
+/* Questions on /faq are headings but read as sentences */
+.night .qa-q { font-family: var(--font-sans); font-weight: 650; text-transform: none; letter-spacing: -0.01em; line-height: 1.35; font-size: 1.2rem; }
 .night :is(h1, h2, .display):lang(hi), .night :is(h1, h2, .display):lang(pa) { font-weight: 900; font-stretch: 62.5%; text-transform: none; line-height: 1.12; letter-spacing: 0; }
 .night .text-display { font-size: clamp(3.2rem, 1rem + 7.4vw, 9.2rem); line-height: .9; }
 .night .text-h1 { font-size: clamp(2.6rem, 1.4rem + 4.4vw, 6rem); line-height: .94; }

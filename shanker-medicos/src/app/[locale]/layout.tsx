@@ -7,7 +7,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { WhatsAppFloat } from "@/components/site/WhatsApp";
 import { SITE_URL } from "@/lib/env";
-import { jsonLd, pharmacySchema } from "@/lib/seo";
+import { jsonLd, pharmacySchema, websiteSchema } from "@/lib/seo";
 import { ClickTracker } from "@/components/marketing/ClickTracker";
 import { Analytics } from "@/components/marketing/Analytics";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
@@ -55,6 +55,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         {/* Cloudflare Web Analytics: free cookieless visit counts on any host, when a token is set. */}
         {CF_BEACON && <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: CF_BEACON })} />}
         <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(pharmacySchema(ctx.settings, ctx.locale))} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(websiteSchema(ctx.locale))} />
       </body>
     </html>
   );

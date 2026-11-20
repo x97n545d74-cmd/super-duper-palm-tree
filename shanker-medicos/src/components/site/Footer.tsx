@@ -29,6 +29,7 @@ export function Footer({ ctx }: { ctx: SiteContext }) {
               {it.label}
             </FLink>
           ))}
+          <FLink href={`/${locale}/faq`}>{t.v4.faqNav}</FLink>
         </FooterCol>
         <FooterCol title={t.v2.stock.eyebrow} className="md:col-span-3">
           {STOCK.slice(0, 8).map((f) => (

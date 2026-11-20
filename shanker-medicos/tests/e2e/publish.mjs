@@ -55,7 +55,7 @@ const get = (p, o = {}) => fetch(BASE + p, { redirect: "manual", signal: AbortSi
 await step("all pages render in all three languages; old medicine pages redirect", async () => {
   const bad = [];
   for (const l of ["en", "hi", "pa"]) {
-    for (const p of ["", "/offers", "/companies", "/products", "/about", "/contact", "/privacy", "/terms"]) {
+    for (const p of ["", "/offers", "/companies", "/products", "/faq", "/about", "/contact", "/privacy", "/terms"]) {
       const r = await get(`/${l}${p}`);
       if (r.status !== 200) bad.push(`/${l}${p}=${r.status}`);
     }
@@ -65,7 +65,7 @@ await step("all pages render in all three languages; old medicine pages redirect
     }
   }
   assert(!bad.length, bad.join(", "));
-  return "24 pages + 9 redirects";
+  return "27 pages + 9 redirects";
 });
 
 await step("no medicine names on any public page (owner's rule)", async () => {
@@ -76,7 +76,7 @@ await step("no medicine names on any public page (owner's rule)", async () => {
   assert(names.length > 30, `parsed ${names.length} names`);
   const hits = [];
   for (const l of ["en", "hi", "pa"])
-    for (const p of ["", "/products", "/companies", "/offers", "/about", "/contact"]) {
+    for (const p of ["", "/products", "/companies", "/offers", "/faq", "/about", "/contact"]) {
       const html = await (await get(`/${l}${p}`)).text();
       for (const n of names) if (html.includes(n)) hits.push(`${l}${p}:${n}`);
     }

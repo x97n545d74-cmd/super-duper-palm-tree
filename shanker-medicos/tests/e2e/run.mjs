@@ -133,7 +133,7 @@ page.on("pageerror", (e) => consoleErrors.push(String(e)));
 page.on("console", (m) => m.type() === "error" && !/favicon|Failed to load resource: the server responded with a status of 404/.test(m.text()) && consoleErrors.push(m.text()));
 
 const LOCALES = ["en", "hi", "pa"];
-const PAGES = ["", "/offers", "/companies", "/products", "/about", "/contact", "/privacy", "/terms"];
+const PAGES = ["", "/offers", "/companies", "/products", "/faq", "/about", "/contact", "/privacy", "/terms"];
 
 /* ================= Routing + i18n ================= */
 
@@ -339,11 +339,12 @@ await step("store details: Dera Road address, PIN, hours, map and 5% first-purch
   assert((await page.textContent("#club")).includes("extra 5% off your first purchase"), "club copy");
 });
 
-await step("offer page in Punjabi: terms, FAQ schema, Offer schema", async () => {
+await step("offer page in Punjabi: terms, visible FAQ, Offer schema (FAQ schema lives on /faq)", async () => {
   await page.goto(`${BASE}/pa/offers`);
   assert(/10%/.test(await page.textContent("h1")) && /[\u0A00-\u0A7F]/.test(await page.textContent("h1")), "pa headline");
   const types = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((b) => JSON.parse(b)["@type"]);
-  assert(types.includes("FAQPage") && types.includes("Offer"), types.join(","));
+  assert(types.includes("Offer") && !types.includes("FAQPage"), types.join(","));
+  assert((await page.locator("#faq-h").count()) === 1, "FAQ shown on the offers page");
 });
 
 let memberCodeSeen = "";
@@ -779,15 +780,33 @@ await step("SEO: unique titles, descriptions, canonical, hreflang, OG on every p
   assert(titles.size >= LOCALES.length * PAGES.length - 3, `only ${titles.size} unique titles`);
 });
 
-await step("SEO: valid JSON-LD (Pharmacy, BreadcrumbList, FAQPage, ItemList) with no invented ratings", async () => {
+await step("SEO: valid JSON-LD (Pharmacy with hours, offers and catalogue; WebSite; FAQPage; ItemList) with no invented ratings", async () => {
   await page.goto(`${BASE}/en`);
-  const home = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((b) => JSON.parse(b)["@type"]);
-  assert(home.includes("Pharmacy") && home.includes("FAQPage"), home.join(","));
+  const home = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((b) => JSON.parse(b));
+  const ph = home.find((j) => j["@type"] === "Pharmacy");
+  assert(ph && ph.taxID === "03AAWFS3612C1ZE" && ph.openingHoursSpecification?.[0]?.dayOfWeek?.includes("Saturday"), "pharmacy GSTIN / hours");
+  assert(ph.alternateName.includes("Shanker Chemists & Druggists") && ph.hasOfferCatalog.itemListElement.length === 12 && ph.makesOffer.length >= 1, "pharmacy names / catalogue / offers");
+  assert(home.some((j) => j["@type"] === "WebSite"), "website schema");
+  await page.goto(`${BASE}/en/faq`);
+  const faq = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((b) => JSON.parse(b)).find((j) => j["@type"] === "FAQPage");
+  assert(faq && faq.mainEntity.length >= 10, `FAQPage on /faq (${faq?.mainEntity?.length})`);
+  assert(faq.mainEntity.some((q) => q.acceptedAnswer.text.includes("9:30 am – 9:30 pm") && q.acceptedAnswer.text.includes("Closed on Sunday")), "hours answer filled in");
+  assert((await page.locator("main h2").count()) >= 10, "each question is a heading");
   await page.goto(`${BASE}/en/companies`);
   const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
   const types = blocks.map((b) => JSON.parse(b)["@type"]);
   assert(types.includes("BreadcrumbList") && types.includes("ItemList"), types.join(","));
-  assert(!blocks.join("").match(/aggregateRating|review/i), "ratings present");
+  assert(!blocks.join("").match(/aggregateRating|"review/i), "ratings present");
+});
+
+await step("GEO: llms.txt fact sheet and AI crawlers allowed", async () => {
+  const r = await get("/llms.txt");
+  const txt = await r.text();
+  assert(r.status === 200 && r.headers.get("content-type").includes("text/markdown"), `llms.txt ${r.status}`);
+  for (const must of ["# Shanker Medicos", "Dera Road", "- Phone and WhatsApp: +91", "Closed on Sunday", "GSTIN: 03AAWFS3612C1ZE", "30% off selected generic medicines", "RP Biotech", "Ayurvedic & herbal", "/pa/faq"]) assert(txt.includes(must), `llms.txt missing: ${must}`);
+  const rb = await (await get("/robots.txt")).text();
+  for (const bot of ["GPTBot", "PerplexityBot", "ClaudeBot", "Google-Extended"]) assert(rb.includes(bot), `robots missing ${bot}`);
+  return `${txt.split("\n").length} lines`;
 });
 
 await step("SEO: sitemap.xml and robots.txt", async () => {
@@ -801,7 +820,7 @@ await step("SEO: sitemap.xml and robots.txt", async () => {
 });
 
 await step("all images have alt text; one h1 per page", async () => {
-  for (const p of ["/en", "/en/products", "/hi/contact", "/en/offers", "/pa/companies", "/en/about"]) {
+  for (const p of ["/en", "/en/products", "/hi/contact", "/en/offers", "/pa/companies", "/en/about", "/hi/faq"]) {
     await page.goto(BASE + p);
     const noAlt = await page.locator("img:not([alt])").count();
     const h1 = await page.locator("h1").count();

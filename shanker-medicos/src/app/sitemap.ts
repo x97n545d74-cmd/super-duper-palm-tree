@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...entry("/products", undefined, 0.9),
     ...entry("/companies", undefined, 0.7),
     ...entry("/offers", undefined, 0.8),
+    ...entry("/faq", undefined, 0.7),
     ...entry("/about", undefined, 0.5),
     ...entry("/contact", undefined, 0.8),
     ...entry("/privacy", undefined, 0.2),

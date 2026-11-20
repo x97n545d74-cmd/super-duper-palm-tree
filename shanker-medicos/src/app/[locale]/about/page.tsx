@@ -3,6 +3,12 @@ import { siteContext } from "@/lib/site";
 import { pageMeta } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { IconArrow } from "@/components/ui/Icons";
+import { catalogue } from "@/lib/data";
+import { fmt } from "@/i18n";
+import { STOCK } from "@/lib/stock";
+import { GENERIC_COMPANIES, GENERIC_OFFER_PERCENT } from "@/lib/generics";
+import { HOURS, fmtTime } from "@/lib/hours";
+import { SITE_URL } from "@/lib/env";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/about">) {
   const { locale, t } = await siteContext((await params).locale);
@@ -10,7 +16,23 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/about">)
 }
 
 export default async function About({ params }: PageProps<"/[locale]/about">) {
-  const { t, locale } = await siteContext((await params).locale);
+  const { t, locale, settings: s } = await siteContext((await params).locale);
+  const companies = await catalogue.listCompanies();
+  const f = t.v4.facts;
+  const hours = fmt(f.hoursVal, { winter: `${fmtTime(HOURS.winter.open)} – ${fmtTime(HOURS.winter.close)}`, summer: `${fmtTime(HOURS.summer.open)} – ${fmtTime(HOURS.summer.close)}` });
+  const facts: [string, string][] = [
+    [f.name, "Shanker Medicos"],
+    [f.aka, "Shanker Chemists & Druggists · शंकर मेडिकोज़ · ਸ਼ੰਕਰ ਮੈਡੀਕੋਜ਼"],
+    [f.type, f.typeVal],
+    [f.address, [s.address, s.city, s.state, s.postal_code].filter(Boolean).join(", ")],
+    [f.phone, s.phone],
+    [f.hours, hours],
+    [f.languages, f.languagesVal],
+    [f.range, fmt(f.rangeVal, { n: companies.length, k: STOCK.length })],
+    [f.generics, fmt(f.genericsVal, { g: GENERIC_COMPANIES.length, percent: GENERIC_OFFER_PERCENT })],
+    ...(s.gstin ? [[f.gstin, s.gstin] as [string, string]] : []),
+    [f.website, SITE_URL.replace(/^https?:\/\//, "")],
+  ];
   return (
     <div className="container-x pb-8 pt-10">
       <Breadcrumbs
@@ -32,6 +54,20 @@ export default async function About({ params }: PageProps<"/[locale]/about">) {
           <figcaption className="mt-3 font-mono text-[0.7rem] uppercase tracking-[0.1em] text-ink-2">{t.v2.hero.chip}</figcaption>
         </figure>
       </div>
+      {/* Facts in one place, in plain words (for people, Google and AI assistants) */}
+      <section className="mt-section" aria-labelledby="facts-h">
+        <h2 id="facts-h" className="text-h2">
+          {t.v4.factsTitle}
+        </h2>
+        <dl data-rv className="panel mt-8 divide-y divide-line px-6 sm:px-8">
+          {facts.map(([k, v]) => (
+            <div key={k} className="grid grid-cols-1 gap-1 py-4 sm:grid-cols-3 sm:gap-6">
+              <dt className="font-mono text-[0.72rem] uppercase tracking-[0.12em] text-ink-2">{k}</dt>
+              <dd className="text-ink sm:col-span-2">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
       <div className="mt-section grid grid-cols-1 gap-3 md:grid-cols-3">
         {t.about.sections.map((s, i) => (
           <section key={s.title} data-rv style={{ ["--i" as string]: i * 2 }} className="panel p-7">

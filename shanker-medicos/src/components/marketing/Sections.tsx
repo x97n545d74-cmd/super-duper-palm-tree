@@ -1,16 +1,17 @@
+import Link from "next/link";
 import { fmt } from "@/i18n";
 import type { SiteContext } from "@/lib/site";
 import { waLink } from "@/lib/whatsapp";
-import { jsonLd } from "@/lib/seo";
 import { PUBLISH_ONLY } from "@/lib/env";
 import { GENERIC_OFFER_PERCENT } from "@/lib/generics";
+import { HOURS, fmtTime } from "@/lib/hours";
 import { IconWhatsApp } from "@/components/ui/Icons";
 import { OfferCard } from "./OfferCard";
 import { ClubForm } from "./ClubForm";
 
 export function offerVars(ctx: SiteContext) {
   const s = ctx.settings;
-  return { percent: s.offer_percent, min: s.offer_min_amount.toLocaleString("en-IN"), code: s.offer_code, extra: s.club_extra_percent, gpercent: GENERIC_OFFER_PERCENT };
+  return { percent: s.offer_percent, min: s.offer_min_amount.toLocaleString("en-IN"), code: s.offer_code, extra: s.club_extra_percent, gpercent: GENERIC_OFFER_PERCENT, winter: `${fmtTime(HOURS.winter.open)} – ${fmtTime(HOURS.winter.close)}`, summer: `${fmtTime(HOURS.summer.open)} – ${fmtTime(HOURS.summer.close)}` };
 }
 
 /** Offer reveal + Shanker Club sign-up, side by side. */
@@ -85,31 +86,46 @@ export function OfferTerms({ ctx }: { ctx: SiteContext }) {
   );
 }
 
-/** FAQ with FAQPage structured data. */
-export function Faq({ ctx }: { ctx: SiteContext }) {
+/** FAQ items in the visitor's language with the live values filled in (offer, club, hours). */
+export function faqItems(ctx: SiteContext) {
   const v = offerVars(ctx);
-  const f = ctx.t.mkt.faq;
-  const items = f.items
+  return ctx.t.mkt.faq.items
     .filter((it, i) => !(i === 2 && !ctx.settings.offer_enabled) && !(i === 3 && !ctx.settings.club_enabled))
     .map((it) => ({ q: fmt(it.q, v), a: fmt(it.a, v) }));
-  const schema = {
+}
+
+/** FAQPage structured data: published once, on /[locale]/faq. */
+export function faqSchema(items: { q: string; a: string }[]) {
+  return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: items.map((it) => ({ "@type": "Question", name: it.q, acceptedAnswer: { "@type": "Answer", text: it.a } })),
   };
+}
+
+/** FAQ accordion (homepage, offers). The full list with structured data lives on /[locale]/faq. */
+export function Faq({ ctx, limit }: { ctx: SiteContext; limit?: number }) {
+  const f = ctx.t.mkt.faq;
+  const all = faqItems(ctx);
+  const items = limit ? all.slice(0, limit) : all;
   return (
     <section className="container-x pt-section" aria-labelledby="faq-h">
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <p className="eyebrow">{f.eyebrow}</p>
           <h2 id="faq-h" className="mt-3 text-h2">{f.title}</h2>
+          {limit && all.length > limit && (
+            <Link href={`/${ctx.locale}/faq`} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-emerald hover:underline">
+              {ctx.t.v4.seeAll} ({all.length}) →
+            </Link>
+          )}
         </div>
         <div className="panel divide-y divide-line px-6 lg:col-span-8">
           {items.map((it) => (
             <details key={it.q} className="group py-1">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-medium">
                 {it.q}
-                <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-line bg-white text-lg text-emerald transition-transform duration-[420ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-open:rotate-45">
+                <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-lg text-emerald transition-transform duration-[420ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-open:rotate-45">
                   +
                 </span>
               </summary>
@@ -118,7 +134,6 @@ export function Faq({ ctx }: { ctx: SiteContext }) {
           ))}
         </div>
       </div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(schema)} />
     </section>
   );
 }

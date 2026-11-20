@@ -41,7 +41,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       {/* HERO: full-bleed storefront (the frame the entry video ends on) */}
       <section className="relative isolate -mt-px flex min-h-[calc(100svh-7rem)] flex-col justify-end overflow-hidden" aria-labelledby="hero-h">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/media/batala-store-poster.jpg" alt={v.hero.videoAlt} width={1280} height={720} fetchPriority="high" className="parallax absolute inset-0 -z-20 h-full w-full object-cover" style={{ filter: "contrast(1.08) saturate(.85)" }} />
+        <img src="/media/batala-store-poster.jpg" alt="Shanker Medicos (Shanker Chemists & Druggists) shop front on Dera Road, Batala" width={1280} height={720} fetchPriority="high" className="parallax absolute inset-0 -z-20 h-full w-full object-cover" style={{ filter: "contrast(1.08) saturate(.85)" }} />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(0,0,0,.55)_0%,rgba(0,0,0,.2)_35%,rgba(0,0,0,.92)_100%)]" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,.7)_100%)]" />
 
@@ -63,12 +63,18 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </div>
 
         <div className="container-x grid grid-cols-1 items-end gap-10 pb-12 pt-40 lg:grid-cols-12 lg:pb-16">
-          <h1 id="hero-h" className="text-display text-white lg:col-span-9">
-            <a href="#generics" data-rv className="mb-6 inline-flex items-center gap-2 rounded-full bg-emerald px-4 py-2 font-sans text-sm font-semibold normal-case tracking-normal text-black hover:bg-[#2ad68f]">
+          <div className="lg:col-span-9">
+            <a href="#generics" data-rv className="inline-flex items-center gap-2 rounded-full bg-emerald px-4 py-2 text-sm font-semibold text-black hover:bg-[#2ad68f]">
               {fmt(t.gen.pill, { percent: GENERIC_OFFER_PERCENT })} <IconArrow className="h-4 w-4" />
             </a>
-            <Lines lines={w.hero.lines} />
-          </h1>
+            {/* What the shop is, in words people search for (visible, not hidden) */}
+            <p data-rv style={{ ["--i" as string]: 1 }} className="mt-5 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-white/75">
+              {t.v4.kicker}
+            </p>
+            <h1 id="hero-h" className="mt-3 text-display text-white">
+              <Lines lines={w.hero.lines} />
+            </h1>
+          </div>
           <div data-rv style={{ ["--i" as string]: 6 }} className="lg:col-span-3 lg:pb-3">
             <p className="max-w-sm text-[1.02rem] leading-relaxed text-white/70">{v.hero.body}</p>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -189,7 +195,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
       <Visit ctx={ctx} />
 
-      <Faq ctx={ctx} />
+      <Faq ctx={ctx} limit={6} />
     </>
   );
 }
