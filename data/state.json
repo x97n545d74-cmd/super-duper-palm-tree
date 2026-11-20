@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 5,
+ "reddit_next": 0,
  "fails": {
   "reddit|r/StockMarketIndia": 10,
   "reddit|r/DalalStreetTalks": 10,
@@ -41,7 +41,8 @@
   "feeds|Moneycontrol business": 6,
   "feeds|Moneycontrol market reports": 6,
   "feeds|Moneycontrol latest": 6,
-  "feeds|Moneycontrol economy": 6
+  "feeds|Moneycontrol economy": 6,
+  "news|India exports imports trade deficit": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795135404.611403,
