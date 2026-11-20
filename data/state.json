@@ -29,27 +29,30 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 0,
+ "reddit_next": 1,
  "fails": {
   "reddit|r/StockMarketIndia": 13,
   "reddit|r/DalalStreetTalks": 13,
   "reddit|r/IndianStocks": 13,
   "reddit|r/NSEbets": 4,
-  "reddit|r/IndianStockMarket": 12,
+  "reddit|r/IndianStockMarket": 13,
   "reddit|r/IndiaInvestments": 12,
   "reddit|r/IndianStreetBets": 12,
-  "feeds|Moneycontrol business": 5,
-  "feeds|Moneycontrol market reports": 5,
-  "feeds|Moneycontrol latest": 5,
-  "feeds|Moneycontrol economy": 5,
-  "news|Brent crude oil price today": 1
+  "feeds|Moneycontrol business": 6,
+  "feeds|Moneycontrol market reports": 6,
+  "feeds|Moneycontrol latest": 6,
+  "feeds|Moneycontrol economy": 6
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795225217.071881,
   "reddit|r/DalalStreetTalks": 1795227017.1184728,
   "reddit|r/IndianStocks": 1795227321.3575573,
-  "reddit|r/IndianStockMarket": 1795199687.2045076,
+  "reddit|r/IndianStockMarket": 1795229121.3924146,
   "reddit|r/IndiaInvestments": 1795201486.7215405,
-  "reddit|r/IndianStreetBets": 1795203286.7560477
+  "reddit|r/IndianStreetBets": 1795203286.7560477,
+  "feeds|Moneycontrol business": 1795229121.3942115,
+  "feeds|Moneycontrol market reports": 1795229121.3942115,
+  "feeds|Moneycontrol latest": 1795229121.3942115,
+  "feeds|Moneycontrol economy": 1795229121.3942115
  }
 }
