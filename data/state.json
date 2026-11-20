@@ -29,23 +29,23 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 4,
+ "reddit_next": 5,
  "fails": {
   "reddit|r/StockMarketIndia": 13,
-  "reddit|r/DalalStreetTalks": 12,
+  "reddit|r/DalalStreetTalks": 13,
   "reddit|r/IndianStocks": 12,
   "reddit|r/NSEbets": 4,
   "reddit|r/IndianStockMarket": 12,
   "reddit|r/IndiaInvestments": 12,
   "reddit|r/IndianStreetBets": 12,
-  "feeds|Moneycontrol business": 3,
-  "feeds|Moneycontrol market reports": 3,
-  "feeds|Moneycontrol latest": 3,
-  "feeds|Moneycontrol economy": 3
+  "feeds|Moneycontrol business": 4,
+  "feeds|Moneycontrol market reports": 4,
+  "feeds|Moneycontrol latest": 4,
+  "feeds|Moneycontrol economy": 4
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795225217.071881,
-  "reddit|r/DalalStreetTalks": 1795196086.976422,
+  "reddit|r/DalalStreetTalks": 1795227017.1184728,
   "reddit|r/IndianStocks": 1795197887.5047772,
   "reddit|r/IndianStockMarket": 1795199687.2045076,
   "reddit|r/IndiaInvestments": 1795201486.7215405,
