@@ -29,22 +29,21 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 5,
+ "reddit_next": 0,
  "fails": {
   "reddit|r/StockMarketIndia": 12,
   "reddit|r/DalalStreetTalks": 12,
-  "reddit|r/IndianStocks": 11,
+  "reddit|r/IndianStocks": 12,
   "reddit|r/NSEbets": 4,
   "reddit|r/IndianStockMarket": 11,
   "reddit|r/IndiaInvestments": 11,
   "reddit|r/IndianStreetBets": 11,
-  "news|Cabinet approves scheme crore": 1,
-  "news|assembly election 2027": 1
+  "news|merger acquisition India company deal crore": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795194287.0604854,
   "reddit|r/DalalStreetTalks": 1795196086.976422,
-  "reddit|r/IndianStocks": 1795168422.497764,
+  "reddit|r/IndianStocks": 1795197887.5047772,
   "reddit|r/IndianStockMarket": 1795170222.5326383,
   "reddit|r/IndiaInvestments": 1795172022.634518,
   "reddit|r/IndianStreetBets": 1795172317.4110868
