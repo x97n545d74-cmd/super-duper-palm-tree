@@ -1,0 +1,337 @@
+{
+  "date": "2026-11-20T21:18:45.789Z",
+  "passed": 66,
+  "total": 66,
+  "results": [
+    {
+      "name": "/ redirects to /en (default English)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all required routes render in all three languages",
+      "ok": true,
+      "detail": "27 pages"
+    },
+    {
+      "name": "unknown pages return a localised 404; old medicine pages redirect to What we stock",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "html lang + script rendering for Hindi and Punjabi",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "language switcher keeps the page and persists the choice",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "company names are not translated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no medicine names on any public page (owner's rule)",
+      "ok": true,
+      "detail": "38 names × 27 pages"
+    },
+    {
+      "name": "what we stock: 12 kinds, each with a WhatsApp question to the store",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "homepage stock index: 12 kinds, each a WhatsApp question in the visitor's language",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "generic medicines: 30% off selected generics, the owner's four makers first, WhatsApp asks",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "company finder: instant search, Indian / multinational filter, WhatsApp ask",
+      "ok": true,
+      "detail": "108 companies (83 Indian, 25 multinational)"
+    },
+    {
+      "name": "entry video: plays once on the homepage, Skip lands it in the hero, not repeated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "prescription on WhatsApp: photo and medicine-list buttons with prefilled text",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "offer: announcement bar, tap-to-reveal code, WhatsApp with code",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "store details: Dera Road address, PIN, hours, map and 5% first-purchase club offer",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "offer page in Punjabi: terms, visible FAQ, Offer schema (FAQ schema lives on /faq)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Shanker Club: validation (bad mobile, no consent)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Shanker Club: sign-up gives a member code and a WhatsApp save link",
+      "ok": true,
+      "detail": "SM-ZY9JN"
+    },
+    {
+      "name": "Shanker Club: joining again with the same number returns the same code",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "automation webhook receives the sign-up, signed with HMAC",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "consent banner: analytics only load after Accept",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "conversion events reach the dataLayer (WhatsApp click)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin requires login",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "wrong password is rejected",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin login works",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "session cookie is httpOnly, scoped to /admin and signed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "business settings: validation errors are shown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "business settings save and appear on the website",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "WhatsApp: messages are encoded and use the configured number",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "WhatsApp: Punjabi page builds a Punjabi message; floating button present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "create a product with an uploaded image",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "new product is saved (admin only, not public); image served",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "duplicate product (same name + brand + pack) is blocked",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "edit a product",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hide and publish a product",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "categories: add (3 languages), reorder, delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "category with products cannot be deleted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "CSV import: mapping, validation, duplicate detection, preview, summary",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "imported products are saved with correct fields",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "delete a product",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "server actions refuse unauthenticated calls",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin: club members list shows attribution; CSV export; delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin: change the offer to 15% and see it on the site",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "companies & logos: 100+ companies, bulk logo upload matched by file name",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "company logos appear on the companies page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "admin: edit a company and feature it on the homepage",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "first-party analytics: dashboard counts visits, WhatsApp taps and sources",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "logout",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "SEO: unique titles, descriptions, canonical, hreflang, OG on every page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "SEO: valid JSON-LD (Pharmacy with hours, offers and catalogue; WebSite; FAQPage; ItemList) with no invented ratings",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "GEO: llms.txt fact sheet and AI crawlers allowed",
+      "ok": true,
+      "detail": "55 lines"
+    },
+    {
+      "name": "SEO: sitemap.xml and robots.txt",
+      "ok": true,
+      "detail": "27 sitemap URLs"
+    },
+    {
+      "name": "all images have alt text; one h1 per page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no broken internal links (crawl of every locale's pages)",
+      "ok": true,
+      "detail": "27 unique links checked"
+    },
+    {
+      "name": "security headers on public pages; admin is noindex",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "media route rejects path traversal and odd names",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no secrets in client JavaScript",
+      "ok": true,
+      "detail": "36 static files scanned"
+    },
+    {
+      "name": "login rate limiting",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: Mobile Chrome (Pixel 7)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: iPhone 13 (Safari viewport)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: Tablet (iPad Mini)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: Desktop 1440",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no horizontal overflow: Small phone 320",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile: drawer navigation",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tap targets: primary buttons are at least 40px tall on mobile",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no JavaScript errors in the browser console",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

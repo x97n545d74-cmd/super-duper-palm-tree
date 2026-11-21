@@ -1,0 +1,3 @@
+name,brand,manufacturer,generic_name,pack_size,category,description,information,availability,rx_class,published,pack_style
+Example Tablet 500,ExampleBrand,Example Pharma Ltd,Paracetamol 500 mg,Strip of 10 tablets,otc-products,Paracetamol 500 mg tablets.,Read the leaflet inside the pack.,unconfirmed,unverified,no,strip
+Example Baby Lotion,ExampleBrand,Example Consumer Ltd,,200 ml bottle,baby-care,Baby lotion.,,in_stock,otc,no,pump
