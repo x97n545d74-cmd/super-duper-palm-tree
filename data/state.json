@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 2,
+ "reddit_next": 3,
  "fails": {
   "reddit|r/StockMarketIndia": 13,
   "reddit|r/DalalStreetTalks": 13,
@@ -38,7 +38,7 @@
   "reddit|r/IndianStockMarket": 13,
   "reddit|r/IndiaInvestments": 13,
   "reddit|r/IndianStreetBets": 13,
-  "news|government tender awarded crore": 1
+  "news|disinvestment privatisation government stake sale": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795225217.071881,
