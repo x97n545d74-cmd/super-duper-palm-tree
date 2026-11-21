@@ -29,7 +29,7 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 1,
+ "reddit_next": 2,
  "fails": {
   "reddit|r/StockMarketIndia": 13,
   "reddit|r/DalalStreetTalks": 13,
@@ -38,10 +38,7 @@
   "reddit|r/IndianStockMarket": 13,
   "reddit|r/IndiaInvestments": 13,
   "reddit|r/IndianStreetBets": 13,
-  "feeds|Moneycontrol business": 6,
-  "feeds|Moneycontrol market reports": 6,
-  "feeds|Moneycontrol latest": 6,
-  "feeds|Moneycontrol economy": 6
+  "news|government tender awarded crore": 1
  },
  "paused_until": {
   "reddit|r/StockMarketIndia": 1795225217.071881,
@@ -49,10 +46,6 @@
   "reddit|r/IndianStocks": 1795227321.3575573,
   "reddit|r/IndianStockMarket": 1795229121.3924146,
   "reddit|r/IndiaInvestments": 1795230921.2476907,
-  "reddit|r/IndianStreetBets": 1795232721.398341,
-  "feeds|Moneycontrol business": 1795229121.3942115,
-  "feeds|Moneycontrol market reports": 1795229121.3942115,
-  "feeds|Moneycontrol latest": 1795229121.3942115,
-  "feeds|Moneycontrol economy": 1795229121.3942115
+  "reddit|r/IndianStreetBets": 1795232721.398341
  }
 }
