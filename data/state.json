@@ -29,9 +29,9 @@
   "@elearnmarkets": "UCMec1m9iUC3agiEK-nsndSg"
  },
  "x_last_run": 1794916397.868803,
- "reddit_next": 3,
+ "reddit_next": 4,
  "fails": {
-  "reddit|r/StockMarketIndia": 14,
+  "reddit|r/StockMarketIndia": 15,
   "reddit|r/DalalStreetTalks": 14,
   "reddit|r/IndianStocks": 14,
   "reddit|r/NSEbets": 4,
@@ -40,7 +40,7 @@
   "reddit|r/IndianStreetBets": 14
  },
  "paused_until": {
-  "reddit|r/StockMarketIndia": 1795254561.200067,
+  "reddit|r/StockMarketIndia": 1795283897.572916,
   "reddit|r/DalalStreetTalks": 1795256360.9586225,
   "reddit|r/IndianStocks": 1795258161.6346564,
   "reddit|r/IndianStockMarket": 1795259961.2239025,
