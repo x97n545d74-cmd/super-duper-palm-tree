@@ -104,6 +104,9 @@ Tool workflow: Agent Reach for research (read-only), the no-ai-slop skill on eve
 - Keep photos dark/blurred behind type so the minimal look holds.
 - **Photo workflow (user, 2026-10-26):** Flickr/Wikimedia/Openverse rate-limit this cloud IP, and Pexels/Unsplash need a key. So for each reel, give the user a shot list of photos with ready-to-paste search queries aimed at free-licence sites (e.g. `site:pexels.com onion pile`, Google Images with Tools → Usage rights → Creative Commons). The user finds and uploads them. Before using one, ask where it's from so it can be logged in LICENSES.md.
 
+## Reply style
+- **User, 2026-11-21:** "just make it simple no need to explain". Hand over deliverables (post text, images) with no explanation, source lists or caveats unless asked. Flag only a number that is wrong.
+
 ## Voice preferences
 - The user dislikes "cranky" or robotic TTS and wants a correct Indian accent: "paisaa", not "paise".
 - The best result so far was the user's own ElevenLabs file (Tia Mirza, v4). The user may supply VO again: hand over the script and ask for it.
